@@ -1,0 +1,26 @@
+{
+  "config": {
+      "abort": {
+          "already_configured": "Inverter is already configured"
+      },
+      "error": {
+          "cannot_connect": "Cannot connect to inverter",
+          "unknown": "Unknown error. Sorry about that."
+      },
+      "step": {
+          "user": {
+              "data": {
+                  "host": "Hostname or IP address",
+                  "port": "Port",
+                  "timeout": "Connection timeout",
+                  "slave": "MODBUS slave number",
+                  "connection": "Connection type",
+                  "model": "Inverter model",
+                  "use_local_time": "Use local time?",
+                  "smart_meter": "Is a smart meter?",
+                  "level": "Data request level"
+              }
+          }
+      }
+ }
+}
