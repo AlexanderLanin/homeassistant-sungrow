@@ -1,0 +1,24 @@
+# This file is only for local development / testing / CICD.
+# It is not used by Home Assistant.
+
+PyYAML~=6.0
+pymodbus~=3.6
+homeassistant~=2023.12
+pytest~=7.0
+pytest-cov~=4.0
+pytest-homeassistant-custom-component~=0.13
+pytest-xdist~=3.0
+beartype
+
+# scripts
+tabulate
+types-tabulate
+requests
+
+# code quality
+mypy
+ruff
+
+types-PyYAML
+homeassistant-stubs
+types-requests

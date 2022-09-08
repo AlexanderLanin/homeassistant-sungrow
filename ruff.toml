@@ -1,0 +1,21 @@
+target-version = "py311"
+unsafe-fixes = true
+
+[lint]
+select = [
+    "F",   # Pyflakes
+    "E",   # pycodestyle
+    "W",   # pycodestyle warnings
+    "C",   # mccabe
+    "N",   # pep8-naming
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+    "RUF", # ruff specific rules
+]
+
+[lint.mccabe]
+# These are the current worst cases in the code. We should try to reduce.
+max-complexity = 8
