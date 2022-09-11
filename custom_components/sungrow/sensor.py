@@ -1,23 +1,14 @@
 """Integration platform for Sungrow Inverters"""
-# https://developers.home-assistant.io/docs/creating_platform_index/
-from __future__ import annotations
-from datetime import timedelta
 
-from typing import Iterable
+from __future__ import annotations
+
+from datetime import timedelta
 import pathlib
 import os
 import yaml
 from pprint import pformat
-
-from .const import (
-    MIN_TIME_BETWEEN_UPDATES, SUNGROW_DAILY_EXPORT_ENERGY, SUNGROW_DAILY_POWER_YIELDS, SUNGROW_DAILY_PV_EXPORT, SUNGROW_ENERGY_GENERATION,
-    SUNGROW_ARRAY1_ENERGY_GENERATION, SUNGROW_ARRAY2_ENERGY_GENERATION, SUNGROW_EXPORT_POWER_HYBRID, SUNGROW_POWER_EXPORT_TO_GRID, SUNGROW_POWER_IMPORT_FROM_GRID, SUNGROW_LOAD_POWER_HYBRID, SUNGROW_METER_POWER, SUNGROW_SELF_CONSUMPTION_OF_DAY, SUNGROW_TOTAL_ACTIVE_POWER, SUNGROW_TOTAL_EXPORT_ENERGY, SUNGROW_TOTAL_PV_EXPORT
-)
-
 import logging
 import voluptuous as vol
-
-from .sungather import SungrowInverter, config, construct, targets, poll
 
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -27,21 +18,14 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.typing import ConfigType
 from homeassistant.components.sensor import (
     PLATFORM_SCHEMA,
-    STATE_CLASS_TOTAL,
-    STATE_CLASS_MEASUREMENT,
     SensorEntity,
     SensorEntityDescription,
 )
 from homeassistant.const import (
     DEVICE_CLASS_ENERGY,
-    DEVICE_CLASS_BATTERY,
-    ATTR_DATE,
-    ATTR_TIME,
     ATTR_MODEL,
     CONF_IP_ADDRESS,
     CONF_NAME,
@@ -49,14 +33,9 @@ from homeassistant.const import (
     CONF_SLAVE,
     CONF_TIMEOUT,
     CONF_HOST,
-    ELECTRIC_CURRENT_AMPERE,
-    ENERGY_WATT_HOUR,
     ENERGY_KILO_WATT_HOUR,
-    FREQUENCY_HERTZ,
     PERCENTAGE,
     POWER_WATT,
-    TEMP_CELSIUS,
-    CONF_MONITORED_CONDITIONS,
     CONF_SCAN_INTERVAL,
 )
 from homeassistant.helpers.update_coordinator import (
@@ -74,25 +53,36 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import (
     DEVICE_CLASS_ENERGY,
-    ENERGY_WATT_HOUR,
     ENERGY_KILO_WATT_HOUR,
     DEVICE_CLASS_POWER,
     POWER_WATT
 )
 
+from .SunGather.inverter import SungrowInverter
+
 from .const import (
-    SUNGROW_ENERGY_GENERATION,
-    SUNGROW_GRID_FREQUENCY,
-    SUNGROW_ARRAY1_ENERGY_GENERATION,
-    SUNGROW_ARRAY2_ENERGY_GENERATION,
+    MIN_TIME_BETWEEN_UPDATES,  
+    SUNGROW_DAILY_EXPORT_ENERGY, 
+    SUNGROW_DAILY_POWER_YIELDS, 
+    SUNGROW_DAILY_PV_EXPORT, 
+    SUNGROW_ENERGY_GENERATION, 
+    SUNGROW_ARRAY1_ENERGY_GENERATION, 
+    SUNGROW_ARRAY2_ENERGY_GENERATION, 
+    SUNGROW_EXPORT_POWER_HYBRID, 
+    SUNGROW_POWER_EXPORT_TO_GRID, 
+    SUNGROW_POWER_IMPORT_FROM_GRID, 
+    SUNGROW_LOAD_POWER_HYBRID, 
+    SUNGROW_METER_POWER, 
+    SUNGROW_SELF_CONSUMPTION_OF_DAY, 
+    SUNGROW_TOTAL_ACTIVE_POWER, 
+    SUNGROW_TOTAL_EXPORT_ENERGY, 
+    SUNGROW_TOTAL_PV_EXPORT,
     SUNGROW_DAILY_OUTPUT_ENERGY,
     SUNGROW_TOTAL_OUTPUT_ENERGY,
     SUNGROW_LOAD_POWER,
     SUNGROW_EXPORT_POWER,
     SUNGROW_DAILY_BATTERY_CHARGE_PV_ENERGY,
     SUNGROW_TOTAL_BATTERY_CHARGE_PV_ENERGY,
-    SUNGROW_DAILY_BATTERY_CHARGE_GRID_ENERGY,
-    SUNGROW_TOTAL_BATTERY_CHARGE_GRID_ENERGY,
     SUNGROW_DAILY_PV_ENERGY,
     SUNGROW_TOTAL_PV_ENERGY,
     SUNGROW_DAILY_DIRECT_ENERGY_CONSUMPTION,
@@ -469,7 +459,8 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
             'manufacturer': 'Sungrow',
             'model': coordinator.data.getInverterModel(),
             "identifiers": {
-                (DOMAIN, coordinator.data.latest_scrape['serial_number'])
+                # FIXME serial_number is not set until inverter.scrape() is called
+                (DOMAIN, coordinator.data.latest_scrape.get('serial_number'))
             }
         }
 
@@ -497,7 +488,7 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
             elif self.entity_description.state_class == SensorStateClass.MEASUREMENT:
                 state = self.coordinator.data.latest_scrape[sensor_type]
 
-        except KeyError as err:
+        except KeyError:
             logger.warn(
                 "Sensor lookup value is not available in data array: %s", sensor_type)
 

@@ -7,7 +7,7 @@ from pprint import pformat
 
 import voluptuous as vol
 
-from .sungather import SungrowInverter
+from .SunGather.inverter import SungrowInverter
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigFlow
@@ -39,7 +39,7 @@ DATA_SCHEMA = vol.Schema({
     vol.Optional("model"): str,
     vol.Optional("use_local_time"): bool,
     vol.Optional("smart_meter"): bool,
-    vol.Optional("level", default=3): int
+    vol.Optional("level", default=2): int
 })
 
 

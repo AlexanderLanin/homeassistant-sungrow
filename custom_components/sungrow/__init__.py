@@ -4,8 +4,6 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from .const import DOMAIN
-
 
 logger = logging.getLogger(__name__)
 
