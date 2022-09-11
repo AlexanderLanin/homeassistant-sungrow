@@ -2,7 +2,7 @@
   "domain": "sungrow",
   "name": "Sungrow Inverter",
   "version": "0.0.1",
-  "documentation": "https://www.example.com",
+  "documentation": "https://github.com/alangibson/homeassistant-sungrow",
   "dependencies": [],
   "codeowners": [],
   "requirements": [
