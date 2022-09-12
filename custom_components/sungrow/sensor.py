@@ -15,6 +15,7 @@ from homeassistant.components.sensor import (
     SensorStateClass
 )
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers import device_registry as dr
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -399,6 +400,11 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback
 ):
+
+    # config flow sets this to either serial number or None
+    if (unique_device_id := config_entry.unique_id) is None:
+        unique_device_id = config_entry.entry_id
+
     """Setup sensors from a config entry created in the integrations UI."""
     # Configure SungrowInverter
     config_inverter = {
@@ -417,20 +423,19 @@ async def async_setup_entry(
         # 1 = Useful data, all required for exports,
         # 2 everything your Inverter supports,
         # 3 Everything from every register
-        'level': config_entry.data.get('level', 3),
+        'level': config_entry.data.get('level', 2),
         # boolean
         'use_local_time': config_entry.data.get('use_local_time', False),
         'smart_meter': config_entry.data.get('smart_meter'),
         # one of: http, sungrow, modbus
         'connection': config_entry.data.get('connection', 'http')
     }
-    pwd = pathlib.Path(__file__).parent.absolute()
-    registersfile = yaml.safe_load(
-        open(os.path.join(pwd, 'registers-sungrow.yaml'), encoding="utf-8"))
 
     # Async construct inverter object
-    def c():
-        # return construct(config_inverter, registersfile)
+    def create_inverter():
+        pwd = pathlib.Path(__file__).parent.absolute()
+        registersfile = yaml.safe_load(
+            open(os.path.join(pwd, 'registers-sungrow.yaml'), encoding="utf-8"))
         inverter = SungrowInverter(config_inverter)
         if not inverter.checkConnection():
             logger.error(
@@ -439,7 +444,7 @@ async def async_setup_entry(
         if not inverter.inverter_config['connection'] == "http":
             inverter.close()
         return inverter
-    inverter: SungrowInverter = await hass.async_add_executor_job(c)
+    inverter: SungrowInverter = await hass.async_add_executor_job(create_inverter)
 
     is_connected = inverter.connect()
     logger.debug(f'sensor async_setup_entry is_connected={is_connected}')
@@ -458,6 +463,18 @@ async def async_setup_entry(
     )
     await coordinator.async_refresh()
 
+    # Register our inverter device
+    device_registry = dr.async_get(hass)
+    device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        # connections={(dr.CONNECTION_NETWORK_MAC, config.mac)},
+        identifiers={(DOMAIN, unique_device_id)},
+        manufacturer="Sungrow",
+        name=f'Sungrow {coordinator.data.getInverterModel()}',
+        model=coordinator.data.getInverterModel()
+    )
+
+    # Register our sensor entities
     async_add_entities([
         SungrowInverterSensorEntity(
             coordinator, description)
@@ -477,15 +494,43 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
         # SensorEntity superclass will automatically pull sensor values from entity_description
         self.entity_description = description
 
+        # model = coordinator.data.getInverterModel()
+        # logger.debug(f'Configuring device: {DOMAIN} {self.name} {model} {self.unique_id}')
         # Setting device_info causes HA to add a Device to the device registry
-        self._attr_device_info: DeviceInfo = {
-            'manufacturer': 'Sungrow',
-            'model': coordinator.data.getInverterModel(),
-            "identifiers": {
-                # FIXME serial_number is not set until inverter.scrape() is called
-                (DOMAIN, coordinator.data.latest_scrape.get('serial_number'))
-            }
-        }
+        # self._attr_device_info: DeviceInfo = {
+        #     'name': f'Sungrow {model}',
+        #     'manufacturer': 'Sungrow',
+        #     'model': model,
+        #     "identifiers": {
+        #         (DOMAIN, self.unique_id)
+        #     }
+        #     # TODO Create a main "Sungrow {model}" device
+        #     # "via_device": (DOMAIN, device_id)
+        # }
+
+    @property
+    def unique_id(self) -> str:
+        if self._attr_unique_id:
+            return self._attr_unique_id
+        else:
+            device_id = self.coordinator.data.latest_scrape.get('serial_number')
+            self._attr_unique_id = f'sungrow_{device_id}_{self.entity_description.key}'
+            return self._attr_unique_id
+
+    # TODO get _device_id somehow
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device information about this IPP device."""
+        # if self._device_id is None:
+        #     return None
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.coordinator.data.latest_scrape.get('serial_number'))},
+            name = f'Sungrow {self.coordinator.data.getInverterModel()}',
+            manufacturer = 'Sungrow',
+            model = self.coordinator.data.getInverterModel(),
+            # TODO Create a main "Sungrow {model}" device
+            # "via_device": (DOMAIN, device_id)
+        )
 
     # SensorEntity methods
 
@@ -508,7 +553,6 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
                     self.coordinator.data.latest_scrape["mppt_2_voltage"]
                     * self.coordinator.data.latest_scrape["mppt_2_current"]
                 )
-            # elif self.entity_description.state_class == SensorStateClass.MEASUREMENT:
             else:
                 state = self.coordinator.data.latest_scrape[sensor_type]
         except KeyError:

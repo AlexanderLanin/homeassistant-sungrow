@@ -12,7 +12,7 @@ DEFAULT_TIMEOUT = 3
 
 MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=10)
 
-# Unit is kWh
+# Unit is W
 SUNGROW_ENERGY_GENERATION = "energy_generation"
 # Unit is kWh
 SUNGROW_ENERGY_CONSUMPTION = "energy_consumption"
