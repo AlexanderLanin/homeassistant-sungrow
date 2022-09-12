@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 import pathlib
 import os
 import yaml
@@ -351,6 +351,30 @@ SENSOR_TYPES = (
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
+    # Resets every day
+    # SensorEntityDescription(
+    #     key=SUNGROW_DAILY_PV_EXPORT,
+    #     name="Today Energy Export to Grid",
+    #     native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
+    #     device_class=DEVICE_CLASS_ENERGY,
+    #     state_class=SensorStateClass.MEASUREMENT,
+    # ),
+    # # Resets every day
+    # SensorEntityDescription(
+    #     key=SUNGROW_DAILY_IMPORT_ENERGY,
+    #     name="Today Energy Import from Grid",
+    #     native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
+    #     device_class=DEVICE_CLASS_ENERGY,
+    #     state_class=SensorStateClass.MEASUREMENT,
+    # ),
+    # # Resets every day
+    # SensorEntityDescription(
+    #     key=SUNGROW_DAILY_PV_ENERGY,
+    #     name="Today PV Generated Energy",
+    #     native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
+    #     device_class=DEVICE_CLASS_ENERGY,
+    #     state_class=SensorStateClass.MEASUREMENT,
+    # ),
 )
 
 
@@ -484,11 +508,19 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
                     self.coordinator.data.latest_scrape["mppt_2_voltage"]
                     * self.coordinator.data.latest_scrape["mppt_2_current"]
                 )
-            elif self.entity_description.state_class == SensorStateClass.MEASUREMENT:
+            # elif self.entity_description.state_class == SensorStateClass.MEASUREMENT:
+            else:
                 state = self.coordinator.data.latest_scrape[sensor_type]
-
         except KeyError:
             logger.warn(
                 "Sensor lookup value is not available in data array: %s", sensor_type)
 
         return state
+
+    @property
+    def last_reset(self) -> datetime | None:
+        if self._attr_device_class == DEVICE_CLASS_ENERGY and self._attr_state_class == SensorStateClass.MEASUREMENT:
+            # We reset last midnight
+            return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            return None

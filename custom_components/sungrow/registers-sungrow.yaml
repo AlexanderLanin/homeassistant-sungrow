@@ -1202,6 +1202,7 @@ registers:
       accuracy: 0.1
       unit: "kWh"
       models: ["SH5K-20","SH3K6","SH4K6","SH5K-V13","SH5K-30","SH3K6-30","SH4K6-30","SH5.0RS","SH3.6RS","SH4.6RS","SH6.0RS","SH10RT","SH8.0RT","SH6.0RT","SH5.0RT"] 
+      # Energy we have exported back to the grid today
     - name: "daily_pv_export"    
       level: 1
       address: 13005
@@ -1209,6 +1210,7 @@ registers:
       accuracy: 0.1
       unit: "kWh"
       models: ["SH5K-20","SH3K6","SH4K6","SH5K-V13","SH5K-30","SH3K6-30","SH4K6-30","SH5.0RS","SH3.6RS","SH4.6RS","SH6.0RS","SH10RT","SH8.0RT","SH6.0RT","SH5.0RT"] 
+      # Energy we have exported back to the grid since last reset (if any)
     - name: "total_pv_export"    
       level: 1
       address: 13006

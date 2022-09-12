@@ -87,6 +87,7 @@ SUNGROW_STATE_IMPORT_FROM_GRID = "state_import_from_grid"
 SUNGROW_STATE_LOAD_ACTIVE = "state_load_active"
 
 # Synthetic from SunGather
+# These are power in W, not energy in kWh
 SUNGROW_POWER_EXPORT_TO_GRID = "export_to_grid"
 SUNGROW_POWER_IMPORT_FROM_GRID = "import_from_grid"
 
