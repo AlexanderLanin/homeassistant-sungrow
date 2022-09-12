@@ -517,10 +517,10 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
 
         return state
 
-    @property
-    def last_reset(self) -> datetime | None:
-        if self._attr_device_class == DEVICE_CLASS_ENERGY and self._attr_state_class == SensorStateClass.MEASUREMENT:
-            # We reset last midnight
-            return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        else:
-            return None
+    # @property
+    # def last_reset(self) -> datetime | None:
+    #     if self._attr_device_class == DEVICE_CLASS_ENERGY and self._attr_state_class == SensorStateClass.MEASUREMENT:
+    #         # We reset last midnight
+    #         return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    #     else:
+    #         return None
