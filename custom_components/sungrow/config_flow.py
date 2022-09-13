@@ -5,7 +5,6 @@ import logging
 from typing import Any
 from pprint import pformat
 import pathlib, yaml, os
-
 import voluptuous as vol
 
 from .SunGather.inverter import SungrowInverter

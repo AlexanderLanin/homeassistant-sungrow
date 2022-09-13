@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from dataclasses import dataclass
 import pathlib
 import os
 import yaml
@@ -120,262 +121,279 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
+
+@dataclass
+class SungrowInverterSensorEntityDescription(SensorEntityDescription):
+    register: str|None = None
+    device_id: str|None = None
+    device_model: str|None = None
+
+
 SENSOR_TYPES = (
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_ENERGY_GENERATION,
+        register=SUNGROW_ENERGY_GENERATION,
         name="Current PV Power Generation",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_ARRAY1_ENERGY_GENERATION,
+        register=SUNGROW_ARRAY1_ENERGY_GENERATION,
         name="Current PV Array 1 Power Generation",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_ARRAY2_ENERGY_GENERATION,
+        register=SUNGROW_ARRAY2_ENERGY_GENERATION,
         name="Current PV Array 2 Power Generation",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_OUTPUT_ENERGY,
+        register=SUNGROW_DAILY_OUTPUT_ENERGY,
         name="Daily Output Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_OUTPUT_ENERGY,
+        register=SUNGROW_TOTAL_OUTPUT_ENERGY,
         name="Total Output Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_LOAD_POWER,
+        register=SUNGROW_LOAD_POWER,
         name="Current Load Power",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_LOAD_POWER_HYBRID,
+        register=SUNGROW_LOAD_POWER_HYBRID,
         name="Current Load Power (Hybrid)",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_EXPORT_POWER,
+        register=SUNGROW_EXPORT_POWER,
         name="Current Export Power",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_EXPORT_POWER_HYBRID,
+        register=SUNGROW_EXPORT_POWER_HYBRID,
         name="Current Export Power (Hybrid)",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_PV_ENERGY,
+        register=SUNGROW_DAILY_PV_ENERGY,
         name="Daily PV Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_PV_ENERGY,
+        register=SUNGROW_TOTAL_PV_ENERGY,
         name="Total PV Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_BATTERY_CHARGE_PV_ENERGY,
+        register=SUNGROW_DAILY_BATTERY_CHARGE_PV_ENERGY,
         name="Daily Battery Charge PV Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_BATTERY_CHARGE_PV_ENERGY,
+        register=SUNGROW_TOTAL_BATTERY_CHARGE_PV_ENERGY,
         name="Total Battery Charge PV Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_DIRECT_ENERGY_CONSUMPTION,
+        register=SUNGROW_DAILY_DIRECT_ENERGY_CONSUMPTION,
         name="Daily Direct Energy Consumption",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_DIRECT_ENERGY_CONSUMPTION,
+        register=SUNGROW_TOTAL_DIRECT_ENERGY_CONSUMPTION,
         name="Total Direct Energy Consumption",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_IMPORT_ENERGY,
+        register=SUNGROW_DAILY_IMPORT_ENERGY,
         name="Daily Grid Import Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_IMPORT_ENERGY,
+        register=SUNGROW_TOTAL_IMPORT_ENERGY,
         name="Total Grid Import Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_BATTERY_DISCHARGE_ENERGY,
+        register=SUNGROW_DAILY_BATTERY_DISCHARGE_ENERGY,
         name="Daily Battery Discharge Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_BATTERY_DISCHARGE_ENERGY,
+        register=SUNGROW_TOTAL_BATTERY_DISCHARGE_ENERGY,
         name="Total Battery Discharge Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_EXPORT_ENERGY_FROM_PV,
+        register=SUNGROW_DAILY_EXPORT_ENERGY_FROM_PV,
         name="Daily Export Energy From PV",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_EXPORT_ENERGY_FROM_PV,
+        register=SUNGROW_TOTAL_EXPORT_ENERGY_FROM_PV,
         name="Total Export Energy From PV",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_EXPORT_ENERGY_FROM_BATTERY,
+        register=SUNGROW_DAILY_EXPORT_ENERGY_FROM_BATTERY,
         name="Daily Export Energy From Battery",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_EXPORT_ENERGY_FROM_BATTERY,
+        register=SUNGROW_TOTAL_EXPORT_ENERGY_FROM_BATTERY,
         name="Total Export Energy From Battery",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_EXPORT_ENERGY,
+        register=SUNGROW_DAILY_EXPORT_ENERGY,
         name="Daily Export Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_EXPORT_ENERGY,
+        register=SUNGROW_TOTAL_EXPORT_ENERGY,
         name="Total Export Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_PV_EXPORT,
+        register=SUNGROW_DAILY_PV_EXPORT,
         name="Daily PV Export",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_PV_EXPORT,
+        register=SUNGROW_TOTAL_PV_EXPORT,
         name="Total Export Energy",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_SELF_CONSUMPTION_OF_DAY,
+        register=SUNGROW_SELF_CONSUMPTION_OF_DAY,
         name="Daily Self Consumption",
         native_unit_of_measurement=PERCENTAGE,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_DAILY_POWER_YIELDS,
+        register=SUNGROW_DAILY_POWER_YIELDS,
         name="Daily Energy Yields",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_METER_POWER,
+        register=SUNGROW_METER_POWER,
         name="Current Meter Power",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_TOTAL_ACTIVE_POWER,
+        register=SUNGROW_TOTAL_ACTIVE_POWER,
         name="Current Active Power",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_POWER_EXPORT_TO_GRID,
+        register=SUNGROW_POWER_EXPORT_TO_GRID,
         name="Current Power Exported to Grid",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
+    SungrowInverterSensorEntityDescription(
         key=SUNGROW_POWER_IMPORT_FROM_GRID,
+        register=SUNGROW_POWER_IMPORT_FROM_GRID,
         name="Current Power Imported from Grid",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=SensorStateClass.MEASUREMENT,
-    ),
-    # Resets every day
-    # SensorEntityDescription(
-    #     key=SUNGROW_DAILY_PV_EXPORT,
-    #     name="Today Energy Export to Grid",
-    #     native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
-    #     device_class=DEVICE_CLASS_ENERGY,
-    #     state_class=SensorStateClass.MEASUREMENT,
-    # ),
-    # # Resets every day
-    # SensorEntityDescription(
-    #     key=SUNGROW_DAILY_IMPORT_ENERGY,
-    #     name="Today Energy Import from Grid",
-    #     native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
-    #     device_class=DEVICE_CLASS_ENERGY,
-    #     state_class=SensorStateClass.MEASUREMENT,
-    # ),
-    # # Resets every day
-    # SensorEntityDescription(
-    #     key=SUNGROW_DAILY_PV_ENERGY,
-    #     name="Today PV Generated Energy",
-    #     native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
-    #     device_class=DEVICE_CLASS_ENERGY,
-    #     state_class=SensorStateClass.MEASUREMENT,
-    # ),
+    )
 )
 
 
@@ -400,8 +418,8 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback
 ):
-
-    # config flow sets this to either serial number or None
+    # Get a unique id for the inverter device
+    # unique_id is set during the initial configuration step
     if (unique_device_id := config_entry.unique_id) is None:
         unique_device_id = config_entry.entry_id
 
@@ -446,13 +464,13 @@ async def async_setup_entry(
         return inverter
     inverter: SungrowInverter = await hass.async_add_executor_job(create_inverter)
 
+    # Make sure we can connect to the inverter
     is_connected = inverter.connect()
     logger.debug(f'sensor async_setup_entry is_connected={is_connected}')
 
+    # Configure DataUpdateCoordinator
     async def f():
         return await hass.async_add_executor_job(data_updater(inverter))
-
-    # Configure DataUpdateCoordinator
     coordinator = DataUpdateCoordinator(
         hass,
         logger,
@@ -461,6 +479,8 @@ async def async_setup_entry(
         update_interval=max(timedelta(seconds=config_entry.data.get(CONF_SCAN_INTERVAL, 60)),
                             MIN_TIME_BETWEEN_UPDATES),
     )
+
+    # Fetch data (at least) once via DataUpdateCoordinator
     await coordinator.async_refresh()
 
     # Register our inverter device
@@ -475,61 +495,45 @@ async def async_setup_entry(
     )
 
     # Register our sensor entities
-    async_add_entities([
-        SungrowInverterSensorEntity(
-            coordinator, description)
-        for description in SENSOR_TYPES
-    ],
-        update_before_add=True
-    )
+    entity = []
+    for description in SENSOR_TYPES:
+        # Add in the owning device's unique id
+        description.device_id = unique_device_id
+        description.device_model = coordinator.data.getInverterModel()
+        model_slug = description.device_model.replace('.', '')
+        description.name = f'{model_slug} {unique_device_id} {description.name}'
+        entity.append(SungrowInverterSensorEntity(coordinator, description))
+    async_add_entities(entity, update_before_add=True)
 
 
 class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
     """Implementation of a Sungrow Inverter sensor."""
 
-    def __init__(self, coordinator: DataUpdateCoordinator, description: SensorEntityDescription):
+    def __init__(self, coordinator: DataUpdateCoordinator, 
+                 description: SungrowInverterSensorEntityDescription):
         """Initialize the sensor."""
         super().__init__(coordinator)
-
         # SensorEntity superclass will automatically pull sensor values from entity_description
         self.entity_description = description
-
-        # model = coordinator.data.getInverterModel()
-        # logger.debug(f'Configuring device: {DOMAIN} {self.name} {model} {self.unique_id}')
-        # Setting device_info causes HA to add a Device to the device registry
-        # self._attr_device_info: DeviceInfo = {
-        #     'name': f'Sungrow {model}',
-        #     'manufacturer': 'Sungrow',
-        #     'model': model,
-        #     "identifiers": {
-        #         (DOMAIN, self.unique_id)
-        #     }
-        #     # TODO Create a main "Sungrow {model}" device
-        #     # "via_device": (DOMAIN, device_id)
-        # }
 
     @property
     def unique_id(self) -> str:
         if self._attr_unique_id:
             return self._attr_unique_id
         else:
-            device_id = self.coordinator.data.latest_scrape.get('serial_number')
-            self._attr_unique_id = f'sungrow_{device_id}_{self.entity_description.key}'
+            self._attr_unique_id = f'sungrow_{self.entity_description.device_id}_{self.entity_description.key}'
             return self._attr_unique_id
 
-    # TODO get _device_id somehow
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device information about this IPP device."""
-        # if self._device_id is None:
-        #     return None
+        if not self.entity_description.device_id:
+            return None
         return DeviceInfo(
-            identifiers={(DOMAIN, self.coordinator.data.latest_scrape.get('serial_number'))},
-            name = f'Sungrow {self.coordinator.data.getInverterModel()}',
+            identifiers={(DOMAIN, self.entity_description.device_id)},
+            name = f'Sungrow {self.entity_description.device_model}',
             manufacturer = 'Sungrow',
-            model = self.coordinator.data.getInverterModel(),
-            # TODO Create a main "Sungrow {model}" device
-            # "via_device": (DOMAIN, device_id)
+            model = self.entity_description.device_model,
         )
 
     # SensorEntity methods
@@ -538,7 +542,6 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
     def native_value(self):
         """Return the state of the sensor."""
         sensor_type = self.entity_description.key
-
         state = None
         try:
             if sensor_type == SUNGROW_ENERGY_GENERATION:
@@ -558,13 +561,4 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
         except KeyError:
             logger.warn(
                 "Sensor lookup value is not available in data array: %s", sensor_type)
-
         return state
-
-    # @property
-    # def last_reset(self) -> datetime | None:
-    #     if self._attr_device_class == DEVICE_CLASS_ENERGY and self._attr_state_class == SensorStateClass.MEASUREMENT:
-    #         # We reset last midnight
-    #         return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    #     else:
-    #         return None
