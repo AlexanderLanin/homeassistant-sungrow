@@ -81,8 +81,12 @@ async def async_setup_entry(
 ):
     # Get a unique id for the inverter device
     # unique_id is set during the initial configuration step
-    if (unique_device_id := config_entry.unique_id) is None:
-        unique_device_id = config_entry.entry_id
+    # if (unique_device_id := config_entry.unique_id) is None:
+    #     # unique_device_id = config_entry.entry_id
+    #     raise Exception('Unique device id is None. This should not be possible.')
+    if (unique_device_id := config_entry.data.get('device_id')) is None:
+        # unique_device_id = config_entry.entry_id
+        raise Exception('Unique device id is None. This should not be possible.')
 
     """Setup sensors from a config entry created in the integrations UI."""
     # Configure SungrowInverter
@@ -147,9 +151,7 @@ async def async_setup_entry(
         description.device_id = unique_device_id
         description.device_model = coordinator.data.getInverterModel()
         model_slug = description.device_model.replace('.', '')
-        logger.debug(f'existing description.name {description.name}')
-        description.name = f'{model_slug} {unique_device_id} {description.name}'
-        logger.debug(f'new description.name {description.name}')
+        description.name = f'{model_slug} {unique_device_id} {description.original_name}'
         entities.append(SungrowInverterSensorEntity(coordinator, description))
     async_add_entities(entities, update_before_add=True)
 

@@ -96,8 +96,9 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
                 # Figure out a unique id (that never changes!) for the device
                 unique_device_id = inverter.latest_scrape.get('serial_number')
                 logger.debug(f'async_step_user assigning unique_id {unique_device_id}')
-                self._abort_if_unique_id_configured(updates={CONF_HOST: user_input[CONF_HOST]})
-                await self.async_set_unique_id(unique_device_id)
+                # self._abort_if_unique_id_configured(updates={CONF_HOST: user_input[CONF_HOST]})
+                # await self.async_set_unique_id(unique_device_id)
+                user_input['device_id'] = unique_device_id
 
                 # Create the config entry
                 logger.debug(f'async_step_user calling async_create_entry with unique_id {unique_device_id}')

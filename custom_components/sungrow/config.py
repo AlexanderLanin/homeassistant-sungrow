@@ -65,6 +65,14 @@ class SungrowInverterSensorEntityDescription(SensorEntityDescription):
     register: str = None
     device_id: str = None
     device_model: str = None
+    _original_name: str = None
+
+    @property
+    def original_name(self):
+        """Capture original name since we will mutate name later"""
+        if not self._original_name:
+            self._original_name = self.name
+        return self._original_name
 
 
 SENSOR_TYPES = (
