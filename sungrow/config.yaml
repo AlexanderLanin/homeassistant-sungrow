@@ -13,10 +13,10 @@ startup: application
 #ingress: true
 #ingress_port: 8099
 boot: auto
-discovery:
-  - "mqtt"
-services:
-  - "mqtt:need"
+#discovery:
+#  - "mqtt"
+#services:
+#  - "mqtt:need"
 map: 
   - share:rw
 # options: 
