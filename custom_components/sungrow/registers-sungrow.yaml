@@ -25,7 +25,7 @@ registers:
     - name: "serial_number"
       level: 2
       address: 4990
-      datatype: "UTF-8"
+      datatype: "UTF-8[10]"
     - name: "device_type_code"
       level: 2
       address: 5000
