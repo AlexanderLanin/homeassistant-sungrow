@@ -1,26 +1,42 @@
 {
-  "config": {
-      "abort": {
-          "already_configured": "Inverter is already configured"
-      },
-      "error": {
-          "cannot_connect": "Cannot connect to inverter",
-          "unknown": "Unknown error. Sorry about that."
-      },
-      "step": {
-          "user": {
-              "data": {
-                  "host": "Hostname or IP address",
-                  "port": "Port",
-                  "timeout": "Connection timeout",
-                  "slave": "MODBUS slave number",
-                  "connection": "Connection type",
-                  "model": "Inverter model",
-                  "use_local_time": "Use local time?",
-                  "smart_meter": "Is a smart meter?",
-                  "level": "Data request level"
-              }
-          }
-      }
- }
+    "config": {
+        "abort": {
+            "already_configured": "Inverter is already configured"
+        },
+        "error": {
+            "cannot_connect": "Cannot connect to inverter",
+            "unknown": "Unknown error. Sorry about that."
+        },
+        "step": {
+            "user": {
+                "title": "Connection settings",
+                "data": {
+                    "host": "Hostname or IP address of inverter",
+                    "port": "Port of inverter connection",
+                    "timeout": "Connection timeout",
+                    "slave": "MODBUS slave number",
+                    "connection": "Connection type",
+                    "model": "Inverter model (Keep empty for auto detection)",
+                    "use_local_time": "Use local time?",
+                    "smart_meter": "Is a smart meter connected?",
+                    "level": "Data request level"
+                },
+                "data_description": {
+                    "host": "Note: In case of IP make sure it's static\n",
+                    "port": "Note: Port defaults are 8082 for HTTP, 502 for MODBUS\n",
+                    "slave": "Note: MODBUS slave number is usually 1 for standalone/master inverters and 2 for slave inverters\n",
+                    "level": "Note: 1 (little detail) to 3 (all available data)\n"
+                }
+            }
+        }
+    },
+    "selector": {
+        "connection": {
+            "options": {
+                "modbus": "MODBUS: Use this when connecting to internal LAN port (preferred)",
+                "sungrow": "MODBUS_Sungrow: Some inverters require this instead of modbus",
+                "http": "HTTP: Use this when connecting to WiNet-S (bad idea)"
+            }
+        }
+    }
 }

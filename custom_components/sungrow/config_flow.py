@@ -8,7 +8,7 @@ import voluptuous as vol
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigFlow
-from homeassistant.helpers.selector import selector
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 from homeassistant.const import (
     CONF_HOST,
     CONF_PORT,
@@ -65,13 +65,11 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
             vol.Required(CONF_TIMEOUT, default=user_input.get(CONF_TIMEOUT, 3)): int,
             vol.Required(CONF_SLAVE, default=user_input.get(CONF_SLAVE, 1)): int,
             vol.Required(
-                "connection", default=user_input.get("connection", "http")
-            ): selector(
-                {
-                    "select": {
-                        "options": ["http", "modbus", "sungrow"],
-                    }
-                }
+                "connection", default=user_input.get("connection", "modbus")
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=["modbus", "sungrow", "http"], translation_key="connection"
+                )
             ),
             vol.Optional("model", default=user_input.get("model", "")): str,
             vol.Optional(
