@@ -7,6 +7,14 @@ from pymodbus.client.sync import ModbusTcpClient
 logger = logging.getLogger(__name__)
 
 
+def are_all_values_zero(my_dict, keys):
+    """Return True if all values in the dictionary are zero or missing."""
+    for key in keys:
+        if my_dict.get(key, 0) != 0:
+            return False
+    return True
+
+
 class SungrowInverter():
     def __init__(self, config_inverter):
         self.client_config = {
@@ -34,6 +42,49 @@ class SungrowInverter():
         self.register_ranges.pop()  # Remove null value from list
 
         self.latest_scrape = {}
+
+    def _ensure_scraped_once(self):
+        """Ensure that the inverter has been scraped at least once"""
+
+        if not self.latest_scrape.get("timestamp"):
+            self.scrape()
+
+    def has_battery(self):
+        """Auto detect if inverter has a battery"""
+        self._ensure_scraped_once()
+
+        # A battery will have some of these values
+        return not are_all_values_zero(
+            self.latest_scrape,
+            [
+                "total_battery_charge_from_pv",
+                "total_battery_discharge_energy",
+                "battery_state_of_healthy",
+                "battery_temperature",
+                "battery_capacity",
+            ],
+        )
+
+    
+    def is_slave(self):
+        """Auto detect if inverter is master or slave"""
+        self._ensure_scraped_once()
+
+        # If there is a battery, it's not a slave
+        if self.has_battery():
+            return False
+        
+        # All of these are only available on the master
+        return are_all_values_zero(
+            self.latest_scrape,
+            [
+                "total_power_yields",
+                "total_apparent_power",
+                "total_reactive_power",
+                "total_export_energy",
+                "total_import_energy",
+            ],
+        )        
 
     def connect(self):
 
