@@ -1,24 +1,14 @@
-"""Sungrow Inverter config flow."""
-from __future__ import annotations
-
 import logging
-from typing import Any
 from pprint import pformat
-import voluptuous as vol
+from typing import Any
 
-from homeassistant.core import HomeAssistant
+import voluptuous as vol  # type: ignore
 from homeassistant.config_entries import ConfigFlow
+from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SLAVE, CONF_TIMEOUT
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_PORT,
-    CONF_TIMEOUT,
-    CONF_SLAVE
-)
 
-from .const import DOMAIN, DEFAULT_NAME
-
-from .inverter import connect_inverter
+from .const import DOMAIN
+from .core.inverter import SungrowInverter
 
 logger = logging.getLogger(__name__)
 
@@ -28,31 +18,8 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    async def validate_input(self, hass: HomeAssistant, config_inverter: dict = None) -> dict[str, Any]:
-        """Validate that the user input allows us to connect to the inverter.
-        Data has the keys from DATA_SCHEMA with values provided by the user.
-        """
-
-        logger.debug(f'validate_input config_inverter={pformat(config_inverter)}')
-
-        # Accumulate validation errors. Key is name of field from DATA_SCHEMA
-        errors = {}
-
-        # Validate the data can be used to set up a connection.
-        logger.debug(f'validate_input creating SungrowInverter')
-        is_success, inverter = await hass.async_add_executor_job(connect_inverter(config_inverter))
-        # If we can't connect, set a value indicating this so we can tell the user
-        logger.debug(
-            f'validate_input inverter.connect() is_success={is_success}')
-        if not is_success:
-            errors['base'] = 'cannot_connect'
-
-        logger.debug(f'validate_input errors={pformat(errors)}')
-
-        return (errors, inverter)
-
     async def _async_show_user_form(
-        self, user_input: dict[str, Any] = {}, errors: dict = {}
+        self, user_input: dict[str, Any], errors: dict[str, str]
     ):
         logger.debug(
             "async_step_user displaying user data entry form "
@@ -93,30 +60,23 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
         Either show config data entry form to the user, or create a config entry.
         """
 
-        logger.debug(f'async_step_user user_input={pformat(user_input)}')
+        logger.debug(f"async_step_user user_input={pformat(user_input)}")
 
         # Either show modal form, or create config entry then move on
-        if not user_input: # Just show the modal form and return if no user input
-            return await self._async_show_user_form()
-        else: # We got user input, so do something with it
+        if not user_input:  # Just show the modal form and return if no user input
+            return await self._async_show_user_form(user_input, {})
+        else:  # We got user input, so do something with it
             # Validate inputs and do a test connection/scrape of the inverter
             # Both info and errors are None when config flow is first invoked
-            errors, inverter = await self.validate_input(self.hass, user_input)
-            logger.debug(f'async_step_user errors={pformat(errors)}')
-
-            # Either display errors in form, or create config entry and close form
-            if not errors:
-                # Figure out a unique id (that never changes!) for the device
-                unique_device_id = inverter.latest_scrape.get('serial_number')
-                logger.debug(f'async_step_user assigning unique_id {unique_device_id}')
-                # self._abort_if_unique_id_configured(updates={CONF_HOST: user_input[CONF_HOST]})
-                # await self.async_set_unique_id(unique_device_id)
-                user_input['device_id'] = unique_device_id
-
-                # Create the config entry
-                logger.debug(f'async_step_user calling async_create_entry with unique_id {unique_device_id}')
-                return self.async_create_entry(title=DEFAULT_NAME, data=user_input)
+            inverter = await SungrowInverter.create(user_input)
+            if inverter:
+                # ToDo: pass inverter object to async_create_entry, so we don't have to
+                # disconnect and connect again
+                await inverter.disconnect()
+                return self.async_create_entry(
+                    title="Sungrow Inverter", data=user_input
+                )
             else:
-                # If there is no user input or there were errors, show the form again,
-                # including any errors that were found with the input.
+                # FIXME: more precise error
+                errors = {"base": "cannot_connect"}
                 return await self._async_show_user_form(user_input, errors)

@@ -1,19 +1,16 @@
 {
   "domain": "sungrow",
   "name": "Sungrow",
-  "version": "0.1.0",
-  "documentation": "https://github.com/alangibson/homeassistant-sungrow",
+  "version": "0.0.1",
+  "integration_type ": "device",
+  "documentation": "https://github.com/AlexanderLanin/homeassistant-sungrow/blob/main/INFO.md",
+  "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
   "dependencies": [],
   "codeowners": [
-    "alangibson"
+    "AlexanderLanin"
   ],
   "requirements": [
-    "PyYAML>=6.0",
-    "requests>=2.26.0",
-    "paho-mqtt>=1.5.1",
-    "pymodbus==2.5.3",
-    "SungrowModbusTcpClient>=0.1.5",
-    "SungrowModbusWebClient>=0.3.2"
+    "pymodbus~=3.6.2"
   ],
   "iot_class": "local_polling",
   "config_flow": true

@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "charliermarsh.ruff",
+    "ryanluker.vscode-coverage-gutters",
+    "ms-python.mypy-type-checker"
+  ]
+}

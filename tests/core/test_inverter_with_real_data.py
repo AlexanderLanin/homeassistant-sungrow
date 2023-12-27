@@ -1,0 +1,85 @@
+"""
+This is an end-to-end test that will connect to a fake inverter and pull data from it.
+It's really great to test the whole stack, but (mostly) it's limited to the happy path.
+"""
+import logging
+from pprint import pprint
+
+import pytest
+
+from custom_components.sungrow.core import inverter, modbus
+from tests.e2e_setup import e2e_setup, simulated_inverter
+
+logging.basicConfig(level=logging.DEBUG)
+
+# Mark all tests in this file as asyncio tests with a socket connection.
+# pytest_plugins = ("pytest_asyncio")
+pytestmark = [pytest.mark.asyncio, pytest.mark.enable_socket]
+
+
+async def test_e2e_master():
+    async with e2e_setup(
+        "master_dump.yaml", {"level": 0, "use_local_time": False}
+    ) as inv:
+        # Dump was recorded with a SH8.0RT-20 (code 3602)
+        assert inv.model in [3602, "SH8.0RT-20"]
+
+        await inv.pull_data()
+
+        # Dump was recorded on a master inverter with battery
+        assert inv.data["has_battery"].value
+        assert inv.data["is_master"].value
+
+        pprint(inv.data.values())
+
+
+async def test_e2e_slave():
+    async with e2e_setup(
+        "slave_dump.yaml", {"level": 0, "use_local_time": False}
+    ) as inv:
+        # Dump was recorded with a SH8.0RT-20 (code 3602)
+        assert inv.model in [3602, "SH8.0RT-20"]
+
+        await inv.pull_data()
+
+        # Dump was recorded on a slave inverter without battery
+        assert not inv.data["has_battery"].value
+        assert not inv.data["is_master"].value
+
+        pprint(inv.data.values())
+
+
+async def test_e2e_slave_unknown_model():
+    async with e2e_setup(
+        "slave_dump_unknown_model.yaml", {"level": 0, "use_local_time": False}
+    ) as inv:
+        # Dump was recorded with a SH8.0RT-20 (code 3602),
+        # but model is manually removed from the dump.
+        assert inv.model == 1
+
+        await inv.pull_data()
+
+        # Dump was recorded on a slave inverter without battery
+        assert not inv.data["has_battery"].value
+        assert not inv.data["is_master"].value
+
+        pprint(inv.data.values())
+
+
+async def test_e2e_fail_no_server():
+    # should this really raise an exception?
+    # or should it just return None? FIXME TODO
+    with pytest.raises(modbus.CannotConnectError):
+        await inverter.SungrowInverter.create(
+            {"host": "localhost", "port": 500 * 1000, "slave": 1}
+        )
+
+
+async def test_e2e_fail_wrong_slave():
+    async with simulated_inverter(None) as port:
+        with pytest.raises((modbus.InvalidSlaveError, modbus.ModbusError)):
+            print("creating inverter...")
+            await inverter.SungrowInverter.create(
+                # Note: simulation runs with slave 1
+                {"host": "localhost", "port": port, "slave": 2}
+            )

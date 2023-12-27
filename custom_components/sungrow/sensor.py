@@ -2,216 +2,222 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
-import voluptuous as vol
-import dataclasses
+from datetime import timedelta
 
-from homeassistant.components.sensor import (
-    SensorEntity
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor.const import (
+    DEVICE_CLASS_STATE_CLASSES,
+    SensorDeviceClass,
+    SensorStateClass,
 )
-from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers import device_registry as dr
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-import homeassistant.helpers.config_validation as cv
-from homeassistant.components.sensor import (
-    PLATFORM_SCHEMA,
-    SensorEntity
-)
 from homeassistant.const import (
-    ATTR_MODEL,
-    CONF_IP_ADDRESS,
-    CONF_NAME,
-    CONF_PORT,
-    CONF_SLAVE,
-    CONF_TIMEOUT,
-    CONF_HOST,
     CONF_SCAN_INTERVAL,
 )
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers.device_registry import DeviceEntry
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator
-)
-from homeassistant.const import (
-    CONF_NAME,
-    CONF_SCAN_INTERVAL
+    DataUpdateCoordinator,
+    UpdateFailed,
 )
 
 from .const import (
-    MIN_TIME_BETWEEN_UPDATES,
-    SUNGROW_ENERGY_GENERATION,
-    SUNGROW_ARRAY1_ENERGY_GENERATION,
-    SUNGROW_ARRAY2_ENERGY_GENERATION,
     DOMAIN,
-    DEFAULT_NAME,
-    DEFAULT_PORT,
-    DEFAULT_SLAVE,
-    DEFAULT_SCAN_INTERVAL,
-    DEFAULT_TIMEOUT
 )
-
-from .config import (
-    SENSOR_TYPES,
-    SungrowInverterSensorEntityDescription
-)
-
-from .inverter import connect_inverter, data_updater
+from .core import signals
+from .core.inverter import SungrowInverter
 
 logger = logging.getLogger(__name__)
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-    {
-        vol.Required(CONF_IP_ADDRESS): cv.string,
-        vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.string,
-        vol.Optional(CONF_SLAVE, default=DEFAULT_SLAVE): cv.positive_int,
-        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.time_period,
-        vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): cv.positive_int,
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-        vol.Optional(ATTR_MODEL): cv.string,
+
+def guess_device_class(unit: str | None) -> SensorDeviceClass | None:
+    # A solar specific copy of homeassistant.components.sensor.const.DEVICE_CLASS_UNITS.
+    # Note: this is a first guess to avoid writing this in the yaml file.
+    device_class_units = {
+        SensorDeviceClass.BATTERY: ["%"],
+        SensorDeviceClass.POWER: ["kW", "KW", "W"],
+        SensorDeviceClass.CURRENT: ["A"],
+        SensorDeviceClass.TEMPERATURE: ["°C"],
+        SensorDeviceClass.DURATION: ["h", "min"],
+        SensorDeviceClass.FREQUENCY: ["Hz"],
+        SensorDeviceClass.WEIGHT: ["kg"],
+        SensorDeviceClass.REACTIVE_POWER: ["kVar", "Var"],
+        SensorDeviceClass.ENERGY: ["kWh"],
+        SensorDeviceClass.VOLTAGE: ["V"],
+        SensorDeviceClass.APPARENT_POWER: ["VA"],
+        # FYI: MM is minute and month. Let's just preserve that bug.
+        None: ["k-ohm", "YYYY", "MM", "DD", "HH", "MM", "SS"],
     }
-)
+
+    # If there is no unit, it's probably a fixed value
+    if unit is None:
+        return SensorDeviceClass.ENUM
+    else:
+        for device_class, units in device_class_units.items():
+            if unit in units:
+                return device_class
+
+    logger.warning(f"Unknown unit '{unit}', not sure what device class to use.")
+    return None
 
 
-# Called automagically by Home Assistant
+def guess_state_class(device_class: SensorDeviceClass | None):
+    """Guess SensorStateClass.MESAUREMENT or TOTAL"""
+
+    if device_class:
+        state_classes = DEVICE_CLASS_STATE_CLASSES.get(device_class, None)
+        if state_classes:
+            return next(iter(state_classes))
+
+    return SensorStateClass.MEASUREMENT
+
+
+def create_sensor_entities_from_registers(
+    signal_definitions: signals.SignalDefinitions,
+    device_entry: DeviceEntry,
+    coordinator: DataUpdateCoordinator,
+) -> list[SungrowInverterSensorEntity]:
+    """Register sensor entities based on the inverter data."""
+
+    entities = []
+    for signal in signal_definitions._definitions.values():
+        # Don't create entities for disabled signals
+        if signal.disabled:
+            continue
+        entities.append(SungrowInverterSensorEntity(coordinator, signal, device_entry))
+    return entities
+
+
+class InverterCoordinator(DataUpdateCoordinator):
+    """Coordinator for pilling data from one inverter."""
+
+    def __init__(self, hass, inverter, update_interval):
+        """Initialize the coordinator."""
+        self.inverter = inverter
+        super().__init__(
+            hass,
+            logger,
+            name="Sungrow Inverter Coordinator",
+            update_interval=update_interval,
+        )
+
+    async def _async_update_data(self):
+        data = await self.inverter.pull_data()
+        if data:
+            return data
+        else:
+            raise UpdateFailed("Failed pulling data from Sungrow Inverter")
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback
+    async_add_entities: AddEntitiesCallback,
 ):
-    # Get a unique id for the inverter device
-    # unique_id is set during the initial configuration step
-    # if (unique_device_id := config_entry.unique_id) is None:
-    #     # unique_device_id = config_entry.entry_id
-    #     raise Exception('Unique device id is None. This should not be possible.')
-    if (unique_device_id := config_entry.data.get('device_id')) is None:
-        # unique_device_id = config_entry.entry_id
-        raise Exception('Unique device id is None. This should not be possible.')
+    """
+    Setup sensors from a config entry created in the integrations UI.
 
-    """Setup sensors from a config entry created in the integrations UI."""
-    # Configure SungrowInverter
-    config_inverter = {
-        # client config
-        'host': config_entry.data[CONF_HOST],
-        # one of: 502 for modbus, 8082 for http
-        'port': config_entry.data.get(CONF_PORT, '8082'),
-        'timeout': int(config_entry.data.get(CONF_TIMEOUT, 10)),
-        'retries': 3,
-        'slave': config_entry.data.get(CONF_SLAVE, DEFAULT_SLAVE),
-        # inverter config
-        # None to autodetect, string of model name otherwise
-        'model': config_entry.data.get('model'),
-        # Information request level
-        # 0 = Model and Solar Generation,
-        # 1 = Useful data, all required for exports,
-        # 2 everything your Inverter supports,
-        # 3 Everything from every register
-        'level': config_entry.data.get('level', 2),
-        # boolean
-        'use_local_time': config_entry.data.get('use_local_time', False),
-        'smart_meter': config_entry.data.get('smart_meter'),
-        # one of: http, sungrow, modbus
-        'connection': config_entry.data.get('connection', 'http')
-    }
+    Called upon config_flow completion and on start of Home Assistant.
+    """
 
-    # Async construct inverter object
-    # Make sure we can connect to the inverter
-    is_success, inverter = await hass.async_add_executor_job(connect_inverter(config_inverter))
-    logger.debug(f'sensor async_setup_entry is_connected={is_success}')
+    unique_device_id = config_entry.data.get["device_id"]
 
-    # Configure DataUpdateCoordinator
-    async def f():
-        return await hass.async_add_executor_job(data_updater(inverter))
-    coordinator = DataUpdateCoordinator(
-        hass,
-        logger,
-        name=DOMAIN,
-        update_method=f,
-        update_interval=max(timedelta(seconds=config_entry.data.get(CONF_SCAN_INTERVAL, 60)),
-                            MIN_TIME_BETWEEN_UPDATES),
-    )
+    inverter = await SungrowInverter.create(config_entry.data)
+    if not inverter:
+        # ToDo: better error handling
+        raise Exception("Failed to create inverter")
 
-    # Fetch data (at least) once via DataUpdateCoordinator
-    await coordinator.async_refresh()
+    with inverter:
+        # ToDo: ensure timedelta is at least MIN_TIME_BETWEEN_UPDATES
+        coordinator = InverterCoordinator(
+            hass,
+            inverter=inverter,
+            update_interval=timedelta(seconds=config_entry.data[CONF_SCAN_INTERVAL]),
+        )
 
-    # Register our inverter device
-    device_registry = dr.async_get(hass)
-    device_registry.async_get_or_create(
-        config_entry_id=config_entry.entry_id,
-        identifiers={(DOMAIN, unique_device_id)},
-        manufacturer="Sungrow",
-        name=f'Sungrow {coordinator.data.getInverterModel()}',
-        model=coordinator.data.getInverterModel()
-    )
+        # Fetch data once so it's available for the first update.
+        # ToDo: is this really needed?
+        await coordinator.async_refresh()
 
-    # Register our sensor entities
-    entities = []
-    for DESCRIPTION in SENSOR_TYPES:
-        # Create a copy, so we don't modify SENSOR_TYPES in place.
-        # We cannot have different Sensors use the same SensorEntityDescription.
-        description = dataclasses.replace(DESCRIPTION)
+        # Register our inverter device
+        device_registry = dr.async_get(hass)
+        device_entry = device_registry.async_get_or_create(
+            config_entry_id=config_entry.entry_id,
+            identifiers={(DOMAIN, unique_device_id)},
+            manufacturer="Sungrow",
+            name=f"Sungrow {inverter.getInverterModel()}",
+            model=inverter.getInverterModel(),
+            serial_number=unique_device_id,
+        )
 
-        # Add in the owning device's unique id
-        description.device_id = unique_device_id
-        description.device_model = coordinator.data.getInverterModel()
-        model_slug = description.device_model.replace('.', '')
-        description.name = f'{model_slug} {unique_device_id} {description.original_name}'
-        entities.append(SungrowInverterSensorEntity(coordinator, description))
-    async_add_entities(entities, update_before_add=True)
+        entities = create_sensor_entities_from_registers(
+            inverter._signals, device_entry, coordinator
+        )
+        logger.warning(f"sensor async_setup_entry entities={entities}")
+        async_add_entities(entities, update_before_add=True)
+
+        inverter.detach()
 
 
-class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
+class SungrowInverterSensorEntity(SensorEntity):
     """Implementation of a Sungrow Inverter sensor."""
 
-    def __init__(self, coordinator: DataUpdateCoordinator,
-                 description: SungrowInverterSensorEntityDescription):
-        """Initialize the sensor."""
-        super().__init__(coordinator)
-        # SensorEntity superclass will automatically pull sensor values from entity_description
-        self.entity_description = description
+    def __init__(
+        self,
+        coordinator: DataUpdateCoordinator,
+        signal: signals.ModbusSignalDefinition,
+        device_entry: DeviceEntry,
+    ):
+        self.coordinator = coordinator
+        self.device_entry = device_entry
+        self.signal = signal
+
+        self._attr_device_class = guess_device_class(signal.unit)
+        self._attr_state_class = guess_state_class(self.device_class)
+        self._attr_name = signal.name.replace("_", " ").title()
+        self._attr_native_unit_of_measurement = signal.unit
+
+        self._attr_available = False
+
+        # All data is preserved based on unique id.
+        # Note: you'll not see this ID anywhere in the UI.
+        sn = coordinator.data["serial_number"]
+        self._attr_unique_id = f"sungrow_{sn}_{signal.name}"
 
     @property
-    def unique_id(self) -> str:
-        if self._attr_unique_id:
-            return self._attr_unique_id
-        else:
-            self._attr_unique_id = f'sungrow_{self.entity_description.device_id}_{self.entity_description.key}'
-            return self._attr_unique_id
+    def suggested_object_id(self) -> str:
+        """This is the 'Entity ID' in the UI"""
 
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        """Return device information about this IPP device."""
-        if not self.entity_description.device_id:
-            return None
-        return DeviceInfo(
-            identifiers={(DOMAIN, self.entity_description.device_id)},
-            name=f'Sungrow {self.entity_description.device_model} {self.entity_description.device_id}',
-            manufacturer='Sungrow',
-            model=self.entity_description.device_model,
-        )
+        # By default (see SensorEntity) this is derived from the name.
+        # In order to set them separately, we need to override this property.
+
+        # This object/entity id is the one you'll see across the UI, incl automations.
+        # We need object id to be something simple, so it's usable in shared dashboards!
+
+        # ToDo: We don't have access to all inverters here, as this happens one by one.
+        #       So it's currently impossible to pick an automatic reasonable name.
+        #       We can barely detect whether this is e.g. a master or a slave.
+        #       But there is no way to detect if this is a simple master + slave
+        #       combination or something else.
+
+        master = self.coordinator.data["is_master"]
+        master_str = "master" if master else "slave"
+
+        object_id = f"sungrow_{master_str}_{self.signal.name}"
+
+        logger.warning(f"sensor object id: {object_id}")
+        return object_id
 
     @property
     def native_value(self):
-        """Return the state of the sensor."""
-        sensor_type = self.entity_description.key
-        state = None
-        try:
-            if sensor_type == SUNGROW_ENERGY_GENERATION:
-                state = self.coordinator.data.latest_scrape["total_dc_power"]
-            elif sensor_type == SUNGROW_ARRAY1_ENERGY_GENERATION:
-                state = (
-                    self.coordinator.data.latest_scrape["mppt_1_voltage"]
-                    * self.coordinator.data.latest_scrape["mppt_1_current"]
-                )
-            elif sensor_type == SUNGROW_ARRAY2_ENERGY_GENERATION:
-                state = (
-                    self.coordinator.data.latest_scrape["mppt_2_voltage"]
-                    * self.coordinator.data.latest_scrape["mppt_2_current"]
-                )
-            else:
-                state = self.coordinator.data.latest_scrape[sensor_type]
-        except KeyError:
-            logger.warn(
-                "Sensor lookup value is not available in data array: %s", sensor_type)
-        return state
+        """Return the state of the sensor. This runs very quickly."""
+
+        # latest data is stored by the coordinator
+        data = self.coordinator.data
+
+        value = data.get(self.signal.name, None)
+        self._attr_available = value is not None
+        return value
