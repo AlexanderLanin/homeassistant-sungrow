@@ -1,13 +1,13 @@
-# This file is only for local development / testing.
+# This file is only for local development / testing / CICD.
 # It is not used by Home Assistant.
 
-PyYAML~=6.0.1 # Note: this is not mentioned in havs.json as it's already available in home assistant
-pymodbus~=3.6.2
-homeassistant~=2023.12.4
-pytest~=7.4.3
-pytest-cov~=4.1.0
-pytest-homeassistant-custom-component~=0.13.85
-pytest-xdist~=3.5.0
+PyYAML~=6.0
+pymodbus~=3.6
+homeassistant~=2023.12
+pytest~=7.4
+pytest-cov~=4.1
+pytest-homeassistant-custom-component~=0.13
+pytest-xdist~=3.5
 
 # code quality
 mypy
