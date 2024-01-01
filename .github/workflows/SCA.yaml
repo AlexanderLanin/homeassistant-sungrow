@@ -9,6 +9,7 @@ jobs:
     name: Ruff
     runs-on: "ubuntu-latest"
     steps:
+      - uses: actions/checkout@v4
       - run: pip install ruff
       - run: ruff .
 
@@ -16,5 +17,6 @@ jobs:
     name: Mypy
     runs-on: "ubuntu-latest"
     steps:
+      - uses: actions/checkout@v4
       - run: pip install mypy
       - run: mypy .
