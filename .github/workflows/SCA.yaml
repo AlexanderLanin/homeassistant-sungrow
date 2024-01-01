@@ -5,11 +5,16 @@ on:
   pull_request:
 
 jobs:
-  sca:
-    name: Code Analysis
+  ruff:
+    name: Ruff
     runs-on: "ubuntu-latest"
     steps:
-      - name: Ruff
-        uses: jpetrucciani/ruff-check@main
-      - name: mypy
-        uses: jpetrucciani/mypy-check@master
+      - run: pip install ruff
+      - run: ruff .
+
+  mypy:
+    name: Mypy
+    runs-on: "ubuntu-latest"
+    steps:
+      - run: pip install mypy
+      - run: mypy .
