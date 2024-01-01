@@ -5,9 +5,9 @@ PyYAML~=6.0
 pymodbus~=3.6
 homeassistant~=2023.12
 pytest~=7.4
-pytest-cov~=4.1
+pytest-cov~=4.0
 pytest-homeassistant-custom-component~=0.13
-pytest-xdist~=3.5
+pytest-xdist~=3.3
 
 # code quality
 mypy
