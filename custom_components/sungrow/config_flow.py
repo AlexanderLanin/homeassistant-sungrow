@@ -4,8 +4,7 @@ from typing import Any
 
 import voluptuous as vol  # type: ignore
 from homeassistant.config_entries import ConfigFlow
-from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SLAVE, CONF_TIMEOUT
-from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
+from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SLAVE
 
 from .const import DOMAIN
 from .core.inverter import SungrowInverter
@@ -29,24 +28,11 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
         schema = {
             vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): str,
             vol.Required(CONF_PORT, default=user_input.get(CONF_PORT, 8082)): int,
-            vol.Required(CONF_TIMEOUT, default=user_input.get(CONF_TIMEOUT, 3)): int,
             vol.Required(CONF_SLAVE, default=user_input.get(CONF_SLAVE, 1)): int,
-            vol.Required(
-                "connection", default=user_input.get("connection", "modbus")
-            ): SelectSelector(
-                SelectSelectorConfig(
-                    options=["modbus", "sungrow", "http"], translation_key="connection"
-                )
-            ),
-            vol.Optional("model", default=user_input.get("model", "")): str,
             vol.Optional(
                 "use_local_time",
                 default=user_input.get("use_local_time", False),
             ): bool,
-            vol.Optional(
-                "smart_meter", default=user_input.get("smart_meter", False)
-            ): bool,
-            vol.Optional("level", default=user_input.get("level", 2)): int,
         }
 
         return self.async_show_form(
@@ -56,9 +42,9 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_user(self, user_input=None):
-        """Initial configuration step
-        Either show config data entry form to the user, or create a config entry.
-        """
+        """Currently it's all in one step"""
+        # ToDo: split into multiple steps!!
+        # first step is only IP address, then we try to connect!
 
         logger.debug(f"async_step_user user_input={pformat(user_input)}")
 
