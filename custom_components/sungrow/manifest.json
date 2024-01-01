@@ -2,7 +2,7 @@
   "domain": "sungrow",
   "name": "Sungrow",
   "version": "0.0.1",
-  "integration_type ": "device",
+  "integration_type ": "hub",
   "documentation": "https://github.com/AlexanderLanin/homeassistant-sungrow/blob/main/INFO.md",
   "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
   "dependencies": [],
