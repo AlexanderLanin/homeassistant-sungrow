@@ -1,0 +1,15 @@
+name: Static Code Analysis
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  sca:
+    name: Code Analysis
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Ruff
+        uses: jpetrucciani/ruff-check@main
+      - name: mypy
+        uses: jpetrucciani/mypy-check@master

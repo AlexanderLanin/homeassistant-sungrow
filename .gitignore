@@ -3,5 +3,4 @@ __pycache__
 .coverage
 .vscode/settings.json
 .vscode/launch.json
-.mypy_cache
-
+.*_cache
