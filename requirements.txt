@@ -9,4 +9,8 @@ pytest-cov~=4.1.0
 pytest-homeassistant-custom-component~=0.13.85
 pytest-xdist~=3.5.0
 
-# todo: missing types
+# code quality
+mypy
+ruff
+
+# todo: missing mypy types

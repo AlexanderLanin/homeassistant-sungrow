@@ -10,7 +10,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4
-      - run: pip install ruff
+      - run: pip install -r requirements.txt
       - run: ruff .
 
   mypy:
@@ -18,5 +18,5 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4
-      - run: pip install mypy
+      - run: pip install -r requirements.txt
       - run: mypy .
