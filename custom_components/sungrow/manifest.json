@@ -7,7 +7,7 @@
   "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
   "dependencies": [],
   "codeowners": [
-    "AlexanderLanin"
+    "@AlexanderLanin"
   ],
   "requirements": [
     "pymodbus~=3.6.2"
