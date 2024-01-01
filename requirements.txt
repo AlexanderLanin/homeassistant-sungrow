@@ -13,4 +13,5 @@ pytest-xdist~=3.3
 mypy
 ruff
 
-# todo: missing mypy types
+types-PyYAML
+homeassistant-stubs

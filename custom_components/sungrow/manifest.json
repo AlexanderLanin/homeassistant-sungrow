@@ -1,16 +1,16 @@
 {
   "domain": "sungrow",
   "name": "Sungrow",
-  "version": "0.0.1",
-  "documentation": "https://github.com/AlexanderLanin/homeassistant-sungrow/blob/main/INFO.md",
-  "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
-  "dependencies": [],
   "codeowners": [
     "@AlexanderLanin"
   ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/AlexanderLanin/homeassistant-sungrow/blob/main/INFO.md",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
   "requirements": [
     "pymodbus~=3.6.2"
   ],
-  "iot_class": "local_polling",
-  "config_flow": true
+  "version": "0.0.1"
 }
