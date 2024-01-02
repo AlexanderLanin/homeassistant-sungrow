@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 import logging
 import voluptuous as vol
+import dataclasses
 
 from homeassistant.components.sensor import (
     SensorEntity
@@ -146,7 +147,11 @@ async def async_setup_entry(
 
     # Register our sensor entities
     entities = []
-    for description in SENSOR_TYPES:
+    for DESCRIPTION in SENSOR_TYPES:
+        # Create a copy, so we don't modify SENSOR_TYPES in place.
+        # We cannot have different Sensors use the same SensorEntityDescription.
+        description = dataclasses.replace(DESCRIPTION)
+
         # Add in the owning device's unique id
         description.device_id = unique_device_id
         description.device_model = coordinator.data.getInverterModel()
@@ -181,7 +186,7 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
             return None
         return DeviceInfo(
             identifiers={(DOMAIN, self.entity_description.device_id)},
-            name=f'Sungrow {self.entity_description.device_model}',
+            name=f'Sungrow {self.entity_description.device_model} {self.entity_description.device_id}',
             manufacturer='Sungrow',
             model=self.entity_description.device_model,
         )

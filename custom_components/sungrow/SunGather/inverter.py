@@ -246,6 +246,20 @@ class SungrowInverter():
                                 register_value + u32_value * 0x10000 - 0xffffffff - 1)
                         else:
                             register_value = register_value + u32_value * 0x10000
+                    elif register.get('datatype').startswith("UTF-8"):
+                        # format: UTF-8[<length>]
+                        length = register.get('datatype')[6:-1]
+                        if not length.isdigit() or not int(length) > 0 or not int(length) < 256:
+                            logger.error(f"Invalid yaml for {register_name}: expected UTF-8[<length>] with length being a number between 1 and 255, e.g. UTF-8[10]")
+                            return False
+                        if num + int(length) > count:
+                            logger.error(f"Invalid yaml for {register_name}: UTF-8[<length>] doesn't fit into scan ranges (start at {num} + length {int(length)} >= {count})")
+                            return False
+
+                        # Read length registers and interpret as UTF-8
+                        register_value = "".join([chr(c >> 8) + chr(c & 0xFF) for c in rr.registers[num:num+int(length)]]).strip("\x00")
+
+                        logger.debug(f"{register_name} of type {register['datatype']} read as {register_value}")
 
                     # We convert a system response to a human value
                     if register.get('datarange'):
