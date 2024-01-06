@@ -233,7 +233,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "A"
 
-  - name: "pv_power"
+  - name: "total_dc_power" # pv power
     level: 1
     address: 5017
     data_type: U32
