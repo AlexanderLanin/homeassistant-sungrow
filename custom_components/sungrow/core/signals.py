@@ -28,7 +28,7 @@ def is_zero(v):
         return v == 0
 
 
-DatapointValueTypeBase = bool | int | float | str
+DatapointValueTypeBase = bool | int | float | str | None
 DatapointValueType = DatapointValueTypeBase | dict[int, DatapointValueTypeBase]
 
 
@@ -58,10 +58,6 @@ class SungrowSignalDefinition(Signal):
 
     @property
     def na_value(self):
-        # FIXME: na_value is not the same as 0!
-        # e.g. for me MPPT3 is NA, but not 0 like MPPT1 and MPPT2 at night!
-        # This might enable us to remove "groups" as a feature completely!!!
-        # FIXME !!!
         """Return the value that indicates that the signal is not available"""
         assert self.base_datatype
 
@@ -147,6 +143,8 @@ class SignalDefinitions:
     # ToDo: move to inverter.py. This is clearly business logic.
     def mark_signals_disabled_based_on_groups(self, data):
         """Note: this returns extra_data to be included!"""
+        # FIXME: now that we can differentiate between 0 and None for each signal,
+        # maybe we can remove this function?
 
         extra_data = {}
 

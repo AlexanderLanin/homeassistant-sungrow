@@ -25,6 +25,13 @@ class RegisterType(StrEnum):
     HOLD = "hold"
 
 
+# e.g. {RegisterType.READ: {0: 123, 1: 456}}
+RawData = dict[RegisterType, dict[int, int]]
+
+# e.g. {"ac_power": [123, 456]}
+MappedData = dict[str, list[list[int] | int]]
+
+
 class ModbusError(Exception):
     pass
 
@@ -92,13 +99,13 @@ class Connection:
     async def read(
         self,
         signal_list: list[Signal],
-    ) -> dict[str, list[list[int] | int]]:
+    ) -> MappedData:
         """
         Read a list of signals.
         """
 
-        all_registers = await self.read_raw(signal_list)
-        return Connection.map_raw_to_signals(all_registers, signal_list)
+        raw_values = await self.read_raw(signal_list)
+        return Connection.map_raw_to_signals(raw_values, signal_list)
 
     ## -- DETAILED IMPLEMENTATION --
 
@@ -182,7 +189,7 @@ class Connection:
     async def read_raw(
         self,
         signal_list: list[Signal],
-    ) -> dict[RegisterRange, list[int]]:
+    ) -> RawData:
         """
         Returns a dict of queried register ranges and their values.
         This probably includes more registers than requested.
@@ -194,59 +201,62 @@ class Connection:
         # So we split the signals into ranges and query each range separately.
         ranges = Connection._calculate_ranges(signal_list)
 
-        registers: dict[Connection.RegisterRange, list[int]] = {}
+        raw_values: RawData = {}
 
         # Read each range
         for r in ranges:
-            registers[r] = await self._read_range(
+            range_values = await self._read_range(
                 register_type=r.register_type,
                 address_start=r.start,
                 address_count=r.length,
             )
+            if r.register_type not in raw_values:
+                raw_values[r.register_type] = {}
 
-        return registers
+            for i, value in enumerate(range_values):
+                raw_values[r.register_type][r.start + i] = value
+
+        return raw_values
 
     @staticmethod
-    def map_raw_to_signals(
-        all_registers: dict[RegisterRange, list[int]], signal_list: list[Signal]
-    ) -> dict[str, list[list[int] | int]]:
+    def map_raw_to_signals(raw_data: RawData, signal_list: list[Signal]) -> MappedData:
         """
         Note: While this doesn't sound like it belongs into this class,
         it's usually also not intended to be called directly, but by read().
         But for some less common use cases it might be useful to call this directly
         """
-        mapped: dict[str, list[list[int] | int]] = {}
+        mapped: MappedData = {}
 
-        # Read each range
-        for range, registers in all_registers.items():
-            # Split results into signals
-            for signal in signal_list:
-                if (
-                    signal.register_type == range.register_type
-                    and signal.address >= range.start
-                    and signal.address < range.start + range.length
-                ):
-                    mapped[signal.name] = Connection._registers_to_signal(
-                        registers, range, signal
-                    )
+        for signal in signal_list:
+            mapped[signal.name] = Connection._get_signal_relevant_registers(
+                raw_data[signal.register_type], signal
+            )
 
         assert len(mapped) == len(signal_list)
         return mapped
 
     @staticmethod
-    def _registers_to_signal(
-        registers: list[int], register_range: RegisterRange, signal: Signal
-    ):
+    def _get_signal_relevant_registers(registers: dict[int, int], signal: Signal):
+        all_available = all(
+            addr in registers
+            for addr in range(signal.address, signal.address + signal.length)
+        )
+        if not all_available:
+            raise ModbusError(
+                f"not all registers available for signal {signal.name} "
+                f"at address {signal.address}"
+            )
+
+        def extract_values(registers: dict[int, int], start: int, length: int):
+            return [registers[start + i] for i in range(length)]
+
         if signal.array_length == 1:
-            start = signal.address - register_range.start
-            return registers[start : start + signal.length]
+            return extract_values(registers, signal.address, signal.length)
         else:
             mapped: list[list[int]] = []
             for i in range(signal.array_length):
-                start = (
-                    signal.address - register_range.start + i * signal.element_length
-                )
-                mapped.append(registers[start : start + signal.element_length])
+                start = signal.address + i * signal.element_length
+                mapped.append(extract_values(registers, start, signal.element_length))
             return mapped
 
     # ToDo: accept RegisterRange as parameter

@@ -18,7 +18,7 @@ pytestmark = [pytest.mark.asyncio, pytest.mark.enable_socket]
 
 
 async def test_e2e_master():
-    async with e2e_setup("master_dump.yaml", {"use_local_time": False}) as inv:
+    async with e2e_setup("dump_master.yaml", {"use_local_time": False}) as inv:
         # Dump was recorded with a SH8.0RT-20 (code 3602)
         assert inv.model in [3602, "SH8.0RT-20"]
 
@@ -34,7 +34,7 @@ async def test_e2e_master():
 
 
 async def test_e2e_slave():
-    async with e2e_setup("slave_dump.yaml", {"use_local_time": False}) as inv:
+    async with e2e_setup("dump_slave.yaml", {"use_local_time": False}) as inv:
         # Dump was recorded with a SH8.0RT-20 (code 3602)
         assert inv.model in [3602, "SH8.0RT-20"]
 
@@ -87,7 +87,7 @@ async def test_e2e_fail_wrong_slave():
 
 async def test_e2e_timestamp_removes_raw_values():
     async with e2e_setup(
-        "master_dump.yaml", {"use_local_time": False, "level": 3}
+        "dump_master.yaml", {"use_local_time": False, "level": 3}
     ) as inv:
         await inv.pull_data()
 
@@ -96,7 +96,7 @@ async def test_e2e_timestamp_removes_raw_values():
             assert key not in inv.data, f"key {key} should not be in data"
 
     async with e2e_setup(
-        "master_dump.yaml", {"use_local_time": True, "level": 3}
+        "dump_master.yaml", {"use_local_time": True, "level": 3}
     ) as inv:
         await inv.pull_data()
 

@@ -11,20 +11,8 @@ logging.getLogger("pymodbus").setLevel(logging.WARNING)
 
 
 async def main():
-    await dump(modbus.Connection("192.168.13.79", 502, 1), "dump-master.yaml")
-    await dump(modbus.Connection("192.168.13.80", 502, 2), "dump-slave.yaml")
-
-
-def flatten_registers(raw_data: dict[modbus.Connection.RegisterRange, list[int]]):
-    flat: dict[str, dict[int, int]] = {"read": {}, "hold": {}}
-    for register_range, registers in raw_data.items():
-        for addr in range(
-            register_range.start, register_range.start + register_range.length
-        ):
-            flat[register_range.register_type][addr] = registers[
-                addr - register_range.start
-            ]
-    return flat
+    await dump(modbus.Connection("192.168.13.79", 502, 1), "dump_master.yaml")
+    await dump(modbus.Connection("192.168.13.80", 502, 2), "dump_slave.yaml")
 
 
 async def dump(connection: modbus.Connection, filename: str) -> None:
@@ -43,7 +31,11 @@ async def dump(connection: modbus.Connection, filename: str) -> None:
     with open(filename, "w") as dump_file:
         yaml.dump(
             {
-                "registers": flatten_registers(raw_data),
+                # Remap the keys so they come out readable.
+                "registers": {
+                    "read": raw_data[modbus.RegisterType.READ],
+                    "hold": raw_data[modbus.RegisterType.HOLD],
+                },
                 "signals": signal_data,
             },
             dump_file,

@@ -45,7 +45,7 @@ registers:
     4992: 12340
     4993: 12597
     4994: 14135
-    4995: 12288
+    4995: 14592
     4996: 0
     4997: 0
     4998: 0
@@ -53,13 +53,13 @@ registers:
     5000: 3602
     5001: 80
     5002: 1
-    5003: 74
-    5004: 957
+    5003: 0
+    5004: 273
     5005: 0
     5006: 65535
     5007: 65535
-    5008: 339
-    5009: 77
+    5008: 291
+    5009: 0
     5010: 0
     5011: 0
     5012: 0
@@ -69,9 +69,9 @@ registers:
     5016: 65535
     5017: 0
     5018: 0
-    5019: 2305
-    5020: 2307
-    5021: 2316
+    5019: 2275
+    5020: 2292
+    5021: 2292
     5022: 0
     5023: 0
     5024: 0
@@ -83,10 +83,10 @@ registers:
     5030: 65535
     5031: 0
     5032: 0
-    5033: 65533
-    5034: 65535
-    5035: 1000
-    5036: 500
+    5033: 0
+    5034: 0
+    5035: 0
+    5036: 499
     5037: 65535
     5038: 65535
     5039: 65535
@@ -100,7 +100,7 @@ registers:
     5047: 65535
     5048: 65535
     5049: 48
-    5071: 691
+    5071: 1045
     5072: 65535
     5073: 65535
     5074: 65535
@@ -117,7 +117,7 @@ registers:
     5085: 65535
     5086: 65535
     5087: 65535
-    5088: 77
+    5088: 0
     5089: 0
     5090: 65535
     5091: 65535
@@ -176,58 +176,58 @@ registers:
     5144: 65535
     5145: 65535
     5146: 65535
-    5147: 6220
-    5148: 5001
+    5147: 30
+    5148: 4997
     5149: 65535
     5150: 65535
     5151: 65535
-    5216: 65234
-    5217: 65535
-    5218: 302
+    5216: 0
+    5217: 0
+    5218: 0
     5219: 0
-    5601: 311
-    5602: 0
-    5603: 585
-    5604: 0
-    5605: 64885
-    5606: 65535
-    5607: 378
-    5608: 0
-    5609: 1
+    5601: 65535
+    5602: 32767
+    5603: 65535
+    5604: 32767
+    5605: 65535
+    5606: 32767
+    5607: 65535
+    5608: 32767
+    5609: 0
     5610: 0
-    5611: 176
+    5611: 0
     5612: 0
-    5613: 81
+    5613: 0
     5614: 0
-    5615: 1430
+    5615: 0
     5616: 0
-    5617: 9
+    5617: 0
     5618: 0
-    5619: 98
+    5619: 273
     5620: 0
     5621: 0
     5622: 0
-    5623: 1600
+    5623: 800
     5624: 0
     5625: 1000
     5626: 65535
     5627: 0
     5628: 80
-    5629: 105
-    5630: 1925
+    5629: 2
+    5630: 0
     5631: 0
-    5632: 210
+    5632: 0
     5633: 0
-    5634: 1000
-    5635: 30
-    5636: 30
+    5634: 0
+    5635: 0
+    5636: 0
     5637: 65535
     5638: 65535
-    5639: 960
-    5723: 65511
-    5724: 65504
-    5725: 65506
-    5726: 65449
+    5639: 0
+    5723: 0
+    5724: 0
+    5725: 0
+    5726: 0
     6100: 0
     6101: 0
     6102: 0
@@ -266,29 +266,29 @@ registers:
     6135: 0
     6136: 0
     6137: 0
-    6138: 1
+    6138: 0
     6139: 0
-    6140: 57
-    6141: 104
-    6142: 220
-    6143: 179
-    6144: 478
-    6145: 468
-    6146: 468
-    6147: 358
-    6148: 316
-    6149: 955
-    6150: 741
-    6151: 454
-    6152: 249
-    6153: 267
-    6154: 347
-    6155: 457
-    6156: 565
-    6157: 319
-    6158: 185
-    6159: 82
-    6160: 4
+    6140: 0
+    6141: 0
+    6142: 0
+    6143: 0
+    6144: 0
+    6145: 0
+    6146: 0
+    6147: 0
+    6148: 0
+    6149: 0
+    6150: 0
+    6151: 0
+    6152: 0
+    6153: 0
+    6154: 0
+    6155: 0
+    6156: 0
+    6157: 0
+    6158: 0
+    6159: 0
+    6160: 0
     6161: 0
     6162: 0
     6163: 0
@@ -324,12 +324,12 @@ registers:
     6193: 0
     6194: 0
     6195: 0
-    6196: 12
-    6197: 8
-    6198: 20
-    6199: 14
-    6200: 16
-    6201: 0
+    6196: 13
+    6197: 7
+    6198: 19
+    6199: 17
+    6200: 17
+    6201: 1
     6202: 0
     6203: 0
     6204: 0
@@ -355,7 +355,7 @@ registers:
     6224: 0
     6225: 0
     6226: 0
-    6227: 70
+    6227: 74
     6228: 0
     6229: 0
     6230: 0
@@ -394,9 +394,9 @@ registers:
     6263: 0
     6264: 0
     6265: 0
-    6266: 184
+    6266: 199
     6267: 0
-    6268: 70
+    6268: 74
     6269: 0
     6270: 0
     6271: 0
@@ -459,25 +459,25 @@ registers:
     6328: 0
     6329: 0
     6330: 0
-    6331: 104
-    6332: 191
-    6333: 102
-    6334: 14
-    6335: 223
-    6336: 460
-    6337: 126
-    6338: 38
-    6339: 220
-    6340: 741
-    6341: 451
-    6342: 58
-    6343: 192
+    6331: 0
+    6332: 0
+    6333: 0
+    6334: 0
+    6335: 0
+    6336: 0
+    6337: 0
+    6338: 0
+    6339: 0
+    6340: 0
+    6341: 0
+    6342: 0
+    6343: 0
     6344: 0
-    6345: 355
-    6346: 409
-    6347: 242
+    6345: 0
+    6346: 0
+    6347: 0
     6348: 0
-    6349: 70
+    6349: 0
     6350: 0
     6351: 0
     6352: 0
@@ -514,12 +514,12 @@ registers:
     6383: 0
     6384: 0
     6385: 0
-    6386: 6
-    6387: 6
-    6388: 6
-    6389: 8
-    6390: 9
-    6391: 0
+    6386: 13
+    6387: 7
+    6388: 19
+    6389: 17
+    6390: 17
+    6391: 1
     6392: 0
     6393: 0
     6394: 0
@@ -545,7 +545,7 @@ registers:
     6414: 0
     6415: 0
     6416: 0
-    6417: 35
+    6417: 74
     6418: 0
     6419: 0
     6420: 0
@@ -573,9 +573,9 @@ registers:
     6442: 0
     6443: 0
     6444: 0
-    6445: 63
+    6445: 199
     6446: 0
-    6447: 35
+    6447: 74
     6448: 0
     6449: 0
     6450: 0
@@ -635,29 +635,29 @@ registers:
     6504: 0
     6505: 0
     6506: 0
-    6507: 1
+    6507: 0
     6508: 0
     6509: 0
     6510: 0
-    6511: 29
-    6512: 14
-    6513: 12
-    6514: 3
-    6515: 8
-    6516: 8
-    6517: 6
-    6518: 40
+    6511: 0
+    6512: 0
+    6513: 0
+    6514: 0
+    6515: 0
+    6516: 0
+    6517: 0
+    6518: 0
     6519: 0
-    6520: 3
-    6521: 6
-    6522: 1
+    6520: 0
+    6521: 0
+    6522: 0
     6523: 0
-    6524: 3
-    6525: 4
-    6526: 1
+    6524: 0
+    6525: 0
+    6526: 0
     6527: 0
     6528: 0
-    6529: 3
+    6529: 0
     6530: 0
     6531: 0
     6532: 0
@@ -816,27 +816,27 @@ registers:
     6685: 0
     6686: 0
     6687: 0
-    6688: 57
+    6688: 0
     6689: 0
     6690: 0
-    6691: 63
-    6692: 452
-    6693: 242
+    6691: 0
+    6692: 0
+    6693: 0
     6694: 0
-    6695: 224
-    6696: 272
-    6697: 695
+    6695: 0
+    6696: 0
+    6697: 0
     6698: 0
     6699: 0
-    6700: 185
-    6701: 74
-    6702: 347
-    6703: 99
-    6704: 152
-    6705: 76
-    6706: 185
-    6707: 12
-    6708: 1
+    6700: 0
+    6701: 0
+    6702: 0
+    6703: 0
+    6704: 0
+    6705: 0
+    6706: 0
+    6707: 0
+    6708: 0
     6709: 0
     6710: 0
     6711: 0
@@ -872,11 +872,11 @@ registers:
     6741: 0
     6742: 0
     6743: 0
-    6744: 6
-    6745: 2
-    6746: 14
-    6747: 6
-    6748: 7
+    6744: 0
+    6745: 0
+    6746: 0
+    6747: 0
+    6748: 0
     6749: 0
     6750: 0
     6751: 0
@@ -903,7 +903,7 @@ registers:
     6772: 0
     6773: 0
     6774: 0
-    6775: 35
+    6775: 0
     6776: 0
     6777: 0
     6778: 0
@@ -931,9 +931,9 @@ registers:
     6800: 0
     6801: 0
     6802: 0
-    6803: 121
+    6803: 0
     6804: 0
-    6805: 35
+    6805: 0
     6806: 0
     6807: 0
     6808: 0
@@ -979,34 +979,34 @@ registers:
     7034: 65535
     7035: 65535
     7036: 65535
-    13000: 64
-    13001: 40
-    13002: 16
-    13003: 254
+    13000: 8
+    13001: 0
+    13002: 0
+    13003: 273
     13004: 0
     13005: 0
     13006: 0
     13007: 0
-    13008: 302
+    13008: 0
     13009: 0
-    13010: 65234
-    13011: 65535
-    13012: 7
-    13013: 156
+    13010: 0
+    13011: 0
+    13012: 0
+    13013: 0
     13014: 0
-    13015: 177
+    13015: 191
     13016: 0
-    13017: 9
-    13018: 98
+    13017: 0
+    13018: 273
     13019: 0
-    13020: 1925
+    13020: 0
     13021: 0
     13022: 0
     13023: 0
-    13024: 1000
-    13025: 210
-    13026: 66
-    13027: 875
+    13024: 0
+    13025: 0
+    13026: 0
+    13027: 0
     13028: 0
     13029: 1000
     13030: 65535
@@ -1015,17 +1015,17 @@ registers:
     13033: 0
     13034: 0
     13035: 0
-    13036: 81
-    13037: 1430
+    13036: 0
+    13037: 0
     13038: 0
-    13039: 96
-    13040: 72
-    13041: 953
+    13039: 0
+    13040: 0
+    13041: 0
     13042: 0
     13043: 255
     13044: 0
-    13045: 1
-    13046: 176
+    13045: 0
+    13046: 0
     13047: 0
     13048: 0
     13049: 0
@@ -1081,10 +1081,10 @@ registers:
   hold:
     5000: 2024
     5001: 1
-    5002: 5
-    5003: 22
-    5004: 40
-    5005: 13
+    5002: 7
+    5003: 0
+    5004: 3
+    5005: 15
     5006: 207
     5007: 170
     5008: 1000
@@ -1117,7 +1117,7 @@ registers:
     5035: 65535
     5036: 85
     5037: 65535
-    5038: 26
+    5038: 4
     5039: 65535
     5040: 65535
     5041: 65535
@@ -1182,7 +1182,7 @@ registers:
     13056: 65535
     13057: 65535
     13058: 1000
-    13059: 50
+    13059: 0
     13060: 65535
     13061: 65535
     13062: 65535
@@ -1197,8 +1197,8 @@ registers:
     13071: 65535
     13072: 65535
     13073: 65535
-    13074: 12000
-    13075: 170
+    13074: 8000
+    13075: 85
     13076: 65535
     13077: 65535
     13078: 65535
@@ -1218,105 +1218,105 @@ registers:
     33149: 0
     33150: 0
     33500: 170
-    33501: 160
+    33501: 161
     33502: 2
 signals:
-  protocol_number: 12288
-  protocol_version: 4352
+  protocol_number: 1094856704
+  protocol_version: 16781568
   arm_software_version: 16722
   dsp_software_version: 19780
-  serial_number: A2350415770
+  serial_number: A2350415779
   device_type_code: SH8.0RT-20
   nominal_output_power: 8.0
   output_type: 3P4L
-  daily_output_energy_pv_and_battery: 7.4
-  total_output_energy_pv_and_battery: 95.7
-  total_running_time: 65535
-  internal_temperature: 33.9
-  total_apparent_power: 77
+  daily_output_energy_pv_and_battery: 0.0
+  total_output_energy_pv_and_battery: 27.3
+  total_running_time: null
+  internal_temperature: 29.1
+  total_apparent_power: 0
   mppt_1_voltage: 0.0
   mppt_1_current: 0.0
   mppt_2_voltage: 0.0
   mppt_2_current: 0.0
-  mppt_3_voltage: 0.0
-  mppt_3_current: 0.0
-  pv_power: 0
-  phase_a_voltage: 230.5
-  phase_b_voltage: 230.7
-  phase_c_voltage: 231.6
+  mppt_3_voltage: null
+  mppt_3_current: null
+  total_dc_power: 0
+  phase_a_voltage: 227.5
+  phase_b_voltage: 229.2
+  phase_c_voltage: 229.2
   phase_a_current: 0.0
   phase_b_current: 0.0
   phase_c_current: 0.0
   total_active_power: 0
-  total_reactive_power: 65533
-  power_factor: 1.0
-  grid_frequency: 50.0
-  work_state_1: 0
-  alarm_time_year: 0
-  alarm_time_month: 0
-  alarm_time_day: 0
-  alarm_time_hour: 0
-  alarm_time_minute: 0
-  alarm_time_second: 0
-  alarm_code_1: 0
+  total_reactive_power: 0
+  power_factor: 0.0
+  grid_frequency: 49.9
+  work_state_1: null
+  alarm_time_year: null
+  alarm_time_month: null
+  alarm_time_day: null
+  alarm_time_hour: null
+  alarm_time_minute: null
+  alarm_time_second: null
+  alarm_code_1: null
   nominal_reactive_power: 4800.0
-  array_insulation_resistance: 691
-  active_power_regulation_setpoint: 65535
-  reactive_power_regulation_setpoint: 65535
-  work_state_2: 65535
-  meter_power: 65535
-  meter_a_phase_power: 65535
+  array_insulation_resistance: 1045
+  active_power_regulation_setpoint: null
+  reactive_power_regulation_setpoint: -1
+  work_state_2: null
+  meter_power: -1
+  meter_a_phase_power: -1
   meter_b_phase_power: 65535
-  meter_c_phase_power: 0
-  meter_load_power: 65535
-  daily_export_energy: 6553.5
-  total_export_energy: 6553.5
-  daily_import_energy: 6553.5
-  total_import_energy: 6553.5
-  daily_direct_energy_consumption: 6553.5
-  total_direct_energy_consumption: 6553.5
-  daily_running_time: 0
-  mppt_4_voltage: 0.0
-  mppt_4_current: 0.0
-  mppt_5_voltage: 0.0
-  mppt_5_current: 0.0
-  mppt_6_voltage: 0.0
-  mppt_6_current: 0.0
-  mppt_7_voltage: 0.0
-  mppt_7_current: 0.0
-  mppt_8_voltage: 0.0
-  mppt_8_current: 0.0
-  monthly_power_yields: 6553.5
-  mppt_9_voltage: 0.0
-  mppt_9_current: 0.0
-  mppt_10_voltage: 0.0
-  mppt_10_current: 0.0
-  mppt_11_voltage: 0.0
-  mppt_11_current: 0.0
-  mppt_12_voltage: 0.0
-  mppt_12_current: 0.0
-  total_power_yields: 6553.5
-  negative_voltage_to_the_ground: 6553.5
-  bus_voltage: 622.0
-  grid_frequency_: 50.01
-  pid_work_state: 0
-  pid_alarm_code: 0
-  export_power: 65234
-  power_meter: 302
-  meter_active_power: 311
-  meter_active_power_phase_a: 585
-  meter_active_power_phase_b: 64885
-  meter_active_power_phase_c: 378
+  meter_c_phase_power: -65536
+  meter_load_power: -1
+  daily_export_energy: null
+  total_export_energy: null
+  daily_import_energy: null
+  total_import_energy: null
+  daily_direct_energy_consumption: null
+  total_direct_energy_consumption: null
+  daily_running_time: null
+  mppt_4_voltage: null
+  mppt_4_current: null
+  mppt_5_voltage: null
+  mppt_5_current: null
+  mppt_6_voltage: null
+  mppt_6_current: null
+  mppt_7_voltage: null
+  mppt_7_current: null
+  mppt_8_voltage: null
+  mppt_8_current: null
+  monthly_power_yields: null
+  mppt_9_voltage: null
+  mppt_9_current: null
+  mppt_10_voltage: null
+  mppt_10_current: null
+  mppt_11_voltage: null
+  mppt_11_current: null
+  mppt_12_voltage: null
+  mppt_12_current: null
+  total_power_yields: null
+  negative_voltage_to_the_ground: -0.1
+  bus_voltage: 3.0
+  grid_frequency_: 49.97
+  pid_work_state: null
+  pid_alarm_code: null
+  export_power: 0
+  meter_active_power: null
+  meter_active_power_phase_a: null
+  meter_active_power_phase_b: null
+  meter_active_power_phase_c: null
+  power_meter: 0
   export_limit_min: 0.0
-  export_limit_max: 16000.0
+  export_limit_max: 8000.0
   bdc_rated_power: 8000.0
-  bms_max_charging_current: 30
-  bms_max_discharging_current: 30
-  battery_capacity_high_precision: 9.6
-  backup_power_phase_a: 65511
-  backup_power_phase_b: 65504
-  backup_power_phase_c: 65506
-  backup_power_total: 65449
+  bms_max_charging_current: 0
+  bms_max_discharging_current: 0
+  battery_capacity_high_precision: 0.0
+  backup_power_phase_a: 0
+  backup_power_phase_b: 0
+  backup_power_phase_c: 0
+  backup_power_total: 0
   pv_power_of_today:
     0: 0
     1: 0
@@ -1356,29 +1356,29 @@ signals:
     35: 0
     36: 0
     37: 0
-    38: 1
+    38: 0
     39: 0
-    40: 57
-    41: 104
-    42: 220
-    43: 179
-    44: 478
-    45: 468
-    46: 468
-    47: 358
-    48: 316
-    49: 955
-    50: 741
-    51: 454
-    52: 249
-    53: 267
-    54: 347
-    55: 457
-    56: 565
-    57: 319
-    58: 185
-    59: 82
-    60: 4
+    40: 0
+    41: 0
+    42: 0
+    43: 0
+    44: 0
+    45: 0
+    46: 0
+    47: 0
+    48: 0
+    49: 0
+    50: 0
+    51: 0
+    52: 0
+    53: 0
+    54: 0
+    55: 0
+    56: 0
+    57: 0
+    58: 0
+    59: 0
+    60: 0
     61: 0
     62: 0
     63: 0
@@ -1415,12 +1415,12 @@ signals:
     94: 0
     95: 0
   pv_energy_yields_daily:
-    0: 1.2
-    1: 0.8
-    2: 2.0
-    3: 1.4
-    4: 1.6
-    5: 0.0
+    0: 1.3
+    1: 0.7
+    2: 1.9
+    3: 1.7
+    4: 1.7
+    5: 0.1
     6: 0.0
     7: 0.0
     8: 0.0
@@ -1446,7 +1446,7 @@ signals:
     28: 0.0
     29: 0.0
   pv_energy_yields_monthly:
-    0: 7.0
+    0: 7.4
     1: 0.0
     2: 0.0
     3: 0.0
@@ -1467,18 +1467,18 @@ signals:
     5: 0.0
     6: 0.0
     7: 0.0
-    8: 18.4
-    9: 7.0
+    8: 19.9
+    9: 7.4
     10: 0.0
     11: 0.0
     12: 0.0
     13: 0.0
     14: 0.0
-    15: 6553.5
-    16: 6553.5
-    17: 6553.5
-    18: 6553.5
-    19: 6553.5
+    15: null
+    16: null
+    17: null
+    18: null
+    19: null
   direct_power_consumption_from_pv_today:
     0: 0
     1: 0
@@ -1521,25 +1521,25 @@ signals:
     38: 0
     39: 0
     40: 0
-    41: 104
-    42: 191
-    43: 102
-    44: 14
-    45: 223
-    46: 460
-    47: 126
-    48: 38
-    49: 220
-    50: 741
-    51: 451
-    52: 58
-    53: 192
+    41: 0
+    42: 0
+    43: 0
+    44: 0
+    45: 0
+    46: 0
+    47: 0
+    48: 0
+    49: 0
+    50: 0
+    51: 0
+    52: 0
+    53: 0
     54: 0
-    55: 355
-    56: 409
-    57: 242
+    55: 0
+    56: 0
+    57: 0
     58: 0
-    59: 70
+    59: 0
     60: 0
     61: 0
     62: 0
@@ -1577,12 +1577,12 @@ signals:
     94: 0
     95: 0
   direct_power_consumption_from_pv_daily:
-    0: 0.6
-    1: 0.6
-    2: 0.6
-    3: 0.8
-    4: 0.9
-    5: 0.0
+    0: 1.3
+    1: 0.7
+    2: 1.9
+    3: 1.7
+    4: 1.7
+    5: 0.1
     6: 0.0
     7: 0.0
     8: 0.0
@@ -1609,7 +1609,7 @@ signals:
     29: 0.0
     30: 0.0
   direct_energy_consumption_from_pv_monthly:
-    0: 3.5
+    0: 7.4
     1: 0.0
     2: 0.0
     3: 0.0
@@ -1630,18 +1630,18 @@ signals:
     5: 0.0
     6: 0.0
     7: 0.0
-    8: 6.3
-    9: 3.5
+    8: 19.9
+    9: 7.4
     10: 0.0
     11: 0.0
     12: 0.0
     13: 0.0
     14: 0.0
-    15: 6553.5
-    16: 6553.5
-    17: 6553.5
-    18: 6553.5
-    19: 6553.5
+    15: null
+    16: null
+    17: null
+    18: null
+    19: null
   export_power_from_pv_today:
     0: 0
     1: 0
@@ -1681,29 +1681,29 @@ signals:
     35: 0
     36: 0
     37: 0
-    38: 1
+    38: 0
     39: 0
     40: 0
     41: 0
-    42: 29
-    43: 14
-    44: 12
-    45: 3
-    46: 8
-    47: 8
-    48: 6
-    49: 40
+    42: 0
+    43: 0
+    44: 0
+    45: 0
+    46: 0
+    47: 0
+    48: 0
+    49: 0
     50: 0
-    51: 3
-    52: 6
-    53: 1
+    51: 0
+    52: 0
+    53: 0
     54: 0
-    55: 3
-    56: 4
-    57: 1
+    55: 0
+    56: 0
+    57: 0
     58: 0
     59: 0
-    60: 3
+    60: 0
     61: 0
     62: 0
     63: 0
@@ -1800,11 +1800,11 @@ signals:
     12: 0.0
     13: 0.0
     14: 0.0
-    15: 6553.5
-    16: 6553.5
-    17: 6553.5
-    18: 6553.5
-    19: 6553.5
+    15: null
+    16: null
+    17: null
+    18: null
+    19: null
   battery_charge_energy_from_pv_today:
     0: 0.0
     1: 0.0
@@ -1846,27 +1846,27 @@ signals:
     37: 0.0
     38: 0.0
     39: 0.0
-    40: 5.7
+    40: 0.0
     41: 0.0
     42: 0.0
-    43: 6.3
-    44: 45.2
-    45: 24.2
+    43: 0.0
+    44: 0.0
+    45: 0.0
     46: 0.0
-    47: 22.4
-    48: 27.2
-    49: 69.5
+    47: 0.0
+    48: 0.0
+    49: 0.0
     50: 0.0
     51: 0.0
-    52: 18.5
-    53: 7.4
-    54: 34.7
-    55: 9.9
-    56: 15.2
-    57: 7.6
-    58: 18.5
-    59: 1.2
-    60: 0.1
+    52: 0.0
+    53: 0.0
+    54: 0.0
+    55: 0.0
+    56: 0.0
+    57: 0.0
+    58: 0.0
+    59: 0.0
+    60: 0.0
     61: 0.0
     62: 0.0
     63: 0.0
@@ -1903,11 +1903,11 @@ signals:
     94: 0.0
     95: 0.0
   battery_charge_energy_from_pv:
-    0: 0.6
-    1: 0.2
-    2: 1.4
-    3: 0.6
-    4: 0.7
+    0: 0.0
+    1: 0.0
+    2: 0.0
+    3: 0.0
+    4: 0.0
     5: 0.0
     6: 0.0
     7: 0.0
@@ -1935,7 +1935,7 @@ signals:
     29: 0.0
     30: 0.0
   battery_charge_energy_from_pv_monthly:
-    0: 3.5
+    0: 0.0
     1: 0.0
     2: 0.0
     3: 0.0
@@ -1956,83 +1956,83 @@ signals:
     5: 0.0
     6: 0.0
     7: 0.0
-    8: 12.1
-    9: 3.5
+    8: 0.0
+    9: 0.0
     10: 0.0
     11: 0.0
     12: 0.0
     13: 0.0
     14: 0.0
-    15: 6553.5
-    16: 6553.5
-    17: 6553.5
-    18: 6553.5
-    19: 6553.5
-  string_1_current: 0.0
-  string_2_current: 0.0
-  string_3_current: 0.0
-  string_4_current: 0.0
-  string_5_current: 0.0
-  string_6_current: 0.0
-  string_7_current: 0.0
-  string_8_current: 0.0
-  string_9_current: 0.0
-  string_10_current: 0.0
-  string_11_current: 0.0
-  string_12_current: 0.0
-  string_13_current: 0.0
-  string_14_current: 0.0
-  string_15_current: 0.0
-  string_16_current: 0.0
-  string_17_current: 0.0
-  string_18_current: 0.0
-  string_19_current: 0.0
-  string_20_current: 0.0
-  string_21_current: 0.0
-  string_22_current: 0.0
-  string_23_current: 0.0
-  string_24_current: 0.0
-  running_state: Running
+    15: null
+    16: null
+    17: null
+    18: null
+    19: null
+  string_1_current: null
+  string_2_current: null
+  string_3_current: null
+  string_4_current: null
+  string_5_current: null
+  string_6_current: null
+  string_7_current: null
+  string_8_current: null
+  string_9_current: null
+  string_10_current: null
+  string_11_current: null
+  string_12_current: null
+  string_13_current: null
+  string_14_current: null
+  string_15_current: null
+  string_16_current: null
+  string_17_current: null
+  string_18_current: null
+  string_19_current: null
+  string_20_current: null
+  string_21_current: null
+  string_22_current: null
+  string_23_current: null
+  string_24_current: null
+  running_state: 8
   state_power_generated_from_pv: false
   state_battery_charging: false
   state_battery_discharging: false
-  state_load_active: true
+  state_load_active: false
   state_feed_into_grid: false
-  state_import_from_grid: true
+  state_import_from_grid: false
   state_power_generated_from_load: false
-  daily_pv_generation: 1.6
-  total_pv_generation: 25.4
+  daily_pv_generation: 0.0
+  total_pv_generation: 27.3
   daily_pv_export: 0.0
   total_pv_export: 0.0
-  load_power_hybrid: 302
-  export_power_hybrid: 65234
-  daily_battery_charge_from_pv: 0.7
-  total_battery_charge_from_pv: 15.6
-  co2_reduction: 17.7
-  daily_direct_energy_consumption_: 0.9
-  total_direct_energy_consumption_: 9.8
-  battery_voltage: 192.5
+  load_power_hybrid: 0
+  export_power_hybrid: 0
+  daily_battery_charge_from_pv: 0.0
+  total_battery_charge_from_pv: 0.0
+  co2_reduction: 19.1
+  daily_direct_energy_consumption_: 0.0
+  total_direct_energy_consumption_: 27.3
+  battery_voltage: 0.0
   battery_current: 0.0
   battery_power: 0
   battery_level: 0.0
-  battery_state_of_health: 100.0
-  battery_temperature: 21.0
-  daily_battery_discharge_energy: 6.6
-  total_battery_discharge_energy: 87.5
+  battery_state_of_health: 0.0
+  battery_temperature: 0.0
+  daily_battery_discharge_energy: 0.0
+  total_battery_discharge_energy: 0.0
   self_consumption_of_day: 100.0
-  grid_state: 0
+  grid_state: null
   phase_a_current_: 0.0
   phase_b_current_: 0.0
   phase_c_current_: 0.0
   total_active_power_2: 0
-  daily_imported_energy: 8.1
-  total_imported_energy: 143.0
-  battery_capacity: 9.6
-  daily_battery_charge_energy: 7.2
-  total_battery_charge_energy: 95.3
+  daily_imported_energy: 0.0
+  total_imported_energy: 0.0
+  battery_capacity: 0.0
+  daily_battery_charge_energy: 0.0
+  total_battery_charge_energy: 0.0
   drm_state: 255
-  daily_exported_energy: 0.1
-  total_exported_energy: 17.6
+  daily_exported_energy: 0.0
+  total_exported_energy: 0.0
   inverter_alarm: 0.0
   grid-side_fault: 0.0
   system_fault1: 0.0
@@ -2048,59 +2048,59 @@ signals:
   bms_fault1: 0
   bms_fault2: 0
   bms_alarm2: 0
-  bms_status: 0
-  max_charging_current: 0
-  max_discharging_current: 0
-  warning: 0
-  protection: 0
-  fault1: 0
-  fault2: 0
-  soc: 0
-  soh: 0
-  battery_current_: 0
-  battery_voltage_: 0.0
-  cycle_count: 0.0
-  average_cell_voltage: 0
-  max_cell_voltage: 0
-  min_cell_voltage: 0
-  battery_pack_voltage: 0
-  average_cell_temp: 65535
-  max_cell_temp: 65535
-  min_cell_temp: 65535
+  bms_status: null
+  max_charging_current: null
+  max_discharging_current: null
+  warning: null
+  protection: null
+  fault1: null
+  fault2: null
+  soc: null
+  soh: null
+  battery_current_: null
+  battery_voltage_: null
+  cycle_count: null
+  average_cell_voltage: null
+  max_cell_voltage: null
+  min_cell_voltage: null
+  battery_pack_voltage: null
+  average_cell_temp: -1
+  max_cell_temp: -1
+  min_cell_temp: -1
   year: 2024
   month: 1
-  day: 5
-  hour: 22
-  minute: 40
-  second: 13
+  day: 7
+  hour: 0
+  minute: 3
+  second: 15
   start_stop: Start
   power_limitation_switch: Enable
   power_limitation_setting: 100.0
-  export_power_limitation: 0
-  export_power_limitation_value: 0
-  current_transformer_output_current: 0
-  current_transformer_range: 0
-  current_transformer: Internal
-  export_power_limitation_percentage: 0.0
-  installed_pv_power: 0.0
-  power_factor_setting: 0.0
-  scheduling_achieve_active_overload: 0
-  night_svg_switch: 0
+  export_power_limitation: null
+  export_power_limitation_value: null
+  current_transformer_output_current: null
+  current_transformer_range: null
+  current_transformer: null
+  export_power_limitation_percentage: null
+  installed_pv_power: null
+  power_factor_setting: null
+  scheduling_achieve_active_overload: null
+  night_svg_switch: null
   reactive_power_adjustment_mode: 'Off'
-  reactive_power_percentage_setting: 6553.5
-  power_limitation_adjustment: 0.0
-  reactive_power_adjustment: 6553500.0
-  pid_recovery: 0
-  anti_pid: 0
-  fullday_pid_suppression: 0
+  reactive_power_percentage_setting: -0.1
+  power_limitation_adjustment: null
+  reactive_power_adjustment: -100.0
+  pid_recovery: null
+  anti_pid: null
+  fullday_pid_suppression: null
   start_stop_2: Start
   ems_mode_selection: 0
   battery_forced_charge_discharge_cmd: Stop
   battery_forced_charge_discharge_power: 0
   battery_forced_charge_discharge_power_: 0
   Max_SoC: 100.0
-  Min_SoC: 5.0
-  export_power_limit: 12000
+  Min_SoC: 0.0
+  export_power_limit: 8000
   start_charging_power: 0.0
   start_discharging_power: 0.0
   energy_meter_comm: Enabled
@@ -2112,5 +2112,5 @@ signals:
   battery_charge_start_power: 0.0
   battery_charge_stop_power: 0.0
   master_slave_mode: Enabled
-  master_slave_role: Master
+  master_slave_role: Slave 1
   slave_count: 2

@@ -30,6 +30,9 @@ async def simulated_inverter(yaml_file):
     if yaml_file:
         with open(yaml_file) as f:
             yaml_data = yaml.safe_load(f)
+            # some old yaml recordings don't have the "registers" key
+            if "registers" in yaml_data:
+                yaml_data = yaml_data["registers"]
             for register_type, registers in yaml_data.items():
                 store = response_data.store[pymodbus_stores[register_type]]
                 for address, value in registers.items():
