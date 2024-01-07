@@ -423,70 +423,65 @@ read:
       18: "Total Fault Bit"
 
   - name: "meter_power"
-    # Doesn't work as is. Moved to level 4.
-    group: group_5083
-    level: 4
+    level: 2
     address: 5083
     data_type: S32
     smart_meter: True
     unit_of_measurement: "W"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "meter_a_phase_power"
-    # Doesn't work as is. Moved to level 4.
-    group: group_5083
-    level: 4
+    level: 2
     address: 5085
     data_type: S32
     unit_of_measurement: "W"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "meter_b_phase_power"
-    # Doesn't work as is. Moved to level 4.
-    group: group_5083
-    level: 4
+    level: 2
     address: 5087
     data_type: S32
     unit_of_measurement: "W"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "meter_c_phase_power"
-    # Doesn't work as is. Moved to level 4.
-    group: group_5083
-    level: 4
+    level: 2
     address: 5089
     data_type: S32
     unit_of_measurement: "W"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "meter_load_power"
-    # Doesn't work as is. Moved to level 4.
-    group: group_5083
-    level: 4
+    level: 2
     address: 5091
     data_type: S32
     smart_meter: True
     unit_of_measurement: "W"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "daily_export_energy"
-    group: group_5083
     level: 1
     address: 5093
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "total_export_energy"
-    group: group_5083
     level: 1
     address: 5095
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "daily_import_energy"
-    group: group_5083
     level: 1
     address: 5097
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "total_import_energy"
     group: group_5083
@@ -497,20 +492,20 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "daily_direct_energy_consumption"
-    group: group_5083
     level: 1
     address: 5101
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "total_direct_energy_consumption"
-    group: group_5083
     level: 1
     address: 5103
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models: ["SG[0-9]+KTL-MT?"]
 
   - name: "daily_running_time"
     level: 2
@@ -734,28 +729,28 @@ read:
 
   - name: "meter_active_power"
     group: "has_meter"
-    level: 2
+    level: 1
     address: 5601
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_a"
     group: "has_meter"
-    level: 2
+    level: 1
     address: 5603
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_b"
     group: "has_meter"
-    level: 2
+    level: 1
     address: 5605
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_c"
     group: "has_meter"
-    level: 2
+    level: 1
     address: 5607
     data_type: S32
     unit_of_measurement: W
