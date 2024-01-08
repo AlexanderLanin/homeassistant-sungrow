@@ -27,10 +27,10 @@ echo "Restarting home assistant..."
 ssh root@homeassistant.local "ha core restart"
 
 
-echo "Tailing log... Press Ctrl+C to exit."
+echo "Retrieving home-assistant log... Press Ctrl+C to exit."
 # ToDo: check if configuration.yaml has sungrow section:
 # logger:
 #   default: warning
 #   logs:
 #     custom_components.sungrow: debug
-ssh root@homeassistant.local "tail -f /root/homeassistant/home-assistant.log"
+ssh root@homeassistant.local "tail -n 1000 -f /root/homeassistant/home-assistant.log"

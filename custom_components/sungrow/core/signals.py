@@ -143,8 +143,6 @@ class SignalDefinitions:
     # ToDo: move to inverter.py. This is clearly business logic.
     def mark_signals_disabled_based_on_groups(self, data):
         """Note: this returns extra_data to be included!"""
-        # FIXME: now that we can differentiate between 0 and None for each signal,
-        # maybe we can remove this function?
 
         extra_data = {}
 

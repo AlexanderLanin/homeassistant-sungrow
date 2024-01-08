@@ -49,13 +49,32 @@ async def pull_raw_signals(
 
 
 def mark_unavailable_signals_as_disabled(
-    all_signals: signals.SignalDefinitions, data, model, level
+    all_signals: signals.SignalDefinitions,
+    data: dict[str, DatapointValueType],
+    model,
+    level,
 ):
+    # Disable signals which do not apply to the current model regardless of content
+    # (0, not supported, etc), because they contain random/unknown data.
     all_signals.mark_signals_not_in_this_model_as_disabled(model)
+
+    # mark signals as disabled if they are not supported by the inverter
+    for name, value in data.items():
+        if value is None:
+            all_signals.get_signal_definition_by_name(name).disabled.append(
+                "Inverter does not support this signal (None returned)"
+            )
+            logger.debug(
+                f"Disabling {name} as it's not supported by inverter (None returned)"
+            )
+
+    # mark_signals_disabled_based_on_groups must be called after unsupported signals
+    # have been marked as disabled. It will check all remaining signals for 0 or not 0.
+    # Therefore filtering by level must happen after this step.
+    extra_data = all_signals.mark_signals_disabled_based_on_groups(data)
+
     all_signals.mark_signals_below_level_as_disabled(level)
 
-    # mark_signals_disabled_based_on_groups must be the last call as it checks .disabled
-    extra_data = all_signals.mark_signals_disabled_based_on_groups(data)
     return extra_data
 
 

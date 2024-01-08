@@ -32,7 +32,7 @@ from .core.inverter import SungrowInverter
 
 logger = logging.getLogger(__name__)
 
-MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=30)
+MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=5)
 
 
 def guess_device_class(unit: str | None) -> SensorDeviceClass | None:

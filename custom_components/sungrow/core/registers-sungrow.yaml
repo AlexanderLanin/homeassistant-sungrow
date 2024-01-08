@@ -12,27 +12,33 @@
 # Note: distinction between 2 and 3 is not always clear.
 # Note: At startup everything is queried regardless of level, so this is really just the level for the UI.
 
+# Groups:
+# Most detection works via "signal supported" and "signal not supported".
+# However e.g. battery may be supported, and yet none is connected.
+# So we need to be able to distinguish between "supported" and "connected".
+# This is done via groups.
+# Signals which should be hidden and signals which are indicators for "not connected" are grouped.
+# Usually "total" signals are indicators, while e.g. "daily" signals are to be hidden.
+# has_battery: only include if battery is present (e.g. battery_capacity is not 0)
+# is_master: only include if inverter is master/standalone (e.g. total_imported_energy is not 0)
+
 read:
   - name: "protocol_number"
-    group: "detailed_versions"
     level: 2
     address: 4950
     data_type: U32
 
   - name: "protocol_version"
-    group: "detailed_versions"
     level: 2
     address: 4952
     data_type: U32
 
   - name: "arm_software_version"
-    group: "detailed_versions"
     level: 2
     address: 4954
     data_type: U16
 
   - name: "dsp_software_version"
-    group: "detailed_versions"
     level: 2
     address: 4969
     data_type: U16
@@ -186,7 +192,6 @@ read:
     unit_of_measurement: "VA"
 
   - name: "mppt_1_voltage"
-    group: "mppt_1"
     level: 1
     address: 5011
     data_type: U16
@@ -194,7 +199,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_1_current"
-    group: "mppt_1"
     level: 1
     address: 5012
     data_type: U16
@@ -202,7 +206,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_2_voltage"
-    group: "mppt_2"
     level: 1
     address: 5013
     data_type: U16
@@ -210,7 +213,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_2_current"
-    group: "mppt_2"
     level: 1
     address: 5014
     data_type: U16
@@ -218,7 +220,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_3_voltage"
-    group: "mppt_3"
     level: 1
     address: 5015
     data_type: U16
@@ -226,7 +227,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_3_current"
-    group: "mppt_3"
     level: 1
     address: 5016
     data_type: U16
@@ -241,7 +241,6 @@ read:
     # Note: this is per inverter. To get total PV power, sum all inverters.
 
   - name: "phase_a_voltage"
-    group: "phase_meters"
     level: 2
     address: 5019
     data_type: U16
@@ -249,7 +248,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "phase_b_voltage"
-    group: "phase_meters"
     level: 2
     address: 5020
     data_type: U16
@@ -257,7 +255,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "phase_c_voltage"
-    group: "phase_meters"
     level: 2
     address: 5021
     data_type: U16
@@ -265,7 +262,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "phase_a_current"
-    group: "phase_meters"
     level: 2
     address: 5022
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
@@ -273,7 +269,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "phase_b_current"
-    group: "phase_meters"
     level: 2
     address: 5023
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
@@ -281,7 +276,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "phase_c_current"
-    group: "phase_meters"
     level: 2
     address: 5024
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
@@ -315,7 +309,6 @@ read:
     unit_of_measurement: "Hz"
 
   - name: "work_state_1" # See Appendix 1
-    group: "fault_5038"
     level: 1
     address: 5038
     data_type: U16
@@ -336,43 +329,36 @@ read:
       0x2500: "Communication Fault"
 
   - name: "alarm_time_year"
-    group: "fault_5038"
     level: 3
     address: 5039
     data_type: U16
 
   - name: "alarm_time_month"
-    group: "fault_5038"
     level: 3
     address: 5040
     data_type: U16
 
   - name: "alarm_time_day"
-    group: "fault_5038"
     level: 3
     address: 5041
     data_type: U16
 
   - name: "alarm_time_hour"
-    group: "fault_5038"
     level: 3
     address: 5042
     data_type: U16
 
   - name: "alarm_time_minute"
-    group: "fault_5038"
     level: 3
     address: 5043
     data_type: U16
 
   - name: "alarm_time_second"
-    group: "fault_5038"
     level: 3
     address: 5045
     data_type: U16
 
   - name: "alarm_code_1" # See Appendix 3
-    group: "fault_5038"
     level: 3
     address: 5045
     data_type: U16
@@ -484,7 +470,6 @@ read:
     models: ["SG[0-9]+KTL-MT?"]
 
   - name: "total_import_energy"
-    group: group_5083
     level: 1
     address: 5099
     data_type: U32
@@ -515,7 +500,6 @@ read:
     # models_exclude: ["SH8.0RT-20"]
 
   - name: "mppt_4_voltage"
-    group: mppt_4
     level: 1
     address: 5115
     data_type: U16
@@ -523,7 +507,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_4_current"
-    group: mppt_4
     level: 1
     address: 5116
     data_type: U16
@@ -531,7 +514,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_5_voltage"
-    group: mppt_5
     level: 1
     address: 5117
     data_type: U16
@@ -539,7 +521,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_5_current"
-    group: mppt_5
     level: 1
     address: 5118
     data_type: U16
@@ -547,7 +528,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_6_voltage"
-    group: mppt_6
     level: 2
     address: 5119
     data_type: U16
@@ -555,7 +535,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_6_current"
-    group: mppt_6
     level: 2
     address: 5120
     data_type: U16
@@ -563,7 +542,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_7_voltage"
-    group: mppt_7
     level: 2
     address: 5121
     data_type: U16
@@ -571,7 +549,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_7_current"
-    group: mppt_7
     level: 2
     address: 5122
     data_type: U16
@@ -579,7 +556,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_8_voltage"
-    group: mppt_8
     level: 2
     address: 5123
     data_type: U16
@@ -587,7 +563,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_8_current"
-    group: mppt_8
     level: 2
     address: 5124
     data_type: U16
@@ -603,7 +578,6 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "mppt_9_voltage"
-    group: mppt_9
     level: 2
     address: 5130
     data_type: U16
@@ -612,7 +586,6 @@ read:
     models:
 
   - name: "mppt_9_current"
-    group: mppt_9
     level: 2
     address: 5131
     data_type: U16
@@ -620,7 +593,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_10_voltage"
-    group: mppt_10
     level: 2
     address: 5132
     data_type: U16
@@ -628,7 +600,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_10_current"
-    group: mppt_10
     level: 2
     address: 5133
     data_type: U16
@@ -636,7 +607,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_11_voltage"
-    group: mppt_11
     level: 2
     address: 5134
     data_type: U16
@@ -644,7 +614,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_11_current"
-    group: mppt_11
     level: 2
     address: 5135
     data_type: U16
@@ -652,7 +621,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_12_voltage"
-    group: mppt_12
     level: 2
     address: 5136
     data_type: U16
@@ -660,7 +628,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_12_current"
-    group: mppt_12
     level: 2
     address: 5137
     data_type: U16
@@ -668,9 +635,7 @@ read:
     unit_of_measurement: "A"
 
   - name: "total_power_yields"
-    group:
-      - high_accuracy_data
-      - is_master
+    group: is_master
     level: 1
     address: 5144
     data_type: U32
@@ -678,7 +643,6 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "negative_voltage_to_the_ground"
-    group: high_accuracy_data
     level: 3
     address: 5146
     data_type: S16
@@ -686,7 +650,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "bus_voltage"
-    group: high_accuracy_data
     level: 2
     address: 5147
     data_type: U16
@@ -694,7 +657,6 @@ read:
     unit_of_measurement: "V"
 
   - name: "grid_frequency"
-    group: high_accuracy_data
     level: 2
     address: 5148
     data_type: U16
@@ -702,7 +664,6 @@ read:
     unit_of_measurement: "Hz"
 
   - name: "pid_work_state"
-    group: high_accuracy_data
     level: 3
     address: 5150
     data_type: U16
@@ -712,7 +673,6 @@ read:
       8: "PID Abnormity"
 
   - name: "pid_alarm_code"
-    group: high_accuracy_data
     level: 2
     address: 5151
     data_type: U16
@@ -728,28 +688,24 @@ read:
     unit_of_measurement: "W"
 
   - name: "meter_active_power"
-    group: "has_meter"
     level: 1
     address: 5601
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_a"
-    group: "has_meter"
     level: 1
     address: 5603
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_b"
-    group: "has_meter"
     level: 1
     address: 5605
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_c"
-    group: "has_meter"
     level: 1
     address: 5607
     data_type: S32
@@ -762,7 +718,6 @@ read:
     unit_of_measurement: "W"
 
   - name: "export_limit_min"
-    group: residential
     level: 2
     address: 5622
     data_type: U16
@@ -782,7 +737,6 @@ read:
       ]
 
   - name: "export_limit_max"
-    group: residential
     level: 2
     address: 5623
     data_type: U16
@@ -790,7 +744,6 @@ read:
     unit_of_measurement: "W"
 
   - name: "bdc_rated_power"
-    group: residential
     level: 2
     address: 5628
     data_type: U16
@@ -798,23 +751,19 @@ read:
     unit_of_measurement: "W"
 
   - name: "bms_max_charging_current"
-    group: residential
     level: 2
     address: 5635
     data_type: U16
     unit_of_measurement: "A"
 
   - name: "bms_max_discharging_current"
-    group: residential
     level: 2
     address: 5636
     data_type: U16
     unit_of_measurement: "A"
 
   - name: "battery_capacity_high_precision"
-    group:
-      - has_battery
-      - high_accuracy_data
+    group: has_battery
     level: 1
     address: 5639
     data_type: U16
@@ -822,28 +771,24 @@ read:
     unit_of_measurement: "kWh"
 
   - name: backup_power_phase_a
-    group: residential
     level: 2
     address: 5723
     data_type: S16
     unit_of_measurement: "W"
 
   - name: backup_power_phase_b
-    group: residential
     level: 2
     address: 5724
     data_type: S16
     unit_of_measurement: "W"
 
   - name: backup_power_phase_c
-    group: residential
     level: 2
     address: 5725
     data_type: S16
     unit_of_measurement: "W"
 
   - name: backup_power_total
-    group: residential
     level: 2
     address: 5726
     data_type: S16
@@ -1591,7 +1536,6 @@ read:
     unit_of_measurement: "A"
 
   - name: "running_state"
-    group: residential
     level: 2
     address: 13000
     data_type: U16
@@ -1607,7 +1551,6 @@ read:
       # rest todo
 
   - name: "state_power_generated_from_pv"
-    group: residential
     level: 2
     address: 13001
     data_type: U16
@@ -1654,7 +1597,6 @@ read:
     mask: 128
 
   - name: "daily_pv_generation"
-    group: residential
     level: 1
     address: 13002
     data_type: U16
@@ -1662,7 +1604,6 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "total_pv_generation"
-    group: residential
     level: 0
     address: 13003
     data_type: U32
@@ -1671,9 +1612,7 @@ read:
     # Energy we have exported back to the grid today
 
   - name: "daily_pv_export"
-    group:
-      - residential
-      - is_master
+    group: is_master
     level: 1
     address: 13005
     data_type: U16
@@ -1682,9 +1621,7 @@ read:
     # Energy we have exported back to the grid since last reset (if any)
 
   - name: "total_pv_export"
-    group:
-      - residential
-      - is_master
+    group: is_master
     level: 2
     address: 13006
     data_type: U32
@@ -1692,23 +1629,19 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "load_power_hybrid"
-    group: residential
     level: 1
     address: 13008
     data_type: S32
     unit_of_measurement: "W"
 
   - name: "export_power_hybrid"
-    group: residential
     level: 1
     address: 13010
     data_type: S32
     unit_of_measurement: "W"
 
   - name: "daily_battery_charge_from_pv"
-    group:
-      - residential
-      - has_battery
+    group: has_battery
     level: 1
     address: 13012
     data_type: U16
@@ -1716,9 +1649,7 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "total_battery_charge_from_pv"
-    group:
-      - residential
-      - has_battery
+    group: has_battery
     level: 1
     address: 13013
     data_type: U32
@@ -1726,7 +1657,6 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "co2_reduction"
-    group: residential
     level: 2
     address: 13015
     data_type: U32
@@ -1734,7 +1664,6 @@ read:
     unit_of_measurement: "kg"
 
   - name: "daily_direct_energy_consumption"
-    group: residential
     level: 1
     address: 13017
     data_type: U16
@@ -1742,7 +1671,6 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "total_direct_energy_consumption"
-    group: residential
     level: 2
     address: 13018
     data_type: U32
@@ -1813,7 +1741,6 @@ read:
     unit_of_measurement: "kWh"
 
   - name: "self_consumption_of_day"
-    group: residential
     level: 1
     address: 13029
     data_type: U16
@@ -1821,7 +1748,6 @@ read:
     unit_of_measurement: "%"
 
   - name: "grid_state"
-    group: residential
     level: 1
     address: 13030
     data_type: U16
@@ -1830,7 +1756,6 @@ read:
       0x55: "On-grid"
 
   - name: "phase_a_current"
-    group: residential
     level: 2
     address: 13031
     data_type: S16
@@ -2708,7 +2633,11 @@ hold:
       0xCE: "Stop"
 
   - name: battery_forced_charge_discharge_cmd
-    group: has_battery
+    # group: has_battery
+    # ToDo: this is set to a non zero value, although the inverter does not have a battery.
+    # We want to disable this via has_battery, but if we but it in the group,
+    # it will prevent the entire group from being disabled.
+    # Note: Doesn't seem urgent as this is level 3.
     level: 3
     address: 13051
     data_type: U16
@@ -2797,7 +2726,11 @@ hold:
     models: ["SH10RT", "SH8.0RT", "SH8.0RT-20", "SH6.0RT", "SH5.0RT"]
 
   - name: battery_max_charge_power
-    group: has_battery
+    # group: has_battery
+    # ToDo: this is set to a non zero value, although the inverter does not have a battery.
+    # We want to disable this via has_battery, but if we but it in the group,
+    # it will prevent the entire group from being disabled.
+    # Note: Doesn't seem urgent as this is level 3.
     address: 33047
     level: 3
     data_type: U16
@@ -2805,7 +2738,11 @@ hold:
     accuracy: 10
 
   - name: battery_max_discharge_power
-    group: has_battery
+    # group: has_battery
+    # ToDo: this is set to a non zero value, although the inverter does not have a battery.
+    # We want to disable this via has_battery, but if we but it in the group,
+    # it will prevent the entire group from being disabled.
+    # Note: Doesn't seem urgent as this is level 3.
     address: 33048
     level: 3
     data_type: U16
