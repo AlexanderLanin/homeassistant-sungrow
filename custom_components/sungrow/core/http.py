@@ -107,10 +107,13 @@ class Connection:
                 v = await self.read_signal(signal)
             except modbus.CannotConnectError:
                 print("Failed, retrying in 5 seconds...")
+                # in case output is piped to a file, it's nice to see the progress
+                sys.stdout.flush()
                 await asyncio.sleep(5)
                 v = await self.read_signal(signal)
             data.update(v)
 
+            # in case output is piped to a file, it's nice to see the progress
             sys.stdout.flush()
 
         return data

@@ -83,6 +83,9 @@ async def is_WiNet(host: str):  # noqa: N802
             r = await client.get(f"http://{host}/")
         except httpx.ConnectError:
             return False
+        except httpx.ConnectTimeout:
+            # ToDo: There is a Dongle present, it just isn't responding in time?
+            return False
 
     return r.status_code == 200 and '<title class="title">WiNet</title>' in r.text
 

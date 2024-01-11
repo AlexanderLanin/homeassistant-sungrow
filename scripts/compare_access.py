@@ -16,10 +16,16 @@ import fix_path  # type: ignore  # noqa: F401
 from custom_components.sungrow.core import deserialize, http, inverter, modbus, signals
 
 # Move to parameters? To .env?
-direct_ip = "192.168.13.79"
-direct_slave = 1
-# winet_ip = "192.168.13.58"
-winet_ip = "192.168.13.74"
+m = True
+if m:
+    direct_ip = "192.168.13.79"  # master
+    direct_slave = 1
+    winet_ip = "192.168.13.58"  # master
+else:
+    # Move to parameters? To .env?
+    direct_ip = "192.168.13.80"  # slave
+    direct_slave = 2
+    winet_ip = "192.168.13.74"  # slave
 
 
 async def collect_data_via_direct_modbus(
@@ -83,14 +89,17 @@ async def main():
     direct_modbus_data = await collect_data_via_direct_modbus(
         signal_definitions, direct_ip
     )
+    print(f"Got {len(direct_modbus_data)} signals")
 
     print("Collecting data via WiNet modbus connection...")
     winet_modbus_data = await collect_data_via_winet_modbus(
         signal_definitions, winet_ip
     )
+    print(f"Got {len(winet_modbus_data)} signals")
 
     print("Collecting data via WiNet http connection...")
     winet_http_data = await collect_data_via_winet_http(signal_definitions, winet_ip)
+    print(f"Got {len(winet_http_data)} signals")
 
     # print the results as markdown table
     print("| Signal | Direct | WiNet HTTP | WiNet Modbus |")
