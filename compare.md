@@ -1,7 +1,7 @@
 | Signal | Direct | WiNet HTTP | WiNet Modbus |
 | ------ | ------ | ---------- | ------------ |
-| **protocol_number** | 1094856704 | 1094856704 | 1094791472 |
-| **protocol_version** | 16781568 | 16781568 | 16778496 |
+| *protocol_number* | 1094856704 | 1094856704 | 1094791472 |
+| *protocol_version* | 16781568 | 16781568 | 16778496 |
 | arm_software_version | 16722 | 16722 | 16722 |
 | dsp_software_version | 19780 | 19780 | 19780 |
 | serial_number | A2350415770 | A2350415770 | A2350415770 |
@@ -10,132 +10,132 @@
 | output_type | 3P4L | 3P4L | 3P4L |
 | daily_output_energy_pv_and_battery | 0.0 | 0.0 | 0.0 |
 | total_output_energy_pv_and_battery | 115.1 | 115.1 | 115.1 |
-| **total_running_time** | None | None | 0 |
-| **internal_temperature** | 32.4 | 32.3 | 32.4 |
-| **total_apparent_power** | 77 | 115 | disabled |
+| *total_running_time* | None | None | 0 |
+| *internal_temperature* | 32.4 | 32.3 | 32.4 |
+| *total_apparent_power* | 77 | 115 | disabled |
 | mppt_1_voltage | 0.0 | 0.0 | 0.0 |
 | mppt_1_current | 0.0 | 0.0 | 0.0 |
 | mppt_2_voltage | 0.0 | 0.0 | 0.0 |
 | mppt_2_current | 0.0 | 0.0 | 0.0 |
-| **mppt_3_voltage** | None | None | disabled |
-| **mppt_3_current** | None | None | disabled |
+| *mppt_3_voltage* | None | None | disabled |
+| *mppt_3_current* | None | None | disabled |
 | total_dc_power | 0 | 0 | 0 |
-| **phase_a_voltage** | 233.0 | 233.3 | 233.0 |
-| **phase_b_voltage** | 234.8 | 234.7 | 234.7 |
-| **phase_c_voltage** | 235.6 | 235.7 | 235.6 |
-| **phase_a_current** | 0.0 | 0.0 | disabled |
-| **phase_b_current** | 0.0 | 0.0 | disabled |
-| **phase_c_current** | 0.0 | 0.0 | disabled |
-| **total_active_power** | 0 | 0 | disabled |
-| **total_reactive_power** | -5 | 1 | -3 |
+| *phase_a_voltage* | 233.0 | 233.3 | 233.0 |
+| *phase_b_voltage* | 234.8 | 234.7 | 234.7 |
+| *phase_c_voltage* | 235.6 | 235.7 | 235.6 |
+| *phase_a_current* | 0.0 | 0.0 | disabled |
+| *phase_b_current* | 0.0 | 0.0 | disabled |
+| *phase_c_current* | 0.0 | 0.0 | disabled |
+| *total_active_power* | 0 | 0 | disabled |
+| *total_reactive_power* | -5 | 1 | -3 |
 | power_factor | 1.0 | 1.0 | 1.0 |
-| **grid_frequency** | 49.9 | 49.9 | 499.7 |
-| **work_state_1** | None | None | disabled |
-| **alarm_time_year** | None | None | disabled |
-| **alarm_time_month** | None | None | disabled |
-| **alarm_time_day** | None | None | disabled |
-| **alarm_time_hour** | None | None | disabled |
-| **alarm_time_minute** | None | None | disabled |
-| **alarm_time_second** | None | None | disabled |
-| **alarm_code_1** | None | None | disabled |
-| **nominal_reactive_power** | 4800.0 | 4800.0 | disabled |
-| **array_insulation_resistance** | 639 | 639 | disabled |
-| **active_power_regulation_setpoint** | None | None | disabled |
-| **reactive_power_regulation_setpoint** | -1 | -1 | disabled |
-| **work_state_2** | None | None | disabled |
-| **meter_power** | -1 | -1 | disabled |
-| **meter_a_phase_power** | -1 | -1 | disabled |
-| **meter_b_phase_power** | 5111807 | 5111807 | disabled |
-| **meter_c_phase_power** | -65536 | -65536 | disabled |
-| **meter_load_power** | -1 | -1 | disabled |
-| **daily_export_energy** | None | None | disabled |
-| **total_export_energy** | None | None | disabled |
-| **daily_import_energy** | None | None | disabled |
-| **total_import_energy** | None | None | disabled |
-| **daily_direct_energy_consumption** | None | None | disabled |
-| **total_direct_energy_consumption** | None | None | disabled |
-| **daily_running_time** | None | None | disabled |
-| **mppt_4_voltage** | None | None | disabled |
-| **mppt_4_current** | None | None | disabled |
-| **mppt_5_voltage** | None | None | disabled |
-| **mppt_5_current** | None | None | disabled |
-| **mppt_6_voltage** | None | None | disabled |
-| **mppt_6_current** | None | None | disabled |
-| **mppt_7_voltage** | None | None | disabled |
-| **mppt_7_current** | None | None | disabled |
-| **mppt_8_voltage** | None | None | disabled |
-| **mppt_8_current** | None | None | disabled |
-| **monthly_power_yields** | None | None | disabled |
-| **mppt_9_voltage** | None | None | disabled |
-| **mppt_9_current** | None | None | disabled |
-| **mppt_10_voltage** | None | None | disabled |
-| **mppt_10_current** | None | None | disabled |
-| **mppt_11_voltage** | None | None | disabled |
-| **mppt_11_current** | None | None | disabled |
-| **mppt_12_voltage** | None | None | disabled |
-| **mppt_12_current** | None | None | disabled |
-| **total_power_yields** | None | None | disabled |
-| **negative_voltage_to_the_ground** | -0.1 | -0.1 | disabled |
-| **bus_voltage** | 636.0 | 635.0 | disabled |
-| **grid_frequency_** | 49.97 | 49.97 | disabled |
-| **pid_work_state** | None | None | disabled |
-| **pid_alarm_code** | None | None | disabled |
-| **export_power** | -1075 | -1230 | disabled |
-| **meter_active_power** | 1114 | 1317 | 1182 |
-| **meter_active_power_phase_a** | 1411 | 1645 | 1487 |
-| **meter_active_power_phase_b** | -1177 | -1192 | -1184 |
-| **meter_active_power_phase_c** | 881 | 951 | 879 |
-| **power_meter** | 1075 | 1246 | disabled |
+| *grid_frequency* | 49.9 | 49.9 | 499.7 |
+| *work_state_1* | None | None | disabled |
+| *alarm_time_year* | None | None | disabled |
+| *alarm_time_month* | None | None | disabled |
+| *alarm_time_day* | None | None | disabled |
+| *alarm_time_hour* | None | None | disabled |
+| *alarm_time_minute* | None | None | disabled |
+| *alarm_time_second* | None | None | disabled |
+| *alarm_code_1* | None | None | disabled |
+| *nominal_reactive_power* | 4800.0 | 4800.0 | disabled |
+| *array_insulation_resistance* | 639 | 639 | disabled |
+| *active_power_regulation_setpoint* | None | None | disabled |
+| *reactive_power_regulation_setpoint* | -1 | -1 | disabled |
+| *work_state_2* | None | None | disabled |
+| *meter_power* | -1 | -1 | disabled |
+| *meter_a_phase_power* | -1 | -1 | disabled |
+| *meter_b_phase_power* | 5111807 | 5111807 | disabled |
+| *meter_c_phase_power* | -65536 | -65536 | disabled |
+| *meter_load_power* | -1 | -1 | disabled |
+| *daily_export_energy* | None | None | disabled |
+| *total_export_energy* | None | None | disabled |
+| *daily_import_energy* | None | None | disabled |
+| *total_import_energy* | None | None | disabled |
+| *daily_direct_energy_consumption* | None | None | disabled |
+| *total_direct_energy_consumption* | None | None | disabled |
+| *daily_running_time* | None | None | disabled |
+| *mppt_4_voltage* | None | None | disabled |
+| *mppt_4_current* | None | None | disabled |
+| *mppt_5_voltage* | None | None | disabled |
+| *mppt_5_current* | None | None | disabled |
+| *mppt_6_voltage* | None | None | disabled |
+| *mppt_6_current* | None | None | disabled |
+| *mppt_7_voltage* | None | None | disabled |
+| *mppt_7_current* | None | None | disabled |
+| *mppt_8_voltage* | None | None | disabled |
+| *mppt_8_current* | None | None | disabled |
+| *monthly_power_yields* | None | None | disabled |
+| *mppt_9_voltage* | None | None | disabled |
+| *mppt_9_current* | None | None | disabled |
+| *mppt_10_voltage* | None | None | disabled |
+| *mppt_10_current* | None | None | disabled |
+| *mppt_11_voltage* | None | None | disabled |
+| *mppt_11_current* | None | None | disabled |
+| *mppt_12_voltage* | None | None | disabled |
+| *mppt_12_current* | None | None | disabled |
+| *total_power_yields* | None | None | disabled |
+| *negative_voltage_to_the_ground* | -0.1 | -0.1 | disabled |
+| *bus_voltage* | 636.0 | 635.0 | disabled |
+| *grid_frequency_* | 49.97 | 49.97 | disabled |
+| *pid_work_state* | None | None | disabled |
+| *pid_alarm_code* | None | None | disabled |
+| *export_power* | -1075 | -1230 | disabled |
+| *meter_active_power* | 1114 | 1317 | 1182 |
+| *meter_active_power_phase_a* | 1411 | 1645 | 1487 |
+| *meter_active_power_phase_b* | -1177 | -1192 | -1184 |
+| *meter_active_power_phase_c* | 881 | 951 | 879 |
+| *power_meter* | 1075 | 1246 | disabled |
 | export_limit_min | 0.0 | 0.0 | 0.0 |
 | export_limit_max | 16000.0 | 16000.0 | 16000.0 |
 | bdc_rated_power | 8000.0 | 8000.0 | 8000.0 |
 | bms_max_charging_current | 30 | 30 | 30 |
 | bms_max_discharging_current | 24 | 24 | 24 |
-| **battery_capacity_high_precision** | 9.6 | 9.6 | disabled |
-| **backup_power_phase_a** | -26 | 3 | disabled |
-| **backup_power_phase_b** | -31 | -29 | disabled |
-| **backup_power_phase_c** | -31 | -30 | disabled |
-| **backup_power_total** | -88 | -88 | disabled |
-| **pv_power_of_today** | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | disabled |
-| **pv_energy_yields_daily** | {0: 1.2, 1: 0.8, 2: 2.0, 3: 1.4, 4: 1.6, 5: 0.1, 6: 0.1, 7: 1.8, 8: 2.3, 9: 2.3, 10: 0.9, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | {0: 1.2, 1: 0.8, 2: 2.0, 3: 1.4, 4: 1.6, 5: 0.1, 6: 0.1, 7: 1.8, 8: 2.3, 9: 2.3, 10: 0.9, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | disabled |
-| **pv_energy_yields_monthly** | {0: 14.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 14.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
-| **pv_energy_yields_yearly_starting_2019** | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 18.4, 9: 14.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 18.4, 9: 14.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
-| **direct_power_consumption_from_pv_today** | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | disabled |
-| **direct_power_consumption_from_pv_daily** | {0: 0.6, 1: 0.6, 2: 0.6, 3: 0.8, 4: 0.9, 5: 0.1, 6: 0.1, 7: 1.4, 8: 2.0, 9: 1.6, 10: 0.8, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | {0: 0.6, 1: 0.6, 2: 0.6, 3: 0.8, 4: 0.9, 5: 0.1, 6: 0.1, 7: 1.4, 8: 2.0, 9: 1.6, 10: 0.8, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | disabled |
-| **direct_energy_consumption_from_pv_monthly** | {0: 9.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 9.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
-| **direct_energy_consumption_from_pv_yearly_starting_2019** | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 6.3, 9: 9.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 6.3, 9: 9.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
-| **export_power_from_pv_today** | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | disabled |
-| **export_energy_from_pv_daily** | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | disabled |
-| **export_energy_from_pv_monthly** | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
-| **export_energy_from_pv_yearly_starting_2019** | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
-| **battery_charge_energy_from_pv_today** | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | disabled |
-| **battery_charge_energy_from_pv** | {0: 0.6, 1: 0.2, 2: 1.4, 3: 0.6, 4: 0.7, 5: 0.0, 6: 0.0, 7: 0.4, 8: 0.3, 9: 0.7, 10: 0.1, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | {0: 0.6, 1: 0.2, 2: 1.4, 3: 0.6, 4: 0.7, 5: 0.0, 6: 0.0, 7: 0.4, 8: 0.3, 9: 0.7, 10: 0.1, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | disabled |
-| **battery_charge_energy_from_pv_monthly** | {0: 5.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 5.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
-| **battery_charge_energy_from_pv_yearly_starting_2019** | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 5.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 5.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
-| **string_1_current** | None | None | disabled |
-| **string_2_current** | None | None | disabled |
-| **string_3_current** | None | None | disabled |
-| **string_4_current** | None | None | disabled |
-| **string_5_current** | None | None | disabled |
-| **string_6_current** | None | None | disabled |
-| **string_7_current** | None | None | disabled |
-| **string_8_current** | None | None | disabled |
-| **string_9_current** | None | None | disabled |
-| **string_10_current** | None | None | disabled |
-| **string_11_current** | None | None | disabled |
-| **string_12_current** | None | None | disabled |
-| **string_13_current** | None | None | disabled |
-| **string_14_current** | None | None | disabled |
-| **string_15_current** | None | None | disabled |
-| **string_16_current** | None | None | disabled |
-| **string_17_current** | None | None | disabled |
-| **string_18_current** | None | None | disabled |
-| **string_19_current** | None | None | disabled |
-| **string_20_current** | None | None | disabled |
-| **string_21_current** | None | None | disabled |
-| **string_22_current** | None | None | disabled |
-| **string_23_current** | None | None | disabled |
-| **string_24_current** | None | None | disabled |
+| *battery_capacity_high_precision* | 9.6 | 9.6 | disabled |
+| *backup_power_phase_a* | -26 | 3 | disabled |
+| *backup_power_phase_b* | -31 | -29 | disabled |
+| *backup_power_phase_c* | -31 | -30 | disabled |
+| *backup_power_total* | -88 | -88 | disabled |
+| *pv_power_of_today* | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | disabled |
+| *pv_energy_yields_daily* | {0: 1.2, 1: 0.8, 2: 2.0, 3: 1.4, 4: 1.6, 5: 0.1, 6: 0.1, 7: 1.8, 8: 2.3, 9: 2.3, 10: 0.9, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | {0: 1.2, 1: 0.8, 2: 2.0, 3: 1.4, 4: 1.6, 5: 0.1, 6: 0.1, 7: 1.8, 8: 2.3, 9: 2.3, 10: 0.9, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | disabled |
+| *pv_energy_yields_monthly* | {0: 14.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 14.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
+| *pv_energy_yields_yearly_starting_2019* | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 18.4, 9: 14.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 18.4, 9: 14.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
+| *direct_power_consumption_from_pv_today* | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | disabled |
+| *direct_power_consumption_from_pv_daily* | {0: 0.6, 1: 0.6, 2: 0.6, 3: 0.8, 4: 0.9, 5: 0.1, 6: 0.1, 7: 1.4, 8: 2.0, 9: 1.6, 10: 0.8, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | {0: 0.6, 1: 0.6, 2: 0.6, 3: 0.8, 4: 0.9, 5: 0.1, 6: 0.1, 7: 1.4, 8: 2.0, 9: 1.6, 10: 0.8, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | disabled |
+| *direct_energy_consumption_from_pv_monthly* | {0: 9.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 9.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
+| *direct_energy_consumption_from_pv_yearly_starting_2019* | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 6.3, 9: 9.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 6.3, 9: 9.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
+| *export_power_from_pv_today* | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | disabled |
+| *export_energy_from_pv_daily* | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | disabled |
+| *export_energy_from_pv_monthly* | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
+| *export_energy_from_pv_yearly_starting_2019* | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
+| *battery_charge_energy_from_pv_today* | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | disabled |
+| *battery_charge_energy_from_pv* | {0: 0.6, 1: 0.2, 2: 1.4, 3: 0.6, 4: 0.7, 5: 0.0, 6: 0.0, 7: 0.4, 8: 0.3, 9: 0.7, 10: 0.1, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | {0: 0.6, 1: 0.2, 2: 1.4, 3: 0.6, 4: 0.7, 5: 0.0, 6: 0.0, 7: 0.4, 8: 0.3, 9: 0.7, 10: 0.1, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | disabled |
+| *battery_charge_energy_from_pv_monthly* | {0: 5.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | {0: 5.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | disabled |
+| *battery_charge_energy_from_pv_yearly_starting_2019* | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 5.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 5.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | disabled |
+| *string_1_current* | None | None | disabled |
+| *string_2_current* | None | None | disabled |
+| *string_3_current* | None | None | disabled |
+| *string_4_current* | None | None | disabled |
+| *string_5_current* | None | None | disabled |
+| *string_6_current* | None | None | disabled |
+| *string_7_current* | None | None | disabled |
+| *string_8_current* | None | None | disabled |
+| *string_9_current* | None | None | disabled |
+| *string_10_current* | None | None | disabled |
+| *string_11_current* | None | None | disabled |
+| *string_12_current* | None | None | disabled |
+| *string_13_current* | None | None | disabled |
+| *string_14_current* | None | None | disabled |
+| *string_15_current* | None | None | disabled |
+| *string_16_current* | None | None | disabled |
+| *string_17_current* | None | None | disabled |
+| *string_18_current* | None | None | disabled |
+| *string_19_current* | None | None | disabled |
+| *string_20_current* | None | None | disabled |
+| *string_21_current* | None | None | disabled |
+| *string_22_current* | None | None | disabled |
+| *string_23_current* | None | None | disabled |
+| *string_24_current* | None | None | disabled |
 | running_state | Running | Running | Running |
 | state_power_generated_from_pv | False | False | False |
 | state_battery_charging | False | False | False |
@@ -148,11 +148,11 @@
 | total_pv_generation | 32.9 | 32.9 | 32.9 |
 | daily_pv_export | 0.0 | 0.0 | 0.0 |
 | total_pv_export | 0.0 | 0.0 | 0.0 |
-| **load_power_hybrid** | 1075 | 1286 | 1070 |
-| **export_power_hybrid** | -1075 | -1283 | -1070 |
+| *load_power_hybrid* | 1075 | 1286 | 1070 |
+| *export_power_hybrid* | -1075 | -1283 | -1070 |
 | daily_battery_charge_from_pv | 0.0 | 0.0 | 0.0 |
 | total_battery_charge_from_pv | 17.1 | 17.1 | 17.1 |
-| **co2_reduction** | 23.0 | 23.0 | 0.0 |
+| *co2_reduction* | 23.0 | 23.0 | 0.0 |
 | daily_direct_energy_consumption_ | 0.0 | 0.0 | 0.0 |
 | total_direct_energy_consumption_ | 15.8 | 15.8 | 15.8 |
 | battery_voltage | 190.5 | 190.5 | 190.5 |
@@ -164,14 +164,14 @@
 | daily_battery_discharge_energy | 0.0 | 0.0 | 0.0 |
 | total_battery_discharge_energy | 101.1 | 101.1 | 101.1 |
 | self_consumption_of_day | 100.0 | 100.0 | 100.0 |
-| **grid_state** | None | None | 0 |
+| *grid_state* | None | None | 0 |
 | phase_a_current_ | 0.0 | 0.0 | 0.0 |
 | phase_b_current_ | 0.0 | 0.0 | 0.0 |
 | phase_c_current_ | 0.0 | 0.0 | 0.0 |
 | total_active_power_2 | 0 | 0 | 0 |
-| **daily_imported_energy** | 0.1 | 0.2 | 0.1 |
-| **total_imported_energy** | 228.0 | 228.1 | 228.0 |
-| **battery_capacity** | 9.6 | 9.6 | 96.0 |
+| *daily_imported_energy* | 0.1 | 0.2 | 0.1 |
+| *total_imported_energy* | 228.0 | 228.1 | 228.0 |
+| *battery_capacity* | 9.6 | 9.6 | 96.0 |
 | daily_battery_charge_energy | 0.0 | 0.0 | 0.0 |
 | total_battery_charge_energy | 110.7 | 110.7 | 110.7 |
 | drm_state | 255 | 255 | 255 |
@@ -185,47 +185,47 @@
 | permanent_fault | 0.0 | 0.0 | 0.0 |
 | bdc-side_fault | 0.0 | 0.0 | 0.0 |
 | bdc-side_permanent_fault | 0.0 | 0.0 | 0.0 |
-| **battery_fault** | 0.0 | 0.0 | None |
-| **battery_alarm** | 0.0 | 0.0 | None |
+| *battery_fault* | 0.0 | 0.0 | None |
+| *battery_alarm* | 0.0 | 0.0 | None |
 | bms_alarm | 0 | 0 | 0 |
 | bms_protection | 0 | 0 | 0 |
 | bms_fault1 | 0 | 0 | 0 |
 | bms_fault2 | 0 | 0 | 0 |
 | bms_alarm2 | 0 | 0 | 0 |
-| **bms_status** | None | None | disabled |
-| **max_charging_current** | None | None | 30 |
-| **max_discharging_current** | None | None | 24 |
-| **warning** | None | None | 0 |
-| **protection** | None | None | 0 |
-| **fault1** | None | None | 0 |
-| **fault2** | None | None | 0 |
-| **soc** | None | None | 0 |
-| **soh** | None | None | 0 |
-| **battery_current_** | None | None | 0 |
-| **battery_voltage_** | None | None | 0.0 |
-| **cycle_count** | None | None | 0.0 |
-| **average_cell_voltage** | None | None | 0 |
-| **max_cell_voltage** | None | None | 0 |
-| **min_cell_voltage** | None | None | 0 |
-| **battery_pack_voltage** | None | None | 0 |
-| **average_cell_temp** | -1 | -1 | 0 |
-| **max_cell_temp** | -1 | -1 | 0 |
-| **min_cell_temp** | -1 | -1 | 0 |
-| **year** | 2024 | 2024 | disabled |
-| **month** | 1 | 1 | disabled |
-| **day** | 12 | 12 | disabled |
+| *bms_status* | None | None | disabled |
+| *max_charging_current* | None | None | 30 |
+| *max_discharging_current* | None | None | 24 |
+| *warning* | None | None | 0 |
+| *protection* | None | None | 0 |
+| *fault1* | None | None | 0 |
+| *fault2* | None | None | 0 |
+| *soc* | None | None | 0 |
+| *soh* | None | None | 0 |
+| *battery_current_* | None | None | 0 |
+| *battery_voltage_* | None | None | 0.0 |
+| *cycle_count* | None | None | 0.0 |
+| *average_cell_voltage* | None | None | 0 |
+| *max_cell_voltage* | None | None | 0 |
+| *min_cell_voltage* | None | None | 0 |
+| *battery_pack_voltage* | None | None | 0 |
+| *average_cell_temp* | -1 | -1 | 0 |
+| *max_cell_temp* | -1 | -1 | 0 |
+| *min_cell_temp* | -1 | -1 | 0 |
+| *year* | 2024 | 2024 | disabled |
+| *month* | 1 | 1 | disabled |
+| *day* | 12 | 12 | disabled |
 | hour | 0 | 0 | 0 |
-| **minute** | 10 | 12 | 10 |
-| **second** | 15 | 14 | 15 |
-| **start_stop** | Start | Start | disabled |
-| **power_limitation_switch** | Enable | Enable | disabled |
+| *minute* | 10 | 12 | 10 |
+| *second* | 15 | 14 | 15 |
+| *start_stop* | Start | Start | disabled |
+| *power_limitation_switch* | Enable | Enable | disabled |
 | power_limitation_setting | 100.0 | 100.0 | 100.0 |
-| **export_power_limitation** | None | None | disabled |
-| **export_power_limitation_value** | None | None | disabled |
-| **current_transformer_output_current** | None | None | disabled |
-| **current_transformer_range** | None | None | disabled |
-| **current_transformer** | None | None | disabled |
-| **export_power_limitation_percentage** | None | None | disabled |
+| *export_power_limitation* | None | None | disabled |
+| *export_power_limitation_value* | None | None | disabled |
+| *current_transformer_output_current* | None | None | disabled |
+| *current_transformer_range* | None | None | disabled |
+| *current_transformer* | None | None | disabled |
+| *export_power_limitation_percentage* | None | None | disabled |
 | installed_pv_power | None | None | None |
 | power_factor_setting | None | None | None |
 | scheduling_achieve_active_overload | None | None | None |
@@ -254,7 +254,7 @@
 | battery_max_discharge_power | 10600.0 | 10600.0 | 10600.0 |
 | battery_capacity_2 | 0.0 | 0.0 | 0.0 |
 | battery_charge_start_power | 0.0 | 0.0 | 0.0 |
-| **battery_charge_stop_power** | 0.0 | 0.0 | disabled |
-| **master_slave_mode** | Enabled | Enabled | disabled |
-| **master_slave_role** | Master | Master | disabled |
-| **slave_count** | 2 | 2 | disabled |
+| *battery_charge_stop_power* | 0.0 | 0.0 | disabled |
+| *master_slave_mode* | Enabled | Enabled | disabled |
+| *master_slave_role* | Master | Master | disabled |
+| *slave_count* | 2 | 2 | disabled |

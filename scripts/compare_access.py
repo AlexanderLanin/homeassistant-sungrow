@@ -112,7 +112,7 @@ async def main():
         if direct_modbus == winet_http == winet_modbus:
             name = signal.name
         else:
-            name = f"**{signal.name}**"
+            name = f"*{signal.name}*"
 
         print(f"| {name} | {direct_modbus} | {winet_http} | {winet_modbus} |")
 
