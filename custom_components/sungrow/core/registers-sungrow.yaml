@@ -190,6 +190,7 @@ read:
     address: 5009
     data_type: U32
     unit_of_measurement: "VA"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_1_voltage"
     level: 1
@@ -225,6 +226,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_3_current"
     level: 1
@@ -232,6 +234,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "total_dc_power" # pv power
     level: 1
@@ -267,6 +270,7 @@ read:
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "phase_b_current"
     level: 2
@@ -274,6 +278,7 @@ read:
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "phase_c_current"
     level: 2
@@ -281,12 +286,14 @@ read:
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "total_active_power"
     level: 1
     address: 5031
     data_type: S32
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "total_reactive_power"
     level: 2
@@ -327,41 +334,49 @@ read:
       0x8200: "Dispatch Run"
       0x5500: "Fault"
       0x2500: "Communication Fault"
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "alarm_time_year"
     level: 3
     address: 5039
     data_type: U16
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "alarm_time_month"
     level: 3
     address: 5040
     data_type: U16
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "alarm_time_day"
     level: 3
     address: 5041
     data_type: U16
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "alarm_time_hour"
     level: 3
     address: 5042
     data_type: U16
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "alarm_time_minute"
     level: 3
     address: 5043
     data_type: U16
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "alarm_time_second"
     level: 3
     address: 5045
     data_type: U16
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "alarm_code_1" # See Appendix 3
     level: 3
     address: 5045
     data_type: U16
+    models_exclude: ["SH.*", "WiNet"]
 
   - name: "nominal_reactive_power"
     level: 2
@@ -369,24 +384,28 @@ read:
     data_type: U16
     accuracy: 100
     unit_of_measurement: "var"
+    models_exclude: ["WiNet"]
 
   - name: "array_insulation_resistance"
     level: 2
     address: 5071
     data_type: U16
     unit_of_measurement: "k-ohm"
+    models_exclude: ["WiNet"]
 
   - name: "active_power_regulation_setpoint"
     level: 3
     address: 5077
     data_type: U32
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "reactive_power_regulation_setpoint"
     level: 2
     address: 5079
     data_type: S32
     unit_of_measurement: "var"
+    models_exclude: ["WiNet"]
 
   - name: "work_state_2" # See Appendix 2
     level: 2
@@ -407,6 +426,7 @@ read:
       13: "Communication Fault"
       17: "Total Run Bit"
       18: "Total Fault Bit"
+    models_exclude: ["WiNet"]
 
   - name: "meter_power"
     level: 2
@@ -415,6 +435,7 @@ read:
     smart_meter: True
     unit_of_measurement: "W"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "meter_a_phase_power"
     level: 2
@@ -422,6 +443,7 @@ read:
     data_type: S32
     unit_of_measurement: "W"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "meter_b_phase_power"
     level: 2
@@ -429,6 +451,7 @@ read:
     data_type: S32
     unit_of_measurement: "W"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "meter_c_phase_power"
     level: 2
@@ -436,6 +459,7 @@ read:
     data_type: S32
     unit_of_measurement: "W"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "meter_load_power"
     level: 2
@@ -444,6 +468,7 @@ read:
     smart_meter: True
     unit_of_measurement: "W"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "daily_export_energy"
     level: 1
@@ -452,6 +477,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "kWh"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "total_export_energy"
     level: 1
@@ -460,6 +486,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "kWh"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "daily_import_energy"
     level: 1
@@ -468,6 +495,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "kWh"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "total_import_energy"
     level: 1
@@ -475,6 +503,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "daily_direct_energy_consumption"
     level: 1
@@ -483,6 +512,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "kWh"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "total_direct_energy_consumption"
     level: 1
@@ -491,13 +521,14 @@ read:
     accuracy: 0.1
     unit_of_measurement: "kWh"
     models: ["SG[0-9]+KTL-MT?"]
+    models_exclude: ["WiNet"]
 
   - name: "daily_running_time"
     level: 2
     address: 5113
     data_type: U16
     unit_of_measurement: "min"
-    # models_exclude: ["SH8.0RT-20"]
+    models_exclude: ["WiNet"]
 
   - name: "mppt_4_voltage"
     level: 1
@@ -505,6 +536,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_4_current"
     level: 1
@@ -512,6 +544,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_5_voltage"
     level: 1
@@ -519,6 +552,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_5_current"
     level: 1
@@ -526,6 +560,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_6_voltage"
     level: 2
@@ -533,6 +568,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_6_current"
     level: 2
@@ -540,6 +576,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_7_voltage"
     level: 2
@@ -547,6 +584,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_7_current"
     level: 2
@@ -554,6 +592,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_8_voltage"
     level: 2
@@ -561,6 +600,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_8_current"
     level: 2
@@ -568,6 +608,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "monthly_power_yields"
     group: is_master
@@ -576,6 +617,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_9_voltage"
     level: 2
@@ -583,7 +625,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models:
+    models_exclude: ["WiNet"]
 
   - name: "mppt_9_current"
     level: 2
@@ -591,6 +633,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_10_voltage"
     level: 2
@@ -598,6 +641,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_10_current"
     level: 2
@@ -605,6 +649,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_11_voltage"
     level: 2
@@ -612,6 +657,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_11_current"
     level: 2
@@ -619,6 +665,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_12_voltage"
     level: 2
@@ -626,6 +673,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "mppt_12_current"
     level: 2
@@ -633,6 +681,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "total_power_yields"
     group: is_master
@@ -641,6 +690,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "negative_voltage_to_the_ground"
     level: 3
@@ -648,6 +698,7 @@ read:
     data_type: S16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "bus_voltage"
     level: 2
@@ -655,6 +706,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
+    models_exclude: ["WiNet"]
 
   - name: "grid_frequency"
     level: 2
@@ -662,6 +714,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "Hz"
+    models_exclude: ["WiNet"]
 
   - name: "pid_work_state"
     level: 3
@@ -671,6 +724,7 @@ read:
       2: "PID Recover Operation"
       4: "Anti-PID Operation"
       8: "PID Abnormity"
+    models_exclude: ["WiNet"]
 
   - name: "pid_alarm_code"
     level: 2
@@ -680,12 +734,14 @@ read:
       432: "PID resistance abnormal"
       433: "PID function abnormal"
       434: "PID overvoltage/overcurrent protection"
+    models_exclude: ["WiNet"]
 
   - name: "export_power"
     level: 2
     address: 5216
     data_type: S32
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "meter_active_power"
     level: 1
@@ -716,6 +772,7 @@ read:
     address: 5218
     data_type: S32
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "export_limit_min"
     level: 2
@@ -763,42 +820,49 @@ read:
     unit_of_measurement: "A"
 
   - name: "battery_capacity_high_precision"
+    # ToDo: this should overwrite battery_capacity instead of being a separate signal
     group: has_battery
     level: 1
     address: 5639
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: backup_power_phase_a
     level: 2
     address: 5723
     data_type: S16
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: backup_power_phase_b
     level: 2
     address: 5724
     data_type: S16
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: backup_power_phase_c
     level: 2
     address: 5725
     data_type: S16
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: backup_power_total
     level: 2
     address: 5726
     data_type: S16
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "pv_power_of_today"
     level: 3
     address: 6100
     data_type: "U16[96]"
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "pv_energy_yields_daily"
     level: 3
@@ -806,6 +870,7 @@ read:
     data_type: "U16[30]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "pv_energy_yields_monthly"
     level: 3
@@ -813,6 +878,7 @@ read:
     data_type: "U16[12]"
     unit_of_measurement: "kWh"
     accuracy: 0.1
+    models_exclude: ["WiNet"]
 
   - name: "pv_energy_yields_yearly_starting_2019"
     level: 3
@@ -820,12 +886,14 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "direct_power_consumption_from_pv_today"
     level: 3
     address: 6290
     data_type: "U16[96]"
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "direct_power_consumption_from_pv_daily"
     level: 3
@@ -833,6 +901,7 @@ read:
     data_type: "U16[31]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "direct_energy_consumption_from_pv_monthly"
     level: 3
@@ -840,6 +909,7 @@ read:
     data_type: "U16[12]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "direct_energy_consumption_from_pv_yearly_starting_2019"
     level: 3
@@ -847,6 +917,7 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "export_power_from_pv_today"
     group: is_master
@@ -854,6 +925,7 @@ read:
     address: 6469
     data_type: "U16[96]"
     unit_of_measurement: "W"
+    models_exclude: ["WiNet"]
 
   - name: "export_energy_from_pv_daily"
     group: is_master
@@ -862,6 +934,7 @@ read:
     data_type: "U16[31]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "export_energy_from_pv_monthly"
     group: is_master
@@ -870,6 +943,7 @@ read:
     data_type: "U16[12]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "export_energy_from_pv_yearly_starting_2019"
     group: is_master
@@ -878,6 +952,7 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "battery_charge_energy_from_pv_today"
     group: has_battery
@@ -886,6 +961,7 @@ read:
     data_type: "U16[96]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "battery_charge_energy_from_pv"
     group: has_battery
@@ -894,6 +970,7 @@ read:
     data_type: "U16[31]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "battery_charge_energy_from_pv_monthly"
     group: has_battery
@@ -902,6 +979,7 @@ read:
     data_type: "U16[12]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "battery_charge_energy_from_pv_yearly_starting_2019"
     group: has_battery
@@ -910,6 +988,7 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
+    models_exclude: ["WiNet"]
 
   - name: "string_1_current"
     level: 2
@@ -917,6 +996,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "string_2_current"
     level: 2
@@ -924,6 +1004,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "string_3_current"
     level: 2
@@ -987,6 +1068,8 @@ read:
         "SG10RT",
         "SG12RT",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_4_current"
     level: 2
     address: 7016
@@ -1045,6 +1128,8 @@ read:
         "SG25CX-SA",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_5_current"
     level: 2
     address: 7017
@@ -1097,6 +1182,8 @@ read:
         "SG25CX-SA",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_6_current"
     level: 2
     address: 7018
@@ -1149,6 +1236,8 @@ read:
         "SG25CX-SA",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_7_current"
     level: 2
     address: 7019
@@ -1193,6 +1282,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_8_current"
     level: 2
     address: 7020
@@ -1236,6 +1327,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_9_current"
     level: 2
     address: 7021
@@ -1271,6 +1364,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_10_current"
     level: 2
     address: 7022
@@ -1304,6 +1399,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_11_current"
     level: 2
     address: 7023
@@ -1332,6 +1429,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_12_current"
     level: 2
     address: 7024
@@ -1360,6 +1459,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_13_current"
     level: 2
     address: 7025
@@ -1385,6 +1486,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_14_current"
     level: 2
     address: 7026
@@ -1415,6 +1518,8 @@ read:
         "SG5.0RS",
         "SG6.0RT",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_15_current"
     level: 2
     address: 7027
@@ -1436,6 +1541,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_16_current"
     level: 2
     address: 7028
@@ -1457,6 +1564,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_17_current"
     level: 2
     address: 7029
@@ -1475,6 +1584,8 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_18_current"
     level: 2
     address: 7030
@@ -1493,12 +1604,15 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
+    models_exclude: ["WiNet"]
+
   - name: "string_19_current"
     level: 2
     address: 7031
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "string_20_current"
     level: 2
@@ -1506,6 +1620,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "string_21_current"
     level: 2
@@ -1513,6 +1628,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "string_22_current"
     level: 2
@@ -1520,6 +1636,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "string_23_current"
     level: 2
@@ -1527,6 +1644,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "string_24_current"
     level: 2
@@ -1534,6 +1652,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
+    models_exclude: ["WiNet"]
 
   - name: "running_state"
     level: 2
@@ -1754,6 +1873,7 @@ read:
     decoded:
       0xAA: "Off-grid"
       0x55: "On-grid"
+    # Does not need exlusion, but is not available on WiNet
 
   - name: "phase_a_current"
     level: 2
@@ -1898,6 +2018,7 @@ read:
     address: 13066
     data_type: U32
     accuracy: 0.1
+    # Does not need exlusion, but is not available on WiNet
 
   - name: "battery_alarm"
     group: has_battery
@@ -1905,6 +2026,7 @@ read:
     address: 13068
     data_type: U32
     accuracy: 0.1
+    # Does not need exlusion, but is not available on WiNet
 
   - name: "bms_alarm"
     level: 3
@@ -1945,6 +2067,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    models_exclude: ["WiNet"]
 
   - name: "max_charging_current"
     group: has_battery
@@ -2239,16 +2362,19 @@ hold:
     level: 3
     address: 5000
     data_type: U16
+    models_exclude: ["WiNet"]
 
   - name: "month"
     level: 3
     address: 5001
     data_type: U16
+    models_exclude: ["WiNet"]
 
   - name: "day"
     level: 3
     address: 5002
     data_type: U16
+    models_exclude: ["WiNet"]
 
   - name: "hour"
     level: 3
@@ -2272,6 +2398,7 @@ hold:
     decoded:
       0xCF: "Start"
       0xCE: "Stop"
+    models_exclude: ["WiNet"]
 
   - name: "power_limitation_switch"
     level: 3
@@ -2280,6 +2407,7 @@ hold:
     decoded:
       0xAA: "Enable"
       0x55: "Disable"
+    models_exclude: ["WiNet"]
 
   - name: "power_limitation_setting"
     level: 3
@@ -2307,6 +2435,7 @@ hold:
     decoded:
       0xAA: "Enable"
       0x55: "Disable"
+    models_exclude: ["WiNet"]
 
   - name: "export_power_limitation_value"
     level: 3
@@ -2324,6 +2453,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
+    models_exclude: ["WiNet"]
 
   - name: "current_transformer_output_current"
     level: 3
@@ -2342,6 +2472,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
+    models_exclude: ["WiNet"]
 
   - name: "current_transformer_range"
     level: 3
@@ -2360,6 +2491,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
+    models_exclude: ["WiNet"]
 
   - name: "current_transformer"
     level: 3
@@ -2380,6 +2512,7 @@ hold:
     decoded:
       0: "Internal"
       1: "External"
+    models_exclude: ["WiNet"]
 
   - name: "export_power_limitation_percentage"
     group: has_battery
@@ -2400,6 +2533,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
+    models_exclude: ["WiNet"]
 
   - name: "installed_pv_power"
     level: 2
@@ -2773,6 +2907,7 @@ hold:
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
+    models_exclude: ["WiNet"]
 
   - name: master_slave_mode
     address: 33500
@@ -2781,6 +2916,7 @@ hold:
     decoded:
       0xAA: "Enabled"
       0x55: "Disabled"
+    models_exclude: ["WiNet"]
 
   - name: master_slave_role
     address: 33501
@@ -2792,8 +2928,10 @@ hold:
       0xA2: "Slave 2"
       0xA3: "Slave 3"
       0xA4: "Slave 4"
+    models_exclude: ["WiNet"]
 
   - name: slave_count
     address: 33502
     level: 2
     data_type: U16
+    models_exclude: ["WiNet"]

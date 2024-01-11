@@ -73,8 +73,14 @@ class SignalDefinitions:
     def __init__(self, definitions: dict[str, SungrowSignalDefinition]):
         self._definitions = definitions
 
-    @property
-    def modbus_signal_list(self):
+    def enabled_modbus_signals(self):
+        filtered: list[Signal] = []
+        for signal in self._definitions.values():
+            if not signal.disabled:
+                filtered.append(signal)
+        return filtered
+
+    def all_modbus_signals(self):
         return cast(list[Signal], list(self._definitions.values()))
 
     def get_signal_definitions_by_address_included(
@@ -113,6 +119,16 @@ class SignalDefinitions:
         # Note: differentiating between read and hold registers is not needed here.
         # They do not overlap.
         return self._definitions.get(name)
+
+    def disable_winet_signals(self):
+        """
+        Including certain signals in the WiNet query, will ruin the entire query,
+        so we disable them.
+        """
+
+        for signal in self._definitions.values():
+            if signal.models_exclude and "WiNet" in signal.models_exclude:
+                signal.disabled.append("disabled for WiNet")
 
     def get_signals_for_group(self, group: str):
         signals: dict[str, SungrowSignalDefinition] = {}

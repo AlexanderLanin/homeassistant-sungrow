@@ -11,6 +11,8 @@
   "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
   "requirements": [
     "pymodbus~=3.6.2",
+    "httpx~=0.25",
+    "websocket-client~=1.7.0",
     "beartype"
   ],
   "version": "0.0.1"

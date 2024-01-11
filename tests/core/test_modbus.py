@@ -7,11 +7,11 @@ from custom_components.sungrow.core.modbus import (
 RR = Connection.RegisterRange
 
 
-def simple_signal(name, address, register_type=RegisterType.READ):
+def simple_signal(name, address, register_type=RegisterType.READ, element_length=1):
     return Signal(
         name=name,
         address=address,
-        element_length=1,
+        element_length=element_length,
         array_length=1,
         register_type=register_type,
     )
@@ -39,6 +39,20 @@ def test_modbus_calculate_ranges_bounds():
 def test_modbus_calculate_ranges_bounds_mixed():
     signals = [
         simple_signal("A", 1000),
+        simple_signal("D", 1050, RegisterType.HOLD),
+        simple_signal("B", 1099),
+        simple_signal("E", 1149, RegisterType.HOLD),
+    ]
+
+    assert Connection._calculate_ranges(signals) == [
+        RR(RegisterType.READ, start=1000, length=100),
+        RR(RegisterType.HOLD, start=1050, length=100),
+    ]
+
+
+def test_modbus_calculate_ranges_small():
+    signals = [
+        simple_signal("A", 4950, RegisterType.READ, 2),
         simple_signal("D", 1050, RegisterType.HOLD),
         simple_signal("B", 1099),
         simple_signal("E", 1149, RegisterType.HOLD),

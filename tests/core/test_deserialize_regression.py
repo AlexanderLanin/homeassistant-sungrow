@@ -37,7 +37,7 @@ def reencode_registers(
     signal_list = signals.load_yaml()
 
     mapped_data = modbus.Connection.map_raw_to_signals(
-        raw_data, signal_list.modbus_signal_list
+        raw_data, signal_list.enabled_modbus_signals()
     )
 
     actual_signals = deserialize.decode_signals(signal_list, mapped_data)

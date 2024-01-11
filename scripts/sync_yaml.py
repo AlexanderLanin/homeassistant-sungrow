@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import fix_path  # type: ignore  # noqa: F401
 import requests
 import yaml
 from beartype.claw import beartype_all

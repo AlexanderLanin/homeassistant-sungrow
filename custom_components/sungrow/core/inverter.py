@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Final
 
+import httpx
+
 from . import deserialize, modbus, signals
 
 logger = logging.getLogger(__name__)
@@ -24,13 +26,9 @@ async def pull_raw_signals(
 
     # Load all registers from inverer
     try:
-        requested_signals: dict[str, signals.SungrowSignalDefinition] = {}
-        for signal in signal_definitions._definitions.values():
-            if not signal.disabled:
-                requested_signals[signal.name] = signal
-        defs = signals.SignalDefinitions(requested_signals)
         data = deserialize.decode_signals(
-            defs, await client.read(defs.modbus_signal_list)
+            signal_definitions,
+            await client.read(signal_definitions.enabled_modbus_signals()),
         )
 
     except modbus.ModbusError as e:
@@ -78,6 +76,17 @@ def mark_unavailable_signals_as_disabled(
     return extra_data
 
 
+async def is_WiNet(host: str):  # noqa: N802
+    """Check if this host belongs to a WiNet-S dongle."""
+    async with httpx.AsyncClient() as client:
+        try:
+            r = await client.get(f"http://{host}/")
+        except httpx.ConnectError:
+            return False
+
+    return r.status_code == 200 and '<title class="title">WiNet</title>' in r.text
+
+
 class SungrowInverter:
     @dataclass
     class Datapoint:
@@ -109,6 +118,14 @@ class SungrowInverter:
             slave=config["slave"],
         ) as connection:
             signal_definitions = signals.load_yaml()
+
+            if await is_WiNet(config["host"]):
+                logger.info(
+                    "Detected WiNet dongle. Disabling unsupported signals. "
+                    "Note: that's a lot. "
+                    "You should connect directly to the inverter instead."
+                )
+                signal_definitions.disable_winet_signals()
 
             data = await pull_raw_signals(connection, signal_definitions)
             if not data:

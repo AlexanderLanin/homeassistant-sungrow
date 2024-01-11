@@ -9,6 +9,8 @@ pytest-cov~=4.0
 pytest-homeassistant-custom-component~=0.13
 pytest-xdist~=3.0
 beartype
+httpx~=0.25
+websocket-client~=1.7
 
 # scripts
 tabulate

@@ -1,5 +1,6 @@
 import logging
 
+from .modbus import MappedData
 from .signals import (
     DatapointValueType,
     DatapointValueTypeBase,
@@ -49,8 +50,8 @@ def _decode_int_signal(
             return int_value
 
 
-def _decode_utf8_signal(signal: SungrowSignalDefinition, raw: list[list[int]]) -> str:
-    value = "".join([chr(c[0] >> 8) + chr(c[0] & 0xFF) for c in raw]).strip("\x00")
+def _decode_utf8_signal(signal: SungrowSignalDefinition, raw: list[int]) -> str:
+    value = "".join([chr(c >> 8) + chr(c & 0xFF) for c in raw]).strip("\x00")
 
     return value
 
@@ -58,8 +59,6 @@ def _decode_utf8_signal(signal: SungrowSignalDefinition, raw: list[list[int]]) -
 def _decode_base_signal(
     signal: SungrowSignalDefinition, raw_value: list[int]
 ) -> DatapointValueTypeBase | None:
-    assert signal.array_length == 1, signal
-
     if signal.base_datatype in ["U16", "S16", "U32", "S32"]:
         return _decode_int_signal(signal, raw_value)
     else:
@@ -70,47 +69,38 @@ def _decode_base_signal(
 
 
 def _decode_array_signal(
-    signal: SungrowSignalDefinition, raw_value: list[list[int]]
+    signal: SungrowSignalDefinition, raw_value: list[int]
 ) -> dict[int, DatapointValueTypeBase] | str:
     assert signal.array_length > 1
 
-    if signal.base_datatype in ["U16", "S16", "U32", "S32"]:
+    if signal.base_datatype == "UTF-8":
+        # raw_value is a list of registers (ints)
+        return _decode_utf8_signal(signal, raw_value)
+    else:
         data: dict[int, DatapointValueTypeBase] = {}
-        # raw_value is a list of lists of registers (ints)
-        for i, element_raw_value in enumerate(raw_value):
-            assert isinstance(element_raw_value, list)
-            data[i] = _decode_int_signal(
+        for i in range(signal.array_length):
+            start = i * signal.element_length
+            data[i] = _decode_base_signal(
                 signal,
-                element_raw_value,
+                raw_value[start : start + signal.element_length],
             )
 
         return data
-    elif signal.base_datatype == "UTF-8":
-        # raw_value is a list of registers (ints)
-        return _decode_utf8_signal(signal, raw_value)
-
-    else:
-        raise RuntimeError(
-            f"Invalid yaml for {signal.name}: "
-            "unknown array datatype (expected U16, S16, U32, S32 or UTF-8)"
-        )
 
 
 def _decode_signal(
     signal: SungrowSignalDefinition,
-    raw_value: list[int | list[int]],
+    raw_value: list[int],
 ) -> DatapointValueType | None:
     if signal.array_length == 1:
-        single_val: list[int] = raw_value  # type: ignore
-        return _decode_base_signal(signal, single_val)
+        return _decode_base_signal(signal, raw_value)
     else:
-        array_val: list[list[int]] = raw_value  # type: ignore
-        return _decode_array_signal(signal, array_val)
+        return _decode_array_signal(signal, raw_value)
 
 
 def decode_signals(
     signal_definitions: SignalDefinitions,
-    raw_signals: dict[str, list[list[int] | int]],
+    raw_signals: MappedData,
 ) -> dict[str, DatapointValueType]:
     decoded: dict[str, DatapointValueType] = {}
     for signal_name, raw_value in raw_signals.items():

@@ -26,9 +26,7 @@ def decode_simple_signal(
 ):
     signal = simple_signal(base_datatype, mask, accuracy, decoded)
     signal_definitions = signals.SignalDefinitions({"test_signal": signal})
-    data = {"test_signal": value}
-    data2: dict[str, list[list[int] | int]] = data  # type: ignore
-    decoded = deserialize.decode_signals(signal_definitions, data2)
+    decoded = deserialize.decode_signals(signal_definitions, {"test_signal": value})
     return decoded["test_signal"]
 
 

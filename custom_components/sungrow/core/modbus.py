@@ -29,7 +29,7 @@ class RegisterType(StrEnum):
 RawData = dict[RegisterType, dict[int, int]]
 
 # e.g. {"ac_power": [123, 456]}
-MappedData = dict[str, list[list[int] | int]]
+MappedData = dict[str, list[int]]
 
 
 class ModbusError(Exception):
@@ -67,10 +67,11 @@ class Connection:
 
     def __init__(self, host: str, port: int, slave: int):
         self._slave = slave
+        self._detached = False
+
         self._client = pymodbus.client.AsyncModbusTcpClient(
             host=host, port=port, timeout=2, retries=1, retry_on_empty=True
         )
-        self._detached = False
 
     def detach(self):
         """Detach from context manager."""
@@ -106,6 +107,39 @@ class Connection:
 
         raw_values = await self.read_raw(signal_list)
         return Connection.map_raw_to_signals(raw_values, signal_list)
+
+    async def detect_signals_causing_problems(
+        self, signal_list: list[Signal]
+    ) -> list[str]:
+        """
+        This will try to read every signal separately.
+        It's slow!
+        """
+
+        problematic: list[str] = []
+
+        for i, signal in enumerate(signal_list):
+            if not await self.connect():
+                raise RuntimeError("Could not connect")
+
+            try:
+                _value = await self._read_range(
+                    register_type=signal.register_type,
+                    address_start=signal.address,
+                    address_count=signal.length,
+                )
+            except ModbusError:
+                problematic.append(signal.name)
+
+                await self.disconnect()
+                await asyncio.sleep(2)
+
+            print(f"{i+1}/{len(signal_list)} ({signal.name})")
+
+        if not await self.connect():
+            raise RuntimeError("Could not connect")
+
+        return problematic
 
     ## -- DETAILED IMPLEMENTATION --
 
@@ -189,6 +223,7 @@ class Connection:
     async def read_raw(
         self,
         signal_list: list[Signal],
+        max_combined_registers: int = 100,
     ) -> RawData:
         """
         Returns a dict of queried register ranges and their values.
@@ -199,7 +234,9 @@ class Connection:
 
         # We cannot query all signals at once, as the inverter will not respond.
         # So we split the signals into ranges and query each range separately.
-        ranges = Connection._calculate_ranges(signal_list)
+        ranges = Connection._calculate_ranges(
+            signal_list, max_length_per_range=max_combined_registers
+        )
 
         raw_values: RawData = {}
 
@@ -247,19 +284,8 @@ class Connection:
                 f"at address {signal.address}"
             )
 
-        def extract_values(registers: dict[int, int], start: int, length: int):
-            return [registers[start + i] for i in range(length)]
+        return [registers[signal.address + i] for i in range(signal.length)]
 
-        if signal.array_length == 1:
-            return extract_values(registers, signal.address, signal.length)
-        else:
-            mapped: list[list[int]] = []
-            for i in range(signal.array_length):
-                start = signal.address + i * signal.element_length
-                mapped.append(extract_values(registers, start, signal.element_length))
-            return mapped
-
-    # ToDo: accept RegisterRange as parameter
     async def _read_range(
         self,
         register_type: RegisterType,
