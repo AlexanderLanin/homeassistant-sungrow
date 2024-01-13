@@ -1,36 +1,27 @@
-import asyncio
 import json
 import logging
-import sys
 import time
 
 import httpx
 from websocket import create_connection
 
-from . import modbus, signals
+import custom_components.sungrow.core.modbus_base as modbus_base
+from custom_components.sungrow.core.modbus_base import (
+    ModbusConnectionBase,
+    RegisterType,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class Connection:
+class HttpConnection(ModbusConnectionBase):
     def __init__(self, host: str, port: int = 8082):
-        self._host = host
-        self._port = port
+        super().__init__(host, port, 0)  # FIXME: slave is not used. Remove from Base?
+
         self._httpx_client = httpx.AsyncClient()
 
         self._token: str | None = None
         self._inverter: dict[str, str | int] | None = None
-
-    async def __aenter__(self):
-        await self._httpx_client.__aenter__()
-        if not await self.connect():
-            raise modbus.CannotConnectError(
-                f"Connection to {self._host}:{self._port} failed"
-            )
-        return self
-
-    async def __aexit__(self, *args, **kwargs):
-        await self._httpx_client.__aexit__(*args, **kwargs)
 
     async def connect(self):
         """
@@ -43,6 +34,11 @@ class Connection:
 
         if self._token:
             return True
+
+        # Reset the httpx client, otherwise it will keep the connection open.
+        await self._httpx_client.aclose()
+        self._httpx_client = httpx.AsyncClient()
+        await self._httpx_client.__aenter__()
 
         endpoint = f"ws://{self._host}:{self._port}/ws/home/overview"
         try:
@@ -60,7 +56,7 @@ class Connection:
             self._token = response["result_data"]["token"]
             logger.info(f"Token Retrieved: {self._token}")
         else:
-            raise modbus.CannotConnectError(
+            raise modbus_base.CannotConnectError(
                 f"Connection Failed {response['result_msg']}"
             )
 
@@ -86,7 +82,7 @@ class Connection:
             # ToDo: can we do anything with the others?
             self._inverter = response["result_data"]["list"][0]
         else:
-            raise modbus.CannotConnectError(
+            raise modbus_base.CannotConnectError(
                 f"Connection Failed {response['result_msg']}"
             )
 
@@ -96,41 +92,24 @@ class Connection:
         self._token = None
         self._inverter = None
 
-    async def read(self, signal_definitions: list[modbus.Signal]) -> modbus.MappedData:
-        data: modbus.MappedData = {}
-
-        # FIXME can we use the range approach?
-        for signal in signal_definitions:
-            # ToDo: can we run these in parallel or will the inverter fail?
-            print(f"Reading {signal.name}...")
-            try:
-                v = await self.read_signal(signal)
-            except modbus.CannotConnectError:
-                print("Failed, retrying in 5 seconds...")
-                # in case output is piped to a file, it's nice to see the progress
-                sys.stdout.flush()
-                await asyncio.sleep(5)
-                v = await self.read_signal(signal)
-            data.update(v)
-
-            # in case output is piped to a file, it's nice to see the progress
-            sys.stdout.flush()
-
-        return data
-
-    async def read_signal(self, signal: modbus.Signal) -> modbus.MappedData:
+    async def _read_range(
+        self,
+        register_type: RegisterType,
+        address_start: int,
+        address_count: int,
+    ) -> list[int]:
         """Raises modbus.CannotConnectError on WiNet misbehavior."""
 
         if not self._token:
             connected = self.connect()
             if not connected:
-                raise modbus.CannotConnectError("Connection failed")
+                raise modbus_base.CannotConnectError("Connection failed")
 
         assert self._inverter
 
         param_types = {
-            modbus.RegisterType.READ: 0,
-            modbus.RegisterType.HOLD: 1,
+            modbus_base.RegisterType.READ: 0,
+            modbus_base.RegisterType.HOLD: 1,
         }
 
         params = {
@@ -138,9 +117,9 @@ class Connection:
             "dev_type": self._inverter["dev_type"],
             "dev_code": self._inverter["dev_code"],
             "type": "3",  # todo: Why 3?
-            "param_addr": signal.address,
-            "param_num": signal.length,
-            "param_type": param_types[signal.register_type],
+            "param_addr": address_start,
+            "param_num": address_count,
+            "param_type": param_types[register_type],
             "token": self._token,
             "lang": "en_us",
             "time123456": time.time(),
@@ -166,17 +145,19 @@ class Connection:
                     data.append(
                         int(modbus_data[i], 16) * 256 + int(modbus_data[i + 1], 16)
                     )
-                return {signal.name: data}
+                return data
             elif response.get("result_code", 0) == 106:  # token expired
+                self._token = None
                 self.disconnect()
-                raise modbus.CannotConnectError(
+                raise modbus_base.CannotConnectError(
                     f"Token Expired: {response.get('result_msg')}"
                 )
             else:
-                raise modbus.CannotConnectError(
-                    f"_Unknown response while trying to query {signal.name}: {response} "
+                raise modbus_base.CannotConnectError(
+                    "Unknown response while trying to query "
+                    f"{register_type} {address_start}: {response} "
                 )
         else:
-            raise modbus.CannotConnectError(
-                f"_Connection Failed: {r.status_code} {r.text}"
+            raise modbus_base.CannotConnectError(
+                f"Connection Failed: {r.status_code} {r.text}"
             )

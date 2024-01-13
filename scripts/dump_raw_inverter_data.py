@@ -5,7 +5,7 @@ import logging
 import fix_path  # type: ignore  # noqa: F401
 import yaml
 
-from custom_components.sungrow.core import deserialize, inverter, modbus, signals
+from custom_components.sungrow.core import deserialize, inverter, modbus_py, signals
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("pymodbus").setLevel(logging.WARNING)
@@ -29,7 +29,7 @@ async def dump(host: str, port: int, slave: int, filename: str) -> None:
     else:
         logging.info("Detected non-WiNet inverter, querying all signals")
 
-    async with modbus.Connection(host, port, slave) as connection:
+    async with modbus_py.PymodbusConnection(host, port, slave) as connection:
         raw_data = await connection.read_raw(
             signal_definitions.enabled_modbus_signals()
         )
@@ -45,8 +45,8 @@ async def dump(host: str, port: int, slave: int, filename: str) -> None:
             {
                 # Remap the keys so they come out readable.
                 "registers": {
-                    "read": raw_data[modbus.RegisterType.READ],
-                    "hold": raw_data[modbus.RegisterType.HOLD],
+                    "read": raw_data[modbus_py.RegisterType.READ],
+                    "hold": raw_data[modbus_py.RegisterType.HOLD],
                 },
                 "signals": signal_data,
             },

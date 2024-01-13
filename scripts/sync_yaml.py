@@ -8,7 +8,7 @@ import yaml
 from beartype.claw import beartype_all
 from tabulate import tabulate
 
-from custom_components.sungrow.core.modbus import RegisterType
+from custom_components.sungrow.core.modbus_py import RegisterType
 from custom_components.sungrow.core.signals import (
     SignalDefinitions,
     SungrowSignalDefinition,

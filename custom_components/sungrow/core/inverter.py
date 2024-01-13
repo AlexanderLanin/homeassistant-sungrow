@@ -7,7 +7,7 @@ from typing import Any, Final
 
 import httpx
 
-from . import deserialize, modbus, signals
+from . import deserialize, modbus_base, modbus_http, modbus_py, signals
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ DatapointValueType = signals.DatapointValueType
 
 
 async def pull_raw_signals(
-    client: modbus.Connection,
+    client: modbus_py.ModbusConnectionBase,
     signal_definitions: signals.SignalDefinitions,
 ) -> dict[str, DatapointValueType] | None:
     """Pull data from inverter. Return None on failure."""
@@ -31,7 +31,7 @@ async def pull_raw_signals(
             await client.read(signal_definitions.enabled_modbus_signals()),
         )
 
-    except modbus.ModbusError as e:
+    except modbus_base.ModbusError as e:
         logger.info(f"Pulling data from inverter failed: {e}")
         # return none or throw exception?
         return None
@@ -87,7 +87,7 @@ async def is_WiNet(host: str):  # noqa: N802
             # ToDo: There is a Dongle present, it just isn't responding in time?
             return False
 
-    return r.status_code == 200 and '<title class="title">WiNet</title>' in r.text
+    return r.status_code == 200  # and '<title class="title">WiNet</title>' in r.text
 
 
 class SungrowInverter:
@@ -115,7 +115,7 @@ class SungrowInverter:
             # ToDo: The 'unit' config option is deprecated. Please use 'slave' instead.
             config["slave"] = deprecated_unit
 
-        async with modbus.Connection(
+        async with modbus_py.ModbusConnectionBase(
             host=config["host"],
             port=config["port"],
             slave=config["slave"],
@@ -167,7 +167,7 @@ class SungrowInverter:
 
     def __init__(
         self,
-        client: modbus.Connection,
+        client: modbus_base.ModbusConnectionBase,
         config: Config,
     ):
         """Note: you should use create() instead!"""

@@ -11,7 +11,8 @@ from typing import cast
 
 import yaml
 
-from .modbus import RegisterType, Signal
+from .modbus_base import Signal  # ToDo: signal imports Signal sounds wrong :D
+from .modbus_py import RegisterType
 
 logger = logging.getLogger(__name__)
 

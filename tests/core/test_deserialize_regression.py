@@ -3,7 +3,7 @@ from typing import cast
 
 import yaml
 
-from custom_components.sungrow.core import deserialize, modbus, signals
+from custom_components.sungrow.core import deserialize, modbus_base, modbus_py, signals
 
 TEST_DATA = pathlib.Path(__file__).parent.parent / "test_data"
 
@@ -18,10 +18,10 @@ def last_key(d: dict):
 
 def data_from_modbus_Connection_read_raw(  # noqa: N802
     filename: str,
-) -> tuple[modbus.RawData, dict[str, signals.DatapointValueType]]:
+) -> tuple[modbus_base.RawData, dict[str, signals.DatapointValueType]]:
     yaml_data = yaml.safe_load((TEST_DATA / filename).read_text())
 
-    registers = cast(modbus.RawData, yaml_data["registers"])
+    registers = cast(modbus_base.RawData, yaml_data["registers"])
     signal_data = cast(dict[str, signals.DatapointValueType], yaml_data["signals"])
     return registers, signal_data
 
@@ -36,7 +36,7 @@ def reencode_registers(
 
     signal_list = signals.load_yaml()
 
-    mapped_data = modbus.Connection.map_raw_to_signals(
+    mapped_data = modbus_py.PymodbusConnection.map_raw_to_signals(
         raw_data, signal_list.enabled_modbus_signals()
     )
 

@@ -1,9 +1,9 @@
-from custom_components.sungrow.core import deserialize, modbus, signals
+from custom_components.sungrow.core import deserialize, modbus_py, signals
 
 
 def simple_signal(base_datatype, mask=None, accuracy=None, decoded=None):
     return signals.SungrowSignalDefinition(
-        register_type=modbus.RegisterType.READ,
+        register_type=modbus_py.RegisterType.READ,
         address=0,
         array_length=1,
         name="test",

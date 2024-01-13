@@ -1,10 +1,9 @@
-from custom_components.sungrow.core.modbus import (
-    Connection,
+from custom_components.sungrow.core.modbus_base import (
+    ModbusConnectionBase,
+    RegisterRange,
     RegisterType,
     Signal,
 )
-
-RR = Connection.RegisterRange
 
 
 def simple_signal(name, address, register_type=RegisterType.READ, element_length=1):
@@ -20,8 +19,8 @@ def simple_signal(name, address, register_type=RegisterType.READ, element_length
 def test_modbus_calculate_ranges_trivial():
     signals = [simple_signal("A", 1000)]
 
-    assert Connection._calculate_ranges(signals) == [
-        RR(RegisterType.READ, start=1000, length=1),
+    assert ModbusConnectionBase._calculate_ranges(signals) == [
+        RegisterRange(RegisterType.READ, start=1000, length=1),
     ]
 
 
@@ -31,8 +30,8 @@ def test_modbus_calculate_ranges_bounds():
         simple_signal("B", 1099),
     ]
 
-    assert Connection._calculate_ranges(signals) == [
-        RR(RegisterType.READ, start=1000, length=100),
+    assert ModbusConnectionBase._calculate_ranges(signals) == [
+        RegisterRange(RegisterType.READ, start=1000, length=100),
     ]
 
 
@@ -44,9 +43,9 @@ def test_modbus_calculate_ranges_bounds_mixed():
         simple_signal("E", 1149, RegisterType.HOLD),
     ]
 
-    assert Connection._calculate_ranges(signals) == [
-        RR(RegisterType.READ, start=1000, length=100),
-        RR(RegisterType.HOLD, start=1050, length=100),
+    assert ModbusConnectionBase._calculate_ranges(signals) == [
+        RegisterRange(RegisterType.READ, start=1000, length=100),
+        RegisterRange(RegisterType.HOLD, start=1050, length=100),
     ]
 
 
@@ -58,9 +57,9 @@ def test_modbus_calculate_ranges_small():
         simple_signal("E", 1149, RegisterType.HOLD),
     ]
 
-    assert Connection._calculate_ranges(signals) == [
-        RR(RegisterType.READ, start=1000, length=100),
-        RR(RegisterType.HOLD, start=1050, length=100),
+    assert ModbusConnectionBase._calculate_ranges(signals) == [
+        RegisterRange(RegisterType.READ, start=1000, length=100),
+        RegisterRange(RegisterType.HOLD, start=1050, length=100),
     ]
 
 
@@ -97,12 +96,12 @@ def test_modbus_calculate_ranges_mixed():
     ]
 
     expected_ranges = [
-        RR(RegisterType.READ, start=1000, length=10),
-        RR(RegisterType.READ, start=2000, length=5),
-        RR(RegisterType.READ, start=4000, length=15),
-        RR(RegisterType.HOLD, start=3000, length=20),
+        RegisterRange(RegisterType.READ, start=1000, length=10),
+        RegisterRange(RegisterType.READ, start=2000, length=5),
+        RegisterRange(RegisterType.READ, start=4000, length=15),
+        RegisterRange(RegisterType.HOLD, start=3000, length=20),
     ]
 
-    ranges = Connection._calculate_ranges(signals)
+    ranges = ModbusConnectionBase._calculate_ranges(signals)
 
     assert ranges == expected_ranges

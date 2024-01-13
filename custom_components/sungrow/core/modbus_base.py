@@ -1,21 +1,13 @@
 """
-A convinience wrapper for pymodbus.
-
 The abstraction level is chosen at the lowest point which does not need to know how
 signals are queried. This is where all signals are read() at once, so this class
 can perform a clever optimization to reduce the number of queries.
 """
 
 import asyncio
-import contextlib
 import logging
 from dataclasses import dataclass
 from enum import StrEnum
-
-import pymodbus
-import pymodbus.client
-import pymodbus.exceptions
-import pymodbus.pdu
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +22,13 @@ RawData = dict[RegisterType, dict[int, int]]
 
 # e.g. {"ac_power": [123, 456]}
 MappedData = dict[str, list[int]]
+
+
+@dataclass(frozen=True)
+class RegisterRange:
+    register_type: RegisterType
+    start: int
+    length: int
 
 
 class ModbusError(Exception):
@@ -49,6 +48,10 @@ class CannotConnectError(ModbusError):
     pass
 
 
+class UnsupportedRegisterQueriedError(ModbusError):
+    pass
+
+
 @dataclass
 class Signal:
     name: str
@@ -62,16 +65,14 @@ class Signal:
         return self.element_length * self.array_length
 
 
-class Connection:
+class ModbusConnectionBase:
     """A pymodbus connection to a single slave."""
 
     def __init__(self, host: str, port: int, slave: int):
+        self._host = host
+        self._port = port
         self._slave = slave
         self._detached = False
-
-        self._client = pymodbus.client.AsyncModbusTcpClient(
-            host=host, port=port, timeout=2, retries=1, retry_on_empty=True
-        )
 
     def detach(self):
         """Detach from context manager."""
@@ -79,23 +80,10 @@ class Connection:
         return self
 
     async def connect(self):
-        if self._client.connected:
-            return True
-        else:
-            return await self._client.connect()
+        raise NotImplementedError()
 
     async def disconnect(self):
-        # The _client has a 'reconnect_task' which it will cancel and delete on close().
-        # But we want to wait for it to actually finish before returning,
-        # so we are cleaning up properly.
-        # Specifically, pytest will complain about lingering tasks if we don't wait for
-        # this task to finish.
-        reconnect_task = self._client.reconnect_task
-        self._client.close()
-        if reconnect_task:
-            # Catch CancelledError, as this is expected.
-            with contextlib.suppress(asyncio.CancelledError):
-                await reconnect_task
+        raise NotImplementedError()
 
     async def read(
         self,
@@ -106,7 +94,7 @@ class Connection:
         """
 
         raw_values = await self.read_raw(signal_list)
-        return Connection.map_raw_to_signals(raw_values, signal_list)
+        return ModbusConnectionBase.map_raw_to_signals(raw_values, signal_list)
 
     async def detect_signals_causing_problems(
         self, signal_list: list[Signal]
@@ -128,26 +116,19 @@ class Connection:
                     address_start=signal.address,
                     address_count=signal.length,
                 )
-            except ModbusError:
-                problematic.append(signal.name)
 
-                await self.disconnect()
+                ok = "ok"
+            except ModbusError as e:
+                problematic.append(signal.name)
+                ok = f"not ok: {e}"
+
                 await asyncio.sleep(2)
 
-            print(f"{i+1}/{len(signal_list)} ({signal.name})")
-
-        if not await self.connect():
-            raise RuntimeError("Could not connect")
+            logger.info(f"{i+1}/{len(signal_list)} ({signal.name}): {ok}")
 
         return problematic
 
     ## -- DETAILED IMPLEMENTATION --
-
-    @dataclass(frozen=True)
-    class RegisterRange:
-        register_type: RegisterType
-        start: int
-        length: int
 
     async def __aenter__(self):
         """Called on 'async with' enter."""
@@ -173,7 +154,7 @@ class Connection:
         This is a simple attempt to speed up the function.
         """
 
-        ranges: list[Connection.RegisterRange] = []
+        ranges: list[RegisterRange] = []
 
         @dataclass
         class Range:
@@ -198,7 +179,7 @@ class Connection:
                 ):
                     # Range is too big. Start a new one.
                     ranges.append(
-                        Connection.RegisterRange(
+                        RegisterRange(
                             register_type,
                             next_range.start,
                             next_range.length,
@@ -213,9 +194,7 @@ class Connection:
 
             if next_range:
                 ranges.append(
-                    Connection.RegisterRange(
-                        register_type, next_range.start, next_range.length
-                    )
+                    RegisterRange(register_type, next_range.start, next_range.length)
                 )
 
         return ranges
@@ -234,7 +213,7 @@ class Connection:
 
         # We cannot query all signals at once, as the inverter will not respond.
         # So we split the signals into ranges and query each range separately.
-        ranges = Connection._calculate_ranges(
+        ranges = ModbusConnectionBase._calculate_ranges(
             signal_list, max_length_per_range=max_combined_registers
         )
 
@@ -265,7 +244,7 @@ class Connection:
         mapped: MappedData = {}
 
         for signal in signal_list:
-            mapped[signal.name] = Connection._get_signal_relevant_registers(
+            mapped[signal.name] = ModbusConnectionBase._get_signal_relevant_registers(
                 raw_data[signal.register_type], signal
             )
 
@@ -298,43 +277,4 @@ class Connection:
         Note: each register is 16 bits, so `address_count` is the number of registers,
         not bytes.
         """
-        if not await self.connect():
-            raise CannotConnectError()
-
-        try:
-            func = {
-                RegisterType.READ: self._client.read_input_registers,
-                RegisterType.HOLD: self._client.read_holding_registers,
-            }[register_type]
-            # Note: sending address = protocol address - 1.
-            # This is the only line in the module that needs to know about this detail!
-            rr = await func(address_start - 1, count=address_count, slave=self._slave)  # type: ignore
-        except pymodbus.ModbusException as e:
-            # e.g. no response from device
-            raise ModbusError(
-                f"connection error (for {register_type}, "
-                f"{address_start}-{address_start+address_count})"
-            ) from e
-
-        if rr.isError():
-            logger.info(
-                f"device error for {register_type}, "
-                f"{address_start}-{address_start+address_count}"
-            )
-
-            if isinstance(rr, pymodbus.pdu.ExceptionResponse):
-                if rr.exception_code == pymodbus.pdu.ModbusExceptions.GatewayNoResponse:
-                    raise InvalidSlaveError(f"Slave ID {self._slave} is invalid")
-                else:
-                    raise ModbusError(f"Unknown exception response: {rr}")
-            else:
-                raise ModbusError(f"Unknown error response: {rr}")
-
-        if len(rr.registers) != address_count:
-            raise ModbusError(
-                f"Mismatched number of registers "
-                f"(requested {address_count}) and responded {len(rr.registers)})"
-            )
-
-        assert isinstance(rr.registers, list)
-        return rr.registers
+        raise NotImplementedError()
