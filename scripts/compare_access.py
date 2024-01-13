@@ -213,7 +213,21 @@ def print_markdown_table(
             f.write("\n\n")
 
 
-# ToDo: hosts as command line argument
-# Note: slave is passed after a slash, e.g.:
-hosts = ["192.168.13.79", "192.168.13.58", "192.168.13.80/2", "192.168.13.74"]
-asyncio.run(main(hosts))
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) == 1:
+        print("Usage: compare_access.py <host> [<host> ...]")
+        print("Note: slave id can be appended to the host, separated by a slash.")
+        print("Example for slave 2: 192.168.13.80/2")
+        print("When no slave id is given, slave 1 is assumed.")
+        print(
+            "Example command line: scripts/compare_access.py "
+            "192.168.13.79 192.168.13.58 192.168.13.80/2 192.168.13.74"
+        )
+        exit(1)
+    else:
+        hosts = sys.argv[1:]
+        print("command line: ", hosts)
+
+        asyncio.run(main(hosts))
