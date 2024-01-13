@@ -58,9 +58,12 @@ async def collect_data_via_py_modbus(
         data = deserialize.decode_signals(signal_definitions, signal_raw_data)
         data["mode"] = mode
         return data
-    except modbus_base.ModbusError:
+    except modbus_base.CannotConnectError:
         logger.info(f"{host}/{slave}/pymodbus: Failed to connect")
         return {}
+    except modbus_base.ModbusError:
+        logger.warning(f"{host}/{slave}/pymodbus: Failed to connect")
+        return {"mode": "pymodbus", "serial_number": "ERROR"}
 
 
 async def collect_data_via_winet_http(
@@ -81,9 +84,12 @@ async def collect_data_via_winet_http(
         data = deserialize.decode_signals(signal_definitions, signal_raw_data)
         data["mode"] = "WiNet http"
         return data
-    except modbus_base.ModbusError:
+    except modbus_base.CannotConnectError:
         logger.info(f"{host}/winet_http: Failed to connect")
         return {}
+    except modbus_base.ModbusError:
+        logger.warning(f"{host}/winet_http: Error during query")
+        return {"mode": "WiNet http", "serial_number": "ERROR"}
 
 
 async def collect_data(
@@ -200,7 +206,7 @@ def print_markdown_table(
 
             for signal in signal_definitions._definitions.values():
                 line = f"| {signal.name} | "
-                for value in transposed_data[signal.name]:
+                for value in transposed_data.get(signal.name, ["Not available"]):
                     line += str(value) + " | "
                 f.write(line + "\n")
 

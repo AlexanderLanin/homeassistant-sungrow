@@ -93,6 +93,7 @@ class ModbusConnectionBase:
         Read a list of signals.
         """
 
+        # ToDo: can we have read_raw() return partial results in case of errors?
         raw_values = await self.read_raw(signal_list)
         return ModbusConnectionBase.map_raw_to_signals(raw_values, signal_list)
 
