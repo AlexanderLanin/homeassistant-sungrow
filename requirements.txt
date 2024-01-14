@@ -2,7 +2,8 @@
 # It is not used by Home Assistant.
 
 PyYAML~=6.0
-pymodbus~=3.6
+# pymodbus>3.6.3
+git+https://github.com/pymodbus-dev/pymodbus.git@54c734c823bbaf9d3915fa29f9460eb0b11ce197
 homeassistant~=2023.12
 pytest~=7.0
 pytest-cov~=4.0

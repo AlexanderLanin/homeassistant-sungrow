@@ -30,7 +30,7 @@ def is_zero(v):
 
 
 DatapointValueTypeBase = bool | int | float | str | None
-DatapointValueType = DatapointValueTypeBase | dict[int, DatapointValueTypeBase]
+DatapointValueType = DatapointValueTypeBase | dict[int, DatapointValueTypeBase] | None
 
 
 @dataclass
@@ -121,15 +121,15 @@ class SignalDefinitions:
         # They do not overlap.
         return self._definitions.get(name)
 
-    def disable_winet_signals(self):
-        """
-        Including certain signals in the WiNet query, will ruin the entire query,
-        so we disable them.
-        """
+    # def disable_winet_signals(self):
+    #     """
+    #     Including certain signals in the WiNet query, will ruin the entire query,
+    #     so we disable them.
+    #     """
 
-        for signal in self._definitions.values():
-            if signal.models_exclude and "WiNet" in signal.models_exclude:
-                signal.disabled.append("disabled for WiNet")
+    #     for signal in self._definitions.values():
+    #         if signal.models_exclude and "WiNet" in signal.models_exclude:
+    #             signal.disabled.append("disabled for WiNet")
 
     def get_signals_for_group(self, group: str):
         signals: dict[str, SungrowSignalDefinition] = {}

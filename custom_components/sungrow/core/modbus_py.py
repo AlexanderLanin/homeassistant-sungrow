@@ -9,7 +9,7 @@ can perform a clever optimization to reduce the number of queries.
 import asyncio
 import contextlib
 import logging
-from dataclasses import dataclass
+import sys
 
 import pymodbus
 import pymodbus.client
@@ -24,6 +24,12 @@ from custom_components.sungrow.core.modbus_base import (
 )
 
 logger = logging.getLogger(__name__)
+
+if pymodbus.__version__ <= "3.6.3":
+    print("pymodbus had a bug in <= 3.6.3 which would lead to many reconnects.")
+    print("As our inverters don't like that, this script requires > 3.6.3.")
+    print("Please run 'pip install --upgrade -r requirements.txt' to upgrade.")
+    sys.exit(1)
 
 
 class PymodbusConnection(ModbusConnectionBase):
@@ -54,17 +60,6 @@ class PymodbusConnection(ModbusConnectionBase):
             # Catch CancelledError, as this is expected.
             with contextlib.suppress(asyncio.CancelledError):
                 await reconnect_task
-
-    async def read(
-        self,
-        signal_list: list[modbus_base.Signal],
-    ) -> MappedData:
-        """
-        Read a list of signals.
-        """
-
-        raw_values = await self.read_raw(signal_list)
-        return ModbusConnectionBase.map_raw_to_signals(raw_values, signal_list)
 
     async def _read_range(  # noqa: C901 (Error handling here is complex, nothing we can do about it)
         self,
@@ -111,7 +106,7 @@ class PymodbusConnection(ModbusConnectionBase):
                     if pymodbus.__version__ == "3.6.3":
                         # pymodbus bug, see https://github.com/pymodbus-dev/pymodbus/pull/1931
                         await self.disconnect()
-                    raise modbus_base.ModbusError(
+                    raise modbus_base.UnsupportedRegisterQueriedError(
                         f"Inverter does not support {address_start}-"
                         f"{address_start+address_count}: {rr}"
                     )

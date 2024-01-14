@@ -105,5 +105,5 @@ def decode_signals(
     decoded: dict[str, DatapointValueType] = {}
     for signal_name, raw_value in raw_signals.items():
         signal = signal_definitions.get_signal_definition_by_name(signal_name)
-        decoded[signal_name] = _decode_signal(signal, raw_value)
+        decoded[signal_name] = _decode_signal(signal, raw_value) if raw_value else None
     return decoded

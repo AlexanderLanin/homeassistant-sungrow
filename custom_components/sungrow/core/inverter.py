@@ -5,8 +5,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Final
 
-import httpx
-
 from . import deserialize, modbus_base, modbus_http, modbus_py, signals
 
 logger = logging.getLogger(__name__)
@@ -76,21 +74,21 @@ def mark_unavailable_signals_as_disabled(
     return extra_data
 
 
-async def is_WiNet(host: str):  # noqa: N802
-    """Check if this host belongs to a WiNet-S dongle."""
-    # FIXME: this won't work with a modbus proxy!
-    # Can we simply always query everything and fall back to detection?
-    # It will have a slower startup time, but it will work without further maintenance!!
-    async with httpx.AsyncClient() as client:
-        try:
-            r = await client.get(f"http://{host}/")
-        except httpx.ConnectError:
-            return False
-        except httpx.ConnectTimeout:
-            # ToDo: There is a Dongle present, it just isn't responding in time?
-            return False
+# async def is_WiNet(host: str):  # noqa: N802
+#     """Check if this host belongs to a WiNet-S dongle."""
+#     # FIXME: this won't work with a modbus proxy!
+#     # Can we simply always query everything and fall back to detection?
+#     # It will have a slower startup time, but it will work without further maintenance!!
+#     async with httpx.AsyncClient() as client:
+#         try:
+#             r = await client.get(f"http://{host}/")
+#         except httpx.ConnectError:
+#             return False
+#         except httpx.ConnectTimeout:
+#             # ToDo: There is a Dongle present, it just isn't responding in time?
+#             return False
 
-    return r.status_code == 200  # and '<title class="title">WiNet</title>' in r.text
+#     return r.status_code == 200  # and '<title class="title">WiNet</title>' in r.text
 
 
 class SungrowInverter:
@@ -125,13 +123,13 @@ class SungrowInverter:
         ) as connection:
             signal_definitions = signals.load_yaml()
 
-            if await is_WiNet(config["host"]):
-                logger.info(
-                    "Detected WiNet dongle. Disabling unsupported signals. "
-                    "Note: that's a lot. "
-                    "You should connect directly to the inverter instead."
-                )
-                signal_definitions.disable_winet_signals()
+            # if await is_WiNet(config["host"]):
+            #     logger.info(
+            #         "Detected WiNet dongle. Disabling unsupported signals. "
+            #         "Note: that's a lot. "
+            #         "You should connect directly to the inverter instead."
+            #     )
+            #     signal_definitions.disable_winet_signals()
 
             data = await pull_raw_signals(connection, signal_definitions)
             if not data:
