@@ -78,6 +78,9 @@ def mark_unavailable_signals_as_disabled(
 
 async def is_WiNet(host: str):  # noqa: N802
     """Check if this host belongs to a WiNet-S dongle."""
+    # FIXME: this won't work with a modbus proxy!
+    # Can we simply always query everything and fall back to detection?
+    # It will have a slower startup time, but it will work without further maintenance!!
     async with httpx.AsyncClient() as client:
         try:
             r = await client.get(f"http://{host}/")

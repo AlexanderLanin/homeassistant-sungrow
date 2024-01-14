@@ -58,11 +58,11 @@ async def collect_data_via_py_modbus(
         data = deserialize.decode_signals(signal_definitions, signal_raw_data)
         data["mode"] = mode
         return data
-    except modbus_base.CannotConnectError:
-        logger.info(f"{host}/{slave}/pymodbus: Failed to connect")
+    except modbus_base.CannotConnectError as e:
+        logger.info(f"{host}/{slave}/pymodbus: Failed to connect ({e})")
         return {}
-    except modbus_base.ModbusError:
-        logger.warning(f"{host}/{slave}/pymodbus: Failed to connect")
+    except modbus_base.ModbusError as e:
+        logger.warning(f"{host}/{slave}/pymodbus: Failed during query ({e})")
         return {"mode": "pymodbus", "serial_number": "ERROR"}
 
 
@@ -84,11 +84,11 @@ async def collect_data_via_winet_http(
         data = deserialize.decode_signals(signal_definitions, signal_raw_data)
         data["mode"] = "WiNet http"
         return data
-    except modbus_base.CannotConnectError:
-        logger.info(f"{host}/winet_http: Failed to connect")
+    except modbus_base.CannotConnectError as e:
+        logger.info(f"{host}/winet_http: Failed to connect ({e}))")
         return {}
-    except modbus_base.ModbusError:
-        logger.warning(f"{host}/winet_http: Error during query")
+    except modbus_base.ModbusError as e:
+        logger.warning(f"{host}/winet_http: Error during query ({e})")
         return {"mode": "WiNet http", "serial_number": "ERROR"}
 
 
@@ -191,6 +191,8 @@ def print_markdown_table(
     data_by_inverter: dict[str, list[dict[str, signals.DatapointValueType]]],
     outfile: str,
 ):
+    # FIXME: missing data doesn't appear in .md! Columns could be misaligned!
+
     with open(outfile, "w") as f:
         for inverter_sn, inverter_data in data_by_inverter.items():
             f.write(f"# {inverter_sn}\n")
