@@ -121,16 +121,7 @@ class _RangeBuilder:
 def build_ranges(
     signals: list[Signal],
     max_registers_per_range: int,
-    blocked_registers: dict[RegisterType, list[int]] | None = None,
+    blocked_registers: dict[RegisterType, list[int]],
 ) -> list[RegisterRange]:
-    # These ifs are actually just for tests
-    if blocked_registers is None:
-        blocked_registers = {RegisterType.READ: [], RegisterType.HOLD: []}
-    else:
-        if RegisterType.READ not in blocked_registers:
-            blocked_registers[RegisterType.READ] = []
-        if RegisterType.HOLD not in blocked_registers:
-            blocked_registers[RegisterType.HOLD] = []
-
     builder = _RangeBuilder(signals, max_registers_per_range, blocked_registers)
     return builder.build_ranges()

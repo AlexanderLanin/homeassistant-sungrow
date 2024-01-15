@@ -107,7 +107,7 @@ class ModbusConnectionBase:
         self._port = port
         self._slave = slave
         self._detached = False
-        self._read_calls = 0
+        self._read_calls = 0 # Make this a full blown stats object? e.g. connections, read calls, read errors, etc.
 
         # These signals are not supported by the inverter.
         # This is required, as we read entire ranges at once and need to avoid having
@@ -246,17 +246,17 @@ class ModbusConnectionBase:
         return [
             signal
             for signal in signals
+            # TODO: is_index_in_range(). See other TODO.
             if signal.register_type == register_range.register_type
             and signal.address >= register_range.start
-            and signal.address + signal.length
-            <= register_range.start + register_range.length
+            and signal.end <= register_range.end
         ]
 
     @staticmethod
     def _get_values_for_signal(r: RawData, signal: Signal):
         all_available = all(
             r.get(addr) is not None
-            for addr in range(signal.address, signal.address + signal.length)
+            for addr in range(signal.address, signal.end)
         )
         if not all_available:
             return None
