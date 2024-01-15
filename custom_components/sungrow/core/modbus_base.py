@@ -220,7 +220,7 @@ class ModbusConnectionBase:
                     self._problematic_registers[reg_range.register_type].append(addr)
 
                 # Indicate that this signal is not supported.
-                return {reg_range.start: None}
+                return {r: None for r in range(reg_range.start, reg_range.end)}
             else:
                 # Let's try to find out which signal is causing the problem.
                 # We do this by splitting the range in half and trying each half.

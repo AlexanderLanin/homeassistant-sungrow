@@ -16,7 +16,6 @@ from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
 
 import fix_path  # type: ignore  # noqa: F401
-import yaml
 
 from custom_components.sungrow.core import (
     deserialize,
@@ -44,8 +43,14 @@ class TaskResult:
     host: str
     slave: int | None = None
     raw_data: dict[RegisterType, RawData] | None = None
-    read_calls: int = None
+    read_calls: int | None = None
     error: Exception | None = None
+
+
+# FIXME data collection is way too slow.
+# Fixing split_range_into_halfs will help a little, but not a lot.
+# We need to re-add WiNet detection and/or filtering by models.
+# e.g. ~130 unsupported registers = 130 useless queries.
 
 
 async def collect_data_via_py_modbus(
@@ -256,6 +261,7 @@ def markdown_write_summary(f, task_results: list[TaskResult]):
         elif t.error:
             result = "Failed"
             assert isinstance(t.error, Exception)
+            # FIXME error message is not printed
             error = f"{t.error.__class__.__name__}: {t.error}"
         else:
             result = "internal error"
