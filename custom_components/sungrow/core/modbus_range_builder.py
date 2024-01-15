@@ -59,63 +59,49 @@ class _ModifyableRange:
     def __str__(self):
         return f"Range({self.register_type}, {self.start}-{self.end-1})"
 
-
-class _RangeBuilder:
-    def __init__(
+    def can_add(
         self,
-        signals: list[Signal],
+        signal: Signal,
         max_registers_per_range: int,
-        blocked_registers: dict[RegisterType, list[int]],
-    ):
-        self.signals = signals
-        self.max_registers_per_range = max_registers_per_range
-        self.blocked_registers = blocked_registers
-
-    def _build_ranges(self, register_type: RegisterType) -> list[RegisterRange]:
-        ranges: list[RegisterRange] = []
-        current_range: _ModifyableRange | None = None
-
-        for signal in _sorted_and_filtered(self.signals, register_type):
-            if current_range is None:
-                current_range = _ModifyableRange(signal)
-            elif self._can_add(current_range, signal):
-                current_range.add(signal)
-            else:
-                ranges.append(current_range.to_register_range())
-                current_range = _ModifyableRange(signal)
-
-        if current_range is not None:
-            ranges.append(current_range.to_register_range())
-
-        return ranges
-
-    def build_ranges(self) -> list[RegisterRange]:
-        # We need to build the ranges for read and hold separately, as they can't be
-        # mixed/combined.
-        return [
-            *self._build_ranges(RegisterType.READ),
-            *self._build_ranges(RegisterType.HOLD),
-        ]
-
-    def _can_add(self, current_range: _ModifyableRange, signal: Signal) -> bool:
+        blocked_registers: list[int],
+    ) -> bool:
         """Check if the signal can be added to the current range."""
 
-        if signal.end - current_range.start > self.max_registers_per_range:
+        if signal.end - self.start > max_registers_per_range:
             return False
 
-        if self._is_any_addr_blocked(
-            current_range.register_type, current_range.end, signal.address
-        ):
+        anything_blocked = any(
+            addr in blocked_registers for addr in range(self.end, signal.address)
+        )
+
+        if anything_blocked:
             return False
 
         return True
 
-    def _is_any_addr_blocked(
-        self, register_type: RegisterType, start: int, end: int
-    ) -> bool:
-        return any(
-            addr in self.blocked_registers[register_type] for addr in range(start, end)
-        )
+
+def _build_ranges(
+    register_type: RegisterType,
+    signals: list[Signal],
+    max_registers_per_range: int,
+    blocked_registers: dict[RegisterType, list[int]],
+) -> list[RegisterRange]:
+    ranges: list[RegisterRange] = []
+    current_range: _ModifyableRange | None = None
+
+    for signal in _sorted_and_filtered(signals, register_type):
+        if current_range is None:
+            current_range = _ModifyableRange(signal)
+        elif current_range.can_add(signal, max_registers_per_range, blocked_registers):
+            current_range.add(signal)
+        else:
+            ranges.append(current_range.to_register_range())
+            current_range = _ModifyableRange(signal)
+
+    if current_range is not None:
+        ranges.append(current_range.to_register_range())
+
+    return ranges
 
 
 def build_ranges(
@@ -123,5 +109,19 @@ def build_ranges(
     max_registers_per_range: int,
     blocked_registers: dict[RegisterType, list[int]],
 ) -> list[RegisterRange]:
-    builder = _RangeBuilder(signals, max_registers_per_range, blocked_registers)
-    return builder.build_ranges()
+    # We need to build the ranges for read and hold separately, as they can't be
+    # mixed/combined.
+    return [
+        *_build_ranges(
+            RegisterType.READ,
+            signals,
+            max_registers_per_range,
+            blocked_registers[RegisterType.READ],
+        ),
+        *_build_ranges(
+            RegisterType.HOLD,
+            signals,
+            max_registers_per_range,
+            blocked_registers[RegisterType.HOLD],
+        ),
+    ]

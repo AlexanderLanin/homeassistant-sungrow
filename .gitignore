@@ -1,2 +1,6 @@
 .*
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.devcontainer
+
 coverage.xml
