@@ -18,7 +18,6 @@ import pymodbus.pdu
 
 import custom_components.sungrow.core.modbus_base as modbus_base
 from custom_components.sungrow.core.modbus_base import (
-    MappedData,
     ModbusConnectionBase,
     RegisterType,
 )
@@ -63,7 +62,7 @@ class PymodbusConnection(ModbusConnectionBase):
 
     async def _read_range(  # noqa: C901 (Error handling here is complex, nothing we can do about it)
         self,
-        register_type: modbus_base.RegisterType,
+        register_type: RegisterType,
         address_start: int,
         address_count: int,
     ) -> list[int]:
@@ -75,6 +74,8 @@ class PymodbusConnection(ModbusConnectionBase):
         """
         if not await self.connect():
             raise modbus_base.CannotConnectError()
+
+        await asyncio.sleep(0.2)  # Server doesn't like it if we query too fast.
 
         try:
             func = {
@@ -92,11 +93,6 @@ class PymodbusConnection(ModbusConnectionBase):
             ) from e
 
         if rr.isError():
-            logger.info(
-                f"device error for {register_type}, "
-                f"{address_start}-{address_start+address_count}"
-            )
-
             if isinstance(rr, pymodbus.pdu.ExceptionResponse):
                 if rr.exception_code == pymodbus.pdu.ModbusExceptions.GatewayNoResponse:
                     raise modbus_base.InvalidSlaveError(
@@ -106,6 +102,7 @@ class PymodbusConnection(ModbusConnectionBase):
                     if pymodbus.__version__ == "3.6.3":
                         # pymodbus bug, see https://github.com/pymodbus-dev/pymodbus/pull/1931
                         await self.disconnect()
+                    # ToDo: consider returning None instead of raising an error
                     raise modbus_base.UnsupportedRegisterQueriedError(
                         f"Inverter does not support {address_start}-"
                         f"{address_start+address_count}: {rr}"

@@ -2,11 +2,15 @@
 Builds the register ranges for the modbus read and hold requests.
 This is complex enough to deserve its own module.
 """
+import logging
+
 from custom_components.sungrow.core.modbus_types import (
     RegisterRange,
     RegisterType,
     Signal,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _sorted_and_filtered(
@@ -36,17 +40,24 @@ class _ModifyableRange:
     @end.setter
     def end(self, value: int):
         """Set the end register address, thats the last register + 1."""
+        logger.debug(f"Setting end of {self} to {value}")
         assert 0 < value < 65536
         self.length = value - self.start
         assert 0 < self.length < 256
 
     def add(self, signal: Signal):
         """Add a signal to the range."""
+        logger.debug(
+            f"Adding {signal.name} ({signal.address}-{signal.end}) to range {self}"
+        )
         assert signal.register_type == self.register_type
-        self.end = signal.address + signal.length
+        self.end = signal.end
 
     def to_register_range(self) -> RegisterRange:
         return RegisterRange(self.register_type, self.start, self.length)
+
+    def __str__(self):
+        return f"Range({self.register_type}, {self.start}-{self.end-1})"
 
 
 class _RangeBuilder:
@@ -54,7 +65,7 @@ class _RangeBuilder:
         self,
         signals: list[Signal],
         max_registers_per_range: int,
-        blocked_registers: list[int],
+        blocked_registers: dict[RegisterType, list[int]],
     ):
         self.signals = signals
         self.max_registers_per_range = max_registers_per_range
@@ -89,22 +100,37 @@ class _RangeBuilder:
     def _can_add(self, current_range: _ModifyableRange, signal: Signal) -> bool:
         """Check if the signal can be added to the current range."""
 
-        if current_range.length + signal.length > self.max_registers_per_range:
+        if signal.end - current_range.start > self.max_registers_per_range:
             return False
 
-        if self._is_any_addr_blocked(current_range.end, signal.address):
+        if self._is_any_addr_blocked(
+            current_range.register_type, current_range.end, signal.address
+        ):
             return False
 
         return True
 
-    def _is_any_addr_blocked(self, start: int, end: int) -> bool:
-        return any(addr in self.blocked_registers for addr in range(start, end))
+    def _is_any_addr_blocked(
+        self, register_type: RegisterType, start: int, end: int
+    ) -> bool:
+        return any(
+            addr in self.blocked_registers[register_type] for addr in range(start, end)
+        )
 
 
 def build_ranges(
     signals: list[Signal],
     max_registers_per_range: int,
-    blocked_registers: list[int],
+    blocked_registers: dict[RegisterType, list[int]] | None = None,
 ) -> list[RegisterRange]:
+    # These ifs are actually just for tests
+    if blocked_registers is None:
+        blocked_registers = {RegisterType.READ: [], RegisterType.HOLD: []}
+    else:
+        if RegisterType.READ not in blocked_registers:
+            blocked_registers[RegisterType.READ] = []
+        if RegisterType.HOLD not in blocked_registers:
+            blocked_registers[RegisterType.HOLD] = []
+
     builder = _RangeBuilder(signals, max_registers_per_range, blocked_registers)
     return builder.build_ranges()

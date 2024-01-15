@@ -8,6 +8,8 @@ import logging
 
 from custom_components.sungrow.core.modbus_range_builder import build_ranges
 from custom_components.sungrow.core.modbus_types import (
+    MappedData,
+    RawData,
     RegisterRange,
     RegisterType,
     Signal,
@@ -15,15 +17,10 @@ from custom_components.sungrow.core.modbus_types import (
 
 logger = logging.getLogger(__name__)
 
-# e.g. {RegisterType.READ: {0: 123, 1: 456}}
-# in case the register is not supported, the value is None
-RawData = dict[RegisterType, dict[int, int | None]]
-
-# e.g. {"ac_power": [123, 456]}
-MappedData = dict[str, list[int] | None]
-
 
 class ModbusError(Exception):
+    """Generic error for all modbus related errors."""
+
     pass
 
 
@@ -41,7 +38,65 @@ class CannotConnectError(ModbusError):
 
 
 class UnsupportedRegisterQueriedError(ModbusError):
+    """
+    When the implementing class throws this, the base class will try to read
+    each register individually to find out which one is not supported.
+
+    It will then avoid querying that register in the future.
+    """
+
     pass
+
+
+def map_raw_to_signals(
+    raw_data: dict[RegisterType, RawData], signal_list: list[Signal]
+) -> MappedData:
+    """
+    Note: While this doesn't sound like it belongs into this class,
+    it's usually also not intended to be called directly, but by read().
+    But for some less common use cases it might be useful to call this directly
+    """
+    return {
+        signal.name: ModbusConnectionBase._get_values_for_signal(
+            raw_data[signal.register_type], signal
+        )
+        for signal in signal_list
+    }
+
+
+def split_range_into_halfs(
+    signals: list[Signal], range: RegisterRange
+) -> tuple[RegisterRange, RegisterRange]:
+    """
+    Splits the given range into two halfs.
+    The first half will be shorter if the range has an odd length.
+    """
+    # FIXME split across signals, not registers
+
+    assert range.length > 1
+    t = range.register_type
+    first_half = RegisterRange(t, range.start, range.length // 2)
+    second_half = RegisterRange(t, first_half.end, range.end - first_half.end)
+
+    assert first_half.length + second_half.length == range.length
+    assert second_half.end == range.end
+
+    return first_half, second_half
+
+
+def signals_overlapping_range(
+    signals: list[Signal], range: RegisterRange
+) -> list[Signal]:
+    """
+    Returns a list of signals that partially overlap with the given range.
+    """
+    return [
+        signal
+        for signal in signals
+        if signal.register_type == range.register_type
+        and signal.address < range.end
+        and signal.end > range.start
+    ]
 
 
 class ModbusConnectionBase:
@@ -52,12 +107,19 @@ class ModbusConnectionBase:
         self._port = port
         self._slave = slave
         self._detached = False
+        self._read_calls = 0
 
         # These signals are not supported by the inverter.
-        # We will not try to read them again.
         # This is required, as we read entire ranges at once and need to avoid having
         # any of these within the range we reading.
-        self._problematic_registers: list[int] = []
+        self._problematic_registers: dict[RegisterType, list[int]] = {
+            RegisterType.READ: [],
+            RegisterType.HOLD: [],
+        }
+
+    @property
+    def read_calls(self):
+        return self._read_calls
 
     def detach(self):
         """Detach from context manager."""
@@ -73,24 +135,33 @@ class ModbusConnectionBase:
     async def read(
         self, signal_list: list[Signal], max_combined_registers=100
     ) -> MappedData:
+        raw_data = await self.read_raw(signal_list, max_combined_registers)
+        return map_raw_to_signals(raw_data, signal_list)
+
+    ## -- DETAILED IMPLEMENTATION --
+
+    async def read_raw(
+        self, signal_list: list[Signal], max_combined_registers=100
+    ) -> dict[RegisterType, RawData]:
+        logger.debug(f"read_raw({len(signal_list)} signals)")
+
         if not await self.connect():
             raise CannotConnectError("Not connected to inverter, but read() was called")
 
         # We cannot query all signals at once, as the inverter will not respond.
         # So we split the signals into ranges and query each range separately.
-        ranges = self._calculate_ranges(
-            signal_list, max_length_per_range=max_combined_registers
+        # Build as few ranges as possible:
+        ranges = build_ranges(
+            signal_list, max_combined_registers, self._problematic_registers
         )
+        logger.debug(f"Ranges: {ranges}")
 
         # Read each range
-        # TODO: can we run these in parallel? via asyncio.gather()
-        all: MappedData = {}
+        raw_data: dict[RegisterType, RawData] = {r: {} for r in RegisterType}
         for r in ranges:
-            range_values = await self._read_range_base(signal_list, r)
-            all.update(range_values)
-        return all
-
-    ## -- DETAILED IMPLEMENTATION --
+            values = await self._read_range_base(signal_list, r)
+            raw_data[r.register_type].update(values)
+        return raw_data
 
     async def __aenter__(self):
         """Called on 'async with' enter."""
@@ -103,89 +174,66 @@ class ModbusConnectionBase:
         if not self._detached:
             await self.disconnect()
 
-    def _calculate_ranges(
-        self, signals: list[Signal], max_length_per_range=100
-    ) -> list[RegisterRange]:
-        """
-        Create as few ranges as possible from a list of signals.
+    async def _call_read_raw(self, range: RegisterRange) -> RawData:
+        """Wrapper for _read_range() that returns RawData."""
+        logger.debug(f"_call_read_raw({range})")
 
-        Note: this accepts a tuple of signals, not a list.
-        The idea is that usually the same list of signals is passed to this function.
-        This is a simple attempt to speed up the function.
-        """
-        return build_ranges(signals, max_length_per_range, self._problematic_registers)
+        self._read_calls += 1
 
-    async def _call_read_raw_and_map_to_signals(
-        self, range: RegisterRange, signal_list: list[Signal]
-    ) -> MappedData:
+        # _read_range() is implemented by the subclass.
+        # It's returning a list of registers, so we need to map it.
         raw_list = await self._read_range(
             register_type=range.register_type,
             address_start=range.start,
             address_count=range.length,
         )
-        raw_dict: RawData = {
-            range.register_type: {
-                range.start + i: value for i, value in enumerate(raw_list)
-            }
-        }
-        return ModbusConnectionBase.map_raw_to_signals(raw_dict, signal_list)
+        raw_dict: RawData = {range.start + i: value for i, value in enumerate(raw_list)}
+        return raw_dict
 
     async def _read_range_base(
-        self, signal_list: list[Signal], range: RegisterRange
-    ) -> MappedData:
+        self, signal_list: list[Signal], reg_range: RegisterRange
+    ) -> RawData:
+        """Wrapper for _read_range() that handles unsupported registers."""
+        logger.debug(f"_read_range_base({reg_range})")
+
         try:
             # Try reading the entire range at once.
             # Usually this will work, except at startup.
-            return await self._call_read_raw_and_map_to_signals(range, signal_list)
+            return await self._call_read_raw(reg_range)
         except UnsupportedRegisterQueriedError:
-            logger.debug(
-                f"Failed to read {range.register_type} registers "
-                f"from {range.start} to {range.start + range.length}."
-            )
+            logger.debug(f"{reg_range} contains unsupported registers.")
 
-            # Some registers are not supported by WiNet.
+            # Some registers are not supported.
             # That means we need to break up the range and try again.
-            signals_in_failed_range = (
-                ModbusConnectionBase._get_signals_in_a_register_range(
-                    signal_list, range
-                )
-            )
+
             # This if differentiates between first appearance of problem and
             # second attempt (recursive call).
-            if len(signals_in_failed_range) == 1:
-                signal = signals_in_failed_range[0]
-
-                logger.debug(
-                    f"Failed to read {signal.name}, stopping further attempts."
-                )
-                # It's enough to store the address, not the length.
-                # Future ranges will not be extended over that address.
-                self._problematic_registers.append(signal.address)
+            # We'll abort when a single register is queried or when a single signal is
+            # queried.
+            # FIXME: overlap is wrong!! covered by a single signal is the question!!
+            # Since we might not have all signals in the list! Only the ones that were
+            # actually queried.
+            overlapping = signals_overlapping_range(signal_list, reg_range)
+            if reg_range.length == 1 or len(overlapping) == 1:
+                logger.debug(f"Failed to read {reg_range} ({overlapping})")
+                for addr in range(reg_range.start, reg_range.end):
+                    self._problematic_registers[reg_range.register_type].append(addr)
 
                 # Indicate that this signal is not supported.
-                return {signal.name: None}
+                return {reg_range.start: None}
             else:
                 # Let's try to find out which signal is causing the problem.
-                # This is slow, but as it's only done once per inverter, there is no
-                # major need to optimize this.
-                logger.debug("Reading each signal individually...")
-                # FIXME as we dont read the entire range this could miss the problematic register!!!
-                # That means we always end up in the exceptional case.
-                return await self.read(
-                    signals_in_failed_range, max_combined_registers=1
+                # We do this by splitting the range in half and trying each half.
+                first_half, second_half = split_range_into_halfs(overlapping, reg_range)
+                logger.debug(
+                    "Calling _read_range_base recursively on "
+                    f"{first_half} and {second_half}"
                 )
-
-    @staticmethod
-    def map_raw_to_signals(raw_data: RawData, signal_list: list[Signal]) -> MappedData:
-        """
-        Note: While this doesn't sound like it belongs into this class,
-        it's usually also not intended to be called directly, but by read().
-        But for some less common use cases it might be useful to call this directly
-        """
-        return {
-            signal.name: ModbusConnectionBase._get_values_for_signal(raw_data, signal)
-            for signal in signal_list
-        }
+                a = await self._read_range_base(signal_list, first_half)
+                b = await self._read_range_base(signal_list, second_half)
+                assert a.keys().isdisjoint(b.keys())
+                a.update(b)
+                return a
 
     @staticmethod
     def _get_signals_in_a_register_range(
@@ -205,9 +253,7 @@ class ModbusConnectionBase:
         ]
 
     @staticmethod
-    def _get_values_for_signal(all_data: RawData, signal: Signal):
-        r = all_data[signal.register_type]
-
+    def _get_values_for_signal(r: RawData, signal: Signal):
         all_available = all(
             r.get(addr) is not None
             for addr in range(signal.address, signal.address + signal.length)

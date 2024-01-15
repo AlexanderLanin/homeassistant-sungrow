@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import time
@@ -112,6 +113,8 @@ class HttpConnection(ModbusConnectionBase):
             modbus_base.RegisterType.HOLD: 1,
         }
 
+        await asyncio.sleep(0.3)  # Server simply disconnects if we query too fast.
+
         params = {
             "dev_id": self._inverter["dev_id"],
             "dev_type": self._inverter["dev_type"],
@@ -129,10 +132,14 @@ class HttpConnection(ModbusConnectionBase):
             url += f"{k}={v}&"
 
         logger.debug(f"getting: {url}")
-        r = await self._httpx_client.get(url)
+        try:
+            r = await self._httpx_client.get(url)
+        except Exception as e:
+            raise modbus_base.CannotConnectError(f"Connection Failed: {e}") from None
+
         if r.status_code == 200:
             response = r.json()
-            logger.debug("Response: {response}")
+            logger.debug(f"Response: {response}")
             result_code = response.get("result_code", 0)
             if result_code == 1:
                 modbus_data = response["result_data"]["param_value"].split(" ")
@@ -152,6 +159,10 @@ class HttpConnection(ModbusConnectionBase):
                 raise modbus_base.CannotConnectError(
                     f"Token Expired: {response.get('result_msg')}"
                 )
+            elif response.get("result_code", 0) == 301:  # common read failed
+                # For me this really happens on the same register every time.
+                # So maybe it's not supported...
+                raise modbus_base.UnsupportedRegisterQueriedError("Common Read Failed")
             else:
                 raise modbus_base.CannotConnectError(
                     "Unknown response while trying to query "

@@ -19,7 +19,7 @@ def simple_signal(name, address, register_type=RegisterType.READ, element_length
 def test_modbus_calculate_ranges_trivial():
     signals = [simple_signal("A", 1000)]
 
-    assert build_ranges(signals, 100, []) == [
+    assert build_ranges(signals, 100) == [
         RegisterRange(RegisterType.READ, start=1000, length=1),
     ]
 
@@ -30,7 +30,7 @@ def test_modbus_calculate_ranges_bounds():
         simple_signal("B", 1099),
     ]
 
-    assert build_ranges(signals, 100, []) == [
+    assert build_ranges(signals, 100) == [
         RegisterRange(RegisterType.READ, start=1000, length=100),
     ]
 
@@ -43,7 +43,7 @@ def test_modbus_calculate_ranges_bounds_mixed():
         simple_signal("E", 1149, RegisterType.HOLD),
     ]
 
-    assert build_ranges(signals, 100, []) == [
+    assert build_ranges(signals, 100) == [
         RegisterRange(RegisterType.READ, start=1000, length=100),
         RegisterRange(RegisterType.HOLD, start=1050, length=100),
     ]
@@ -55,17 +55,17 @@ def test_modbus_calculate_ranges_blocked():
         simple_signal("B", 5020),
     ]
 
-    assert build_ranges(signals, 100, []) == [
+    assert build_ranges(signals, 100) == [
         RegisterRange(RegisterType.READ, start=5000, length=21),
     ]
 
     # blocked registers outside the range should not matter
-    assert build_ranges(signals, 100, [4999, 5021]) == [
+    assert build_ranges(signals, 100, {RegisterType.READ: [4999, 5021]}) == [
         RegisterRange(RegisterType.READ, start=5000, length=21),
     ]
 
     # blocked registers in the middle prevent merging
-    assert build_ranges(signals, 100, [5010]) == [
+    assert build_ranges(signals, 100, {RegisterType.READ: [5010]}) == [
         RegisterRange(RegisterType.READ, start=5000, length=1),
         RegisterRange(RegisterType.READ, start=5020, length=1),
     ]

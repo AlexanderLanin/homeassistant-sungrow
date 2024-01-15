@@ -19,6 +19,14 @@ class RegisterRange:
     start: int
     length: int
 
+    @property
+    def end(self):
+        """The address after the last address of the range."""
+        return self.start + self.length
+
+    def __str__(self):
+        return f"Range({self.register_type}, {self.start}-{self.end-1})"
+
 
 @dataclass
 class Signal:
@@ -32,3 +40,17 @@ class Signal:
     @property
     def length(self):
         return self.element_length * self.array_length
+
+    @property
+    def end(self):
+        """The address after the last address of the signal."""
+        return self.address + self.length
+
+
+# In case the register is not supported, the value is None
+# e.g. {0: 123, 1: 456: 2: None}
+RawData = dict[int, int | None]
+
+# In case the signal is not supported, the value is None
+# e.g. {"ac_power": [123, 456], "ac_current": None}
+MappedData = dict[str, list[int] | None]

@@ -1,6 +1,6 @@
 import logging
 
-from .modbus_py import MappedData
+from .modbus_base import MappedData
 from .signals import (
     DatapointValueType,
     DatapointValueTypeBase,
