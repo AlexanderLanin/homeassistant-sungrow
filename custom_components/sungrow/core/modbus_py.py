@@ -45,6 +45,7 @@ class PymodbusConnection(ModbusConnectionBase):
         if self._client.connected:
             return True
         else:
+            self._stats.connections += 1
             return await self._client.connect()
 
     async def disconnect(self):

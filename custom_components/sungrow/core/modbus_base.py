@@ -5,6 +5,7 @@ can perform a clever optimization to reduce the number of queries.
 """
 
 import logging
+from dataclasses import dataclass
 
 from custom_components.sungrow.core.modbus_range_builder import build_ranges
 from custom_components.sungrow.core.modbus_types import (
@@ -102,12 +103,18 @@ def signals_overlapping_range(
 class ModbusConnectionBase:
     """A pymodbus connection to a single slave."""
 
+    @dataclass
+    class Stats:
+        connections: int = 0
+        read_calls: int = 0
+        read_errors: int = 0
+
     def __init__(self, host: str, port: int, slave: int):
         self._host = host
         self._port = port
         self._slave = slave
         self._detached = False
-        self._read_calls = 0 # Make this a full blown stats object? e.g. connections, read calls, read errors, etc.
+        self._stats = ModbusConnectionBase.Stats()
 
         # These signals are not supported by the inverter.
         # This is required, as we read entire ranges at once and need to avoid having
@@ -127,6 +134,7 @@ class ModbusConnectionBase:
         return self
 
     async def connect(self):
+        # Note: for proper stats, you need to increase self._stats.connections
         raise NotImplementedError()
 
     async def disconnect(self):
@@ -178,15 +186,19 @@ class ModbusConnectionBase:
         """Wrapper for _read_range() that returns RawData."""
         logger.debug(f"_call_read_raw({range})")
 
-        self._read_calls += 1
-
         # _read_range() is implemented by the subclass.
         # It's returning a list of registers, so we need to map it.
-        raw_list = await self._read_range(
-            register_type=range.register_type,
-            address_start=range.start,
-            address_count=range.length,
-        )
+        try:
+            self._stats.read_calls += 1
+            raw_list = await self._read_range(
+                register_type=range.register_type,
+                address_start=range.start,
+                address_count=range.length,
+            )
+        except Exception:
+            self._stats.read_errors += 1
+            raise
+
         raw_dict: RawData = {range.start + i: value for i, value in enumerate(raw_list)}
         return raw_dict
 
@@ -255,8 +267,7 @@ class ModbusConnectionBase:
     @staticmethod
     def _get_values_for_signal(r: RawData, signal: Signal):
         all_available = all(
-            r.get(addr) is not None
-            for addr in range(signal.address, signal.end)
+            r.get(addr) is not None for addr in range(signal.address, signal.end)
         )
         if not all_available:
             return None
