@@ -12,6 +12,7 @@ pytest_plugins = ("pytest_asyncio",)
 
 # This doesn't match anymore as the code has changed, but it's still a good example.
 # Now the code pull all registers on connect and will fail with invalid responses.
+@pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 @pytest.mark.asyncio
 async def te_st_create_inverter_with_mocked_modbus():
     with (
