@@ -1,6 +1,7 @@
 import logging
 from unittest.mock import patch
 
+import fix_path  # type: ignore  # noqa: F401
 import pytest
 
 from custom_components.sungrow.core import inverter, modbus_base, modbus_py

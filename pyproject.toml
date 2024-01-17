@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "homeassistant-sungrow"
+version = "0.0.1dev"
+description = "Sungrow integration"
+authors = ["Alexander Lanin <alex@lanin.de>"]
+license = "to be decided"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+pymodbus = { git = "https://github.com/pymodbus-dev/pymodbus.git", rev = "54c734c823bbaf9d3915fa29f9460eb0b11ce197" }
+httpx = "*"
+websocket-client = "*"
+homeassistant = "^2024.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-homeassistant-custom-component = "*"
+pytest-xdist = "*"
+
+[tool.poetry.group.scripts.dependencies]
+tabulate = "*"
+requests = "*"
+
+[tool.poetry.group.quality.dependencies]
+beartype = "*"
+ruff = "*"
+mypy = "*"
+types-requests = "*"
+types-PyYAML = "*"
+types-tabulate = "*"
+homeassistant-stubs = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

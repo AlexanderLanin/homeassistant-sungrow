@@ -1,3 +1,5 @@
+import fix_path  # type: ignore  # noqa: F401
+
 from custom_components.sungrow.core import deserialize, modbus_py, signals
 
 

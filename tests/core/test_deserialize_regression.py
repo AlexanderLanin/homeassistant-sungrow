@@ -1,6 +1,7 @@
 import pathlib
 from typing import cast
 
+import fix_path  # type: ignore  # noqa: F401
 import yaml
 
 from custom_components.sungrow.core import deserialize, modbus_base, modbus_py, signals

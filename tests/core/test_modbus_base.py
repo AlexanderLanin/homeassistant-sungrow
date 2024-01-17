@@ -1,3 +1,5 @@
+import fix_path  # type: ignore  # noqa: F401
+
 from custom_components.sungrow.core.modbus_base import split_range_into_halfs
 from custom_components.sungrow.core.modbus_types import (
     RegisterRange,

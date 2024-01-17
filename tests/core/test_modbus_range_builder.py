@@ -1,9 +1,12 @@
+import fix_path  # type: ignore  # noqa: F401
+
 from custom_components.sungrow.core.modbus_range_builder import build_ranges
 from custom_components.sungrow.core.modbus_types import (
     RegisterRange,
     RegisterType,
     Signal,
 )
+
 
 def call_build_ranges(
     signals: list[Signal],
@@ -23,6 +26,7 @@ def call_build_ranges(
         max_registers_per_range,
         blocked_registers,
     )
+
 
 def simple_signal(name, address, register_type=RegisterType.READ, element_length=1):
     return Signal(
