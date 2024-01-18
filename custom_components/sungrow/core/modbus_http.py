@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import time
+from typing import Any
 
 import httpx
 from websocket import create_connection
@@ -97,10 +98,10 @@ class HttpConnection(ModbusConnectionBase):
 
     async def _handle_response(
         self,
-        response: dict[str, str | int],
+        response: dict[str, Any],
         register_type: RegisterType,
         address_start: int,
-    ):
+    ) -> list[int]:
         logger.debug(f"Response: {response}")
         result_code = response.get("result_code", 0)
         if result_code == 1:

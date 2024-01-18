@@ -5,7 +5,6 @@ This is complex enough to deserve its own module.
 import logging
 
 from custom_components.sungrow.core.modbus_types import (
-    RegisterRange,
     RegisterType,
     Signal,
 )
@@ -22,93 +21,66 @@ def _sorted_and_filtered(
     )
 
 
-class _ModifyableRange:
-    register_type: RegisterType
-    start: int
-    length: int
-
-    def __init__(self, signal: Signal):
-        self.register_type = signal.register_type
-        self.start = signal.address
-        self.length = signal.length
-
-    @property
-    def end(self) -> int:
-        """The register address after the last register in the range."""
-        return self.start + self.length
-
-    @end.setter
-    def end(self, value: int):
-        """Set the end register address, thats the last register + 1."""
-        logger.debug(f"Setting end of {self} to {value}")
-        assert 0 < value < 65536
-        self.length = value - self.start
-        assert 0 < self.length < 256
-
-    def add(self, signal: Signal):
-        """Add a signal to the range."""
-        logger.debug(
-            f"Adding {signal.name} ({signal.address}-{signal.end}) to range {self}"
-        )
-        assert signal.register_type == self.register_type
-        self.end = signal.end
-
-    def to_register_range(self) -> RegisterRange:
-        return RegisterRange(self.register_type, self.start, self.length)
-
-    def __str__(self):
-        return f"Range({self.register_type}, {self.start}-{self.end-1})"
-
-    def can_add(
-        self,
-        signal: Signal,
-        max_registers_per_range: int,
-        blocked_registers: list[int],
-    ) -> bool:
-        """Check if the signal can be added to the current range."""
-
-        if signal.end - self.start > max_registers_per_range:
-            return False
-
-        anything_blocked = any(
-            addr in blocked_registers for addr in range(self.end, signal.address)
-        )
-
-        if anything_blocked:
-            return False
-
+def can_add(
+    current_range: list[Signal],
+    signal: Signal,
+    max_registers_per_range: int,
+    blocked_registers: list[int],
+) -> bool:
+    """Check if the signal can be added to the current range."""
+    if not current_range:
         return True
+
+    if signal.end - current_range[0].address > max_registers_per_range:
+        return False
+
+    anything_blocked = any(
+        addr in blocked_registers
+        for addr in range(current_range[-1].end, signal.address)
+    )
+
+    if anything_blocked:
+        return False
+
+    return True
 
 
 def _build_ranges(
     register_type: RegisterType,
     signals: list[Signal],
     max_registers_per_range: int,
-    blocked_registers: dict[RegisterType, list[int]],
-) -> list[RegisterRange]:
-    ranges: list[RegisterRange] = []
-    current_range: _ModifyableRange | None = None
+    blocked_registers: list[int],
+) -> list[list[Signal]]:
+    ranges: list[list[Signal]] = []
+
+    current_range: list[Signal] = []
 
     for signal in _sorted_and_filtered(signals, register_type):
-        if current_range is None:
-            current_range = _ModifyableRange(signal)
-        elif current_range.can_add(signal, max_registers_per_range, blocked_registers):
-            current_range.add(signal)
+        if can_add(current_range, signal, max_registers_per_range, blocked_registers):
+            current_range.append(signal)
         else:
-            ranges.append(current_range.to_register_range())
-            current_range = _ModifyableRange(signal)
+            ranges.append(current_range)
+            current_range = []
 
-    if current_range is not None:
-        ranges.append(current_range.to_register_range())
+    if current_range:
+        ranges.append(current_range)
 
     return ranges
 
 
-def build_ranges(
+def split_list(
     signals: list[Signal],
     max_registers_per_range: int,
     blocked_registers: dict[RegisterType, list[int]],
-) -> list[RegisterRange]:
+) -> list[list[Signal]]:
+    """
+    Split the list of signals into ranges.
+    Each range is guaranteed to:
+    - not contain any blocked registers
+    - not exceed the max_registers_per_range
+    - be sorted by address
+    - only contain signals of the same register type
+    """
     # We need to build the ranges for read and hold separately, as they can't be
     # mixed/combined.
     return [

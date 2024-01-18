@@ -2,7 +2,7 @@
 
 import logging
 
-import fix_path  # type: ignore  # noqa: F401
+import fix_path  # noqa: F401
 import yaml
 
 from custom_components.sungrow.core import deserialize, inverter, modbus_py, signals
