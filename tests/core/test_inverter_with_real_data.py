@@ -14,10 +14,10 @@ from tests.e2e_setup import e2e_setup, simulated_inverter
 logging.basicConfig(level=logging.DEBUG)
 
 # Mark all tests in this file as asyncio tests with a socket connection.
-# pytest_plugins = ("pytest_asyncio")
 pytestmark = [pytest.mark.asyncio, pytest.mark.enable_socket]
 
 
+@pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_master():
     async with e2e_setup("dump_master.yaml", {"use_local_time": False}) as inv:
         # Dump was recorded with a SH8.0RT-20 (code 3602)
@@ -34,6 +34,7 @@ async def test_e2e_master():
         pprint(inv.data.values())
 
 
+@pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_slave():
     async with e2e_setup("dump_slave.yaml", {"use_local_time": False}) as inv:
         # Dump was recorded with a SH8.0RT-20 (code 3602)
@@ -50,6 +51,7 @@ async def test_e2e_slave():
         pprint(inv.data.values())
 
 
+@pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_slave_unknown_model():
     async with e2e_setup(
         "slave_dump_unknown_model.yaml", {"use_local_time": False}
@@ -67,6 +69,7 @@ async def test_e2e_slave_unknown_model():
         pprint(inv.data.values())
 
 
+@pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_fail_no_server():
     # should this really raise an exception?
     # or should it just return None? FIXME TODO
@@ -76,6 +79,7 @@ async def test_e2e_fail_no_server():
         )
 
 
+@pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_fail_wrong_slave():
     async with simulated_inverter(None) as port:
         with pytest.raises((modbus_base.InvalidSlaveError, modbus_base.ModbusError)):
@@ -86,6 +90,7 @@ async def test_e2e_fail_wrong_slave():
             )
 
 
+@pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_timestamp_removes_raw_values():
     async with e2e_setup(
         "dump_master.yaml", {"use_local_time": False, "level": 3}

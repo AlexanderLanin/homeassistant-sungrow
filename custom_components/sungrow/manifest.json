@@ -12,8 +12,7 @@
   "requirements": [
     "pymodbus~=3.6.2",
     "httpx~=0.25",
-    "websocket-client~=1.7.0",
-    "beartype"
+    "websocket-client~=1.7.0"
   ],
   "version": "0.0.1"
 }
