@@ -67,22 +67,28 @@ def map_raw_to_signals(
 
 def split_range_into_halfs(
     signals: list[Signal], range: RegisterRange
-) -> tuple[RegisterRange, RegisterRange]:
+) -> tuple[RegisterRange, RegisterRange | None] | None:
     """
     Splits the given range into two halfs.
-    The first half will be shorter if the range has an odd length.
+
+    signals: list of signals that are contained in the range.
+             Sorted by address. At least two.
     """
-    # FIXME split across signals, not registers
+    if len(signals) <= 1:
+        raise ValueError("Expected >= 2 signals; Recusion error?")
 
-    assert range.length > 1
-    t = range.register_type
-    first_half = RegisterRange(t, range.start, range.length // 2)
-    second_half = RegisterRange(t, first_half.end, range.end - first_half.end)
+    # Range 1
+    range1_start = signals[0].address
+    range1_end = signals[len(signals) // 2 - 1].end
+    range1 = RegisterRange(range.register_type, range1_start, range1_end - range1_start)
 
-    assert first_half.length + second_half.length == range.length
-    assert second_half.end == range.end
+    # Range 2
+    first_signal_in_range2 = signals[len(signals) // 2]
+    range2_start = first_signal_in_range2.address
+    range2_end = signals[-1].end
+    range2 = RegisterRange(range.register_type, range2_start, range2_end - range2_start)
 
-    return first_half, second_half
+    return range1, range2
 
 
 def signals_overlapping_range(
@@ -222,9 +228,6 @@ class ModbusConnectionBase:
             # second attempt (recursive call).
             # We'll abort when a single register is queried or when a single signal is
             # queried.
-            # FIXME: overlap is wrong!! covered by a single signal is the question!!
-            # Since we might not have all signals in the list! Only the ones that were
-            # actually queried.
             overlapping = signals_overlapping_range(signal_list, reg_range)
             if reg_range.length == 1 or len(overlapping) == 1:
                 logger.debug(f"Failed to read {reg_range} ({overlapping})")

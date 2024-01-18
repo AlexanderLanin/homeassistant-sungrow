@@ -48,7 +48,6 @@ class TaskResult:
 
 
 # FIXME data collection is way too slow.
-# Fixing split_range_into_halfs will help a little, but not a lot.
 # We need to re-add WiNet detection and/or filtering by models.
 # e.g. ~130 unsupported registers = 130 useless queries.
 

@@ -1,10 +1,18 @@
 {
     "image": "mcr.microsoft.com/devcontainers/python:0-3.11-bullseye",
-    "postCreateCommand": "pip install -r requirements.txt --upgrade",
+    "postCreateCommand": [
+        "pip install poetry",
+        "poetry install",
+        "poetry shell" // Will this affect the default shell?
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
                 "charliermarsh.ruff"
+            ],
+            // Not sure if it will work from here:
+            "python.experiments.optOutFrom": [
+                "pythonTestAdapter"
             ]
         }
     }
