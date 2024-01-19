@@ -5,6 +5,7 @@ from typing import Any
 import voluptuous as vol  # type: ignore
 from homeassistant.config_entries import ConfigFlow
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SLAVE
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 
 from .const import DOMAIN
 from .core.inverter import SungrowInverter
@@ -27,8 +28,15 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
 
         schema = {
             vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): str,
-            vol.Required(CONF_PORT, default=user_input.get(CONF_PORT, 502)): int,
-            vol.Required(CONF_SLAVE, default=user_input.get(CONF_SLAVE, 1)): int,
+            vol.Optional(CONF_PORT, default=user_input.get(CONF_PORT, "")): int,
+            vol.Optional(CONF_SLAVE, default=user_input.get(CONF_SLAVE, "")): int,
+            vol.Optional(
+                "connection", default=user_input.get("connection", "modbus")
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=["modbus", "sungrow", "http"], translation_key="connection"
+                )
+            ),
         }
 
         return self.async_show_form(

@@ -9,6 +9,18 @@ from .const import DOMAIN
 logger = logging.getLogger(__name__)
 
 
+async def async_setup(hass: HomeAssistant, config: dict):
+    """Set up the Sungrow inverter component."""
+    logger.warning(f"async_setup(config={config})")
+
+    # We'll be collecting some persistent data in hass.data
+    hass.data.setdefault(DOMAIN, {})
+
+    # We don't need to do anything here, since we'll be setting up
+    # our inverter(s) in async_setup_entry, which gets called later on
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Entry point to instantiate an inverter, based on a config."""
 

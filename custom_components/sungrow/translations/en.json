@@ -17,8 +17,9 @@
                     "use_local_time": "Use local time?"
                 },
                 "data_description": {
-                    "host": "Note: In case of IP make sure it's static\n",
-                    "slave": "Note: MODBUS slave number is usually 1 for standalone/master inverters and 2 for slave inverters\n"
+                    "host": "Note: In case you use an IP, make sure it's static",
+                    "port": "Empty: auto-detect\n\n\n",
+                    "slave": "Empty: auto-detect<br /><br /><br />"
                 }
             }
         }
