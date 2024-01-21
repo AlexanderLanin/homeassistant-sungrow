@@ -4,7 +4,6 @@ from .modbus_base import MappedData
 from .signals import (
     DatapointValueType,
     DatapointValueTypeBase,
-    SignalDefinitions,
     SungrowSignalDefinition,
 )
 
@@ -99,11 +98,11 @@ def _decode_signal(
 
 
 def decode_signals(
-    signal_definitions: SignalDefinitions,
+    signal_list: list[SungrowSignalDefinition],
     raw_signals: MappedData,
 ) -> dict[str, DatapointValueType]:
     decoded: dict[str, DatapointValueType] = {}
-    for signal_name, raw_value in raw_signals.items():
-        signal = signal_definitions.get_signal_definition_by_name(signal_name)
-        decoded[signal_name] = _decode_signal(signal, raw_value) if raw_value else None
+    for signal in signal_list:
+        value = raw_signals[signal.name]
+        decoded[signal.name] = _decode_signal(signal, value) if value else None
     return decoded

@@ -74,12 +74,15 @@ class SignalDefinitions:
     def __init__(self, definitions: dict[str, SungrowSignalDefinition]):
         self._definitions = definitions
 
-    def enabled_modbus_signals(self):
-        filtered: list[Signal] = []
+    def enabled_signals(self):
+        filtered: list[SungrowSignalDefinition] = []
         for signal in self._definitions.values():
             if not signal.disabled:
                 filtered.append(signal)
         return filtered
+
+    def enabled_modbus_signals(self):
+        return cast(list[Signal], self.enabled_signals())
 
     def all_modbus_signals(self):
         return cast(list[Signal], list(self._definitions.values()))
@@ -121,15 +124,18 @@ class SignalDefinitions:
         # They do not overlap.
         return self._definitions.get(name)
 
-    # def disable_winet_signals(self):
-    #     """
-    #     Including certain signals in the WiNet query, will ruin the entire query,
-    #     so we disable them.
-    #     """
+    def get_signal_definitions_by_name(self, names: list[str]):
+        return [self._definitions.get(name) for name in names]
 
-    #     for signal in self._definitions.values():
-    #         if signal.models_exclude and "WiNet" in signal.models_exclude:
-    #             signal.disabled.append("disabled for WiNet")
+    def disable_winet_signals(self):
+        """
+        Including certain signals in the WiNet query, will ruin the entire query,
+        so we disable them.
+        """
+
+        for signal in self._definitions.values():
+            if signal.models_exclude and "WiNet" in signal.models_exclude:
+                signal.disabled.append("disabled for WiNet")
 
     def get_signals_for_group(self, group: str):
         signals: dict[str, SungrowSignalDefinition] = {}
@@ -165,17 +171,22 @@ class SignalDefinitions:
 
         # now filter groups where all signals are inactive
         for group, group_signals in self.get_groups().items():
-            if group == "fetch_always_but_do_not_show_unless_level_2":
-                continue
-
+            has_enabled_signal = False
             all_zero = True
             for signal in group_signals.values():
                 v = data.get(signal.name)
-                if not signal.disabled and not is_zero(v):
-                    logger.info(f"Group {group}: Signal {signal.name} is not zero: {v}")
-                    all_zero = False
-                    # break
-            if all_zero:
+                if not signal.disabled:
+                    has_enabled_signal = True
+                    if not is_zero(v):
+                        logger.info(
+                            f"Group {group}: Signal {signal.name} is not zero: {v}"
+                        )
+                        all_zero = False
+
+            if not has_enabled_signal:
+                logger.info(f"Group {group}: not supported by inverter")
+                # extra_data[group] = False
+            elif all_zero:
                 logger.info(f"Group {group}: all signals are zero")
                 for signal in group_signals.values():
                     signal.disabled.append(f"all (enabled) signals in {group} are zero")

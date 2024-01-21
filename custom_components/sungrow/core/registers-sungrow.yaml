@@ -21,6 +21,7 @@
 # Usually "total" signals are indicators, while e.g. "daily" signals are to be hidden.
 # has_battery: only include if battery is present (e.g. battery_capacity is not 0)
 # is_master: only include if inverter is master/standalone (e.g. total_imported_energy is not 0)
+# TODO: split between indicators and to be hidden signals
 
 read:
   - name: "protocol_number"
@@ -207,6 +208,7 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_2_voltage"
+    group: mppt2
     level: 1
     address: 5013
     data_type: U16
@@ -214,6 +216,7 @@ read:
     unit_of_measurement: "V"
 
   - name: "mppt_2_current"
+    group: mppt2
     level: 1
     address: 5014
     data_type: U16
@@ -221,6 +224,7 @@ read:
     unit_of_measurement: "A"
 
   - name: "mppt_3_voltage"
+    group: mppt3
     level: 1
     address: 5015
     data_type: U16
@@ -229,6 +233,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_3_current"
+    group: mppt3
     level: 1
     address: 5016
     data_type: U16
@@ -531,6 +536,26 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_4_voltage"
+    models:
+      [
+        "SG50KTL-M",
+        "SG60KTL-M",
+        "SG49K5J",
+        "SG50KTL-M-20",
+        "SG60KU-M",
+        "SG80KTL-M",
+        "SG40CX",
+        "SG50CX",
+        "SG60CX-US",
+        "SG110CX",
+        "SG250HX",
+        "SG250HX-US",
+        "SG100CX",
+        "SG100CX-JP",
+        "SG250HX-IN",
+        "SG75CX",
+      ]
+    group: mppt4
     level: 1
     address: 5115
     data_type: U16
@@ -539,6 +564,26 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_4_current"
+    models:
+      [
+        "SG50KTL-M",
+        "SG60KTL-M",
+        "SG49K5J",
+        "SG50KTL-M-20",
+        "SG60KU-M",
+        "SG80KTL-M",
+        "SG40CX",
+        "SG50CX",
+        "SG60CX-US",
+        "SG110CX",
+        "SG250HX",
+        "SG250HX-US",
+        "SG100CX",
+        "SG100CX-JP",
+        "SG250HX-IN",
+        "SG75CX",
+      ]
+    group: mppt4
     level: 1
     address: 5116
     data_type: U16
@@ -547,6 +592,9 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_5_voltage"
+    models:
+      ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    group: mppt5
     level: 1
     address: 5117
     data_type: U16
@@ -555,6 +603,9 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_5_current"
+    models:
+      ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    group: mppt5
     level: 1
     address: 5118
     data_type: U16
@@ -563,6 +614,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_6_voltage"
+    group: mppt6
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5119
     data_type: U16
@@ -571,6 +624,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_6_current"
+    group: mppt6
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5120
     data_type: U16
@@ -579,6 +634,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_7_voltage"
+    group: mppt7
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5121
     data_type: U16
@@ -587,6 +644,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_7_current"
+    group: mppt7
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5122
     data_type: U16
@@ -595,6 +654,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_8_voltage"
+    group: mppt8
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5123
     data_type: U16
@@ -603,6 +664,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_8_current"
+    group: mppt8
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5124
     data_type: U16
@@ -620,6 +683,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_9_voltage"
+    group: mppt9
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5130
     data_type: U16
@@ -628,6 +693,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_9_current"
+    group: mppt9
+    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
     level: 2
     address: 5131
     data_type: U16
@@ -636,6 +703,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_10_voltage"
+    group: mppt10
+    models: ["SG250HX.*"]
     level: 2
     address: 5132
     data_type: U16
@@ -644,6 +713,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_10_current"
+    group: mppt10
+    models: ["SG250HX.*"]
     level: 2
     address: 5133
     data_type: U16
@@ -652,6 +723,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_11_voltage"
+    group: mppt11
+    models: ["SG250HX.*"]
     level: 2
     address: 5134
     data_type: U16
@@ -660,6 +733,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_11_current"
+    group: mppt11
+    models: ["SG250HX.*"]
     level: 2
     address: 5135
     data_type: U16
@@ -668,6 +743,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_12_voltage"
+    group: mppt12
+    models: ["SG250HX.*"]
     level: 2
     address: 5136
     data_type: U16
@@ -676,6 +753,8 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_12_current"
+    group: mppt12
+    models: ["SG250HX.*"]
     level: 2
     address: 5137
     data_type: U16

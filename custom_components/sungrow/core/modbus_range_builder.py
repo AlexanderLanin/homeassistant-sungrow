@@ -12,7 +12,7 @@ from custom_components.sungrow.core.modbus_types import (
 logger = logging.getLogger(__name__)
 
 
-def _sorted_and_filtered(
+def sorted_and_filtered(
     signals: list[Signal], register_type: RegisterType
 ) -> list[Signal]:
     return sorted(
@@ -55,12 +55,12 @@ def _build_ranges(
 
     current_range: list[Signal] = []
 
-    for signal in _sorted_and_filtered(signals, register_type):
+    for signal in sorted_and_filtered(signals, register_type):
         if can_add(current_range, signal, max_registers_per_range, blocked_registers):
             current_range.append(signal)
         else:
             ranges.append(current_range)
-            current_range = []
+            current_range = [signal]
 
     if current_range:
         ranges.append(current_range)

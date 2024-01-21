@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
+from typing import cast
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.sensor.const import (
@@ -12,12 +13,14 @@ from homeassistant.components.sensor.const import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
+    CONF_HOST,
+    CONF_PORT,
     CONF_SCAN_INTERVAL,
+    CONF_SLAVE,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers import device_registry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -25,10 +28,13 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
-from .const import (
-    DOMAIN,
+from custom_components.sungrow.const import DOMAIN
+from custom_components.sungrow.core.inverter import (
+    InitialConnection,
+    SungrowInverter,
+    connect_and_get_basic_data,
 )
-from .core.inverter import SungrowInverter
+from custom_components.sungrow.core.inverter_types import Datapoint
 
 logger = logging.getLogger(__name__)
 
@@ -147,14 +153,33 @@ async def async_setup_entry(
 
     Called upon config_flow completion and on start of Home Assistant.
     """
+    user_input = config_entry.data
 
-    inverter = await SungrowInverter.create(config_entry.data)
-    if not inverter:
-        raise ConfigEntryNotReady("Failed to connect to inverter")
+    sn = user_input["serial_number"]
+    if sn in hass.data[DOMAIN]["inverters"]:
+        # We already have a connection to this inverter. We'll reuse that one.
+        # (This happens when a new config entry is created via config_flow)
+        logger.debug(f"Reusing existing connection to inverter {sn}")
+        ic = cast(InitialConnection, hass.data[DOMAIN]["inverters"][sn])
+    else:
+        # No connection yet. We'll create a new one.
+        # (This happens when HA is restarted)
+        logger.debug(f"Creating new connection to inverter {sn}")
+        ic = await connect_and_get_basic_data(
+            user_input[CONF_HOST],
+            user_input[CONF_PORT],
+            user_input[CONF_SLAVE],
+            user_input["connection"],
+        )
+        if not ic:
+            # When we cannot connect to the inverter at HA startup,
+            # we don't assume wrong address.
+            # We'll assume the inverter is offline at the moment.
+            raise ConfigEntryNotReady("Failed to connect to inverter; retrying later.")
 
-    async with inverter:
+    async with await SungrowInverter.create(ic) as inverter:
         update_interval = max(
-            timedelta(seconds=config_entry.data.get(CONF_SCAN_INTERVAL, 60)),
+            timedelta(seconds=user_input.get(CONF_SCAN_INTERVAL, 60)),
             MIN_TIME_BETWEEN_UPDATES,
         )
         coordinator = InverterCoordinator(
@@ -165,11 +190,11 @@ async def async_setup_entry(
 
         # Fetch data once so it's available for the first update.
         # ToDo: is this really needed?
-        await coordinator.async_config_entry_first_refresh()
+        # await coordinator.async_config_entry_first_refresh()
 
         # Register our inverter device
-        device_registry = dr.async_get(hass)
-        device_entry = device_registry.async_get_or_create(
+        dr = device_registry.async_get(hass)
+        device_entry = dr.async_get_or_create(
             config_entry_id=config_entry.entry_id,
             identifiers={(DOMAIN, inverter.serial_number)},
             manufacturer="Sungrow",
@@ -216,7 +241,7 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
             self._attr_name = inverter.slave_master_standalone + " - " + signal_pretty
 
         # This will link the sensor to the matching device.
-        self._attr_device_info = DeviceInfo(
+        self._attr_device_info = device_registry.DeviceInfo(
             identifiers=device_identifiers,
         )
 
@@ -249,12 +274,16 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
         # but that's not how it is meant to be?!
         data = self.coordinator.data
 
-        value = data.get(self.signal_name, None)
-        if value:
-            assert isinstance(value, SungrowInverter.Datapoint)
-            # self._attr_available = True
-            value = value.value
-            return value
+        if data:
+            value = data.get(self.signal_name, None)
+            if value:
+                assert isinstance(value, Datapoint)
+                # self._attr_available = True
+                value = value.value
+                return value
+            else:
+                # self._attr_available = False
+                return None
         else:
             # self._attr_available = False
             return None

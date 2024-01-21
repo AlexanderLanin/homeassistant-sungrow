@@ -1,5 +1,4 @@
 import logging
-from pprint import pformat
 from typing import Any
 
 import voluptuous as vol  # type: ignore
@@ -8,7 +7,7 @@ from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SLAVE
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 
 from .const import DOMAIN
-from .core.inverter import SungrowInverter
+from .core.inverter import connect_and_get_basic_data, slave_master_standalone_str
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +20,6 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
     async def _async_show_user_form(
         self, user_input: dict[str, Any], errors: dict[str, str]
     ):
-        logger.debug(
-            "async_step_user displaying user data entry form "
-            + f"with user_input={user_input} and errors={errors}"
-        )
-
         schema = {
             vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): str,
             vol.Optional(CONF_PORT, default=user_input.get(CONF_PORT, "")): int,
@@ -34,7 +28,7 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
                 "connection", default=user_input.get("connection", "modbus")
             ): SelectSelector(
                 SelectSelectorConfig(
-                    options=["modbus", "sungrow", "http"], translation_key="connection"
+                    options=["auto", "modbus", "http"], translation_key="connection"
                 )
             ),
         }
@@ -47,30 +41,36 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Currently it's all in one step"""
-        # ToDo: split into multiple steps!!
-        # first step is only IP address, then we try to connect!
 
-        logger.debug(f"async_step_user user_input={pformat(user_input)}")
-
-        # Either show modal form, or create config entry then move on
-        if user_input is None:  # Just show the modal form and return if no user input
+        # New config flow. Just show the form.
+        if user_input is None:
             return await self._async_show_user_form({}, {})
-        else:  # We got user input, so do something with it
-            as_dict = dict(user_input)
-            inverter = await SungrowInverter.create(as_dict)
-            if inverter:
-                # Fetch data for slave_master_standalone detection
-                await inverter.pull_data()
 
-                # ToDo: pass inverter object to async_create_entry, so we don't have to
-                # disconnect and connect again
-                await inverter.disconnect()
-                return self.async_create_entry(
-                    # Note: name can be changed in the UI!
-                    title="Sungrow Inverter " + inverter.slave_master_standalone,
-                    data=as_dict,
-                )
-            else:
-                # FIXME: more precise error
-                errors = {"base": "cannot_connect"}
-                return await self._async_show_user_form(user_input, errors)
+        ic = await connect_and_get_basic_data(
+            user_input[CONF_HOST],
+            user_input[CONF_PORT],
+            user_input[CONF_SLAVE],
+            user_input["connection"],
+        )
+        if ic:
+            # Store the inverter in hass.data, so we can access it from the sensor
+            # platform without establishing a new connection.
+            self.hass.data.setdefault(DOMAIN, {"inverters": {}})
+            self.hass.data[DOMAIN]["inverters"][ic.data["serial_number"]] = ic
+
+            # We need to pass the serial number to the sensor platform,
+            # otherwise it won't know which connection to use.
+            # data will be stored persistently in the config entry.
+            # So we want to keep it as small as possible.
+            data = dict(user_input)
+            data["serial_number"] = ic.data["serial_number"]
+
+            return self.async_create_entry(
+                # Note: name can be changed in the UI!
+                title="Sungrow Inverter " + slave_master_standalone_str(ic.data),
+                data=data,
+                # TODO: description=f"Found inverter {inverter.serial_number}", etc
+            )
+        else:
+            errors = {"base": "cannot_connect"}
+            return await self._async_show_user_form(user_input, errors)

@@ -131,8 +131,6 @@ class ModbusConnectionBase:
     async def read_raw(
         self, signal_list: list[Signal], max_combined_registers=100
     ) -> dict[RegisterType, RawData]:
-        logger.debug(f"read_raw({len(signal_list)} signals)")
-
         if not await self.connect():
             raise CannotConnectError("Not connected to inverter, but read() was called")
 
@@ -142,11 +140,14 @@ class ModbusConnectionBase:
         ranges = split_list(
             signal_list, max_combined_registers, self._problematic_registers
         )
-        logger.debug(f"Ranges: {ranges}")
+
+        logger.debug(f"read_raw({len(signal_list)} signals) -> {len(ranges)} ranges")
 
         # Read each range
         raw_data: dict[RegisterType, RawData] = {r: {} for r in RegisterType}
         for range in ranges:
+            assert range[-1].end - range[0].address <= max_combined_registers
+
             values = await self._read_range_base(range)
             raw_data[range[0].register_type].update(values)
         return raw_data
@@ -187,7 +188,9 @@ class ModbusConnectionBase:
         assert signal_list
 
         reg_range = RegisterRange(
-            signal_list[0].register_type, signal_list[0].address, signal_list[-1].end
+            signal_list[0].register_type,
+            signal_list[0].address,
+            signal_list[-1].end - signal_list[0].address,
         )
         logger.debug(f"_read_range_base({reg_range})")
 

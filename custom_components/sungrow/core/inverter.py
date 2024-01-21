@@ -3,9 +3,11 @@
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Final
+from typing import Final, cast
 
-from . import deserialize, modbus_base, modbus_http, modbus_py, signals
+from custom_components.sungrow.core.inverter_types import Datapoint
+
+from . import deserialize, extra_sensors, modbus_base, modbus_http, modbus_py, signals
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ DatapointValueType = signals.DatapointValueType
 
 async def pull_raw_signals(
     client: modbus_py.ModbusConnectionBase,
-    signal_definitions: signals.SignalDefinitions,
+    signal_definitions: list[signals.SungrowSignalDefinition],
 ) -> dict[str, DatapointValueType] | None:
     """Pull data from inverter. Return None on failure."""
 
@@ -22,11 +24,14 @@ async def pull_raw_signals(
 
     pull_start = datetime.now()
 
+    # Downcast to base class to make mypy happy
+    signal_definitions_base = cast(list[modbus_base.Signal], signal_definitions)
+
     # Load all registers from inverer
     try:
         data = deserialize.decode_signals(
             signal_definitions,
-            await client.read(signal_definitions.enabled_modbus_signals()),
+            await client.read(signal_definitions_base),
         )
 
     except modbus_base.ModbusError as e:
@@ -47,13 +52,7 @@ async def pull_raw_signals(
 def mark_unavailable_signals_as_disabled(
     all_signals: signals.SignalDefinitions,
     data: dict[str, DatapointValueType],
-    model,
-    level,
 ):
-    # Disable signals which do not apply to the current model regardless of content
-    # (0, not supported, etc), because they contain random/unknown data.
-    all_signals.mark_signals_not_in_this_model_as_disabled(model)
-
     # mark signals as disabled if they are not supported by the inverter
     for name, value in data.items():
         if value is None:
@@ -69,96 +68,145 @@ def mark_unavailable_signals_as_disabled(
     # Therefore filtering by level must happen after this step.
     extra_data = all_signals.mark_signals_disabled_based_on_groups(data)
 
-    all_signals.mark_signals_below_level_as_disabled(level)
-
     return extra_data
 
 
-# async def is_WiNet(host: str):  # noqa: N802
-#     """Check if this host belongs to a WiNet-S dongle."""
-#     # FIXME: this won't work with a modbus proxy!
-#     # Can we simply always query everything and fall back to detection?
-#     # It will have a slower startup time, but it will work without further maintenance!!
-#     async with httpx.AsyncClient() as client:
-#         try:
-#             r = await client.get(f"http://{host}/")
-#         except httpx.ConnectError:
-#             return False
-#         except httpx.ConnectTimeout:
-#             # ToDo: There is a Dongle present, it just isn't responding in time?
-#             return False
+@dataclass
+class InitialConnection:
+    connection: modbus_py.ModbusConnectionBase
+    signal_definitions: signals.SignalDefinitions
+    data: dict[str, DatapointValueType]
 
-#     return r.status_code == 200  # and '<title class="title">WiNet</title>' in r.text
+
+def convert_raw_data_to_datapoints(
+    raw_data: dict[str, DatapointValueType],
+    signal_list: signals.SignalDefinitions,
+):
+    data: dict[str, Datapoint] = {}
+
+    for k, v in raw_data.items():
+        definition = signal_list.get_signal_definition_by_name(k)
+        assert definition, k
+
+        data[k] = Datapoint(k, v, definition.unit_of_measurement)
+
+    return data
+
+
+async def connect_and_get_basic_data(
+    host: str,
+    port: int | None,
+    slave: int | None,
+    connection: str | None,
+):
+    """
+    Create a connection and retrieve some initial data to test the connection.
+
+    Will raise ModbusException on errors
+    """
+
+    # FIXME try http first!
+    if connection is None:
+        ...
+
+    # Try default modbus port
+    if port is None:
+        port = 502
+
+    if slave is None or slave == 0:
+        # TODO actually detect slave.
+        # e.g. try 1-3 and see if we get a response.
+        slave = 1
+
+    signal_definitions = signals.load_yaml()
+
+    query = signal_definitions.get_signal_definitions_by_name(
+        [
+            "serial_number",
+            "device_type_code",
+            "master_slave_mode",
+            "master_slave_role",
+            "output_type",
+        ]
+    )
+
+    async with modbus_py.PymodbusConnection(
+        host=host, port=port, slave=slave
+    ) as pymodbus_connection:
+        data = await pull_raw_signals(pymodbus_connection, query)
+        if not data:
+            # TODO does this happen when the connected to port is not a modbus port?
+            logger.warning("Failed to pull any data from inverter")
+            return None
+
+        logger.debug(
+            "Connected to inverter "
+            f"{data['device_type_code']} / {data['serial_number']}"
+        )
+
+        if isinstance(data["device_type_code"], int):
+            logger.info(
+                f"Unknown inverter type code detected: {data['device_type_code']}. "
+                "Please report this to the developers."
+            )
+        else:
+            # Now that we have the model, we can disable unsupported signals.
+            # This is required, as querying a hundred unsupported signals, will result
+            # in 100 queries (best case).
+            signal_definitions.mark_signals_not_in_this_model_as_disabled(
+                data["device_type_code"]
+            )
+
+        if data["master_slave_mode"] is None:
+            # WiNet dongle does not support master_slave_mode via modbus.
+            # Let's disable all other WiNet unsupported signals, so we don't query
+            # them.
+            signal_definitions.disable_winet_signals()
+
+        return InitialConnection(pymodbus_connection.detach(), signal_definitions, data)
 
 
 class SungrowInverter:
-    @dataclass
-    class Datapoint:
-        name: str  # do we need the name here?
-        value: DatapointValueType
-        unit_of_measurement: str | None = None
-
-        def __repr__(self) -> str:
-            if self.unit_of_measurement:
-                return f"{self.name} = {self.value} {self.unit_of_measurement}"
-            else:
-                return f"{self.name} = {self.value}"
+    # FIXME: SungrowInverter:
+    # * is it one connection to one inverter?
+    # * is it one inverter with multiple connections? (http, WiNet, modbus-proxy, ...)
 
     @staticmethod
-    async def create(config: dict[str, Any]):
-        """
-        Create a SungrowInverter instance
-
-        Will raise ModbusException on errors
-        """
-
-        if deprecated_unit := config.get("unit"):
-            # ToDo: The 'unit' config option is deprecated. Please use 'slave' instead.
-            config["slave"] = deprecated_unit
-
-        async with modbus_py.ModbusConnectionBase(
-            host=config["host"],
-            port=config["port"],
-            slave=config["slave"],
-        ) as connection:
-            signal_definitions = signals.load_yaml()
-
-            # if await is_WiNet(config["host"]):
-            #     logger.info(
-            #         "Detected WiNet dongle. Disabling unsupported signals. "
-            #         "Note: that's a lot. "
-            #         "You should connect directly to the inverter instead."
-            #     )
-            #     signal_definitions.disable_winet_signals()
-
-            data = await pull_raw_signals(connection, signal_definitions)
+    async def create(ic: InitialConnection):
+        # TODO: move all of this to __init__?
+        async with ic.connection:
+            # We now need to pull all data which belongs to a group,
+            # so we can detect groups which do not apply, like "has_battery".
+            query = [
+                signal
+                for signal in ic.signal_definitions._definitions.values()
+                if signal.group and not signal.disabled and signal.name not in ic.data
+            ]
+            data = await pull_raw_signals(ic.connection, query)
             if not data:
-                logger.warning("Failed to pull any data from inverter")
-                # return none or raise? FIXME TODO
-                return None
-
-            model = data["device_type_code"]
-            if isinstance(model, int):
-                logger.info(
-                    f"Unknown inverter type code detected: {model}. "
-                    "Please report this to the developers."
-                )
-            else:
-                # As defined in the yaml file, the model is a string.
-                # (This is for mypy)
-                assert isinstance(model, str)
+                raise RuntimeError("Failed to pull data from inverter")
 
             extra_data = mark_unavailable_signals_as_disabled(
-                signal_definitions, data, model, 1  # config.get("level", 1)
+                ic.signal_definitions, data
             )
+
+            # TODO config.get("level", 1)
+            ic.signal_definitions.mark_signals_below_level_as_disabled(1)
+
+            for signal in ic.signal_definitions._definitions.values():
+                if signal.disabled:
+                    data.pop(signal.name, None)
+
+            # Let's keep both
+            data.update(ic.data)
 
             my_config = SungrowInverter.Config(
                 initial_data=data,
                 active_groups=extra_data,
-                signals=signal_definitions,
+                signals=ic.signal_definitions,
             )
 
-            return SungrowInverter(connection.detach(), my_config)
+            return SungrowInverter(ic.connection.detach(), my_config)
 
     @dataclass
     class Config:
@@ -178,7 +226,7 @@ class SungrowInverter:
         self._client = client
         self._config: Final = config
 
-        self.data: dict[str, SungrowInverter.Datapoint] = {}
+        self.data: dict[str, Datapoint] = {}
 
     async def disconnect(self):
         await self._client.disconnect()
@@ -187,35 +235,21 @@ class SungrowInverter:
         """Pull data from inverter and update self.data"""
         # ToDo: drop on_error
 
-        new_data = await pull_raw_signals(self._client, self._config.signals)
+        new_data = await pull_raw_signals(
+            self._client, self._config.signals.enabled_signals()
+        )
         if new_data:
-            self.post_process_raw_data(new_data)
-            new_data.update(self._config.active_groups)
+            temp = convert_raw_data_to_datapoints(new_data, self._config.signals)
 
-            temp: dict[str, SungrowInverter.Datapoint] = {}
-            for k, v in new_data.items():
-                # data from post processing may already be wrapped in Datapoint
-                if not isinstance(v, SungrowInverter.Datapoint):
-                    definition = self._config.signals.get_signal_definition_by_name(k)
-                    unit_of_measurement = (
-                        definition.unit_of_measurement if definition else None
-                    )
+            for g in self._config.active_groups:
+                temp[g] = Datapoint(
+                    name=g,
+                    value=self._config.active_groups[g],
+                    unit_of_measurement=None,
+                )
 
-                    temp[k] = SungrowInverter.Datapoint(
-                        name=k, value=v, unit_of_measurement=unit_of_measurement
-                    )
-
-                    # this can break due to pydantic :/
-                    if type(v) != type(temp[k].value):  # noqa: E721
-                        logger.warning(
-                            f"Type mismatch for {k}: {type(v)} != {type(temp[k].value)}"
-                        )
-
-            current2 = temp.get("mppt_1_current")
-            if current2:
-                assert isinstance(current2.value, float | int), type(current2.value)
-
-            self.post_process_datapoint_data(temp)
+            extra_signals = extra_sensors.calculate(new_data)
+            temp.update(extra_signals)
 
             self.data = temp
             return self.data
@@ -227,60 +261,6 @@ class SungrowInverter:
                 raise on_error
             else:
                 return on_error
-
-    @staticmethod
-    def _convert_signals_to_timestamp(data: dict[str, Any], prefix: str = ""):
-        try:
-            # format: YYYY-MM-DD HH:MM:SS
-            timestamp = "%04d-%02d-%02d %02d:%02d:%02d" % (
-                int(data[prefix + "year"]),
-                int(data[prefix + "month"]),
-                int(data[prefix + "day"]),
-                int(data[prefix + "hour"]),
-                int(data[prefix + "minute"]),
-                int(data[prefix + "second"]),
-            )
-        except KeyError:
-            timestamp = None
-
-        return timestamp
-
-    @staticmethod
-    def _drop_timestamp_info(data: dict[str, Any], prefix: str = ""):
-        for key in ["year", "month", "day", "hour", "minute", "second"]:
-            data.pop(prefix + key, None)
-
-    def post_process_raw_data(self, new_data: dict[str, DatapointValueType]):
-        # If it's enabled, convert the timestamp to a string
-        if new_data.get("year"):
-            new_data["timestamp"] = SungrowInverter._convert_signals_to_timestamp(
-                new_data
-            )
-        SungrowInverter._drop_timestamp_info(new_data)
-
-        if new_data.get("pid_alarm_code"):
-            new_data["alarm_timestamp"] = SungrowInverter._convert_signals_to_timestamp(
-                new_data, "alarm_time_"
-            )
-        SungrowInverter._drop_timestamp_info(new_data, "alarm_time_")
-
-    def post_process_datapoint_data(self, new_data: dict[str, Datapoint]):
-        """Add 'fake sensors' based on other sensors."""
-
-        # 'power' for every mppt
-        for i in range(1, 12):
-            current = new_data.get(f"mppt_{i}_current")
-            voltage = new_data.get(f"mppt_{i}_voltage")
-            if current is not None and voltage is not None:
-                # Tell mypy these can be multiplied
-                assert isinstance(current.value, float | int), type(current.value)
-                assert isinstance(voltage.value, float | int), type(voltage.value)
-
-                new_data[f"mppt_{i}_power"] = SungrowInverter.Datapoint(
-                    name=f"mppt_{i}_power",
-                    value=current.value * voltage.value,
-                    unit_of_measurement="W",
-                )
 
     async def __aenter__(self):
         self._detached = False
@@ -318,26 +298,31 @@ class SungrowInverter:
     def slave_master_standalone(self):
         """
         Simple heuristic to determine if this is a master or slave inverter.
-
-        Note: this is not 100% accurate. It's just a heuristic.
-        It would be better if we add all inverters to a single config_entry.
         """
 
-        if self._config.initial_data.get("master_slave_mode") == "Disabled":
-            return "Standalone"
-        elif self._config.initial_data.get("master_slave_mode") == "Enabled":
-            if self._config.initial_data.get("master_slave_role") == "Master":
-                return "Master"
-            else:
-                # ToDo: mulitple slaves
-                return "Slave"
+        return slave_master_standalone_str(
+            self._config.initial_data, self._config.active_groups
+        )
+
+
+def slave_master_standalone_str(initial_data, active_groups=None):
+    if initial_data.get("master_slave_mode") == "Disabled":
+        return "Standalone"
+    elif initial_data.get("master_slave_mode") == "Enabled":
+        if initial_data.get("master_slave_role") == "Master":
+            return "Master"
         else:
-            # Data not available. Fall back to heuristic.
-            # TODO This should somehow be reported back with a registers dump...
-            if self._config.active_groups.get("is_master"):
-                if self._config.initial_data.get("output_type", "2P") == "2P":
-                    return "Standalone"
-                else:
-                    return "Master"
+            # ToDo: mulitple slaves
+            return "Slave"
+    elif active_groups is not None:
+        # Data not available. Fall back to heuristic.
+        # TODO This should somehow be reported back with a registers dump...
+        if active_groups.get("is_master"):
+            if initial_data.get("output_type", "2P") == "2P":
+                return "Standalone"
             else:
-                return "Slave"
+                return "Master"
+        else:
+            return "Slave"
+    else:
+        return initial_data["serial_number"]

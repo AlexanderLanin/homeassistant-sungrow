@@ -60,14 +60,18 @@ async def simulated_inverter(yaml_file: str | pathlib.Path | None):
 
     Note: this will enable sockets for the duration of the test case.
     """
-    response_data = pymodbus.datastore.ModbusSlaveContext()
 
     if yaml_file:
+        response_data = pymodbus.datastore.ModbusSlaveContext()
         use_yaml_for_responses(response_data, yaml_file)
 
-    context = pymodbus.datastore.ModbusServerContext(
-        slaves={1: response_data}, single=False
-    )
+        context = pymodbus.datastore.ModbusServerContext(
+            slaves={1: response_data}, single=False
+        )
+    else:
+        # no response
+        context = pymodbus.datastore.ModbusServerContext(single=False)
+
     server = pymodbus.server.ModbusTcpServer(context=context, address=("localhost", 0))
 
     # Block connect() to all hosts except localhost
@@ -79,14 +83,13 @@ async def simulated_inverter(yaml_file: str | pathlib.Path | None):
     server_task = asyncio.create_task(server.serve_forever())
 
     # Wait for server to actually start.
-    logger.debug("Waiting for server to start...")
     for _attempt in range(20):
         if server.transport:
             break
         await asyncio.sleep(0.1)
     if not server.transport:
         raise Exception("Server failed to start.")
-    if _attempt > 2:
+    if _attempt > 1:
         logger.warning(f"Server start took {_attempt/10} seconds.")
     port = server.transport.sockets[0].getsockname()[1]  # type: ignore
     logger.debug(f"Server started on port {port}")

@@ -10,11 +10,16 @@ logger = logging.getLogger(__name__)
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the Sungrow inverter component."""
+    """
+    Set up the Sungrow inverter component.
+
+    Note: the very first config_flow is executed before this function is called!!
+    """
     logger.warning(f"async_setup(config={config})")
 
-    # We'll be collecting some persistent data in hass.data
-    hass.data.setdefault(DOMAIN, {})
+    # We'll be storing connections to our inverter(s) in hass.data.
+    # That's so we can pass them from the config flow to the sensor platform.
+    hass.data.setdefault(DOMAIN, {"inverters": {}})
 
     # We don't need to do anything here, since we'll be setting up
     # our inverter(s) in async_setup_entry, which gets called later on
