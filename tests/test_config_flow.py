@@ -15,14 +15,14 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 
+from custom_components.sungrow.core.inverter import InitialConnection
 from tests import e2e_setup
 
 pytestmark = [pytest.mark.asyncio]
 DOMAIN = "sungrow"
 
 # log everything... except pymodbus
-# TODO: prepend "sungrow" to all log messages?
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logging.getLogger("pymodbus").setLevel(logging.WARNING)
 logging.getLogger("asyncio").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -98,5 +98,14 @@ async def test_successful_config_flow(hass: HomeAssistant):
                 CONF_SLAVE: 0,  # TODO: what exactly is vol.Optional passing when empty?
             },
         )
-        assert result["errors"] == {}
+        # Note: this will go through the entire config flow, including entry creation
+        # via async_setup and async_setup_entry.
+        assert result.get("errors") is None
         logger.debug(f"config flow result: {result}")
+
+        # Cleanup
+        # Fortunately the connection is stored in the hass object, so we can
+        # access it from here.
+        for _sn, ic in hass.data[DOMAIN]["inverters"].items():
+            assert isinstance(ic, InitialConnection)
+            await ic.connection.disconnect()
