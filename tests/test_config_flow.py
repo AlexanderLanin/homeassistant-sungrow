@@ -14,6 +14,7 @@ from homeassistant.const import (
     CONF_SLAVE,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry, entity_registry
 
 from custom_components.sungrow.core.inverter import InitialConnection
 from tests import e2e_setup
@@ -106,6 +107,19 @@ async def test_successful_config_flow(hass: HomeAssistant):
         # Cleanup
         # Fortunately the connection is stored in the hass object, so we can
         # access it from here.
-        for _sn, ic in hass.data[DOMAIN]["inverters"].items():
+        assert len(hass.data[DOMAIN]["inverters"]) == 1
+        for sn, ic in hass.data[DOMAIN]["inverters"].items():
             assert isinstance(ic, InitialConnection)
             await ic.connection.disconnect()
+
+        # Split tests?! This goes way beyond a simple config flow test...
+
+        dr = device_registry.async_get(hass)
+        device = dr.async_get_device(
+            identifiers={(DOMAIN, sn)},
+        )
+        assert device
+
+        er = entity_registry.async_get(hass)
+        # ~40 sensors created
+        assert len(er._entities_data) > 30
