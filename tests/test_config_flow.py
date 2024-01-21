@@ -5,6 +5,7 @@ You can run this file e.g. via:
 clear && pytest -k config_flow --log-cli-level=DEBUG
 """
 import logging
+from unittest.mock import patch
 
 import pytest
 from homeassistant import config_entries, data_entry_flow
@@ -14,7 +15,6 @@ from homeassistant.const import (
     CONF_SLAVE,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry, entity_registry
 
 from custom_components.sungrow.core.inverter import InitialConnection
 from tests import e2e_setup
@@ -38,20 +38,30 @@ async def always_enable_custom_integrations(
     yield
 
 
-# # This fixture bypasses the actual setup of the integration
-# # since we only want to test the config flow. We test the
-# # actual functionality of the integration in other test modules.
-# @pytest.fixture(autouse=True)
-# def bypass_setup_fixture():
-#     """Prevent setup."""
-#     with patch(
-#         "custom_components.sungrow.async_setup",
-#         return_value=True,
-#     ), patch(
-#         "custom_components.sungrow.async_setup_entry",
-#         return_value=True,
-#     ):
-#         yield
+@pytest.fixture(autouse=True)
+def bypass_setup_fixture():
+    """Prevent actual setup of the integration, so these tests run faster."""
+    with patch(
+        "custom_components.sungrow.async_setup",
+        return_value=True,
+    ), patch(
+        "custom_components.sungrow.async_setup_entry",
+        return_value=True,
+    ):
+        yield
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
+    yield
+    # Unfortunately tests here are not even aware of any connection, as it's internal
+    # to the config_flow.
+    # Fortunately the connection is stored in the global hass object, so we can
+    # access it from here.
+    if DOMAIN in hass.data:
+        for ic in hass.data[DOMAIN]["inverters"].values():
+            assert isinstance(ic, InitialConnection)
+            await ic.connection.disconnect()
 
 
 async def start_config_flow(hass: HomeAssistant) -> str:
@@ -83,7 +93,7 @@ async def test_non_responding_inverter(hass: HomeAssistant):
         assert result["errors"]["base"] == "cannot_connect"
 
 
-async def test_successful_config_flow(hass: HomeAssistant):
+async def test_successful_config_flow_only(hass: HomeAssistant, bypass_setup_fixture):
     flow_id = await start_config_flow(hass)
 
     async with e2e_setup.simulated_inverter(
@@ -103,23 +113,3 @@ async def test_successful_config_flow(hass: HomeAssistant):
         # via async_setup and async_setup_entry.
         assert result.get("errors") is None
         logger.debug(f"config flow result: {result}")
-
-        # Cleanup
-        # Fortunately the connection is stored in the hass object, so we can
-        # access it from here.
-        assert len(hass.data[DOMAIN]["inverters"]) == 1
-        for sn, ic in hass.data[DOMAIN]["inverters"].items():
-            assert isinstance(ic, InitialConnection)
-            await ic.connection.disconnect()
-
-        # Split tests?! This goes way beyond a simple config flow test...
-
-        dr = device_registry.async_get(hass)
-        device = dr.async_get_device(
-            identifiers={(DOMAIN, sn)},
-        )
-        assert device
-
-        er = entity_registry.async_get(hass)
-        # ~40 sensors created
-        assert len(er._entities_data) > 30
