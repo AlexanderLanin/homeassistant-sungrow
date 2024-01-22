@@ -87,7 +87,7 @@ def _decode_array_signal(
         return data
 
 
-def _decode_signal(
+def decode_signal(
     signal: SungrowSignalDefinition,
     raw_value: list[int],
 ) -> DatapointValueType | None:
@@ -104,5 +104,5 @@ def decode_signals(
     decoded: dict[str, DatapointValueType] = {}
     for signal in signal_list:
         value = raw_signals[signal.name]
-        decoded[signal.name] = _decode_signal(signal, value) if value else None
+        decoded[signal.name] = decode_signal(signal, value) if value else None
     return decoded

@@ -25,6 +25,7 @@ from custom_components.sungrow.core import (
     signals,
 )
 from custom_components.sungrow.core.modbus_types import (
+    MappedData,
     RawData,
     RegisterType,
 )
@@ -43,7 +44,7 @@ class TaskResult:
     host: str
     slave: int | None = None
     raw_data: dict[RegisterType, RawData] | None = None
-    read_calls: int | None = None
+    stats: int | None = None
     error: Exception | None = None
 
 
@@ -72,7 +73,7 @@ async def collect_data_via_py_modbus(
             "pymodbus",
             host,
             slave,
-            read_calls=connection.read_calls,
+            stats=connection.stats,
             raw_data=raw_data,
         )
     except modbus_base.CannotConnectError as e:
@@ -100,7 +101,7 @@ async def collect_data_via_winet_http(
         return TaskResult(
             "winet_http",
             host,
-            read_calls=connection.read_calls,
+            stats=connection.read_calls,
             raw_data=raw_data,
         )
     except modbus_base.CannotConnectError as e:
@@ -135,54 +136,68 @@ async def collect_data(
         return results
 
 
-def split_data_by_inverter(
+def get_sn_from_raw_data(
+    raw_data: dict[RegisterType, RawData],
+    signal_definitions: signals.SignalDefinitions,
+) -> str:
+    sn_signal = signal_definitions.get_signal_definition_by_name("serial_number")
+    raw_sn = modbus_base.map_raw_to_signal(raw_data[sn_signal.register_type], sn_signal)
+    assert raw_sn
+    sn = deserialize.decode_signal(sn_signal, raw_sn)
+    assert isinstance(sn, str)
+    return sn
+
+
+@dataclass
+class DataPerConnection(TaskResult):
+    mapped_data: MappedData | None = None
+    decoded: dict[str, signals.DatapointValueType] | None = None
+
+
+def merge_by_inverter(
     results: list[TaskResult], signal_definitions: signals.SignalDefinitions
 ):
-    """
-    In: [{"serial_number": "123", "a": 1}, {"serial_number": "123", "b": 2}]
-    Out: {"123": [{"a": 1}, {"b": 2}]}
-
-    serial_number becomes the key.
-    The value is a list of dicts, where each dict contains the data for a single signal.
-    """
-
-    r: dict[str, list[dict[str, signals.DatapointValueType]]] = {}
-    for d in results:
-        if d.error or not d.raw_data:
-            continue
-        mapped = modbus_base.map_raw_to_signals(
-            d.raw_data, signal_definitions.all_modbus_signals()
+    r: dict[str, list[DataPerConnection]] = {}
+    for d in sorted(results, key=lambda d: d.host):
+        dpc = DataPerConnection(
+            mode=d.mode,
+            host=d.host,
+            slave=d.slave,
+            raw_data=d.raw_data,
+            stats=d.stats,
+            error=d.error,
         )
-        decoded = deserialize.decode_signals(signal_definitions, mapped)
-        decoded["mode"] = f"{d.mode}/{d.host}/{d.slave}"
-        sn = decoded["serial_number"]
-        assert isinstance(sn, str)
-        if sn not in r:
-            r[sn] = []
-        r[sn].append(decoded)
-    return r
+        if d.raw_data:
+            dpc.mapped_data = modbus_base.map_raw_to_signals(
+                d.raw_data, signal_definitions.all_modbus_signals()
+            )
+            dpc.decoded = deserialize.decode_signals(
+                signal_definitions.all_signals(), dpc.mapped_data
+            )
+            sn = dpc.decoded["serial_number"]
+            assert isinstance(sn, str)
+        else:
+            sn = "-"
+
+        r.setdefault(sn, []).append(dpc)
+
+    return dict(sorted(r.items()))
 
 
-def transpose_data_by_signal(
-    inverter_data: list[dict[str, signals.DatapointValueType]],
-):
-    """
-    inverter_data is a list of datapoints,
-    where each list item is one connection method to the inverter.
+def collect_all_registers(inverter_data: list[DataPerConnection]):
+    all_registers: dict[RegisterType, list[int]] = {
+        RegisterType.READ: [],
+        RegisterType.HOLD: [],
+    }
 
-    In: {"123": [{"a": 1}, {"b": 2}]}
-    Out: {"a": [1], "b": [2]}
+    for per_connection in inverter_data:
+        if not per_connection.raw_data:
+            continue
 
-    signal.name becomes the key.
-    The value is a list of datapoints for that signal. One per inverter.
-    """
-    r: dict[str, list[signals.DatapointValueType]] = {}
-    for signal_data in inverter_data:
-        for name, value in signal_data.items():
-            if name not in r:
-                r[name] = []
-            r[name].append(value)
-    return r
+        for register_type, registers in per_connection.raw_data.items():
+            all_registers[register_type].extend(registers.keys())
+
+    return all_registers
 
 
 def write_pickle(task_results: list[TaskResult]):
@@ -234,41 +249,42 @@ async def main(hosts: list[str]):
     # TODO: remove pickle file and use json only.
     write_json(task_results)
 
-    data_by_inverter = split_data_by_inverter(task_results, signal_definitions)
+    data_by_inverter = merge_by_inverter(task_results, signal_definitions)
 
-    markdown_write_file(
-        "compare.md", signal_definitions, task_results, data_by_inverter
-    )
+    markdown_write_file("compare.md", signal_definitions, data_by_inverter)
 
 
-def markdown_write_summary(f, task_results: list[TaskResult]):
+def markdown_write_summary(f, data_by_inverter: dict[str, list[DataPerConnection]]):
     f.write("# Summary:\n\n")
-    f.write("| Host | Mode | Read Calls | Result | Errors |\n")
-    f.write("| --- | --- | --- | --- | --- |\n")
-    for t in task_results:
-        if t.raw_data:
-            registers_ok = 0
-            registers_skipped = 0
-            for register_type in t.raw_data:
-                for value in t.raw_data[register_type].values():
-                    if value is None:
-                        registers_skipped += 1
-                    else:
-                        registers_ok += 1
-            result = f"{registers_ok} registers retrieved"
-            error = f"{registers_skipped} registers not supported"
-        elif t.error:
-            result = "Failed"
-            assert isinstance(t.error, Exception)
-            # FIXME error message is not printed
-            error = f"{t.error.__class__.__name__}: {t.error}"
-        else:
-            result = "internal error"
-            error = "internal error"
+    f.write("| SN | Host | Mode | Read Calls | Result | Errors |\n")
+    f.write("| --- | --- | --- | --- | --- | --- |\n")
+    for sn, connections in data_by_inverter.items():
+        for per_connection in connections:
+            if per_connection.raw_data:
+                registers_ok = 0
+                registers_skipped = 0
+                for register_type in per_connection.raw_data:
+                    for value in per_connection.raw_data[register_type].values():
+                        if value is None:
+                            registers_skipped += 1
+                        else:
+                            registers_ok += 1
+                result = f"{registers_ok} registers retrieved"
+                error = f"{registers_skipped} registers not supported"
+            elif per_connection.error:
+                result = "Failed"
+                e = per_connection.error
+                assert isinstance(e, Exception)
+                error = f"{e.__class__.__name__}: {e}"
+            else:
+                result = "internal error"
+                error = "internal error"
 
-        f.write(
-            f"| {t.host}/{t.slave} | {t.mode} | {t.read_calls} | {result} | {error} |\n"
-        )
+            f.write(
+                f"| {sn} | {per_connection.host}/{per_connection.slave} | "
+                f"{per_connection.mode} | "
+                f"{per_connection.stats} | {result} | {error} |\n"
+            )
 
     f.write("\n\n")
 
@@ -276,25 +292,63 @@ def markdown_write_summary(f, task_results: list[TaskResult]):
 def markdown_write_signals(
     f,
     signal_definitions: signals.SignalDefinitions,
-    data_by_inverter: dict[str, list[dict[str, signals.DatapointValueType]]],
+    data_by_inverter: dict[str, list[DataPerConnection]],
 ):
     for inverter_sn, inverter_data in data_by_inverter.items():
+        if not inverter_data[0].raw_data:
+            continue
+
         f.write(f"# {inverter_sn}\n")
 
-        # We print attribute by attribute, so we need to transpose the data.
-        transposed_data = transpose_data_by_signal(inverter_data)
-
-        header = "| Signal | "
-        for column in transposed_data["mode"]:
-            header += column + " | "
-        f.write(header + "\n")
-        f.write("| --- " * (len(transposed_data["mode"]) + 1) + "|\n")
+        f.write(
+            "| host/slave/mode | "
+            + " | ".join(f"{c.host}/{c.slave}/{c.mode}" for c in inverter_data)
+            + " |\n"
+        )
+        f.write("| --- " * (len(inverter_data) + 1) + "|\n")
 
         for signal in signal_definitions._definitions.values():
             line = f"| {signal.name} | "
-            for value in transposed_data.get(signal.name, ["Not available"]):
+            for c in inverter_data:
+                value = (
+                    c.decoded.get(signal.name, ["Not available"]) if c.decoded else []
+                )
                 line += str(value) + " | "
             f.write(line + "\n")
+
+        f.write("\n\n")
+
+
+def markdown_write_raw_data(
+    f,
+    signal_definitions: signals.SignalDefinitions,
+    data_by_inverter: dict[str, list[DataPerConnection]],
+):
+    for inverter_sn, inverter_data in data_by_inverter.items():
+        if not inverter_data[0].raw_data:
+            continue
+
+        f.write(f"# {inverter_sn}\n")
+
+        f.write(
+            "| host/slave/mode | "
+            + " | ".join(f"{c.host}/{c.slave}/{c.mode}" for c in inverter_data)
+            + " |\n"
+        )
+        f.write("| --- " * (len(inverter_data) + 1) + "|\n")
+
+        all_registers = collect_all_registers(inverter_data)
+        for register_type, registers in all_registers.items():
+            for register in registers:
+                line = f"| {register_type} {register} | "
+                for c in inverter_data:
+                    value = (
+                        c.raw_data.get(register_type, {}).get(register)
+                        if c.raw_data
+                        else None
+                    )
+                    line += (hex(value) if value else "N/A") + " | "
+                f.write(line + "\n")
 
         f.write("\n\n")
 
@@ -302,12 +356,12 @@ def markdown_write_signals(
 def markdown_write_file(
     outfile: str,
     signal_definitions: signals.SignalDefinitions,
-    task_results: list[TaskResult],
-    data_by_inverter: dict[str, list[dict[str, signals.DatapointValueType]]],
+    data_by_inverter: dict[str, list[DataPerConnection]],
 ):
     with open(outfile, "w") as f:
-        markdown_write_summary(f, task_results)
+        markdown_write_summary(f, data_by_inverter)
         markdown_write_signals(f, signal_definitions, data_by_inverter)
+        markdown_write_raw_data(f, signal_definitions, data_by_inverter)
 
 
 if __name__ == "__main__":

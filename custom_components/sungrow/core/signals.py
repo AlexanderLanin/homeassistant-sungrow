@@ -74,6 +74,9 @@ class SignalDefinitions:
     def __init__(self, definitions: dict[str, SungrowSignalDefinition]):
         self._definitions = definitions
 
+    def all_signals(self) -> list[SungrowSignalDefinition]:
+        return list(self._definitions.values())
+
     def enabled_signals(self):
         filtered: list[SungrowSignalDefinition] = []
         for signal in self._definitions.values():

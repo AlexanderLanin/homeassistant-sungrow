@@ -74,7 +74,9 @@ class PymodbusConnection(ModbusConnectionBase):
         not bytes.
         """
         if not await self.connect():
-            raise modbus_base.CannotConnectError()
+            raise modbus_base.CannotConnectError(
+                "Cannot connect to inverter for reading"
+            )
 
         await asyncio.sleep(0.2)  # Server doesn't like it if we query too fast.
 

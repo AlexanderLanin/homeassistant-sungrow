@@ -48,7 +48,8 @@ class HttpConnection(ModbusConnectionBase):
         try:
             socket = create_connection(endpoint, timeout=2)
         except Exception as e:
-            print(e)
+            # FIXME: this is actually debug, but I want to see what it looks like
+            logger.warning(e)
             return False
 
         logger.debug("Connection to websocket server established")

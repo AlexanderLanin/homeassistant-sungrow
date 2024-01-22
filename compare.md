@@ -1,285 +1,312 @@
 # Summary:
 
-| Host | Mode | Read Calls | Result | Errors |
-| --- | --- | --- | --- | --- |
-| 192.168.13.79/1 | pymodbus | 22 | 1219 registers retrieved | 0 registers not supported |
-| 192.168.13.79/None | winet_http | None | Failed | CannotConnectError:  |
-| 192.168.13.58/1 | pymodbus | 270 | 379 registers retrieved | 136 registers not supported |
-| 192.168.13.58/None | winet_http | 24 | 1123 registers retrieved | 1 registers not supported |
-| 192.168.13.80/2 | pymodbus | 22 | 1219 registers retrieved | 0 registers not supported |
-| 192.168.13.80/None | winet_http | None | Failed | CannotConnectError:  |
-| 192.168.13.74/1 | pymodbus | 270 | 379 registers retrieved | 136 registers not supported |
-| 192.168.13.74/None | winet_http | None | Failed | CannotConnectError:  |
+| SN | Host | Mode | Read Calls | Result | Errors |
+| --- | --- | --- | --- | --- | --- |
+| - | 192.168.13.58/1 | pymodbus | None | Failed | ModbusError: Unknown exception response: Exception Response(131, 3, SlaveFailure) |
+| - | 192.168.13.58/None | winet_http | None | Failed | CannotConnectError:  |
+| - | 192.168.13.74/None | winet_http | None | Failed | CannotConnectError:  |
+| - | 192.168.13.79/None | winet_http | None | Failed | CannotConnectError:  |
+| - | 192.168.13.80/None | winet_http | None | Failed | CannotConnectError:  |
+| A2350415770 | 192.168.13.79/1 | pymodbus | ModbusConnectionBase.Stats(connections=1, read_calls=22, read_errors=0) | 1287 registers retrieved | 0 registers not supported |
+| A2350415779 | 192.168.13.74/1 | pymodbus | ModbusConnectionBase.Stats(connections=1, read_calls=172, read_errors=162) | 447 registers retrieved | 804 registers not supported |
+| A2350415779 | 192.168.13.80/2 | pymodbus | ModbusConnectionBase.Stats(connections=1, read_calls=22, read_errors=0) | 1287 registers retrieved | 0 registers not supported |
 
 
 # A2350415770
-| Signal | pymodbus/192.168.13.79/1 | pymodbus/192.168.13.58/1 | winet_http/192.168.13.58/None | 
-| --- | --- | --- | --- |
-| protocol_number | 1094856704 | 1094791472 | 1094856704 | 
-| protocol_version | 16781568 | 16778496 | 16781568 | 
-| arm_software_version | 16722 | 16722 | 16722 | 
-| dsp_software_version | 19780 | 19780 | 19780 | 
-| serial_number | A2350415770 | A2350415770 | A2350415770 | 
-| device_type_code | SH8.0RT-20 | SH8.0RT-20 | SH8.0RT-20 | 
-| nominal_output_power | 8.0 | 8.0 | 8.0 | 
-| output_type | 3P4L | 3P4L | 3P4L | 
-| daily_output_energy_pv_and_battery | 0.0 | 0.0 | 0.0 | 
-| total_output_energy_pv_and_battery | 125.2 | 125.2 | 125.2 | 
-| total_running_time | None | 0 | None | 
-| internal_temperature | 33.9 | 34.0 | 33.9 | 
-| total_apparent_power | 145 | 0 | 78 | 
-| mppt_1_voltage | 0.0 | 0.0 | 0.0 | 
-| mppt_1_current | 0.0 | 0.0 | 0.0 | 
-| mppt_2_voltage | 0.0 | 0.0 | 0.0 | 
-| mppt_2_current | 0.0 | 0.0 | 0.0 | 
-| mppt_3_voltage | None | 0.0 | None | 
-| mppt_3_current | None | 0.0 | None | 
-| total_dc_power | 0 | 0 | 0 | 
-| phase_a_voltage | 231.1 | 231.0 | 231.2 | 
-| phase_b_voltage | 232.6 | 232.7 | 232.5 | 
-| phase_c_voltage | 232.2 | 232.3 | 232.6 | 
-| phase_a_current | 0.0 | 0.0 | 0.0 | 
-| phase_b_current | 0.0 | 0.0 | 0.0 | 
-| phase_c_current | 0.0 | 0.0 | 0.0 | 
-| total_active_power | 0 | 0 | 0 | 
-| total_reactive_power | 81 | -2 | -2 | 
-| power_factor | -0.69 | 1.0 | 1.0 | 
-| grid_frequency | 50.0 | 500.2 | 49.9 | 
-| work_state_1 | None | 0 | None | 
-| alarm_time_year | None | 0 | None | 
-| alarm_time_month | None | 0 | None | 
-| alarm_time_day | None | 0 | None | 
-| alarm_time_hour | None | 0 | None | 
-| alarm_time_minute | None | 0 | None | 
-| alarm_time_second | None | 0 | None | 
-| alarm_code_1 | None | 0 | None | 
-| nominal_reactive_power | 4800.0 | 0.0 | 4800.0 | 
-| array_insulation_resistance | 748 | None | 748 | 
-| active_power_regulation_setpoint | None | None | None | 
-| reactive_power_regulation_setpoint | -1 | None | -1 | 
-| work_state_2 | None | None | None | 
-| meter_power | -1 | None | -1 | 
-| meter_a_phase_power | -1 | None | -1 | 
-| meter_b_phase_power | 5373951 | None | 5177343 | 
-| meter_c_phase_power | -65536 | None | -65536 | 
-| meter_load_power | -1 | None | -1 | 
-| daily_export_energy | None | None | None | 
-| total_export_energy | None | None | None | 
-| daily_import_energy | None | None | None | 
-| total_import_energy | None | None | None | 
-| daily_direct_energy_consumption | None | None | None | 
-| total_direct_energy_consumption | None | None | None | 
-| daily_running_time | None | None | None | 
-| mppt_4_voltage | None | None | None | 
-| mppt_4_current | None | None | None | 
-| mppt_5_voltage | None | None | None | 
-| mppt_5_current | None | None | None | 
-| mppt_6_voltage | None | None | None | 
-| mppt_6_current | None | None | None | 
-| mppt_7_voltage | None | None | None | 
-| mppt_7_current | None | None | None | 
-| mppt_8_voltage | None | None | None | 
-| mppt_8_current | None | None | None | 
-| monthly_power_yields | None | None | None | 
-| mppt_9_voltage | None | None | None | 
-| mppt_9_current | None | None | None | 
-| mppt_10_voltage | None | None | None | 
-| mppt_10_current | None | None | None | 
-| mppt_11_voltage | None | None | None | 
-| mppt_11_current | None | None | None | 
-| mppt_12_voltage | None | None | None | 
-| mppt_12_current | None | None | None | 
-| total_power_yields | None | None | None | 
-| negative_voltage_to_the_ground | -0.1 | None | -0.1 | 
-| bus_voltage | 626.0 | None | 626.0 | 
-| grid_frequency_ | 50.03 | None | 49.98 | 
-| pid_work_state | None | None | None | 
-| pid_alarm_code | None | None | None | 
-| export_power | -434 | None | -388 | 
-| meter_active_power | 408 | 421 | 389 | 
-| meter_active_power_phase_a | 654 | 659 | 667 | 
-| meter_active_power_phase_b | -667 | -650 | -698 | 
-| meter_active_power_phase_c | 421 | 412 | 420 | 
-| power_meter | 434 | None | 388 | 
-| export_limit_min | 0.0 | 0.0 | 0.0 | 
-| export_limit_max | 16000.0 | 16000.0 | 16000.0 | 
-| bdc_rated_power | 8000.0 | 8000.0 | 8000.0 | 
-| bms_max_charging_current | 30 | 30 | 30 | 
-| bms_max_discharging_current | 27 | 27 | 27 | 
-| battery_capacity_high_precision | 9.6 | 0.0 | 9.6 | 
-| backup_power_phase_a | -25 | None | -25 | 
-| backup_power_phase_b | -31 | None | -31 | 
-| backup_power_phase_c | -31 | None | -31 | 
-| backup_power_total | -87 | None | -87 | 
-| pv_power_of_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | None | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
-| pv_energy_yields_daily | {0: 1.2, 1: 0.8, 2: 2.0, 3: 1.4, 4: 1.6, 5: 0.1, 6: 0.1, 7: 1.8, 8: 2.3, 9: 2.3, 10: 0.9, 11: 1.4, 12: 1.2, 13: 2.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | None | {0: 1.2, 1: 0.8, 2: 2.0, 3: 1.4, 4: 1.6, 5: 0.1, 6: 0.1, 7: 1.8, 8: 2.3, 9: 2.3, 10: 0.9, 11: 1.4, 12: 1.2, 13: 2.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | 
-| pv_energy_yields_monthly | {0: 19.1, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | {0: 19.1, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
-| pv_energy_yields_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 18.4, 9: 19.1, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 18.4, 9: 19.1, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
-| direct_power_consumption_from_pv_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | None | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
-| direct_power_consumption_from_pv_daily | {0: 0.6, 1: 0.6, 2: 0.6, 3: 0.8, 4: 0.9, 5: 0.1, 6: 0.1, 7: 1.4, 8: 2.0, 9: 1.6, 10: 0.8, 11: 1.0, 12: 1.0, 13: 1.9, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | None | {0: 0.6, 1: 0.6, 2: 0.6, 3: 0.8, 4: 0.9, 5: 0.1, 6: 0.1, 7: 1.4, 8: 2.0, 9: 1.6, 10: 0.8, 11: 1.0, 12: 1.0, 13: 1.9, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
-| direct_energy_consumption_from_pv_monthly | {0: 13.4, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | {0: 13.4, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
-| direct_energy_consumption_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 6.3, 9: 13.4, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 6.3, 9: 13.4, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
-| export_power_from_pv_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | None | None | 
-| export_energy_from_pv_daily | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
-| export_energy_from_pv_monthly | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
-| export_energy_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
-| battery_charge_energy_from_pv_today | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | 
-| battery_charge_energy_from_pv | {0: 0.6, 1: 0.2, 2: 1.4, 3: 0.6, 4: 0.7, 5: 0.0, 6: 0.0, 7: 0.4, 8: 0.3, 9: 0.7, 10: 0.1, 11: 0.4, 12: 0.2, 13: 0.1, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | None | {0: 0.6, 1: 0.2, 2: 1.4, 3: 0.6, 4: 0.7, 5: 0.0, 6: 0.0, 7: 0.4, 8: 0.3, 9: 0.7, 10: 0.1, 11: 0.4, 12: 0.2, 13: 0.1, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
-| battery_charge_energy_from_pv_monthly | {0: 5.7, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | {0: 5.7, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
-| battery_charge_energy_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 5.7, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 5.7, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
-| string_1_current | None | None | None | 
-| string_2_current | None | None | None | 
-| string_3_current | None | None | None | 
-| string_4_current | None | None | None | 
-| string_5_current | None | None | None | 
-| string_6_current | None | None | None | 
-| string_7_current | None | None | None | 
-| string_8_current | None | None | None | 
-| string_9_current | None | None | None | 
-| string_10_current | None | None | None | 
-| string_11_current | None | None | None | 
-| string_12_current | None | None | None | 
-| string_13_current | None | None | None | 
-| string_14_current | None | None | None | 
-| string_15_current | None | None | None | 
-| string_16_current | None | None | None | 
-| string_17_current | None | None | None | 
-| string_18_current | None | None | None | 
-| string_19_current | None | None | None | 
-| string_20_current | None | None | None | 
-| string_21_current | None | None | None | 
-| string_22_current | None | None | None | 
-| string_23_current | None | None | None | 
-| string_24_current | None | None | None | 
-| running_state | Running | Running | Running | 
-| state_power_generated_from_pv | False | False | False | 
-| state_battery_charging | False | False | False | 
-| state_battery_discharging | False | False | False | 
-| state_load_active | True | True | True | 
-| state_feed_into_grid | False | False | False | 
-| state_import_from_grid | True | True | True | 
-| state_power_generated_from_load | False | False | False | 
-| daily_pv_generation | 0.0 | 0.0 | 0.0 | 
-| total_pv_generation | 37.5 | 37.5 | 37.5 | 
-| daily_pv_export | 0.0 | 0.0 | 0.0 | 
-| total_pv_export | 0.0 | 0.0 | 0.0 | 
-| load_power_hybrid | 411 | 385 | 388 | 
-| export_power_hybrid | -411 | -385 | -388 | 
-| daily_battery_charge_from_pv | 0.0 | 0.0 | 0.0 | 
-| total_battery_charge_from_pv | 17.8 | 17.8 | 17.8 | 
-| co2_reduction | 26.2 | 0.0 | 26.2 | 
-| daily_direct_energy_consumption_ | 0.0 | 0.0 | 0.0 | 
-| total_direct_energy_consumption_ | 19.7 | 19.7 | 19.7 | 
-| battery_voltage | 191.0 | 191.0 | 191.0 | 
-| battery_current | 0.0 | 0.0 | 0.0 | 
-| battery_power | 0 | 0 | 0 | 
-| battery_level | 0.0 | 0.0 | 0.0 | 
-| battery_state_of_health | 100.0 | 100.0 | 100.0 | 
-| battery_temperature | 19.0 | 19.0 | 19.0 | 
-| daily_battery_discharge_energy | 0.0 | 0.0 | 0.0 | 
-| total_battery_discharge_energy | 107.1 | 107.1 | 107.1 | 
-| self_consumption_of_day | 100.0 | 100.0 | 100.0 | 
-| grid_state | None | 0 | None | 
-| phase_a_current_ | 0.0 | 0.0 | 0.0 | 
-| phase_b_current_ | 0.0 | 0.0 | 0.0 | 
-| phase_c_current_ | 0.0 | 0.0 | 0.0 | 
-| total_active_power_2 | 0 | 0 | 0 | 
-| daily_imported_energy | 0.9 | 0.9 | 0.9 | 
-| total_imported_energy | 281.8 | 281.8 | 281.8 | 
-| battery_capacity | 9.6 | 96.0 | 9.6 | 
-| daily_battery_charge_energy | 0.0 | 0.0 | 0.0 | 
-| total_battery_charge_energy | 118.2 | 118.2 | 118.2 | 
-| drm_state | 255 | 255 | 255 | 
-| daily_exported_energy | 0.1 | 0.1 | 0.1 | 
-| total_exported_energy | 26.2 | 26.2 | 26.2 | 
-| inverter_alarm | 0.0 | 0.0 | 0.0 | 
-| grid-side_fault | 0.0 | 0.0 | 0.0 | 
-| system_fault1 | 0.0 | 0.0 | 0.0 | 
-| system_fault2 | 0.0 | 0.0 | 0.0 | 
-| dc-side_fault | 0.0 | 0.0 | 0.0 | 
-| permanent_fault | 0.0 | 0.0 | 0.0 | 
-| bdc-side_fault | 0.0 | 0.0 | 0.0 | 
-| bdc-side_permanent_fault | 0.0 | 0.0 | 0.0 | 
-| battery_fault | 0.0 | None | 0.0 | 
-| battery_alarm | 0.0 | None | 0.0 | 
-| bms_alarm | 0 | 0 | 0 | 
-| bms_protection | 0 | 0 | 0 | 
-| bms_fault1 | 0 | 0 | 0 | 
-| bms_fault2 | 0 | 0 | 0 | 
-| bms_alarm2 | 0 | 0 | 0 | 
-| bms_status | None | 0 | None | 
-| max_charging_current | None | 30 | None | 
-| max_discharging_current | None | 27 | None | 
-| warning | None | 0 | None | 
-| protection | None | 0 | None | 
-| fault1 | None | 0 | None | 
-| fault2 | None | 0 | None | 
-| soc | None | 0 | None | 
-| soh | None | 0 | None | 
-| battery_current_ | None | 0 | None | 
-| battery_voltage_ | None | 0.0 | None | 
-| cycle_count | None | 0.0 | None | 
-| average_cell_voltage | None | 0 | None | 
-| max_cell_voltage | None | 0 | None | 
-| min_cell_voltage | None | 0 | None | 
-| battery_pack_voltage | None | 0 | None | 
-| average_cell_temp | -1 | 0 | -1 | 
-| max_cell_temp | -1 | 0 | -1 | 
-| min_cell_temp | -1 | 0 | -1 | 
-| year | 2024 | 2024 | 2024 | 
-| month | 1 | 1 | 1 | 
-| day | 15 | 15 | 15 | 
-| hour | 2 | 2 | 2 | 
-| minute | 43 | 47 | 48 | 
-| second | 20 | 53 | 44 | 
-| start_stop | Start | Start | Start | 
-| power_limitation_switch | Enable | Enable | Enable | 
-| power_limitation_setting | 100.0 | 100.0 | 100.0 | 
-| export_power_limitation | None | None | None | 
-| export_power_limitation_value | None | None | None | 
-| current_transformer_output_current | None | None | None | 
-| current_transformer_range | None | None | None | 
-| current_transformer | None | None | None | 
-| export_power_limitation_percentage | None | None | None | 
-| installed_pv_power | None | None | None | 
-| power_factor_setting | None | None | None | 
-| scheduling_achieve_active_overload | None | None | None | 
-| night_svg_switch | None | None | None | 
-| reactive_power_adjustment_mode | Off | Off | Off | 
-| reactive_power_percentage_setting | -0.1 | -0.1 | -0.1 | 
-| power_limitation_adjustment | None | None | None | 
-| reactive_power_adjustment | -100.0 | -100.0 | -100.0 | 
-| pid_recovery | None | None | None | 
-| anti_pid | None | None | None | 
-| fullday_pid_suppression | None | None | None | 
-| start_stop_2 | Start | Start | Start | 
-| ems_mode_selection | 0 | 0 | 0 | 
-| battery_forced_charge_discharge_cmd | Stop | Stop | Stop | 
-| battery_forced_charge_discharge_power | 0 | 0 | 0 | 
-| battery_forced_charge_discharge_power_ | 0 | 0 | 0 | 
-| Max_SoC | 100.0 | 100.0 | 100.0 | 
-| Min_SoC | 5.0 | 5.0 | 5.0 | 
-| export_power_limit | 12000 | 12000 | 12000 | 
-| start_charging_power | 0.0 | 0.0 | 0.0 | 
-| start_discharging_power | 0.0 | 0.0 | 0.0 | 
-| energy_meter_comm | Enabled | Enabled | Enabled | 
-| export_power_limitation_ | Enabled | Enabled | Enabled | 
-| soc_reserve | 0 | 0 | 0 | 
-| battery_max_charge_power | 10600.0 | 10600.0 | 10600.0 | 
-| battery_max_discharge_power | 10600.0 | 10600.0 | 10600.0 | 
-| battery_capacity_2 | 0.0 | 0.0 | 0.0 | 
-| battery_charge_start_power | 0.0 | 0.0 | 0.0 | 
-| battery_charge_stop_power | 0.0 | 0.0 | 0.0 | 
-| master_slave_mode | Enabled | Enabled | Enabled | 
-| master_slave_role | Master | Master | Master | 
-| slave_count | 2 | 2 | 2 | 
+| host/slave/mode | 192.168.13.79/1/pymodbus |
+| --- | --- |
+| protocol_number | 1094856704 | 
+| protocol_version | 16781568 | 
+| arm_software_version | 16722 | 
+| dsp_software_version | 19780 | 
+| serial_number | A2350415770 | 
+| device_type_code | SH8.0RT-20 | 
+| nominal_output_power | 8.0 | 
+| output_type | 3P4L | 
+| daily_output_energy_pv_and_battery | 3.4 | 
+| total_output_energy_pv_and_battery | 164.0 | 
+| total_running_time | None | 
+| internal_temperature | 33.4 | 
+| total_apparent_power | 77 | 
+| mppt_1_voltage | 0.0 | 
+| mppt_1_current | 0.0 | 
+| mppt_2_voltage | 0.0 | 
+| mppt_2_current | 0.0 | 
+| mppt_3_voltage | None | 
+| mppt_3_current | None | 
+| total_dc_power | 0 | 
+| phase_a_voltage | 231.6 | 
+| phase_b_voltage | 232.1 | 
+| phase_c_voltage | 232.2 | 
+| phase_a_current | 0.0 | 
+| phase_b_current | 0.0 | 
+| phase_c_current | 0.0 | 
+| total_active_power | 0 | 
+| total_reactive_power | -5 | 
+| power_factor | 1.0 | 
+| grid_frequency | 50.0 | 
+| work_state_1 | None | 
+| alarm_time_year | None | 
+| alarm_time_month | None | 
+| alarm_time_day | None | 
+| alarm_time_hour | None | 
+| alarm_time_minute | None | 
+| alarm_time_second | None | 
+| alarm_code_1 | None | 
+| nominal_reactive_power | 4800.0 | 
+| array_insulation_resistance | 748 | 
+| active_power_regulation_setpoint | None | 
+| reactive_power_regulation_setpoint | -1 | 
+| work_state_2 | None | 
+| meter_power | -1 | 
+| meter_a_phase_power | -1 | 
+| meter_b_phase_power | 5111807 | 
+| meter_c_phase_power | -65536 | 
+| meter_load_power | -1 | 
+| daily_export_energy | None | 
+| total_export_energy | None | 
+| daily_import_energy | None | 
+| total_import_energy | None | 
+| daily_direct_energy_consumption | None | 
+| total_direct_energy_consumption | None | 
+| daily_running_time | None | 
+| mppt_4_voltage | None | 
+| mppt_4_current | None | 
+| mppt_5_voltage | None | 
+| mppt_5_current | None | 
+| mppt_6_voltage | None | 
+| mppt_6_current | None | 
+| mppt_7_voltage | None | 
+| mppt_7_current | None | 
+| mppt_8_voltage | None | 
+| mppt_8_current | None | 
+| monthly_power_yields | None | 
+| mppt_9_voltage | None | 
+| mppt_9_current | None | 
+| mppt_10_voltage | None | 
+| mppt_10_current | None | 
+| mppt_11_voltage | None | 
+| mppt_11_current | None | 
+| mppt_12_voltage | None | 
+| mppt_12_current | None | 
+| total_power_yields | None | 
+| negative_voltage_to_the_ground | -0.1 | 
+| bus_voltage | 627.0 | 
+| grid_frequency_ | 50.0 | 
+| pid_work_state | None | 
+| pid_alarm_code | None | 
+| export_power | 94 | 
+| meter_active_power | -99 | 
+| meter_active_power_phase_a | 152 | 
+| meter_active_power_phase_b | -300 | 
+| meter_active_power_phase_c | 48 | 
+| power_meter | -94 | 
+| export_limit_min | 0.0 | 
+| export_limit_max | 16000.0 | 
+| bdc_rated_power | 8000.0 | 
+| bms_max_charging_current | 30 | 
+| bms_max_discharging_current | 28 | 
+| battery_capacity_high_precision | 9.6 | 
+| backup_power_phase_a | -27 | 
+| backup_power_phase_b | -31 | 
+| backup_power_phase_c | -30 | 
+| backup_power_total | -88 | 
+| pv_power_of_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 2, 37: 14, 38: 53, 39: 259, 40: 202, 41: 192, 42: 342, 43: 449, 44: 511, 45: 481, 46: 623, 47: 645, 48: 648, 49: 676, 50: 313, 51: 578, 52: 456, 53: 225, 54: 447, 55: 290, 56: 83, 57: 90, 58: 262, 59: 9, 60: 135, 61: 646, 62: 446, 63: 283, 64: 54, 65: 75, 66: 1, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
+| pv_energy_yields_daily | {0: 1.2, 1: 0.8, 2: 2.0, 3: 1.4, 4: 1.6, 5: 0.1, 6: 0.1, 7: 1.8, 8: 2.3, 9: 2.3, 10: 0.9, 11: 1.4, 12: 1.2, 13: 2.0, 14: 2.9, 15: 3.6, 16: 3.3, 17: 6.6, 18: 6.7, 19: 6.0, 20: 3.5, 21: 2.2, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | 
+| pv_energy_yields_monthly | {0: 53.9, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| pv_energy_yields_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 18.4, 9: 53.9, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
+| direct_power_consumption_from_pv_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 8, 38: 53, 39: 20, 40: 55, 41: 0, 42: 0, 43: 287, 44: 511, 45: 308, 46: 0, 47: 0, 48: 0, 49: 607, 50: 313, 51: 92, 52: 0, 53: 209, 54: 152, 55: 80, 56: 19, 57: 63, 58: 262, 59: 9, 60: 0, 61: 0, 62: 444, 63: 283, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
+| direct_power_consumption_from_pv_daily | {0: 0.6, 1: 0.6, 2: 0.6, 3: 0.8, 4: 0.9, 5: 0.1, 6: 0.1, 7: 1.4, 8: 2.0, 9: 1.6, 10: 0.8, 11: 1.0, 12: 1.0, 13: 1.9, 14: 1.8, 15: 2.8, 16: 3.2, 17: 2.7, 18: 2.5, 19: 5.4, 20: 2.6, 21: 0.9, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
+| direct_energy_consumption_from_pv_monthly | {0: 35.3, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| direct_energy_consumption_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 6.3, 9: 35.3, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
+| export_power_from_pv_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 1, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 5, 52: 0, 53: 14, 54: 14, 55: 5, 56: 0, 57: 27, 58: 0, 59: 0, 60: 0, 61: 0, 62: 2, 63: 0, 64: 0, 65: 0, 66: 1, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
+| export_energy_from_pv_daily | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
+| export_energy_from_pv_monthly | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| export_energy_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
+| battery_charge_energy_from_pv_today | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.2, 37: 0.6, 38: 0.0, 39: 23.9, 40: 14.7, 41: 19.2, 42: 34.2, 43: 16.2, 44: 0.0, 45: 17.2, 46: 62.3, 47: 64.5, 48: 64.8, 49: 6.9, 50: 0.0, 51: 48.1, 52: 45.6, 53: 0.2, 54: 28.1, 55: 20.5, 56: 6.4, 57: 0.0, 58: 0.0, 59: 0.0, 60: 13.5, 61: 64.6, 62: 0.0, 63: 0.0, 64: 5.4, 65: 7.5, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | 
+| battery_charge_energy_from_pv | {0: 0.6, 1: 0.2, 2: 1.4, 3: 0.6, 4: 0.7, 5: 0.0, 6: 0.0, 7: 0.4, 8: 0.3, 9: 0.7, 10: 0.1, 11: 0.4, 12: 0.2, 13: 0.1, 14: 1.1, 15: 0.8, 16: 0.1, 17: 3.9, 18: 4.2, 19: 0.6, 20: 0.9, 21: 1.3, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
+| battery_charge_energy_from_pv_monthly | {0: 18.6, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| battery_charge_energy_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 18.6, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
+| string_1_current | None | 
+| string_2_current | None | 
+| string_3_current | None | 
+| string_4_current | None | 
+| string_5_current | None | 
+| string_6_current | None | 
+| string_7_current | None | 
+| string_8_current | None | 
+| string_9_current | None | 
+| string_10_current | None | 
+| string_11_current | None | 
+| string_12_current | None | 
+| string_13_current | None | 
+| string_14_current | None | 
+| string_15_current | None | 
+| string_16_current | None | 
+| string_17_current | None | 
+| string_18_current | None | 
+| string_19_current | None | 
+| string_20_current | None | 
+| string_21_current | None | 
+| string_22_current | None | 
+| string_23_current | None | 
+| string_24_current | None | 
+| running_state | Running | 
+| state_power_generated_from_pv | False | 
+| state_battery_charging | False | 
+| state_battery_discharging | False | 
+| state_load_active | False | 
+| state_feed_into_grid | True | 
+| state_import_from_grid | False | 
+| state_power_generated_from_load | True | 
+| daily_pv_generation | 2.2 | 
+| total_pv_generation | 72.3 | 
+| daily_pv_export | 0.0 | 
+| total_pv_export | 0.0 | 
+| load_power_hybrid | -93 | 
+| export_power_hybrid | 93 | 
+| daily_battery_charge_from_pv | 1.3 | 
+| total_battery_charge_from_pv | 30.7 | 
+| co2_reduction | 50.6 | 
+| daily_direct_energy_consumption_ | 0.9 | 
+| total_direct_energy_consumption_ | 41.6 | 
+| battery_voltage | 191.0 | 
+| battery_current | 0.0 | 
+| battery_power | 0 | 
+| battery_level | 0.0 | 
+| battery_state_of_health | 100.0 | 
+| battery_temperature | 19.0 | 
+| daily_battery_discharge_energy | 2.4 | 
+| total_battery_discharge_energy | 123.8 | 
+| self_consumption_of_day | 100.0 | 
+| grid_state | None | 
+| phase_a_current_ | 0.0 | 
+| phase_b_current_ | 0.0 | 
+| phase_c_current_ | 0.0 | 
+| total_active_power_2 | 0 | 
+| daily_imported_energy | 8.2 | 
+| total_imported_energy | 409.5 | 
+| battery_capacity | 9.6 | 
+| daily_battery_charge_energy | 2.8 | 
+| total_battery_charge_energy | 137.5 | 
+| drm_state | 255 | 
+| daily_exported_energy | 2.2 | 
+| total_exported_energy | 36.6 | 
+| inverter_alarm | 0.0 | 
+| grid-side_fault | 0.0 | 
+| system_fault1 | 0.0 | 
+| system_fault2 | 0.0 | 
+| dc-side_fault | 0.0 | 
+| permanent_fault | 0.0 | 
+| bdc-side_fault | 0.0 | 
+| bdc-side_permanent_fault | 0.0 | 
+| battery_fault | 0.0 | 
+| battery_alarm | 0.0 | 
+| bms_alarm | 0 | 
+| bms_protection | 0 | 
+| bms_fault1 | 0 | 
+| bms_fault2 | 0 | 
+| bms_alarm2 | 0 | 
+| bms_status | None | 
+| max_charging_current | None | 
+| max_discharging_current | None | 
+| warning | None | 
+| protection | None | 
+| fault1 | None | 
+| fault2 | None | 
+| soc | None | 
+| soh | None | 
+| battery_current_ | None | 
+| battery_voltage_ | None | 
+| cycle_count | None | 
+| average_cell_voltage | None | 
+| max_cell_voltage | None | 
+| min_cell_voltage | None | 
+| battery_pack_voltage | None | 
+| average_cell_temp | -1 | 
+| max_cell_temp | -1 | 
+| min_cell_temp | -1 | 
+| year | 2024 | 
+| month | 1 | 
+| day | 22 | 
+| hour | 23 | 
+| minute | 11 | 
+| second | 34 | 
+| start_stop | Start | 
+| power_limitation_switch | Enable | 
+| power_limitation_setting | 100.0 | 
+| export_power_limitation | None | 
+| export_power_limitation_value | None | 
+| current_transformer_output_current | None | 
+| current_transformer_range | None | 
+| current_transformer | None | 
+| export_power_limitation_percentage | None | 
+| installed_pv_power | None | 
+| power_factor_setting | None | 
+| scheduling_achieve_active_overload | None | 
+| night_svg_switch | None | 
+| reactive_power_adjustment_mode | Off | 
+| reactive_power_percentage_setting | -0.1 | 
+| power_limitation_adjustment | None | 
+| reactive_power_adjustment | -100.0 | 
+| pid_recovery | None | 
+| anti_pid | None | 
+| fullday_pid_suppression | None | 
+| start_stop_2 | Start | 
+| ems_mode_selection | 0 | 
+| battery_forced_charge_discharge_cmd | Stop | 
+| battery_forced_charge_discharge_power | 0 | 
+| battery_forced_charge_discharge_power_ | 0 | 
+| Max_SoC | 100.0 | 
+| Min_SoC | 5.0 | 
+| export_power_limit | 12000 | 
+| start_charging_power | 0.0 | 
+| start_discharging_power | 0.0 | 
+| energy_meter_comm | Enabled | 
+| export_power_limitation_ | Enabled | 
+| soc_reserve | 0 | 
+| battery_max_charge_power | 10600.0 | 
+| battery_max_discharge_power | 10600.0 | 
+| battery_capacity_2 | 0.0 | 
+| battery_charge_start_power | 0.0 | 
+| battery_charge_stop_power | 0.0 | 
+| master_slave_mode | Enabled | 
+| master_slave_role | Master | 
+| slave_count | 2 | 
+| weekly_discharging_start_time_1_hour | 0 | 
+| weekly_discharging_start_time_1_minute | 0 | 
+| weekly_discharging_end_time_1_hour | 0 | 
+| weekly_discharging_end_time_1_minute | 24 | 
+| weekly_discharging_start_time_2_hour | 0 | 
+| weekly_discharging_start_time_2_minute | 0 | 
+| weekly_discharging_end_time_2_hour | 0 | 
+| weekly_discharging_end_time_2_minute | 24 | 
+| weekend_discharging_enable | None | 
+| weekend_discharging_start_time_1_hour | 170 | 
+| weekend_discharging_start_time_1_minute | 0 | 
+| weekend_discharging_end_time_1_hour | 0 | 
+| weekend_discharging_end_time_1_minute | 24 | 
+| weekend_discharging_start_time_2_hour | 0 | 
+| weekend_discharging_start_time_2_minute | 0 | 
+| forced_charging_enable | None | 
+| forced_charging_valid_time | 85 | 
+| forced_charging_start_time_1_hour | 1 | 
+| forced_charging_start_time_1_minute | 0 | 
+| forced_charging_end_time_1_hour | 0 | 
+| forced_charging_end_time_1_minute | 0 | 
+| forced_charging_target_soc_1 | 0.0 | 
+| forced_charging_start_time_2_hour | 0 | 
+| forced_charging_start_time_2_minute | 0 | 
+| forced_charging_end_time_2_hour | 0 | 
+| forced_charging_end_time_2_minute | 0 | 
+| forced_charging_target_soc_2 | 0.0 | 
 
 
 # A2350415779
-| Signal | pymodbus/192.168.13.80/2 | pymodbus/192.168.13.74/1 | 
+| host/slave/mode | 192.168.13.74/1/pymodbus | 192.168.13.80/2/pymodbus |
 | --- | --- | --- |
-| protocol_number | 1094856704 | 1094791472 | 
-| protocol_version | 16781568 | 16778496 | 
+| protocol_number | 1094791472 | 1094856704 | 
+| protocol_version | 16778496 | 16781568 | 
 | arm_software_version | 16722 | 16722 | 
 | dsp_software_version | 19780 | 19780 | 
 | serial_number | A2350415779 | A2350415779 | 
@@ -288,44 +315,44 @@
 | output_type | 3P4L | 3P4L | 
 | daily_output_energy_pv_and_battery | 0.0 | 0.0 | 
 | total_output_energy_pv_and_battery | 44.4 | 44.4 | 
-| total_running_time | None | 0 | 
-| internal_temperature | 28.4 | 28.3 | 
+| total_running_time | 0 | None | 
+| internal_temperature | 27.9 | 27.9 | 
 | total_apparent_power | 0 | 0 | 
 | mppt_1_voltage | 0.0 | 0.0 | 
 | mppt_1_current | 0.0 | 0.0 | 
 | mppt_2_voltage | 0.0 | 0.0 | 
 | mppt_2_current | 0.0 | 0.0 | 
-| mppt_3_voltage | None | 0.0 | 
-| mppt_3_current | None | 0.0 | 
+| mppt_3_voltage | 0.0 | None | 
+| mppt_3_current | 0.0 | None | 
 | total_dc_power | 0 | 0 | 
-| phase_a_voltage | 230.8 | 231.2 | 
-| phase_b_voltage | 231.2 | 231.7 | 
-| phase_c_voltage | 231.5 | 232.0 | 
+| phase_a_voltage | 232.0 | 232.1 | 
+| phase_b_voltage | 231.7 | 231.8 | 
+| phase_c_voltage | 231.6 | 231.7 | 
 | phase_a_current | 0.0 | 0.0 | 
 | phase_b_current | 0.0 | 0.0 | 
 | phase_c_current | 0.0 | 0.0 | 
 | total_active_power | 0 | 0 | 
 | total_reactive_power | 0 | 0 | 
 | power_factor | 0.0 | 0.0 | 
-| grid_frequency | 49.9 | 499.7 | 
-| work_state_1 | None | 0 | 
-| alarm_time_year | None | 0 | 
-| alarm_time_month | None | 0 | 
-| alarm_time_day | None | 0 | 
-| alarm_time_hour | None | 0 | 
-| alarm_time_minute | None | 0 | 
-| alarm_time_second | None | 0 | 
-| alarm_code_1 | None | 0 | 
-| nominal_reactive_power | 4800.0 | 0.0 | 
-| array_insulation_resistance | 955 | None | 
+| grid_frequency | 499.9 | 49.9 | 
+| work_state_1 | 0 | None | 
+| alarm_time_year | 0 | None | 
+| alarm_time_month | 0 | None | 
+| alarm_time_day | 0 | None | 
+| alarm_time_hour | 0 | None | 
+| alarm_time_minute | 0 | None | 
+| alarm_time_second | 0 | None | 
+| alarm_code_1 | 0 | None | 
+| nominal_reactive_power | 0.0 | 4800.0 | 
+| array_insulation_resistance | None | 955 | 
 | active_power_regulation_setpoint | None | None | 
-| reactive_power_regulation_setpoint | -1 | None | 
+| reactive_power_regulation_setpoint | None | -1 | 
 | work_state_2 | None | None | 
-| meter_power | -1 | None | 
-| meter_a_phase_power | -1 | None | 
-| meter_b_phase_power | 65535 | None | 
-| meter_c_phase_power | -65536 | None | 
-| meter_load_power | -1 | None | 
+| meter_power | None | -1 | 
+| meter_a_phase_power | None | -1 | 
+| meter_b_phase_power | None | 65535 | 
+| meter_c_phase_power | None | -65536 | 
+| meter_load_power | None | -1 | 
 | daily_export_energy | None | None | 
 | total_export_energy | None | None | 
 | daily_import_energy | None | None | 
@@ -353,43 +380,43 @@
 | mppt_12_voltage | None | None | 
 | mppt_12_current | None | None | 
 | total_power_yields | None | None | 
-| negative_voltage_to_the_ground | -0.1 | None | 
-| bus_voltage | 4.0 | None | 
-| grid_frequency_ | 49.98 | None | 
+| negative_voltage_to_the_ground | None | -0.1 | 
+| bus_voltage | None | 16.0 | 
+| grid_frequency_ | None | 49.99 | 
 | pid_work_state | None | None | 
 | pid_alarm_code | None | None | 
-| export_power | 0 | None | 
-| meter_active_power | None | 0 | 
-| meter_active_power_phase_a | None | 0 | 
-| meter_active_power_phase_b | None | 0 | 
-| meter_active_power_phase_c | None | 0 | 
-| power_meter | 0 | None | 
+| export_power | None | 0 | 
+| meter_active_power | 0 | None | 
+| meter_active_power_phase_a | 0 | None | 
+| meter_active_power_phase_b | 0 | None | 
+| meter_active_power_phase_c | 0 | None | 
+| power_meter | None | 0 | 
 | export_limit_min | 0.0 | 0.0 | 
 | export_limit_max | 8000.0 | 8000.0 | 
 | bdc_rated_power | 8000.0 | 8000.0 | 
 | bms_max_charging_current | 0 | 0 | 
 | bms_max_discharging_current | 0 | 0 | 
 | battery_capacity_high_precision | 0.0 | 0.0 | 
-| backup_power_phase_a | 0 | None | 
-| backup_power_phase_b | 0 | None | 
-| backup_power_phase_c | 0 | None | 
-| backup_power_total | 0 | None | 
-| pv_power_of_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | None | 
-| pv_energy_yields_daily | {0: 1.3, 1: 0.7, 2: 1.9, 3: 1.7, 4: 1.7, 5: 0.1, 6: 0.3, 7: 3.3, 8: 4.2, 9: 4.1, 10: 2.6, 11: 1.5, 12: 1.1, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | None | 
-| pv_energy_yields_monthly | {0: 24.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | 
-| pv_energy_yields_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 19.9, 9: 24.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | 
-| direct_power_consumption_from_pv_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | None | 
-| direct_power_consumption_from_pv_daily | {0: 1.3, 1: 0.7, 2: 1.9, 3: 1.7, 4: 1.7, 5: 0.1, 6: 0.3, 7: 3.3, 8: 4.2, 9: 4.1, 10: 2.6, 11: 1.5, 12: 1.1, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | None | 
-| direct_energy_consumption_from_pv_monthly | {0: 24.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | 
-| direct_energy_consumption_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 19.9, 9: 24.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | 
-| export_power_from_pv_today | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | None | 
-| export_energy_from_pv_daily | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | None | 
-| export_energy_from_pv_monthly | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | 
-| export_energy_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | 
-| battery_charge_energy_from_pv_today | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | None | 
-| battery_charge_energy_from_pv | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | None | 
-| battery_charge_energy_from_pv_monthly | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | None | 
-| battery_charge_energy_from_pv_yearly_starting_2019 | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | None | 
+| backup_power_phase_a | None | 0 | 
+| backup_power_phase_b | None | 0 | 
+| backup_power_phase_c | None | 0 | 
+| backup_power_total | None | 0 | 
+| pv_power_of_today | None | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
+| pv_energy_yields_daily | None | {0: 1.3, 1: 0.7, 2: 1.9, 3: 1.7, 4: 1.7, 5: 0.1, 6: 0.3, 7: 3.3, 8: 4.2, 9: 4.1, 10: 2.6, 11: 1.5, 12: 1.1, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0} | 
+| pv_energy_yields_monthly | None | {0: 24.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| pv_energy_yields_yearly_starting_2019 | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 19.9, 9: 24.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
+| direct_power_consumption_from_pv_today | None | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
+| direct_power_consumption_from_pv_daily | None | {0: 1.3, 1: 0.7, 2: 1.9, 3: 1.7, 4: 1.7, 5: 0.1, 6: 0.3, 7: 3.3, 8: 4.2, 9: 4.1, 10: 2.6, 11: 1.5, 12: 1.1, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
+| direct_energy_consumption_from_pv_monthly | None | {0: 24.5, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| direct_energy_consumption_from_pv_yearly_starting_2019 | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 19.9, 9: 24.5, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
+| export_power_from_pv_today | None | {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0} | 
+| export_energy_from_pv_daily | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
+| export_energy_from_pv_monthly | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| export_energy_from_pv_yearly_starting_2019 | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
+| battery_charge_energy_from_pv_today | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0} | 
+| battery_charge_energy_from_pv | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0} | 
+| battery_charge_energy_from_pv_monthly | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0} | 
+| battery_charge_energy_from_pv_yearly_starting_2019 | None | {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None} | 
 | string_1_current | None | None | 
 | string_2_current | None | None | 
 | string_3_current | None | None | 
@@ -414,7 +441,7 @@
 | string_22_current | None | None | 
 | string_23_current | None | None | 
 | string_24_current | None | None | 
-| running_state | 8 | 5120 | 
+| running_state | 5120 | 8 | 
 | state_power_generated_from_pv | False | False | 
 | state_battery_charging | False | False | 
 | state_battery_discharging | False | False | 
@@ -430,7 +457,7 @@
 | export_power_hybrid | 0 | 0 | 
 | daily_battery_charge_from_pv | 0.0 | 0.0 | 
 | total_battery_charge_from_pv | 0.0 | 0.0 | 
-| co2_reduction | 31.0 | 0.0 | 
+| co2_reduction | 0.0 | 31.0 | 
 | daily_direct_energy_consumption_ | 0.0 | 0.0 | 
 | total_direct_energy_consumption_ | 44.4 | 44.4 | 
 | battery_voltage | 0.0 | 0.0 | 
@@ -442,7 +469,7 @@
 | daily_battery_discharge_energy | 0.0 | 0.0 | 
 | total_battery_discharge_energy | 0.0 | 0.0 | 
 | self_consumption_of_day | 100.0 | 100.0 | 
-| grid_state | None | 0 | 
+| grid_state | 0 | None | 
 | phase_a_current_ | 0.0 | 0.0 | 
 | phase_b_current_ | 0.0 | 0.0 | 
 | phase_c_current_ | 0.0 | 0.0 | 
@@ -463,38 +490,38 @@
 | permanent_fault | 0.0 | 0.0 | 
 | bdc-side_fault | 0.0 | 0.0 | 
 | bdc-side_permanent_fault | 0.0 | 0.0 | 
-| battery_fault | 0.0 | None | 
-| battery_alarm | 0.0 | None | 
+| battery_fault | None | 0.0 | 
+| battery_alarm | None | 0.0 | 
 | bms_alarm | 0 | 0 | 
 | bms_protection | 0 | 0 | 
 | bms_fault1 | 0 | 0 | 
 | bms_fault2 | 0 | 0 | 
 | bms_alarm2 | 0 | 0 | 
-| bms_status | None | 0 | 
-| max_charging_current | None | 0 | 
-| max_discharging_current | None | 0 | 
-| warning | None | 0 | 
-| protection | None | 0 | 
-| fault1 | None | 0 | 
-| fault2 | None | 0 | 
-| soc | None | 0 | 
-| soh | None | 0 | 
-| battery_current_ | None | 0 | 
-| battery_voltage_ | None | 0.0 | 
-| cycle_count | None | 0.0 | 
-| average_cell_voltage | None | 0 | 
-| max_cell_voltage | None | 0 | 
-| min_cell_voltage | None | 0 | 
-| battery_pack_voltage | None | 0 | 
-| average_cell_temp | -1 | 0 | 
-| max_cell_temp | -1 | 0 | 
-| min_cell_temp | -1 | 0 | 
+| bms_status | 0 | None | 
+| max_charging_current | 0 | None | 
+| max_discharging_current | 0 | None | 
+| warning | 0 | None | 
+| protection | 0 | None | 
+| fault1 | 0 | None | 
+| fault2 | 0 | None | 
+| soc | 0 | None | 
+| soh | 0 | None | 
+| battery_current_ | 0 | None | 
+| battery_voltage_ | 0.0 | None | 
+| cycle_count | 0.0 | None | 
+| average_cell_voltage | 0 | None | 
+| max_cell_voltage | 0 | None | 
+| min_cell_voltage | 0 | None | 
+| battery_pack_voltage | 0 | None | 
+| average_cell_temp | 0 | -1 | 
+| max_cell_temp | 0 | -1 | 
+| min_cell_temp | 0 | -1 | 
 | year | 2024 | 2024 | 
 | month | 1 | 1 | 
-| day | 15 | 15 | 
-| hour | 2 | 2 | 
-| minute | 49 | 54 | 
-| second | 52 | 32 | 
+| day | 22 | 22 | 
+| hour | 23 | 23 | 
+| minute | 12 | 12 | 
+| second | 52 | 16 | 
 | start_stop | Start | Start | 
 | power_limitation_switch | Enable | Enable | 
 | power_limitation_setting | 0.0 | 0.0 | 
@@ -536,5 +563,3867 @@
 | master_slave_mode | Enabled | Enabled | 
 | master_slave_role | Slave 1 | Slave 1 | 
 | slave_count | 2 | 2 | 
+| weekly_discharging_start_time_1_hour | 0 | 0 | 
+| weekly_discharging_start_time_1_minute | 0 | 0 | 
+| weekly_discharging_end_time_1_hour | 0 | 0 | 
+| weekly_discharging_end_time_1_minute | 24 | 24 | 
+| weekly_discharging_start_time_2_hour | 0 | 0 | 
+| weekly_discharging_start_time_2_minute | 0 | 0 | 
+| weekly_discharging_end_time_2_hour | 0 | 0 | 
+| weekly_discharging_end_time_2_minute | 24 | 24 | 
+| weekend_discharging_enable | None | None | 
+| weekend_discharging_start_time_1_hour | 170 | 170 | 
+| weekend_discharging_start_time_1_minute | 0 | 0 | 
+| weekend_discharging_end_time_1_hour | 0 | 0 | 
+| weekend_discharging_end_time_1_minute | 24 | 24 | 
+| weekend_discharging_start_time_2_hour | 0 | 0 | 
+| weekend_discharging_start_time_2_minute | 0 | 0 | 
+| forced_charging_enable | None | None | 
+| forced_charging_valid_time | 85 | 85 | 
+| forced_charging_start_time_1_hour | 1 | 1 | 
+| forced_charging_start_time_1_minute | 0 | 0 | 
+| forced_charging_end_time_1_hour | 0 | 0 | 
+| forced_charging_end_time_1_minute | 0 | 0 | 
+| forced_charging_target_soc_1 | 0.0 | 0.0 | 
+| forced_charging_start_time_2_hour | 0 | 0 | 
+| forced_charging_start_time_2_minute | 0 | 0 | 
+| forced_charging_end_time_2_hour | 0 | 0 | 
+| forced_charging_end_time_2_minute | 0 | 0 | 
+| forced_charging_target_soc_2 | 0.0 | 0.0 | 
+
+
+# A2350415770
+| host/slave/mode | 192.168.13.79/1/pymodbus |
+| --- | --- |
+| read 4950 | 0x3000 | 
+| read 4951 | 0x4142 | 
+| read 4952 | 0x1100 | 
+| read 4953 | 0x100 | 
+| read 4954 | 0x4152 | 
+| read 4955 | 0x4d5f | 
+| read 4956 | 0x5341 | 
+| read 4957 | 0x5050 | 
+| read 4958 | 0x4849 | 
+| read 4959 | 0x5245 | 
+| read 4960 | 0x2d48 | 
+| read 4961 | 0x5f56 | 
+| read 4962 | 0x3131 | 
+| read 4963 | 0x5f56 | 
+| read 4964 | 0x3031 | 
+| read 4965 | 0x5f42 | 
+| read 4966 | N/A | 
+| read 4967 | N/A | 
+| read 4968 | N/A | 
+| read 4969 | 0x4d44 | 
+| read 4970 | 0x5350 | 
+| read 4971 | 0x5f53 | 
+| read 4972 | 0x4150 | 
+| read 4973 | 0x5048 | 
+| read 4974 | 0x4952 | 
+| read 4975 | 0x452d | 
+| read 4976 | 0x485f | 
+| read 4977 | 0x5631 | 
+| read 4978 | 0x315f | 
+| read 4979 | 0x5630 | 
+| read 4980 | 0x315f | 
+| read 4981 | 0x4200 | 
+| read 4982 | N/A | 
+| read 4983 | N/A | 
+| read 4984 | 0xffff | 
+| read 4985 | 0xffff | 
+| read 4986 | 0xffff | 
+| read 4987 | 0xffff | 
+| read 4988 | 0xffff | 
+| read 4989 | 0xffff | 
+| read 4990 | 0x4132 | 
+| read 4991 | 0x3335 | 
+| read 4992 | 0x3034 | 
+| read 4993 | 0x3135 | 
+| read 4994 | 0x3737 | 
+| read 4995 | 0x3000 | 
+| read 4996 | N/A | 
+| read 4997 | N/A | 
+| read 4998 | N/A | 
+| read 4999 | N/A | 
+| read 5000 | 0xe12 | 
+| read 5001 | 0x50 | 
+| read 5002 | 0x1 | 
+| read 5003 | 0x22 | 
+| read 5004 | 0x668 | 
+| read 5005 | N/A | 
+| read 5006 | 0xffff | 
+| read 5007 | 0xffff | 
+| read 5008 | 0x14e | 
+| read 5009 | 0x4d | 
+| read 5010 | N/A | 
+| read 5011 | N/A | 
+| read 5012 | N/A | 
+| read 5013 | N/A | 
+| read 5014 | N/A | 
+| read 5015 | 0xffff | 
+| read 5016 | 0xffff | 
+| read 5017 | N/A | 
+| read 5018 | N/A | 
+| read 5019 | 0x90c | 
+| read 5020 | 0x911 | 
+| read 5021 | 0x912 | 
+| read 5022 | N/A | 
+| read 5023 | N/A | 
+| read 5024 | N/A | 
+| read 5025 | 0xffff | 
+| read 5026 | 0xffff | 
+| read 5027 | 0xffff | 
+| read 5028 | 0xffff | 
+| read 5029 | 0xffff | 
+| read 5030 | 0xffff | 
+| read 5031 | N/A | 
+| read 5032 | N/A | 
+| read 5033 | 0xfffb | 
+| read 5034 | 0xffff | 
+| read 5035 | 0x3e8 | 
+| read 5036 | 0x1f4 | 
+| read 5037 | 0xffff | 
+| read 5038 | 0xffff | 
+| read 5039 | 0xffff | 
+| read 5040 | 0xffff | 
+| read 5041 | 0xffff | 
+| read 5042 | 0xffff | 
+| read 5043 | 0xffff | 
+| read 5044 | 0xffff | 
+| read 5045 | 0xffff | 
+| read 5046 | 0xffff | 
+| read 5047 | 0xffff | 
+| read 5048 | 0xffff | 
+| read 5049 | 0x30 | 
+| read 5071 | 0x2ec | 
+| read 5072 | 0xffff | 
+| read 5073 | 0xffff | 
+| read 5074 | 0xffff | 
+| read 5075 | 0xffff | 
+| read 5076 | 0xffff | 
+| read 5077 | 0xffff | 
+| read 5078 | 0xffff | 
+| read 5079 | 0xffff | 
+| read 5080 | 0xffff | 
+| read 5081 | 0xffff | 
+| read 5082 | 0xffff | 
+| read 5083 | 0xffff | 
+| read 5084 | 0xffff | 
+| read 5085 | 0xffff | 
+| read 5086 | 0xffff | 
+| read 5087 | 0xffff | 
+| read 5088 | 0x4d | 
+| read 5089 | N/A | 
+| read 5090 | 0xffff | 
+| read 5091 | 0xffff | 
+| read 5092 | 0xffff | 
+| read 5093 | 0xffff | 
+| read 5094 | 0xffff | 
+| read 5095 | 0xffff | 
+| read 5096 | 0xffff | 
+| read 5097 | 0xffff | 
+| read 5098 | 0xffff | 
+| read 5099 | 0xffff | 
+| read 5100 | 0xffff | 
+| read 5101 | 0xffff | 
+| read 5102 | 0xffff | 
+| read 5103 | 0xffff | 
+| read 5104 | 0xffff | 
+| read 5105 | 0xffff | 
+| read 5106 | 0xffff | 
+| read 5107 | 0xffff | 
+| read 5108 | 0xffff | 
+| read 5109 | 0xffff | 
+| read 5110 | 0xffff | 
+| read 5111 | 0xffff | 
+| read 5112 | 0xffff | 
+| read 5113 | 0xffff | 
+| read 5114 | 0x1 | 
+| read 5115 | 0xffff | 
+| read 5116 | 0xffff | 
+| read 5117 | 0xffff | 
+| read 5118 | 0xffff | 
+| read 5119 | 0xffff | 
+| read 5120 | 0xffff | 
+| read 5121 | 0xffff | 
+| read 5122 | 0xffff | 
+| read 5123 | 0xffff | 
+| read 5124 | 0xffff | 
+| read 5125 | 0xffff | 
+| read 5126 | 0xffff | 
+| read 5127 | 0xffff | 
+| read 5128 | 0xffff | 
+| read 5129 | 0xffff | 
+| read 5130 | 0xffff | 
+| read 5131 | 0xffff | 
+| read 5132 | 0xffff | 
+| read 5133 | 0xffff | 
+| read 5134 | 0xffff | 
+| read 5135 | 0xffff | 
+| read 5136 | 0xffff | 
+| read 5137 | 0xffff | 
+| read 5138 | 0xffff | 
+| read 5139 | 0xffff | 
+| read 5140 | 0xffff | 
+| read 5141 | 0xffff | 
+| read 5142 | 0xffff | 
+| read 5143 | 0xffff | 
+| read 5144 | 0xffff | 
+| read 5145 | 0xffff | 
+| read 5146 | 0xffff | 
+| read 5147 | 0x187e | 
+| read 5148 | 0x1388 | 
+| read 5149 | 0xffff | 
+| read 5150 | 0xffff | 
+| read 5151 | 0xffff | 
+| read 5216 | 0x5e | 
+| read 5217 | N/A | 
+| read 5218 | 0xffa2 | 
+| read 5219 | 0xffff | 
+| read 5601 | 0xff9d | 
+| read 5602 | 0xffff | 
+| read 5603 | 0x98 | 
+| read 5604 | N/A | 
+| read 5605 | 0xfed4 | 
+| read 5606 | 0xffff | 
+| read 5607 | 0x30 | 
+| read 5608 | N/A | 
+| read 5609 | 0x16 | 
+| read 5610 | N/A | 
+| read 5611 | 0x16e | 
+| read 5612 | N/A | 
+| read 5613 | 0x52 | 
+| read 5614 | N/A | 
+| read 5615 | 0xfff | 
+| read 5616 | N/A | 
+| read 5617 | 0x9 | 
+| read 5618 | N/A | 
+| read 5619 | 0x1a0 | 
+| read 5620 | N/A | 
+| read 5621 | N/A | 
+| read 5622 | N/A | 
+| read 5623 | 0x640 | 
+| read 5624 | N/A | 
+| read 5625 | 0x3e8 | 
+| read 5626 | 0xffff | 
+| read 5627 | N/A | 
+| read 5628 | 0x50 | 
+| read 5629 | 0x69 | 
+| read 5630 | 0x777 | 
+| read 5631 | N/A | 
+| read 5632 | 0xbe | 
+| read 5633 | N/A | 
+| read 5634 | 0x3e8 | 
+| read 5635 | 0x1e | 
+| read 5636 | 0x1c | 
+| read 5637 | 0xffff | 
+| read 5638 | 0xffff | 
+| read 5639 | 0x3c0 | 
+| read 5723 | 0xffe5 | 
+| read 5724 | 0xffe1 | 
+| read 5725 | 0xffe2 | 
+| read 5726 | 0xffa8 | 
+| read 6100 | N/A | 
+| read 6101 | N/A | 
+| read 6102 | N/A | 
+| read 6103 | N/A | 
+| read 6104 | N/A | 
+| read 6105 | N/A | 
+| read 6106 | N/A | 
+| read 6107 | N/A | 
+| read 6108 | N/A | 
+| read 6109 | N/A | 
+| read 6110 | N/A | 
+| read 6111 | N/A | 
+| read 6112 | N/A | 
+| read 6113 | N/A | 
+| read 6114 | N/A | 
+| read 6115 | N/A | 
+| read 6116 | N/A | 
+| read 6117 | N/A | 
+| read 6118 | N/A | 
+| read 6119 | N/A | 
+| read 6120 | N/A | 
+| read 6121 | N/A | 
+| read 6122 | N/A | 
+| read 6123 | N/A | 
+| read 6124 | N/A | 
+| read 6125 | N/A | 
+| read 6126 | N/A | 
+| read 6127 | N/A | 
+| read 6128 | N/A | 
+| read 6129 | N/A | 
+| read 6130 | N/A | 
+| read 6131 | N/A | 
+| read 6132 | N/A | 
+| read 6133 | N/A | 
+| read 6134 | N/A | 
+| read 6135 | N/A | 
+| read 6136 | 0x2 | 
+| read 6137 | 0xe | 
+| read 6138 | 0x35 | 
+| read 6139 | 0x103 | 
+| read 6140 | 0xca | 
+| read 6141 | 0xc0 | 
+| read 6142 | 0x156 | 
+| read 6143 | 0x1c1 | 
+| read 6144 | 0x1ff | 
+| read 6145 | 0x1e1 | 
+| read 6146 | 0x26f | 
+| read 6147 | 0x285 | 
+| read 6148 | 0x288 | 
+| read 6149 | 0x2a4 | 
+| read 6150 | 0x139 | 
+| read 6151 | 0x242 | 
+| read 6152 | 0x1c8 | 
+| read 6153 | 0xe1 | 
+| read 6154 | 0x1bf | 
+| read 6155 | 0x122 | 
+| read 6156 | 0x53 | 
+| read 6157 | 0x5a | 
+| read 6158 | 0x106 | 
+| read 6159 | 0x9 | 
+| read 6160 | 0x87 | 
+| read 6161 | 0x286 | 
+| read 6162 | 0x1be | 
+| read 6163 | 0x11b | 
+| read 6164 | 0x36 | 
+| read 6165 | 0x4b | 
+| read 6166 | 0x1 | 
+| read 6167 | N/A | 
+| read 6168 | N/A | 
+| read 6169 | N/A | 
+| read 6170 | N/A | 
+| read 6171 | N/A | 
+| read 6172 | N/A | 
+| read 6173 | N/A | 
+| read 6174 | N/A | 
+| read 6175 | N/A | 
+| read 6176 | N/A | 
+| read 6177 | N/A | 
+| read 6178 | N/A | 
+| read 6179 | N/A | 
+| read 6180 | N/A | 
+| read 6181 | N/A | 
+| read 6182 | N/A | 
+| read 6183 | N/A | 
+| read 6184 | N/A | 
+| read 6185 | N/A | 
+| read 6186 | N/A | 
+| read 6187 | N/A | 
+| read 6188 | N/A | 
+| read 6189 | N/A | 
+| read 6190 | N/A | 
+| read 6191 | N/A | 
+| read 6192 | N/A | 
+| read 6193 | N/A | 
+| read 6194 | N/A | 
+| read 6195 | N/A | 
+| read 6196 | 0xc | 
+| read 6197 | 0x8 | 
+| read 6198 | 0x14 | 
+| read 6199 | 0xe | 
+| read 6200 | 0x10 | 
+| read 6201 | 0x1 | 
+| read 6202 | 0x1 | 
+| read 6203 | 0x12 | 
+| read 6204 | 0x17 | 
+| read 6205 | 0x17 | 
+| read 6206 | 0x9 | 
+| read 6207 | 0xe | 
+| read 6208 | 0xc | 
+| read 6209 | 0x14 | 
+| read 6210 | 0x1d | 
+| read 6211 | 0x24 | 
+| read 6212 | 0x21 | 
+| read 6213 | 0x42 | 
+| read 6214 | 0x43 | 
+| read 6215 | 0x3c | 
+| read 6216 | 0x23 | 
+| read 6217 | 0x16 | 
+| read 6218 | N/A | 
+| read 6219 | N/A | 
+| read 6220 | N/A | 
+| read 6221 | N/A | 
+| read 6222 | N/A | 
+| read 6223 | N/A | 
+| read 6224 | N/A | 
+| read 6225 | N/A | 
+| read 6226 | N/A | 
+| read 6227 | 0x21b | 
+| read 6228 | N/A | 
+| read 6229 | N/A | 
+| read 6230 | N/A | 
+| read 6231 | N/A | 
+| read 6232 | N/A | 
+| read 6233 | N/A | 
+| read 6234 | N/A | 
+| read 6235 | N/A | 
+| read 6236 | N/A | 
+| read 6237 | N/A | 
+| read 6238 | N/A | 
+| read 6239 | 0xffff | 
+| read 6240 | 0xffff | 
+| read 6241 | 0xffff | 
+| read 6242 | 0xffff | 
+| read 6243 | 0xffff | 
+| read 6244 | 0xffff | 
+| read 6245 | 0xffff | 
+| read 6246 | 0xffff | 
+| read 6247 | 0xffff | 
+| read 6248 | 0xffff | 
+| read 6249 | 0xffff | 
+| read 6250 | N/A | 
+| read 6251 | N/A | 
+| read 6252 | N/A | 
+| read 6253 | N/A | 
+| read 6254 | N/A | 
+| read 6255 | N/A | 
+| read 6256 | N/A | 
+| read 6257 | N/A | 
+| read 6258 | N/A | 
+| read 6259 | N/A | 
+| read 6260 | N/A | 
+| read 6261 | N/A | 
+| read 6262 | N/A | 
+| read 6263 | N/A | 
+| read 6264 | N/A | 
+| read 6265 | N/A | 
+| read 6266 | 0xb8 | 
+| read 6267 | N/A | 
+| read 6268 | 0x21b | 
+| read 6269 | N/A | 
+| read 6270 | N/A | 
+| read 6271 | N/A | 
+| read 6272 | N/A | 
+| read 6273 | N/A | 
+| read 6274 | N/A | 
+| read 6275 | N/A | 
+| read 6276 | N/A | 
+| read 6277 | N/A | 
+| read 6278 | N/A | 
+| read 6279 | N/A | 
+| read 6280 | 0xffff | 
+| read 6281 | 0xffff | 
+| read 6282 | 0xffff | 
+| read 6283 | 0xffff | 
+| read 6284 | 0xffff | 
+| read 6285 | 0xffff | 
+| read 6286 | 0xffff | 
+| read 6287 | 0xffff | 
+| read 6288 | 0xffff | 
+| read 6289 | 0xffff | 
+| read 6290 | N/A | 
+| read 6291 | N/A | 
+| read 6292 | N/A | 
+| read 6293 | N/A | 
+| read 6294 | N/A | 
+| read 6295 | N/A | 
+| read 6296 | N/A | 
+| read 6297 | N/A | 
+| read 6298 | N/A | 
+| read 6299 | N/A | 
+| read 6300 | N/A | 
+| read 6301 | N/A | 
+| read 6302 | N/A | 
+| read 6303 | N/A | 
+| read 6304 | N/A | 
+| read 6305 | N/A | 
+| read 6306 | N/A | 
+| read 6307 | N/A | 
+| read 6308 | N/A | 
+| read 6309 | N/A | 
+| read 6310 | N/A | 
+| read 6311 | N/A | 
+| read 6312 | N/A | 
+| read 6313 | N/A | 
+| read 6314 | N/A | 
+| read 6315 | N/A | 
+| read 6316 | N/A | 
+| read 6317 | N/A | 
+| read 6318 | N/A | 
+| read 6319 | N/A | 
+| read 6320 | N/A | 
+| read 6321 | N/A | 
+| read 6322 | N/A | 
+| read 6323 | N/A | 
+| read 6324 | N/A | 
+| read 6325 | N/A | 
+| read 6326 | N/A | 
+| read 6327 | 0x8 | 
+| read 6328 | 0x35 | 
+| read 6329 | 0x14 | 
+| read 6330 | 0x37 | 
+| read 6331 | N/A | 
+| read 6332 | N/A | 
+| read 6333 | 0x11f | 
+| read 6334 | 0x1ff | 
+| read 6335 | 0x134 | 
+| read 6336 | N/A | 
+| read 6337 | N/A | 
+| read 6338 | N/A | 
+| read 6339 | 0x25f | 
+| read 6340 | 0x139 | 
+| read 6341 | 0x5c | 
+| read 6342 | N/A | 
+| read 6343 | 0xd1 | 
+| read 6344 | 0x98 | 
+| read 6345 | 0x50 | 
+| read 6346 | 0x13 | 
+| read 6347 | 0x3f | 
+| read 6348 | 0x106 | 
+| read 6349 | 0x9 | 
+| read 6350 | N/A | 
+| read 6351 | N/A | 
+| read 6352 | 0x1bc | 
+| read 6353 | 0x11b | 
+| read 6354 | N/A | 
+| read 6355 | N/A | 
+| read 6356 | N/A | 
+| read 6357 | N/A | 
+| read 6358 | N/A | 
+| read 6359 | N/A | 
+| read 6360 | N/A | 
+| read 6361 | N/A | 
+| read 6362 | N/A | 
+| read 6363 | N/A | 
+| read 6364 | N/A | 
+| read 6365 | N/A | 
+| read 6366 | N/A | 
+| read 6367 | N/A | 
+| read 6368 | N/A | 
+| read 6369 | N/A | 
+| read 6370 | N/A | 
+| read 6371 | N/A | 
+| read 6372 | N/A | 
+| read 6373 | N/A | 
+| read 6374 | N/A | 
+| read 6375 | N/A | 
+| read 6376 | N/A | 
+| read 6377 | N/A | 
+| read 6378 | N/A | 
+| read 6379 | N/A | 
+| read 6380 | N/A | 
+| read 6381 | N/A | 
+| read 6382 | N/A | 
+| read 6383 | N/A | 
+| read 6384 | N/A | 
+| read 6385 | N/A | 
+| read 6386 | 0x6 | 
+| read 6387 | 0x6 | 
+| read 6388 | 0x6 | 
+| read 6389 | 0x8 | 
+| read 6390 | 0x9 | 
+| read 6391 | 0x1 | 
+| read 6392 | 0x1 | 
+| read 6393 | 0xe | 
+| read 6394 | 0x14 | 
+| read 6395 | 0x10 | 
+| read 6396 | 0x8 | 
+| read 6397 | 0xa | 
+| read 6398 | 0xa | 
+| read 6399 | 0x13 | 
+| read 6400 | 0x12 | 
+| read 6401 | 0x1c | 
+| read 6402 | 0x20 | 
+| read 6403 | 0x1b | 
+| read 6404 | 0x19 | 
+| read 6405 | 0x36 | 
+| read 6406 | 0x1a | 
+| read 6407 | 0x9 | 
+| read 6408 | N/A | 
+| read 6409 | N/A | 
+| read 6410 | N/A | 
+| read 6411 | N/A | 
+| read 6412 | N/A | 
+| read 6413 | N/A | 
+| read 6414 | N/A | 
+| read 6415 | N/A | 
+| read 6416 | N/A | 
+| read 6417 | 0x161 | 
+| read 6418 | N/A | 
+| read 6419 | N/A | 
+| read 6420 | N/A | 
+| read 6421 | N/A | 
+| read 6422 | N/A | 
+| read 6423 | N/A | 
+| read 6424 | N/A | 
+| read 6425 | N/A | 
+| read 6426 | N/A | 
+| read 6427 | N/A | 
+| read 6428 | N/A | 
+| read 6429 | N/A | 
+| read 6430 | N/A | 
+| read 6431 | N/A | 
+| read 6432 | N/A | 
+| read 6433 | N/A | 
+| read 6434 | N/A | 
+| read 6435 | N/A | 
+| read 6436 | N/A | 
+| read 6437 | N/A | 
+| read 6438 | N/A | 
+| read 6439 | N/A | 
+| read 6440 | N/A | 
+| read 6441 | N/A | 
+| read 6442 | N/A | 
+| read 6443 | N/A | 
+| read 6444 | N/A | 
+| read 6445 | 0x3f | 
+| read 6446 | N/A | 
+| read 6447 | 0x161 | 
+| read 6448 | N/A | 
+| read 6449 | N/A | 
+| read 6450 | N/A | 
+| read 6451 | N/A | 
+| read 6452 | N/A | 
+| read 6453 | N/A | 
+| read 6454 | N/A | 
+| read 6455 | N/A | 
+| read 6456 | N/A | 
+| read 6457 | N/A | 
+| read 6458 | N/A | 
+| read 6459 | 0xffff | 
+| read 6460 | 0xffff | 
+| read 6461 | 0xffff | 
+| read 6462 | 0xffff | 
+| read 6463 | 0xffff | 
+| read 6464 | 0xffff | 
+| read 6465 | 0xffff | 
+| read 6466 | 0xffff | 
+| read 6467 | 0xffff | 
+| read 6468 | 0xffff | 
+| read 6469 | N/A | 
+| read 6470 | N/A | 
+| read 6471 | N/A | 
+| read 6472 | N/A | 
+| read 6473 | N/A | 
+| read 6474 | N/A | 
+| read 6475 | N/A | 
+| read 6476 | N/A | 
+| read 6477 | N/A | 
+| read 6478 | N/A | 
+| read 6479 | N/A | 
+| read 6480 | N/A | 
+| read 6481 | N/A | 
+| read 6482 | N/A | 
+| read 6483 | N/A | 
+| read 6484 | N/A | 
+| read 6485 | N/A | 
+| read 6486 | N/A | 
+| read 6487 | N/A | 
+| read 6488 | N/A | 
+| read 6489 | N/A | 
+| read 6490 | N/A | 
+| read 6491 | N/A | 
+| read 6492 | N/A | 
+| read 6493 | N/A | 
+| read 6494 | N/A | 
+| read 6495 | N/A | 
+| read 6496 | N/A | 
+| read 6497 | N/A | 
+| read 6498 | N/A | 
+| read 6499 | N/A | 
+| read 6500 | N/A | 
+| read 6501 | N/A | 
+| read 6502 | N/A | 
+| read 6503 | N/A | 
+| read 6504 | N/A | 
+| read 6505 | N/A | 
+| read 6506 | N/A | 
+| read 6507 | N/A | 
+| read 6508 | N/A | 
+| read 6509 | N/A | 
+| read 6510 | N/A | 
+| read 6511 | N/A | 
+| read 6512 | N/A | 
+| read 6513 | N/A | 
+| read 6514 | 0x1 | 
+| read 6515 | N/A | 
+| read 6516 | N/A | 
+| read 6517 | N/A | 
+| read 6518 | N/A | 
+| read 6519 | N/A | 
+| read 6520 | 0x5 | 
+| read 6521 | N/A | 
+| read 6522 | 0xe | 
+| read 6523 | 0xe | 
+| read 6524 | 0x5 | 
+| read 6525 | N/A | 
+| read 6526 | 0x1b | 
+| read 6527 | N/A | 
+| read 6528 | N/A | 
+| read 6529 | N/A | 
+| read 6530 | N/A | 
+| read 6531 | 0x2 | 
+| read 6532 | N/A | 
+| read 6533 | N/A | 
+| read 6534 | N/A | 
+| read 6535 | 0x1 | 
+| read 6536 | N/A | 
+| read 6537 | N/A | 
+| read 6538 | N/A | 
+| read 6539 | N/A | 
+| read 6540 | N/A | 
+| read 6541 | N/A | 
+| read 6542 | N/A | 
+| read 6543 | N/A | 
+| read 6544 | N/A | 
+| read 6545 | N/A | 
+| read 6546 | N/A | 
+| read 6547 | N/A | 
+| read 6548 | N/A | 
+| read 6549 | N/A | 
+| read 6550 | N/A | 
+| read 6551 | N/A | 
+| read 6552 | N/A | 
+| read 6553 | N/A | 
+| read 6554 | N/A | 
+| read 6555 | N/A | 
+| read 6556 | N/A | 
+| read 6557 | N/A | 
+| read 6558 | N/A | 
+| read 6559 | N/A | 
+| read 6560 | N/A | 
+| read 6561 | N/A | 
+| read 6562 | N/A | 
+| read 6563 | N/A | 
+| read 6564 | N/A | 
+| read 6565 | N/A | 
+| read 6566 | N/A | 
+| read 6567 | N/A | 
+| read 6568 | N/A | 
+| read 6569 | N/A | 
+| read 6570 | N/A | 
+| read 6571 | N/A | 
+| read 6572 | N/A | 
+| read 6573 | N/A | 
+| read 6574 | N/A | 
+| read 6575 | N/A | 
+| read 6576 | N/A | 
+| read 6577 | N/A | 
+| read 6578 | N/A | 
+| read 6579 | N/A | 
+| read 6580 | N/A | 
+| read 6581 | N/A | 
+| read 6582 | N/A | 
+| read 6583 | N/A | 
+| read 6584 | N/A | 
+| read 6585 | N/A | 
+| read 6586 | N/A | 
+| read 6587 | N/A | 
+| read 6588 | N/A | 
+| read 6589 | N/A | 
+| read 6590 | N/A | 
+| read 6591 | N/A | 
+| read 6592 | N/A | 
+| read 6593 | N/A | 
+| read 6594 | N/A | 
+| read 6595 | N/A | 
+| read 6596 | N/A | 
+| read 6597 | N/A | 
+| read 6598 | N/A | 
+| read 6599 | N/A | 
+| read 6600 | N/A | 
+| read 6601 | N/A | 
+| read 6602 | N/A | 
+| read 6603 | N/A | 
+| read 6604 | N/A | 
+| read 6605 | N/A | 
+| read 6606 | N/A | 
+| read 6607 | N/A | 
+| read 6608 | N/A | 
+| read 6609 | N/A | 
+| read 6610 | N/A | 
+| read 6611 | N/A | 
+| read 6612 | N/A | 
+| read 6613 | N/A | 
+| read 6614 | N/A | 
+| read 6615 | N/A | 
+| read 6616 | N/A | 
+| read 6617 | N/A | 
+| read 6618 | N/A | 
+| read 6619 | N/A | 
+| read 6620 | N/A | 
+| read 6621 | N/A | 
+| read 6622 | N/A | 
+| read 6623 | N/A | 
+| read 6624 | N/A | 
+| read 6625 | N/A | 
+| read 6626 | N/A | 
+| read 6627 | N/A | 
+| read 6628 | N/A | 
+| read 6629 | N/A | 
+| read 6630 | N/A | 
+| read 6631 | N/A | 
+| read 6632 | N/A | 
+| read 6633 | N/A | 
+| read 6634 | N/A | 
+| read 6635 | N/A | 
+| read 6636 | N/A | 
+| read 6637 | N/A | 
+| read 6638 | 0xffff | 
+| read 6639 | 0xffff | 
+| read 6640 | 0xffff | 
+| read 6641 | 0xffff | 
+| read 6642 | 0xffff | 
+| read 6643 | 0xffff | 
+| read 6644 | 0xffff | 
+| read 6645 | 0xffff | 
+| read 6646 | 0xffff | 
+| read 6647 | 0xffff | 
+| read 6648 | N/A | 
+| read 6649 | N/A | 
+| read 6650 | N/A | 
+| read 6651 | N/A | 
+| read 6652 | N/A | 
+| read 6653 | N/A | 
+| read 6654 | N/A | 
+| read 6655 | N/A | 
+| read 6656 | N/A | 
+| read 6657 | N/A | 
+| read 6658 | N/A | 
+| read 6659 | N/A | 
+| read 6660 | N/A | 
+| read 6661 | N/A | 
+| read 6662 | N/A | 
+| read 6663 | N/A | 
+| read 6664 | N/A | 
+| read 6665 | N/A | 
+| read 6666 | N/A | 
+| read 6667 | N/A | 
+| read 6668 | N/A | 
+| read 6669 | N/A | 
+| read 6670 | N/A | 
+| read 6671 | N/A | 
+| read 6672 | N/A | 
+| read 6673 | N/A | 
+| read 6674 | N/A | 
+| read 6675 | N/A | 
+| read 6676 | N/A | 
+| read 6677 | N/A | 
+| read 6678 | N/A | 
+| read 6679 | N/A | 
+| read 6680 | N/A | 
+| read 6681 | N/A | 
+| read 6682 | N/A | 
+| read 6683 | N/A | 
+| read 6684 | 0x2 | 
+| read 6685 | 0x6 | 
+| read 6686 | N/A | 
+| read 6687 | 0xef | 
+| read 6688 | 0x93 | 
+| read 6689 | 0xc0 | 
+| read 6690 | 0x156 | 
+| read 6691 | 0xa2 | 
+| read 6692 | N/A | 
+| read 6693 | 0xac | 
+| read 6694 | 0x26f | 
+| read 6695 | 0x285 | 
+| read 6696 | 0x288 | 
+| read 6697 | 0x45 | 
+| read 6698 | N/A | 
+| read 6699 | 0x1e1 | 
+| read 6700 | 0x1c8 | 
+| read 6701 | 0x2 | 
+| read 6702 | 0x119 | 
+| read 6703 | 0xcd | 
+| read 6704 | 0x40 | 
+| read 6705 | N/A | 
+| read 6706 | N/A | 
+| read 6707 | N/A | 
+| read 6708 | 0x87 | 
+| read 6709 | 0x286 | 
+| read 6710 | N/A | 
+| read 6711 | N/A | 
+| read 6712 | 0x36 | 
+| read 6713 | 0x4b | 
+| read 6714 | N/A | 
+| read 6715 | N/A | 
+| read 6716 | N/A | 
+| read 6717 | N/A | 
+| read 6718 | N/A | 
+| read 6719 | N/A | 
+| read 6720 | N/A | 
+| read 6721 | N/A | 
+| read 6722 | N/A | 
+| read 6723 | N/A | 
+| read 6724 | N/A | 
+| read 6725 | N/A | 
+| read 6726 | N/A | 
+| read 6727 | N/A | 
+| read 6728 | N/A | 
+| read 6729 | N/A | 
+| read 6730 | N/A | 
+| read 6731 | N/A | 
+| read 6732 | N/A | 
+| read 6733 | N/A | 
+| read 6734 | N/A | 
+| read 6735 | N/A | 
+| read 6736 | N/A | 
+| read 6737 | N/A | 
+| read 6738 | N/A | 
+| read 6739 | N/A | 
+| read 6740 | N/A | 
+| read 6741 | N/A | 
+| read 6742 | N/A | 
+| read 6743 | N/A | 
+| read 6744 | 0x6 | 
+| read 6745 | 0x2 | 
+| read 6746 | 0xe | 
+| read 6747 | 0x6 | 
+| read 6748 | 0x7 | 
+| read 6749 | N/A | 
+| read 6750 | N/A | 
+| read 6751 | 0x4 | 
+| read 6752 | 0x3 | 
+| read 6753 | 0x7 | 
+| read 6754 | 0x1 | 
+| read 6755 | 0x4 | 
+| read 6756 | 0x2 | 
+| read 6757 | 0x1 | 
+| read 6758 | 0xb | 
+| read 6759 | 0x8 | 
+| read 6760 | 0x1 | 
+| read 6761 | 0x27 | 
+| read 6762 | 0x2a | 
+| read 6763 | 0x6 | 
+| read 6764 | 0x9 | 
+| read 6765 | 0xd | 
+| read 6766 | N/A | 
+| read 6767 | N/A | 
+| read 6768 | N/A | 
+| read 6769 | N/A | 
+| read 6770 | N/A | 
+| read 6771 | N/A | 
+| read 6772 | N/A | 
+| read 6773 | N/A | 
+| read 6774 | N/A | 
+| read 6775 | 0xba | 
+| read 6776 | N/A | 
+| read 6777 | N/A | 
+| read 6778 | N/A | 
+| read 6779 | N/A | 
+| read 6780 | N/A | 
+| read 6781 | N/A | 
+| read 6782 | N/A | 
+| read 6783 | N/A | 
+| read 6784 | N/A | 
+| read 6785 | N/A | 
+| read 6786 | N/A | 
+| read 6787 | N/A | 
+| read 6788 | N/A | 
+| read 6789 | N/A | 
+| read 6790 | N/A | 
+| read 6791 | N/A | 
+| read 6792 | N/A | 
+| read 6793 | N/A | 
+| read 6794 | N/A | 
+| read 6795 | N/A | 
+| read 6796 | N/A | 
+| read 6797 | N/A | 
+| read 6798 | N/A | 
+| read 6799 | N/A | 
+| read 6800 | N/A | 
+| read 6801 | N/A | 
+| read 6802 | N/A | 
+| read 6803 | 0x79 | 
+| read 6804 | N/A | 
+| read 6805 | 0xba | 
+| read 6806 | N/A | 
+| read 6807 | N/A | 
+| read 6808 | N/A | 
+| read 6809 | N/A | 
+| read 6810 | N/A | 
+| read 6811 | N/A | 
+| read 6812 | N/A | 
+| read 6813 | N/A | 
+| read 6814 | N/A | 
+| read 6815 | N/A | 
+| read 6816 | N/A | 
+| read 6817 | 0xffff | 
+| read 6818 | 0xffff | 
+| read 6819 | 0xffff | 
+| read 6820 | 0xffff | 
+| read 6821 | 0xffff | 
+| read 6822 | 0xffff | 
+| read 6823 | 0xffff | 
+| read 6824 | 0xffff | 
+| read 6825 | 0xffff | 
+| read 6826 | 0xffff | 
+| read 7013 | 0xffff | 
+| read 7014 | 0xffff | 
+| read 7015 | 0xffff | 
+| read 7016 | 0xffff | 
+| read 7017 | 0xffff | 
+| read 7018 | 0xffff | 
+| read 7019 | 0xffff | 
+| read 7020 | 0xffff | 
+| read 7021 | 0xffff | 
+| read 7022 | 0xffff | 
+| read 7023 | 0xffff | 
+| read 7024 | 0xffff | 
+| read 7025 | 0xffff | 
+| read 7026 | 0xffff | 
+| read 7027 | 0xffff | 
+| read 7028 | 0xffff | 
+| read 7029 | 0xffff | 
+| read 7030 | 0xffff | 
+| read 7031 | 0xffff | 
+| read 7032 | 0xffff | 
+| read 7033 | 0xffff | 
+| read 7034 | 0xffff | 
+| read 7035 | 0xffff | 
+| read 7036 | 0xffff | 
+| read 13000 | 0x40 | 
+| read 13001 | 0x90 | 
+| read 13002 | 0x16 | 
+| read 13003 | 0x2d3 | 
+| read 13004 | N/A | 
+| read 13005 | N/A | 
+| read 13006 | N/A | 
+| read 13007 | N/A | 
+| read 13008 | 0xffa3 | 
+| read 13009 | 0xffff | 
+| read 13010 | 0x5d | 
+| read 13011 | N/A | 
+| read 13012 | 0xd | 
+| read 13013 | 0x133 | 
+| read 13014 | N/A | 
+| read 13015 | 0x1fa | 
+| read 13016 | N/A | 
+| read 13017 | 0x9 | 
+| read 13018 | 0x1a0 | 
+| read 13019 | N/A | 
+| read 13020 | 0x776 | 
+| read 13021 | N/A | 
+| read 13022 | N/A | 
+| read 13023 | N/A | 
+| read 13024 | 0x3e8 | 
+| read 13025 | 0xbe | 
+| read 13026 | 0x18 | 
+| read 13027 | 0x4d6 | 
+| read 13028 | N/A | 
+| read 13029 | 0x3e8 | 
+| read 13030 | 0xffff | 
+| read 13031 | N/A | 
+| read 13032 | N/A | 
+| read 13033 | N/A | 
+| read 13034 | N/A | 
+| read 13035 | N/A | 
+| read 13036 | 0x52 | 
+| read 13037 | 0xfff | 
+| read 13038 | N/A | 
+| read 13039 | 0x60 | 
+| read 13040 | 0x1c | 
+| read 13041 | 0x55f | 
+| read 13042 | N/A | 
+| read 13043 | 0xff | 
+| read 13044 | N/A | 
+| read 13045 | 0x16 | 
+| read 13046 | 0x16e | 
+| read 13047 | N/A | 
+| read 13048 | N/A | 
+| read 13049 | N/A | 
+| read 13050 | N/A | 
+| read 13051 | N/A | 
+| read 13052 | N/A | 
+| read 13053 | N/A | 
+| read 13054 | N/A | 
+| read 13055 | N/A | 
+| read 13056 | N/A | 
+| read 13057 | N/A | 
+| read 13058 | N/A | 
+| read 13059 | N/A | 
+| read 13060 | N/A | 
+| read 13061 | N/A | 
+| read 13062 | N/A | 
+| read 13063 | N/A | 
+| read 13064 | N/A | 
+| read 13065 | N/A | 
+| read 13066 | N/A | 
+| read 13067 | N/A | 
+| read 13068 | N/A | 
+| read 13069 | N/A | 
+| read 13070 | N/A | 
+| read 13071 | N/A | 
+| read 13072 | N/A | 
+| read 13073 | N/A | 
+| read 13074 | N/A | 
+| read 13075 | N/A | 
+| read 13076 | N/A | 
+| read 13077 | N/A | 
+| read 13078 | N/A | 
+| read 13079 | N/A | 
+| read 13100 | 0xffff | 
+| read 13101 | 0xffff | 
+| read 13102 | 0xffff | 
+| read 13103 | 0xffff | 
+| read 13104 | 0xffff | 
+| read 13105 | 0xffff | 
+| read 13106 | 0xffff | 
+| read 13107 | 0xffff | 
+| read 13108 | 0xffff | 
+| read 13109 | 0xffff | 
+| read 13110 | 0xffff | 
+| read 13111 | 0xffff | 
+| read 13112 | 0xffff | 
+| read 13113 | 0xffff | 
+| read 13114 | 0xffff | 
+| read 13115 | 0xffff | 
+| read 13116 | 0xffff | 
+| read 13117 | 0xffff | 
+| read 13118 | 0xffff | 
+| hold 5000 | 0x7e8 | 
+| hold 5001 | 0x1 | 
+| hold 5002 | 0x16 | 
+| hold 5003 | 0x17 | 
+| hold 5004 | 0xb | 
+| hold 5005 | 0x22 | 
+| hold 5006 | 0xcf | 
+| hold 5007 | 0xaa | 
+| hold 5008 | 0x3e8 | 
+| hold 5009 | 0xffff | 
+| hold 5010 | 0xffff | 
+| hold 5011 | 0xffff | 
+| hold 5012 | 0xffff | 
+| hold 5013 | 0xffff | 
+| hold 5014 | 0xffff | 
+| hold 5015 | 0xffff | 
+| hold 5016 | 0xffff | 
+| hold 5017 | 0xffff | 
+| hold 5018 | 0xffff | 
+| hold 5019 | 0xffff | 
+| hold 5020 | 0xffff | 
+| hold 5021 | 0xffff | 
+| hold 5022 | 0xffff | 
+| hold 5023 | 0xffff | 
+| hold 5024 | 0xffff | 
+| hold 5025 | 0xffff | 
+| hold 5026 | 0xffff | 
+| hold 5027 | 0xffff | 
+| hold 5028 | 0xffff | 
+| hold 5029 | 0xffff | 
+| hold 5030 | 0xffff | 
+| hold 5031 | 0xffff | 
+| hold 5032 | 0xffff | 
+| hold 5033 | 0xffff | 
+| hold 5034 | 0xffff | 
+| hold 5035 | 0xffff | 
+| hold 5036 | 0x55 | 
+| hold 5037 | 0xffff | 
+| hold 5038 | 0x2e | 
+| hold 5039 | 0xffff | 
+| hold 5040 | 0xffff | 
+| hold 5041 | 0xffff | 
+| hold 5042 | 0xffff | 
+| hold 5043 | 0xffff | 
+| hold 13000 | 0xcf | 
+| hold 13001 | 0xffff | 
+| hold 13002 | 0x3 | 
+| hold 13003 | N/A | 
+| hold 13004 | N/A | 
+| hold 13005 | N/A | 
+| hold 13006 | N/A | 
+| hold 13007 | N/A | 
+| hold 13008 | N/A | 
+| hold 13009 | N/A | 
+| hold 13010 | N/A | 
+| hold 13011 | 0x55 | 
+| hold 13012 | N/A | 
+| hold 13013 | N/A | 
+| hold 13014 | N/A | 
+| hold 13015 | N/A | 
+| hold 13016 | N/A | 
+| hold 13017 | 0xffff | 
+| hold 13018 | 0xffff | 
+| hold 13019 | 0xffff | 
+| hold 13020 | 0xffff | 
+| hold 13021 | 0xffff | 
+| hold 13022 | 0xffff | 
+| hold 13023 | 0xffff | 
+| hold 13024 | 0xffff | 
+| hold 13025 | 0xffff | 
+| hold 13026 | 0xffff | 
+| hold 13027 | 0xffff | 
+| hold 13028 | 0xffff | 
+| hold 13029 | 0xffff | 
+| hold 13030 | 0xffff | 
+| hold 13031 | 0xffff | 
+| hold 13032 | 0xffff | 
+| hold 13033 | 0xffff | 
+| hold 13034 | 0xffff | 
+| hold 13035 | 0xffff | 
+| hold 13036 | 0xffff | 
+| hold 13037 | 0xffff | 
+| hold 13038 | 0xffff | 
+| hold 13039 | 0xffff | 
+| hold 13040 | 0xffff | 
+| hold 13041 | 0xffff | 
+| hold 13042 | 0xffff | 
+| hold 13043 | 0xffff | 
+| hold 13044 | 0xffff | 
+| hold 13045 | 0xffff | 
+| hold 13046 | 0xffff | 
+| hold 13047 | 0xffff | 
+| hold 13048 | 0xffff | 
+| hold 13049 | 0xffff | 
+| hold 13050 | N/A | 
+| hold 13051 | 0xcc | 
+| hold 13052 | N/A | 
+| hold 13053 | 0xffff | 
+| hold 13054 | 0xffff | 
+| hold 13055 | 0xffff | 
+| hold 13056 | 0xffff | 
+| hold 13057 | 0xffff | 
+| hold 13058 | 0x3e8 | 
+| hold 13059 | 0x32 | 
+| hold 13060 | 0xffff | 
+| hold 13061 | 0xffff | 
+| hold 13062 | 0xffff | 
+| hold 13063 | 0xffff | 
+| hold 13064 | 0xffff | 
+| hold 13065 | 0xffff | 
+| hold 13066 | 0xffff | 
+| hold 13067 | 0xffff | 
+| hold 13068 | 0xffff | 
+| hold 13069 | 0xffff | 
+| hold 13070 | 0xffff | 
+| hold 13071 | 0xffff | 
+| hold 13072 | 0xffff | 
+| hold 13073 | 0xffff | 
+| hold 13074 | 0x2ee0 | 
+| hold 13075 | 0xaa | 
+| hold 13076 | 0xffff | 
+| hold 13077 | 0xffff | 
+| hold 13078 | 0xffff | 
+| hold 13079 | 0xffff | 
+| hold 13080 | N/A | 
+| hold 13081 | 0xffff | 
+| hold 13082 | 0xffff | 
+| hold 13083 | 0xffff | 
+| hold 13084 | N/A | 
+| hold 13085 | N/A | 
+| hold 13086 | 0xaa | 
+| hold 13087 | 0xaa | 
+| hold 13100 | N/A | 
+| hold 33047 | 0x424 | 
+| hold 33048 | 0x424 | 
+| hold 33049 | N/A | 
+| hold 33149 | N/A | 
+| hold 33150 | N/A | 
+| hold 33151 | N/A | 
+| hold 33152 | N/A | 
+| hold 33153 | 0x18 | 
+| hold 33154 | N/A | 
+| hold 33155 | N/A | 
+| hold 33156 | N/A | 
+| hold 33157 | 0x18 | 
+| hold 33158 | N/A | 
+| hold 33159 | 0xffff | 
+| hold 33160 | 0xffff | 
+| hold 33161 | 0xffff | 
+| hold 33162 | 0xffff | 
+| hold 33163 | 0xffff | 
+| hold 33164 | 0xffff | 
+| hold 33165 | 0xffff | 
+| hold 33166 | 0xffff | 
+| hold 33167 | 0xffff | 
+| hold 33168 | 0xffff | 
+| hold 33169 | 0xffff | 
+| hold 33170 | 0xffff | 
+| hold 33171 | 0xffff | 
+| hold 33172 | 0xffff | 
+| hold 33173 | 0xffff | 
+| hold 33174 | 0xffff | 
+| hold 33175 | 0xffff | 
+| hold 33176 | 0xffff | 
+| hold 33177 | 0xffff | 
+| hold 33178 | 0xffff | 
+| hold 33179 | 0xaa | 
+| hold 33180 | N/A | 
+| hold 33181 | N/A | 
+| hold 33182 | 0x18 | 
+| hold 33183 | N/A | 
+| hold 33184 | N/A | 
+| hold 33185 | N/A | 
+| hold 33186 | 0x18 | 
+| hold 33187 | N/A | 
+| hold 33188 | 0xffff | 
+| hold 33189 | 0xffff | 
+| hold 33190 | 0xffff | 
+| hold 33191 | 0xffff | 
+| hold 33192 | 0xffff | 
+| hold 33193 | 0xffff | 
+| hold 33194 | 0xffff | 
+| hold 33195 | 0xffff | 
+| hold 33196 | 0xffff | 
+| hold 33197 | 0xffff | 
+| hold 33198 | 0xffff | 
+| hold 33199 | 0xffff | 
+| hold 33200 | 0xffff | 
+| hold 33201 | 0xffff | 
+| hold 33202 | 0xffff | 
+| hold 33203 | 0xffff | 
+| hold 33204 | 0xffff | 
+| hold 33205 | 0xffff | 
+| hold 33206 | 0xffff | 
+| hold 33207 | 0xffff | 
+| hold 33208 | 0x55 | 
+| hold 33209 | 0x1 | 
+| hold 33210 | N/A | 
+| hold 33211 | N/A | 
+| hold 33212 | N/A | 
+| hold 33213 | N/A | 
+| hold 33214 | N/A | 
+| hold 33215 | N/A | 
+| hold 33216 | N/A | 
+| hold 33217 | N/A | 
+| hold 33218 | N/A | 
+| hold 33500 | 0xaa | 
+| hold 33501 | 0xa0 | 
+| hold 33502 | 0x2 | 
+
+
+# A2350415779
+| host/slave/mode | 192.168.13.74/1/pymodbus | 192.168.13.80/2/pymodbus |
+| --- | --- | --- |
+| read 4950 | 0x3130 | 0x3000 | 
+| read 4951 | 0x4141 | 0x4142 | 
+| read 4952 | 0x500 | 0x1100 | 
+| read 4953 | 0x100 | 0x100 | 
+| read 4954 | 0x4152 | 0x4152 | 
+| read 4955 | 0x4d5f | 0x4d5f | 
+| read 4956 | 0x5341 | 0x5341 | 
+| read 4957 | 0x5050 | 0x5050 | 
+| read 4958 | 0x4849 | 0x4849 | 
+| read 4959 | 0x5245 | 0x5245 | 
+| read 4960 | 0x2d48 | 0x2d48 | 
+| read 4961 | 0x5f56 | 0x5f56 | 
+| read 4962 | 0x3131 | 0x3131 | 
+| read 4963 | 0x5f56 | 0x5f56 | 
+| read 4964 | 0x3031 | 0x3031 | 
+| read 4965 | 0x5f42 | 0x5f42 | 
+| read 4966 | N/A | N/A | 
+| read 4967 | N/A | N/A | 
+| read 4968 | N/A | N/A | 
+| read 4969 | 0x4d44 | 0x4d44 | 
+| read 4970 | 0x5350 | 0x5350 | 
+| read 4971 | 0x5f53 | 0x5f53 | 
+| read 4972 | 0x4150 | 0x4150 | 
+| read 4973 | 0x5048 | 0x5048 | 
+| read 4974 | 0x4952 | 0x4952 | 
+| read 4975 | 0x452d | 0x452d | 
+| read 4976 | 0x485f | 0x485f | 
+| read 4977 | 0x5631 | 0x5631 | 
+| read 4978 | 0x315f | 0x315f | 
+| read 4979 | 0x5630 | 0x5630 | 
+| read 4980 | 0x315f | 0x315f | 
+| read 4981 | 0x4200 | 0x4200 | 
+| read 4982 | N/A | N/A | 
+| read 4983 | N/A | N/A | 
+| read 4984 | N/A | 0xffff | 
+| read 4985 | N/A | 0xffff | 
+| read 4986 | N/A | 0xffff | 
+| read 4987 | N/A | 0xffff | 
+| read 4988 | N/A | 0xffff | 
+| read 4989 | N/A | 0xffff | 
+| read 4990 | 0x4132 | 0x4132 | 
+| read 4991 | 0x3335 | 0x3335 | 
+| read 4992 | 0x3034 | 0x3034 | 
+| read 4993 | 0x3135 | 0x3135 | 
+| read 4994 | 0x3737 | 0x3737 | 
+| read 4995 | 0x3900 | 0x3900 | 
+| read 4996 | N/A | N/A | 
+| read 4997 | N/A | N/A | 
+| read 4998 | N/A | N/A | 
+| read 4999 | N/A | N/A | 
+| read 5000 | 0xe12 | 0xe12 | 
+| read 5001 | 0x50 | 0x50 | 
+| read 5002 | 0x1 | 0x1 | 
+| read 5003 | N/A | N/A | 
+| read 5004 | 0x1bc | 0x1bc | 
+| read 5005 | N/A | N/A | 
+| read 5006 | N/A | 0xffff | 
+| read 5007 | N/A | 0xffff | 
+| read 5008 | 0x117 | 0x117 | 
+| read 5009 | N/A | N/A | 
+| read 5010 | N/A | N/A | 
+| read 5011 | N/A | N/A | 
+| read 5012 | N/A | N/A | 
+| read 5013 | N/A | N/A | 
+| read 5014 | N/A | N/A | 
+| read 5015 | N/A | 0xffff | 
+| read 5016 | N/A | 0xffff | 
+| read 5017 | N/A | N/A | 
+| read 5018 | N/A | N/A | 
+| read 5019 | 0x910 | 0x911 | 
+| read 5020 | 0x90d | 0x90e | 
+| read 5021 | 0x90c | 0x90d | 
+| read 5022 | N/A | N/A | 
+| read 5023 | N/A | N/A | 
+| read 5024 | N/A | N/A | 
+| read 5025 | N/A | 0xffff | 
+| read 5026 | N/A | 0xffff | 
+| read 5027 | N/A | 0xffff | 
+| read 5028 | N/A | 0xffff | 
+| read 5029 | N/A | 0xffff | 
+| read 5030 | N/A | 0xffff | 
+| read 5031 | N/A | N/A | 
+| read 5032 | N/A | N/A | 
+| read 5033 | N/A | N/A | 
+| read 5034 | N/A | N/A | 
+| read 5035 | N/A | N/A | 
+| read 5036 | 0x1387 | 0x1f3 | 
+| read 5037 | N/A | 0xffff | 
+| read 5038 | N/A | 0xffff | 
+| read 5039 | N/A | 0xffff | 
+| read 5040 | N/A | 0xffff | 
+| read 5041 | N/A | 0xffff | 
+| read 5042 | N/A | 0xffff | 
+| read 5043 | N/A | 0xffff | 
+| read 5044 | N/A | 0xffff | 
+| read 5045 | N/A | 0xffff | 
+| read 5046 | N/A | 0xffff | 
+| read 5047 | N/A | 0xffff | 
+| read 5048 | N/A | 0xffff | 
+| read 5049 | N/A | 0x30 | 
+| read 5071 | N/A | 0x3bb | 
+| read 5077 | N/A | 0xffff | 
+| read 5078 | N/A | 0xffff | 
+| read 5079 | N/A | 0xffff | 
+| read 5080 | N/A | 0xffff | 
+| read 5081 | N/A | 0xffff | 
+| read 5082 | N/A | 0xffff | 
+| read 5083 | N/A | 0xffff | 
+| read 5084 | N/A | 0xffff | 
+| read 5085 | N/A | 0xffff | 
+| read 5086 | N/A | 0xffff | 
+| read 5087 | N/A | 0xffff | 
+| read 5088 | N/A | N/A | 
+| read 5089 | N/A | N/A | 
+| read 5090 | N/A | 0xffff | 
+| read 5091 | N/A | 0xffff | 
+| read 5092 | N/A | 0xffff | 
+| read 5093 | N/A | 0xffff | 
+| read 5094 | N/A | 0xffff | 
+| read 5095 | N/A | 0xffff | 
+| read 5096 | N/A | 0xffff | 
+| read 5097 | N/A | 0xffff | 
+| read 5098 | N/A | 0xffff | 
+| read 5099 | N/A | 0xffff | 
+| read 5100 | N/A | 0xffff | 
+| read 5101 | N/A | 0xffff | 
+| read 5102 | N/A | 0xffff | 
+| read 5103 | N/A | 0xffff | 
+| read 5104 | N/A | 0xffff | 
+| read 5113 | N/A | 0xffff | 
+| read 5115 | N/A | 0xffff | 
+| read 5116 | N/A | 0xffff | 
+| read 5117 | N/A | 0xffff | 
+| read 5118 | N/A | 0xffff | 
+| read 5119 | N/A | 0xffff | 
+| read 5120 | N/A | 0xffff | 
+| read 5121 | N/A | 0xffff | 
+| read 5122 | N/A | 0xffff | 
+| read 5123 | N/A | 0xffff | 
+| read 5124 | N/A | 0xffff | 
+| read 5128 | N/A | 0xffff | 
+| read 5129 | N/A | 0xffff | 
+| read 5130 | N/A | 0xffff | 
+| read 5131 | N/A | 0xffff | 
+| read 5132 | N/A | 0xffff | 
+| read 5133 | N/A | 0xffff | 
+| read 5134 | N/A | 0xffff | 
+| read 5135 | N/A | 0xffff | 
+| read 5136 | N/A | 0xffff | 
+| read 5137 | N/A | 0xffff | 
+| read 5144 | N/A | 0xffff | 
+| read 5145 | N/A | 0xffff | 
+| read 5146 | N/A | 0xffff | 
+| read 5147 | N/A | 0xa0 | 
+| read 5148 | N/A | 0x1387 | 
+| read 5150 | N/A | 0xffff | 
+| read 5151 | N/A | 0xffff | 
+| read 5216 | N/A | N/A | 
+| read 5217 | N/A | N/A | 
+| read 5218 | N/A | N/A | 
+| read 5219 | N/A | N/A | 
+| read 5601 | N/A | 0xffff | 
+| read 5602 | N/A | 0x7fff | 
+| read 5603 | N/A | 0xffff | 
+| read 5604 | N/A | 0x7fff | 
+| read 5605 | N/A | 0xffff | 
+| read 5606 | N/A | 0x7fff | 
+| read 5607 | N/A | 0xffff | 
+| read 5608 | N/A | 0x7fff | 
+| read 5609 | N/A | N/A | 
+| read 5610 | N/A | N/A | 
+| read 5611 | N/A | N/A | 
+| read 5612 | N/A | N/A | 
+| read 5613 | N/A | N/A | 
+| read 5614 | N/A | N/A | 
+| read 5615 | N/A | N/A | 
+| read 5616 | N/A | N/A | 
+| read 5617 | N/A | N/A | 
+| read 5618 | N/A | N/A | 
+| read 5619 | N/A | 0x1bc | 
+| read 5620 | N/A | N/A | 
+| read 5621 | N/A | N/A | 
+| read 5622 | N/A | N/A | 
+| read 5623 | 0x320 | 0x320 | 
+| read 5624 | N/A | N/A | 
+| read 5625 | N/A | 0x3e8 | 
+| read 5626 | N/A | 0xffff | 
+| read 5627 | N/A | N/A | 
+| read 5628 | 0x50 | 0x50 | 
+| read 5629 | N/A | 0x2 | 
+| read 5630 | N/A | N/A | 
+| read 5631 | N/A | N/A | 
+| read 5632 | N/A | N/A | 
+| read 5633 | N/A | N/A | 
+| read 5634 | N/A | N/A | 
+| read 5635 | N/A | N/A | 
+| read 5636 | N/A | N/A | 
+| read 5637 | N/A | 0xffff | 
+| read 5638 | N/A | 0xffff | 
+| read 5639 | N/A | N/A | 
+| read 5723 | N/A | N/A | 
+| read 5724 | N/A | N/A | 
+| read 5725 | N/A | N/A | 
+| read 5726 | N/A | N/A | 
+| read 6100 | N/A | N/A | 
+| read 6101 | N/A | N/A | 
+| read 6102 | N/A | N/A | 
+| read 6103 | N/A | N/A | 
+| read 6104 | N/A | N/A | 
+| read 6105 | N/A | N/A | 
+| read 6106 | N/A | N/A | 
+| read 6107 | N/A | N/A | 
+| read 6108 | N/A | N/A | 
+| read 6109 | N/A | N/A | 
+| read 6110 | N/A | N/A | 
+| read 6111 | N/A | N/A | 
+| read 6112 | N/A | N/A | 
+| read 6113 | N/A | N/A | 
+| read 6114 | N/A | N/A | 
+| read 6115 | N/A | N/A | 
+| read 6116 | N/A | N/A | 
+| read 6117 | N/A | N/A | 
+| read 6118 | N/A | N/A | 
+| read 6119 | N/A | N/A | 
+| read 6120 | N/A | N/A | 
+| read 6121 | N/A | N/A | 
+| read 6122 | N/A | N/A | 
+| read 6123 | N/A | N/A | 
+| read 6124 | N/A | N/A | 
+| read 6125 | N/A | N/A | 
+| read 6126 | N/A | N/A | 
+| read 6127 | N/A | N/A | 
+| read 6128 | N/A | N/A | 
+| read 6129 | N/A | N/A | 
+| read 6130 | N/A | N/A | 
+| read 6131 | N/A | N/A | 
+| read 6132 | N/A | N/A | 
+| read 6133 | N/A | N/A | 
+| read 6134 | N/A | N/A | 
+| read 6135 | N/A | N/A | 
+| read 6136 | N/A | N/A | 
+| read 6137 | N/A | N/A | 
+| read 6138 | N/A | N/A | 
+| read 6139 | N/A | N/A | 
+| read 6140 | N/A | N/A | 
+| read 6141 | N/A | N/A | 
+| read 6142 | N/A | N/A | 
+| read 6143 | N/A | N/A | 
+| read 6144 | N/A | N/A | 
+| read 6145 | N/A | N/A | 
+| read 6146 | N/A | N/A | 
+| read 6147 | N/A | N/A | 
+| read 6148 | N/A | N/A | 
+| read 6149 | N/A | N/A | 
+| read 6150 | N/A | N/A | 
+| read 6151 | N/A | N/A | 
+| read 6152 | N/A | N/A | 
+| read 6153 | N/A | N/A | 
+| read 6154 | N/A | N/A | 
+| read 6155 | N/A | N/A | 
+| read 6156 | N/A | N/A | 
+| read 6157 | N/A | N/A | 
+| read 6158 | N/A | N/A | 
+| read 6159 | N/A | N/A | 
+| read 6160 | N/A | N/A | 
+| read 6161 | N/A | N/A | 
+| read 6162 | N/A | N/A | 
+| read 6163 | N/A | N/A | 
+| read 6164 | N/A | N/A | 
+| read 6165 | N/A | N/A | 
+| read 6166 | N/A | N/A | 
+| read 6167 | N/A | N/A | 
+| read 6168 | N/A | N/A | 
+| read 6169 | N/A | N/A | 
+| read 6170 | N/A | N/A | 
+| read 6171 | N/A | N/A | 
+| read 6172 | N/A | N/A | 
+| read 6173 | N/A | N/A | 
+| read 6174 | N/A | N/A | 
+| read 6175 | N/A | N/A | 
+| read 6176 | N/A | N/A | 
+| read 6177 | N/A | N/A | 
+| read 6178 | N/A | N/A | 
+| read 6179 | N/A | N/A | 
+| read 6180 | N/A | N/A | 
+| read 6181 | N/A | N/A | 
+| read 6182 | N/A | N/A | 
+| read 6183 | N/A | N/A | 
+| read 6184 | N/A | N/A | 
+| read 6185 | N/A | N/A | 
+| read 6186 | N/A | N/A | 
+| read 6187 | N/A | N/A | 
+| read 6188 | N/A | N/A | 
+| read 6189 | N/A | N/A | 
+| read 6190 | N/A | N/A | 
+| read 6191 | N/A | N/A | 
+| read 6192 | N/A | N/A | 
+| read 6193 | N/A | N/A | 
+| read 6194 | N/A | N/A | 
+| read 6195 | N/A | N/A | 
+| read 6196 | N/A | 0xd | 
+| read 6197 | N/A | 0x7 | 
+| read 6198 | N/A | 0x13 | 
+| read 6199 | N/A | 0x11 | 
+| read 6200 | N/A | 0x11 | 
+| read 6201 | N/A | 0x1 | 
+| read 6202 | N/A | 0x3 | 
+| read 6203 | N/A | 0x21 | 
+| read 6204 | N/A | 0x2a | 
+| read 6205 | N/A | 0x29 | 
+| read 6206 | N/A | 0x1a | 
+| read 6207 | N/A | 0xf | 
+| read 6208 | N/A | 0xb | 
+| read 6209 | N/A | N/A | 
+| read 6210 | N/A | N/A | 
+| read 6211 | N/A | N/A | 
+| read 6212 | N/A | N/A | 
+| read 6213 | N/A | N/A | 
+| read 6214 | N/A | N/A | 
+| read 6215 | N/A | N/A | 
+| read 6216 | N/A | N/A | 
+| read 6217 | N/A | N/A | 
+| read 6218 | N/A | N/A | 
+| read 6219 | N/A | N/A | 
+| read 6220 | N/A | N/A | 
+| read 6221 | N/A | N/A | 
+| read 6222 | N/A | N/A | 
+| read 6223 | N/A | N/A | 
+| read 6224 | N/A | N/A | 
+| read 6225 | N/A | N/A | 
+| read 6227 | N/A | 0xf5 | 
+| read 6228 | N/A | N/A | 
+| read 6229 | N/A | N/A | 
+| read 6230 | N/A | N/A | 
+| read 6231 | N/A | N/A | 
+| read 6232 | N/A | N/A | 
+| read 6233 | N/A | N/A | 
+| read 6234 | N/A | N/A | 
+| read 6235 | N/A | N/A | 
+| read 6236 | N/A | N/A | 
+| read 6237 | N/A | N/A | 
+| read 6238 | N/A | N/A | 
+| read 6250 | N/A | N/A | 
+| read 6251 | N/A | N/A | 
+| read 6252 | N/A | N/A | 
+| read 6253 | N/A | N/A | 
+| read 6254 | N/A | N/A | 
+| read 6255 | N/A | N/A | 
+| read 6256 | N/A | N/A | 
+| read 6257 | N/A | N/A | 
+| read 6258 | N/A | N/A | 
+| read 6259 | N/A | N/A | 
+| read 6260 | N/A | N/A | 
+| read 6261 | N/A | N/A | 
+| read 6262 | N/A | N/A | 
+| read 6263 | N/A | N/A | 
+| read 6264 | N/A | N/A | 
+| read 6265 | N/A | N/A | 
+| read 6266 | N/A | 0xc7 | 
+| read 6267 | N/A | N/A | 
+| read 6268 | N/A | 0xf5 | 
+| read 6269 | N/A | N/A | 
+| read 6270 | N/A | N/A | 
+| read 6271 | N/A | N/A | 
+| read 6272 | N/A | N/A | 
+| read 6273 | N/A | N/A | 
+| read 6274 | N/A | N/A | 
+| read 6275 | N/A | N/A | 
+| read 6276 | N/A | N/A | 
+| read 6277 | N/A | N/A | 
+| read 6278 | N/A | N/A | 
+| read 6279 | N/A | N/A | 
+| read 6280 | N/A | 0xffff | 
+| read 6281 | N/A | 0xffff | 
+| read 6282 | N/A | 0xffff | 
+| read 6283 | N/A | 0xffff | 
+| read 6284 | N/A | 0xffff | 
+| read 6285 | N/A | 0xffff | 
+| read 6286 | N/A | 0xffff | 
+| read 6287 | N/A | 0xffff | 
+| read 6288 | N/A | 0xffff | 
+| read 6289 | N/A | 0xffff | 
+| read 6290 | N/A | N/A | 
+| read 6291 | N/A | N/A | 
+| read 6292 | N/A | N/A | 
+| read 6293 | N/A | N/A | 
+| read 6294 | N/A | N/A | 
+| read 6295 | N/A | N/A | 
+| read 6296 | N/A | N/A | 
+| read 6297 | N/A | N/A | 
+| read 6298 | N/A | N/A | 
+| read 6299 | N/A | N/A | 
+| read 6300 | N/A | N/A | 
+| read 6301 | N/A | N/A | 
+| read 6302 | N/A | N/A | 
+| read 6303 | N/A | N/A | 
+| read 6304 | N/A | N/A | 
+| read 6305 | N/A | N/A | 
+| read 6306 | N/A | N/A | 
+| read 6307 | N/A | N/A | 
+| read 6308 | N/A | N/A | 
+| read 6309 | N/A | N/A | 
+| read 6310 | N/A | N/A | 
+| read 6311 | N/A | N/A | 
+| read 6312 | N/A | N/A | 
+| read 6313 | N/A | N/A | 
+| read 6314 | N/A | N/A | 
+| read 6315 | N/A | N/A | 
+| read 6316 | N/A | N/A | 
+| read 6317 | N/A | N/A | 
+| read 6318 | N/A | N/A | 
+| read 6319 | N/A | N/A | 
+| read 6320 | N/A | N/A | 
+| read 6321 | N/A | N/A | 
+| read 6322 | N/A | N/A | 
+| read 6323 | N/A | N/A | 
+| read 6324 | N/A | N/A | 
+| read 6325 | N/A | N/A | 
+| read 6326 | N/A | N/A | 
+| read 6327 | N/A | N/A | 
+| read 6328 | N/A | N/A | 
+| read 6329 | N/A | N/A | 
+| read 6330 | N/A | N/A | 
+| read 6331 | N/A | N/A | 
+| read 6332 | N/A | N/A | 
+| read 6333 | N/A | N/A | 
+| read 6334 | N/A | N/A | 
+| read 6335 | N/A | N/A | 
+| read 6336 | N/A | N/A | 
+| read 6337 | N/A | N/A | 
+| read 6338 | N/A | N/A | 
+| read 6339 | N/A | N/A | 
+| read 6340 | N/A | N/A | 
+| read 6341 | N/A | N/A | 
+| read 6342 | N/A | N/A | 
+| read 6343 | N/A | N/A | 
+| read 6344 | N/A | N/A | 
+| read 6345 | N/A | N/A | 
+| read 6346 | N/A | N/A | 
+| read 6347 | N/A | N/A | 
+| read 6348 | N/A | N/A | 
+| read 6349 | N/A | N/A | 
+| read 6350 | N/A | N/A | 
+| read 6351 | N/A | N/A | 
+| read 6352 | N/A | N/A | 
+| read 6353 | N/A | N/A | 
+| read 6354 | N/A | N/A | 
+| read 6355 | N/A | N/A | 
+| read 6356 | N/A | N/A | 
+| read 6357 | N/A | N/A | 
+| read 6358 | N/A | N/A | 
+| read 6359 | N/A | N/A | 
+| read 6360 | N/A | N/A | 
+| read 6361 | N/A | N/A | 
+| read 6362 | N/A | N/A | 
+| read 6363 | N/A | N/A | 
+| read 6364 | N/A | N/A | 
+| read 6365 | N/A | N/A | 
+| read 6366 | N/A | N/A | 
+| read 6367 | N/A | N/A | 
+| read 6368 | N/A | N/A | 
+| read 6369 | N/A | N/A | 
+| read 6370 | N/A | N/A | 
+| read 6371 | N/A | N/A | 
+| read 6372 | N/A | N/A | 
+| read 6373 | N/A | N/A | 
+| read 6374 | N/A | N/A | 
+| read 6375 | N/A | N/A | 
+| read 6376 | N/A | N/A | 
+| read 6377 | N/A | N/A | 
+| read 6378 | N/A | N/A | 
+| read 6379 | N/A | N/A | 
+| read 6380 | N/A | N/A | 
+| read 6381 | N/A | N/A | 
+| read 6382 | N/A | N/A | 
+| read 6383 | N/A | N/A | 
+| read 6384 | N/A | N/A | 
+| read 6385 | N/A | N/A | 
+| read 6386 | N/A | 0xd | 
+| read 6387 | N/A | 0x7 | 
+| read 6388 | N/A | 0x13 | 
+| read 6389 | N/A | 0x11 | 
+| read 6390 | N/A | 0x11 | 
+| read 6391 | N/A | 0x1 | 
+| read 6392 | N/A | 0x3 | 
+| read 6393 | N/A | 0x21 | 
+| read 6394 | N/A | 0x2a | 
+| read 6395 | N/A | 0x29 | 
+| read 6396 | N/A | 0x1a | 
+| read 6397 | N/A | 0xf | 
+| read 6398 | N/A | 0xb | 
+| read 6399 | N/A | N/A | 
+| read 6400 | N/A | N/A | 
+| read 6401 | N/A | N/A | 
+| read 6402 | N/A | N/A | 
+| read 6403 | N/A | N/A | 
+| read 6404 | N/A | N/A | 
+| read 6405 | N/A | N/A | 
+| read 6406 | N/A | N/A | 
+| read 6407 | N/A | N/A | 
+| read 6408 | N/A | N/A | 
+| read 6409 | N/A | N/A | 
+| read 6410 | N/A | N/A | 
+| read 6411 | N/A | N/A | 
+| read 6412 | N/A | N/A | 
+| read 6413 | N/A | N/A | 
+| read 6414 | N/A | N/A | 
+| read 6415 | N/A | N/A | 
+| read 6416 | N/A | N/A | 
+| read 6417 | N/A | 0xf5 | 
+| read 6418 | N/A | N/A | 
+| read 6419 | N/A | N/A | 
+| read 6420 | N/A | N/A | 
+| read 6421 | N/A | N/A | 
+| read 6422 | N/A | N/A | 
+| read 6423 | N/A | N/A | 
+| read 6424 | N/A | N/A | 
+| read 6425 | N/A | N/A | 
+| read 6426 | N/A | N/A | 
+| read 6427 | N/A | N/A | 
+| read 6428 | N/A | N/A | 
+| read 6429 | N/A | N/A | 
+| read 6430 | N/A | N/A | 
+| read 6431 | N/A | N/A | 
+| read 6432 | N/A | N/A | 
+| read 6433 | N/A | N/A | 
+| read 6434 | N/A | N/A | 
+| read 6435 | N/A | N/A | 
+| read 6436 | N/A | N/A | 
+| read 6437 | N/A | N/A | 
+| read 6438 | N/A | N/A | 
+| read 6439 | N/A | N/A | 
+| read 6440 | N/A | N/A | 
+| read 6441 | N/A | N/A | 
+| read 6442 | N/A | N/A | 
+| read 6443 | N/A | N/A | 
+| read 6444 | N/A | N/A | 
+| read 6445 | N/A | 0xc7 | 
+| read 6446 | N/A | N/A | 
+| read 6447 | N/A | 0xf5 | 
+| read 6448 | N/A | N/A | 
+| read 6449 | N/A | N/A | 
+| read 6450 | N/A | N/A | 
+| read 6451 | N/A | N/A | 
+| read 6452 | N/A | N/A | 
+| read 6453 | N/A | N/A | 
+| read 6454 | N/A | N/A | 
+| read 6455 | N/A | N/A | 
+| read 6456 | N/A | N/A | 
+| read 6457 | N/A | N/A | 
+| read 6458 | N/A | N/A | 
+| read 6459 | N/A | 0xffff | 
+| read 6460 | N/A | 0xffff | 
+| read 6461 | N/A | 0xffff | 
+| read 6462 | N/A | 0xffff | 
+| read 6463 | N/A | 0xffff | 
+| read 6464 | N/A | 0xffff | 
+| read 6465 | N/A | 0xffff | 
+| read 6466 | N/A | 0xffff | 
+| read 6467 | N/A | 0xffff | 
+| read 6468 | N/A | 0xffff | 
+| read 6469 | N/A | N/A | 
+| read 6470 | N/A | N/A | 
+| read 6471 | N/A | N/A | 
+| read 6472 | N/A | N/A | 
+| read 6473 | N/A | N/A | 
+| read 6474 | N/A | N/A | 
+| read 6475 | N/A | N/A | 
+| read 6476 | N/A | N/A | 
+| read 6477 | N/A | N/A | 
+| read 6478 | N/A | N/A | 
+| read 6479 | N/A | N/A | 
+| read 6480 | N/A | N/A | 
+| read 6481 | N/A | N/A | 
+| read 6482 | N/A | N/A | 
+| read 6483 | N/A | N/A | 
+| read 6484 | N/A | N/A | 
+| read 6485 | N/A | N/A | 
+| read 6486 | N/A | N/A | 
+| read 6487 | N/A | N/A | 
+| read 6488 | N/A | N/A | 
+| read 6489 | N/A | N/A | 
+| read 6490 | N/A | N/A | 
+| read 6491 | N/A | N/A | 
+| read 6492 | N/A | N/A | 
+| read 6493 | N/A | N/A | 
+| read 6494 | N/A | N/A | 
+| read 6495 | N/A | N/A | 
+| read 6496 | N/A | N/A | 
+| read 6497 | N/A | N/A | 
+| read 6498 | N/A | N/A | 
+| read 6499 | N/A | N/A | 
+| read 6500 | N/A | N/A | 
+| read 6501 | N/A | N/A | 
+| read 6502 | N/A | N/A | 
+| read 6503 | N/A | N/A | 
+| read 6504 | N/A | N/A | 
+| read 6505 | N/A | N/A | 
+| read 6506 | N/A | N/A | 
+| read 6507 | N/A | N/A | 
+| read 6508 | N/A | N/A | 
+| read 6509 | N/A | N/A | 
+| read 6510 | N/A | N/A | 
+| read 6511 | N/A | N/A | 
+| read 6512 | N/A | N/A | 
+| read 6513 | N/A | N/A | 
+| read 6514 | N/A | N/A | 
+| read 6515 | N/A | N/A | 
+| read 6516 | N/A | N/A | 
+| read 6517 | N/A | N/A | 
+| read 6518 | N/A | N/A | 
+| read 6519 | N/A | N/A | 
+| read 6520 | N/A | N/A | 
+| read 6521 | N/A | N/A | 
+| read 6522 | N/A | N/A | 
+| read 6523 | N/A | N/A | 
+| read 6524 | N/A | N/A | 
+| read 6525 | N/A | N/A | 
+| read 6526 | N/A | N/A | 
+| read 6527 | N/A | N/A | 
+| read 6528 | N/A | N/A | 
+| read 6529 | N/A | N/A | 
+| read 6530 | N/A | N/A | 
+| read 6531 | N/A | N/A | 
+| read 6532 | N/A | N/A | 
+| read 6533 | N/A | N/A | 
+| read 6534 | N/A | N/A | 
+| read 6535 | N/A | N/A | 
+| read 6536 | N/A | N/A | 
+| read 6537 | N/A | N/A | 
+| read 6538 | N/A | N/A | 
+| read 6539 | N/A | N/A | 
+| read 6540 | N/A | N/A | 
+| read 6541 | N/A | N/A | 
+| read 6542 | N/A | N/A | 
+| read 6543 | N/A | N/A | 
+| read 6544 | N/A | N/A | 
+| read 6545 | N/A | N/A | 
+| read 6546 | N/A | N/A | 
+| read 6547 | N/A | N/A | 
+| read 6548 | N/A | N/A | 
+| read 6549 | N/A | N/A | 
+| read 6550 | N/A | N/A | 
+| read 6551 | N/A | N/A | 
+| read 6552 | N/A | N/A | 
+| read 6553 | N/A | N/A | 
+| read 6554 | N/A | N/A | 
+| read 6555 | N/A | N/A | 
+| read 6556 | N/A | N/A | 
+| read 6557 | N/A | N/A | 
+| read 6558 | N/A | N/A | 
+| read 6559 | N/A | N/A | 
+| read 6560 | N/A | N/A | 
+| read 6561 | N/A | N/A | 
+| read 6562 | N/A | N/A | 
+| read 6563 | N/A | N/A | 
+| read 6564 | N/A | N/A | 
+| read 6565 | N/A | N/A | 
+| read 6566 | N/A | N/A | 
+| read 6567 | N/A | N/A | 
+| read 6568 | N/A | N/A | 
+| read 6569 | N/A | N/A | 
+| read 6570 | N/A | N/A | 
+| read 6571 | N/A | N/A | 
+| read 6572 | N/A | N/A | 
+| read 6573 | N/A | N/A | 
+| read 6574 | N/A | N/A | 
+| read 6575 | N/A | N/A | 
+| read 6576 | N/A | N/A | 
+| read 6577 | N/A | N/A | 
+| read 6578 | N/A | N/A | 
+| read 6579 | N/A | N/A | 
+| read 6580 | N/A | N/A | 
+| read 6581 | N/A | N/A | 
+| read 6582 | N/A | N/A | 
+| read 6583 | N/A | N/A | 
+| read 6584 | N/A | N/A | 
+| read 6585 | N/A | N/A | 
+| read 6586 | N/A | N/A | 
+| read 6587 | N/A | N/A | 
+| read 6588 | N/A | N/A | 
+| read 6589 | N/A | N/A | 
+| read 6590 | N/A | N/A | 
+| read 6591 | N/A | N/A | 
+| read 6592 | N/A | N/A | 
+| read 6593 | N/A | N/A | 
+| read 6594 | N/A | N/A | 
+| read 6595 | N/A | N/A | 
+| read 6596 | N/A | N/A | 
+| read 6597 | N/A | N/A | 
+| read 6598 | N/A | N/A | 
+| read 6599 | N/A | N/A | 
+| read 6600 | N/A | N/A | 
+| read 6601 | N/A | N/A | 
+| read 6602 | N/A | N/A | 
+| read 6603 | N/A | N/A | 
+| read 6604 | N/A | N/A | 
+| read 6605 | N/A | N/A | 
+| read 6606 | N/A | N/A | 
+| read 6607 | N/A | N/A | 
+| read 6608 | N/A | N/A | 
+| read 6609 | N/A | N/A | 
+| read 6610 | N/A | N/A | 
+| read 6611 | N/A | N/A | 
+| read 6612 | N/A | N/A | 
+| read 6613 | N/A | N/A | 
+| read 6614 | N/A | N/A | 
+| read 6615 | N/A | N/A | 
+| read 6616 | N/A | N/A | 
+| read 6617 | N/A | N/A | 
+| read 6618 | N/A | N/A | 
+| read 6619 | N/A | N/A | 
+| read 6620 | N/A | N/A | 
+| read 6621 | N/A | N/A | 
+| read 6622 | N/A | N/A | 
+| read 6623 | N/A | N/A | 
+| read 6624 | N/A | N/A | 
+| read 6625 | N/A | N/A | 
+| read 6626 | N/A | N/A | 
+| read 6627 | N/A | N/A | 
+| read 6628 | N/A | N/A | 
+| read 6629 | N/A | N/A | 
+| read 6630 | N/A | N/A | 
+| read 6631 | N/A | N/A | 
+| read 6632 | N/A | N/A | 
+| read 6633 | N/A | N/A | 
+| read 6634 | N/A | N/A | 
+| read 6635 | N/A | N/A | 
+| read 6636 | N/A | N/A | 
+| read 6637 | N/A | N/A | 
+| read 6638 | N/A | 0xffff | 
+| read 6639 | N/A | 0xffff | 
+| read 6640 | N/A | 0xffff | 
+| read 6641 | N/A | 0xffff | 
+| read 6642 | N/A | 0xffff | 
+| read 6643 | N/A | 0xffff | 
+| read 6644 | N/A | 0xffff | 
+| read 6645 | N/A | 0xffff | 
+| read 6646 | N/A | 0xffff | 
+| read 6647 | N/A | 0xffff | 
+| read 6648 | N/A | N/A | 
+| read 6649 | N/A | N/A | 
+| read 6650 | N/A | N/A | 
+| read 6651 | N/A | N/A | 
+| read 6652 | N/A | N/A | 
+| read 6653 | N/A | N/A | 
+| read 6654 | N/A | N/A | 
+| read 6655 | N/A | N/A | 
+| read 6656 | N/A | N/A | 
+| read 6657 | N/A | N/A | 
+| read 6658 | N/A | N/A | 
+| read 6659 | N/A | N/A | 
+| read 6660 | N/A | N/A | 
+| read 6661 | N/A | N/A | 
+| read 6662 | N/A | N/A | 
+| read 6663 | N/A | N/A | 
+| read 6664 | N/A | N/A | 
+| read 6665 | N/A | N/A | 
+| read 6666 | N/A | N/A | 
+| read 6667 | N/A | N/A | 
+| read 6668 | N/A | N/A | 
+| read 6669 | N/A | N/A | 
+| read 6670 | N/A | N/A | 
+| read 6671 | N/A | N/A | 
+| read 6672 | N/A | N/A | 
+| read 6673 | N/A | N/A | 
+| read 6674 | N/A | N/A | 
+| read 6675 | N/A | N/A | 
+| read 6676 | N/A | N/A | 
+| read 6677 | N/A | N/A | 
+| read 6678 | N/A | N/A | 
+| read 6679 | N/A | N/A | 
+| read 6680 | N/A | N/A | 
+| read 6681 | N/A | N/A | 
+| read 6682 | N/A | N/A | 
+| read 6683 | N/A | N/A | 
+| read 6684 | N/A | N/A | 
+| read 6685 | N/A | N/A | 
+| read 6686 | N/A | N/A | 
+| read 6687 | N/A | N/A | 
+| read 6688 | N/A | N/A | 
+| read 6689 | N/A | N/A | 
+| read 6690 | N/A | N/A | 
+| read 6691 | N/A | N/A | 
+| read 6692 | N/A | N/A | 
+| read 6693 | N/A | N/A | 
+| read 6694 | N/A | N/A | 
+| read 6695 | N/A | N/A | 
+| read 6696 | N/A | N/A | 
+| read 6697 | N/A | N/A | 
+| read 6698 | N/A | N/A | 
+| read 6699 | N/A | N/A | 
+| read 6700 | N/A | N/A | 
+| read 6701 | N/A | N/A | 
+| read 6702 | N/A | N/A | 
+| read 6703 | N/A | N/A | 
+| read 6704 | N/A | N/A | 
+| read 6705 | N/A | N/A | 
+| read 6706 | N/A | N/A | 
+| read 6707 | N/A | N/A | 
+| read 6708 | N/A | N/A | 
+| read 6709 | N/A | N/A | 
+| read 6710 | N/A | N/A | 
+| read 6711 | N/A | N/A | 
+| read 6712 | N/A | N/A | 
+| read 6713 | N/A | N/A | 
+| read 6714 | N/A | N/A | 
+| read 6715 | N/A | N/A | 
+| read 6716 | N/A | N/A | 
+| read 6717 | N/A | N/A | 
+| read 6718 | N/A | N/A | 
+| read 6719 | N/A | N/A | 
+| read 6720 | N/A | N/A | 
+| read 6721 | N/A | N/A | 
+| read 6722 | N/A | N/A | 
+| read 6723 | N/A | N/A | 
+| read 6724 | N/A | N/A | 
+| read 6725 | N/A | N/A | 
+| read 6726 | N/A | N/A | 
+| read 6727 | N/A | N/A | 
+| read 6728 | N/A | N/A | 
+| read 6729 | N/A | N/A | 
+| read 6730 | N/A | N/A | 
+| read 6731 | N/A | N/A | 
+| read 6732 | N/A | N/A | 
+| read 6733 | N/A | N/A | 
+| read 6734 | N/A | N/A | 
+| read 6735 | N/A | N/A | 
+| read 6736 | N/A | N/A | 
+| read 6737 | N/A | N/A | 
+| read 6738 | N/A | N/A | 
+| read 6739 | N/A | N/A | 
+| read 6740 | N/A | N/A | 
+| read 6741 | N/A | N/A | 
+| read 6742 | N/A | N/A | 
+| read 6743 | N/A | N/A | 
+| read 6744 | N/A | N/A | 
+| read 6745 | N/A | N/A | 
+| read 6746 | N/A | N/A | 
+| read 6747 | N/A | N/A | 
+| read 6748 | N/A | N/A | 
+| read 6749 | N/A | N/A | 
+| read 6750 | N/A | N/A | 
+| read 6751 | N/A | N/A | 
+| read 6752 | N/A | N/A | 
+| read 6753 | N/A | N/A | 
+| read 6754 | N/A | N/A | 
+| read 6755 | N/A | N/A | 
+| read 6756 | N/A | N/A | 
+| read 6757 | N/A | N/A | 
+| read 6758 | N/A | N/A | 
+| read 6759 | N/A | N/A | 
+| read 6760 | N/A | N/A | 
+| read 6761 | N/A | N/A | 
+| read 6762 | N/A | N/A | 
+| read 6763 | N/A | N/A | 
+| read 6764 | N/A | N/A | 
+| read 6765 | N/A | N/A | 
+| read 6766 | N/A | N/A | 
+| read 6767 | N/A | N/A | 
+| read 6768 | N/A | N/A | 
+| read 6769 | N/A | N/A | 
+| read 6770 | N/A | N/A | 
+| read 6771 | N/A | N/A | 
+| read 6772 | N/A | N/A | 
+| read 6773 | N/A | N/A | 
+| read 6774 | N/A | N/A | 
+| read 6775 | N/A | N/A | 
+| read 6776 | N/A | N/A | 
+| read 6777 | N/A | N/A | 
+| read 6778 | N/A | N/A | 
+| read 6779 | N/A | N/A | 
+| read 6780 | N/A | N/A | 
+| read 6781 | N/A | N/A | 
+| read 6782 | N/A | N/A | 
+| read 6783 | N/A | N/A | 
+| read 6784 | N/A | N/A | 
+| read 6785 | N/A | N/A | 
+| read 6786 | N/A | N/A | 
+| read 6787 | N/A | N/A | 
+| read 6788 | N/A | N/A | 
+| read 6789 | N/A | N/A | 
+| read 6790 | N/A | N/A | 
+| read 6791 | N/A | N/A | 
+| read 6792 | N/A | N/A | 
+| read 6793 | N/A | N/A | 
+| read 6794 | N/A | N/A | 
+| read 6795 | N/A | N/A | 
+| read 6796 | N/A | N/A | 
+| read 6797 | N/A | N/A | 
+| read 6798 | N/A | N/A | 
+| read 6799 | N/A | N/A | 
+| read 6800 | N/A | N/A | 
+| read 6801 | N/A | N/A | 
+| read 6802 | N/A | N/A | 
+| read 6803 | N/A | N/A | 
+| read 6804 | N/A | N/A | 
+| read 6805 | N/A | N/A | 
+| read 6806 | N/A | N/A | 
+| read 6807 | N/A | N/A | 
+| read 6808 | N/A | N/A | 
+| read 6809 | N/A | N/A | 
+| read 6810 | N/A | N/A | 
+| read 6811 | N/A | N/A | 
+| read 6812 | N/A | N/A | 
+| read 6813 | N/A | N/A | 
+| read 6814 | N/A | N/A | 
+| read 6815 | N/A | N/A | 
+| read 6816 | N/A | N/A | 
+| read 6817 | N/A | 0xffff | 
+| read 6818 | N/A | 0xffff | 
+| read 6819 | N/A | 0xffff | 
+| read 6820 | N/A | 0xffff | 
+| read 6821 | N/A | 0xffff | 
+| read 6822 | N/A | 0xffff | 
+| read 6823 | N/A | 0xffff | 
+| read 6824 | N/A | 0xffff | 
+| read 6825 | N/A | 0xffff | 
+| read 6826 | N/A | 0xffff | 
+| read 7013 | N/A | 0xffff | 
+| read 7014 | N/A | 0xffff | 
+| read 7015 | N/A | 0xffff | 
+| read 7016 | N/A | 0xffff | 
+| read 7017 | N/A | 0xffff | 
+| read 7018 | N/A | 0xffff | 
+| read 7019 | N/A | 0xffff | 
+| read 7020 | N/A | 0xffff | 
+| read 7021 | N/A | 0xffff | 
+| read 7022 | N/A | 0xffff | 
+| read 7023 | N/A | 0xffff | 
+| read 7024 | N/A | 0xffff | 
+| read 7025 | N/A | 0xffff | 
+| read 7026 | N/A | 0xffff | 
+| read 7027 | N/A | 0xffff | 
+| read 7028 | N/A | 0xffff | 
+| read 7029 | N/A | 0xffff | 
+| read 7030 | N/A | 0xffff | 
+| read 7031 | N/A | 0xffff | 
+| read 7032 | N/A | 0xffff | 
+| read 7033 | N/A | 0xffff | 
+| read 7034 | N/A | 0xffff | 
+| read 7035 | N/A | 0xffff | 
+| read 7036 | N/A | 0xffff | 
+| read 13000 | 0x1400 | 0x8 | 
+| read 13001 | N/A | N/A | 
+| read 13002 | N/A | N/A | 
+| read 13003 | 0x1bc | 0x1bc | 
+| read 13004 | N/A | N/A | 
+| read 13005 | N/A | N/A | 
+| read 13006 | N/A | N/A | 
+| read 13007 | N/A | N/A | 
+| read 13008 | N/A | N/A | 
+| read 13009 | N/A | N/A | 
+| read 13010 | N/A | N/A | 
+| read 13011 | N/A | N/A | 
+| read 13012 | N/A | N/A | 
+| read 13013 | N/A | N/A | 
+| read 13014 | N/A | N/A | 
+| read 13015 | N/A | 0x136 | 
+| read 13016 | N/A | N/A | 
+| read 13017 | N/A | N/A | 
+| read 13018 | 0x1bc | 0x1bc | 
+| read 13019 | N/A | N/A | 
+| read 13020 | N/A | N/A | 
+| read 13021 | N/A | N/A | 
+| read 13022 | N/A | N/A | 
+| read 13023 | N/A | N/A | 
+| read 13024 | N/A | N/A | 
+| read 13025 | N/A | N/A | 
+| read 13026 | N/A | N/A | 
+| read 13027 | N/A | N/A | 
+| read 13028 | N/A | N/A | 
+| read 13029 | 0x3e8 | 0x3e8 | 
+| read 13030 | N/A | 0xffff | 
+| read 13031 | N/A | N/A | 
+| read 13032 | N/A | N/A | 
+| read 13033 | N/A | N/A | 
+| read 13034 | N/A | N/A | 
+| read 13035 | N/A | N/A | 
+| read 13036 | N/A | N/A | 
+| read 13037 | N/A | N/A | 
+| read 13038 | N/A | N/A | 
+| read 13039 | N/A | N/A | 
+| read 13040 | N/A | N/A | 
+| read 13041 | N/A | N/A | 
+| read 13042 | N/A | N/A | 
+| read 13043 | 0xff | 0xff | 
+| read 13044 | N/A | N/A | 
+| read 13045 | N/A | N/A | 
+| read 13046 | N/A | N/A | 
+| read 13047 | N/A | N/A | 
+| read 13048 | N/A | N/A | 
+| read 13049 | N/A | N/A | 
+| read 13050 | N/A | N/A | 
+| read 13051 | N/A | N/A | 
+| read 13052 | N/A | N/A | 
+| read 13053 | N/A | N/A | 
+| read 13054 | N/A | N/A | 
+| read 13055 | N/A | N/A | 
+| read 13056 | N/A | N/A | 
+| read 13057 | N/A | N/A | 
+| read 13058 | N/A | N/A | 
+| read 13059 | N/A | N/A | 
+| read 13060 | N/A | N/A | 
+| read 13061 | N/A | N/A | 
+| read 13062 | N/A | N/A | 
+| read 13063 | N/A | N/A | 
+| read 13064 | N/A | N/A | 
+| read 13065 | N/A | N/A | 
+| read 13066 | 0xffff | N/A | 
+| read 13067 | 0xffff | N/A | 
+| read 13068 | 0xffff | N/A | 
+| read 13069 | 0xffff | N/A | 
+| read 13070 | N/A | N/A | 
+| read 13071 | N/A | N/A | 
+| read 13072 | N/A | N/A | 
+| read 13073 | N/A | N/A | 
+| read 13074 | N/A | N/A | 
+| read 13075 | N/A | N/A | 
+| read 13076 | N/A | N/A | 
+| read 13077 | N/A | N/A | 
+| read 13078 | N/A | N/A | 
+| read 13079 | N/A | N/A | 
+| read 13100 | N/A | 0xffff | 
+| read 13101 | N/A | 0xffff | 
+| read 13102 | N/A | 0xffff | 
+| read 13103 | N/A | 0xffff | 
+| read 13104 | N/A | 0xffff | 
+| read 13105 | N/A | 0xffff | 
+| read 13106 | N/A | 0xffff | 
+| read 13107 | N/A | 0xffff | 
+| read 13108 | N/A | 0xffff | 
+| read 13109 | N/A | 0xffff | 
+| read 13110 | N/A | 0xffff | 
+| read 13111 | N/A | 0xffff | 
+| read 13112 | N/A | 0xffff | 
+| read 13113 | N/A | 0xffff | 
+| read 13114 | N/A | 0xffff | 
+| read 13115 | N/A | 0xffff | 
+| read 13116 | N/A | 0xffff | 
+| read 13117 | N/A | 0xffff | 
+| read 13118 | N/A | 0xffff | 
+| read 4950 | 0x3130 | 0x3000 | 
+| read 4951 | 0x4141 | 0x4142 | 
+| read 4952 | 0x500 | 0x1100 | 
+| read 4953 | 0x100 | 0x100 | 
+| read 4954 | 0x4152 | 0x4152 | 
+| read 4955 | 0x4d5f | 0x4d5f | 
+| read 4956 | 0x5341 | 0x5341 | 
+| read 4957 | 0x5050 | 0x5050 | 
+| read 4958 | 0x4849 | 0x4849 | 
+| read 4959 | 0x5245 | 0x5245 | 
+| read 4960 | 0x2d48 | 0x2d48 | 
+| read 4961 | 0x5f56 | 0x5f56 | 
+| read 4962 | 0x3131 | 0x3131 | 
+| read 4963 | 0x5f56 | 0x5f56 | 
+| read 4964 | 0x3031 | 0x3031 | 
+| read 4965 | 0x5f42 | 0x5f42 | 
+| read 4966 | N/A | N/A | 
+| read 4967 | N/A | N/A | 
+| read 4968 | N/A | N/A | 
+| read 4969 | 0x4d44 | 0x4d44 | 
+| read 4970 | 0x5350 | 0x5350 | 
+| read 4971 | 0x5f53 | 0x5f53 | 
+| read 4972 | 0x4150 | 0x4150 | 
+| read 4973 | 0x5048 | 0x5048 | 
+| read 4974 | 0x4952 | 0x4952 | 
+| read 4975 | 0x452d | 0x452d | 
+| read 4976 | 0x485f | 0x485f | 
+| read 4977 | 0x5631 | 0x5631 | 
+| read 4978 | 0x315f | 0x315f | 
+| read 4979 | 0x5630 | 0x5630 | 
+| read 4980 | 0x315f | 0x315f | 
+| read 4981 | 0x4200 | 0x4200 | 
+| read 4982 | N/A | N/A | 
+| read 4983 | N/A | N/A | 
+| read 4984 | N/A | 0xffff | 
+| read 4985 | N/A | 0xffff | 
+| read 4986 | N/A | 0xffff | 
+| read 4987 | N/A | 0xffff | 
+| read 4988 | N/A | 0xffff | 
+| read 4989 | N/A | 0xffff | 
+| read 4990 | 0x4132 | 0x4132 | 
+| read 4991 | 0x3335 | 0x3335 | 
+| read 4992 | 0x3034 | 0x3034 | 
+| read 4993 | 0x3135 | 0x3135 | 
+| read 4994 | 0x3737 | 0x3737 | 
+| read 4995 | 0x3900 | 0x3900 | 
+| read 4996 | N/A | N/A | 
+| read 4997 | N/A | N/A | 
+| read 4998 | N/A | N/A | 
+| read 4999 | N/A | N/A | 
+| read 5000 | 0xe12 | 0xe12 | 
+| read 5001 | 0x50 | 0x50 | 
+| read 5002 | 0x1 | 0x1 | 
+| read 5003 | N/A | N/A | 
+| read 5004 | 0x1bc | 0x1bc | 
+| read 5005 | N/A | N/A | 
+| read 5006 | N/A | 0xffff | 
+| read 5007 | N/A | 0xffff | 
+| read 5008 | 0x117 | 0x117 | 
+| read 5009 | N/A | N/A | 
+| read 5010 | N/A | N/A | 
+| read 5011 | N/A | N/A | 
+| read 5012 | N/A | N/A | 
+| read 5013 | N/A | N/A | 
+| read 5014 | N/A | N/A | 
+| read 5015 | N/A | 0xffff | 
+| read 5016 | N/A | 0xffff | 
+| read 5017 | N/A | N/A | 
+| read 5018 | N/A | N/A | 
+| read 5019 | 0x910 | 0x911 | 
+| read 5020 | 0x90d | 0x90e | 
+| read 5021 | 0x90c | 0x90d | 
+| read 5022 | N/A | N/A | 
+| read 5023 | N/A | N/A | 
+| read 5024 | N/A | N/A | 
+| read 5025 | N/A | 0xffff | 
+| read 5026 | N/A | 0xffff | 
+| read 5027 | N/A | 0xffff | 
+| read 5028 | N/A | 0xffff | 
+| read 5029 | N/A | 0xffff | 
+| read 5030 | N/A | 0xffff | 
+| read 5031 | N/A | N/A | 
+| read 5032 | N/A | N/A | 
+| read 5033 | N/A | N/A | 
+| read 5034 | N/A | N/A | 
+| read 5035 | N/A | N/A | 
+| read 5036 | 0x1387 | 0x1f3 | 
+| read 5037 | N/A | 0xffff | 
+| read 5038 | N/A | 0xffff | 
+| read 5039 | N/A | 0xffff | 
+| read 5040 | N/A | 0xffff | 
+| read 5041 | N/A | 0xffff | 
+| read 5042 | N/A | 0xffff | 
+| read 5043 | N/A | 0xffff | 
+| read 5044 | N/A | 0xffff | 
+| read 5045 | N/A | 0xffff | 
+| read 5046 | N/A | 0xffff | 
+| read 5047 | N/A | 0xffff | 
+| read 5048 | N/A | 0xffff | 
+| read 5049 | N/A | 0x30 | 
+| read 5071 | N/A | 0x3bb | 
+| read 5072 | N/A | 0xffff | 
+| read 5073 | N/A | 0xffff | 
+| read 5074 | N/A | 0xffff | 
+| read 5075 | N/A | 0xffff | 
+| read 5076 | N/A | 0xffff | 
+| read 5077 | N/A | 0xffff | 
+| read 5078 | N/A | 0xffff | 
+| read 5079 | N/A | 0xffff | 
+| read 5080 | N/A | 0xffff | 
+| read 5081 | N/A | 0xffff | 
+| read 5082 | N/A | 0xffff | 
+| read 5083 | N/A | 0xffff | 
+| read 5084 | N/A | 0xffff | 
+| read 5085 | N/A | 0xffff | 
+| read 5086 | N/A | 0xffff | 
+| read 5087 | N/A | 0xffff | 
+| read 5088 | N/A | N/A | 
+| read 5089 | N/A | N/A | 
+| read 5090 | N/A | 0xffff | 
+| read 5091 | N/A | 0xffff | 
+| read 5092 | N/A | 0xffff | 
+| read 5093 | N/A | 0xffff | 
+| read 5094 | N/A | 0xffff | 
+| read 5095 | N/A | 0xffff | 
+| read 5096 | N/A | 0xffff | 
+| read 5097 | N/A | 0xffff | 
+| read 5098 | N/A | 0xffff | 
+| read 5099 | N/A | 0xffff | 
+| read 5100 | N/A | 0xffff | 
+| read 5101 | N/A | 0xffff | 
+| read 5102 | N/A | 0xffff | 
+| read 5103 | N/A | 0xffff | 
+| read 5104 | N/A | 0xffff | 
+| read 5105 | N/A | 0xffff | 
+| read 5106 | N/A | 0xffff | 
+| read 5107 | N/A | 0xffff | 
+| read 5108 | N/A | 0xffff | 
+| read 5109 | N/A | 0xffff | 
+| read 5110 | N/A | 0xffff | 
+| read 5111 | N/A | 0xffff | 
+| read 5112 | N/A | 0xffff | 
+| read 5113 | N/A | 0xffff | 
+| read 5114 | N/A | 0x1 | 
+| read 5115 | N/A | 0xffff | 
+| read 5116 | N/A | 0xffff | 
+| read 5117 | N/A | 0xffff | 
+| read 5118 | N/A | 0xffff | 
+| read 5119 | N/A | 0xffff | 
+| read 5120 | N/A | 0xffff | 
+| read 5121 | N/A | 0xffff | 
+| read 5122 | N/A | 0xffff | 
+| read 5123 | N/A | 0xffff | 
+| read 5124 | N/A | 0xffff | 
+| read 5125 | N/A | 0xffff | 
+| read 5126 | N/A | 0xffff | 
+| read 5127 | N/A | 0xffff | 
+| read 5128 | N/A | 0xffff | 
+| read 5129 | N/A | 0xffff | 
+| read 5130 | N/A | 0xffff | 
+| read 5131 | N/A | 0xffff | 
+| read 5132 | N/A | 0xffff | 
+| read 5133 | N/A | 0xffff | 
+| read 5134 | N/A | 0xffff | 
+| read 5135 | N/A | 0xffff | 
+| read 5136 | N/A | 0xffff | 
+| read 5137 | N/A | 0xffff | 
+| read 5138 | N/A | 0xffff | 
+| read 5139 | N/A | 0xffff | 
+| read 5140 | N/A | 0xffff | 
+| read 5141 | N/A | 0xffff | 
+| read 5142 | N/A | 0xffff | 
+| read 5143 | N/A | 0xffff | 
+| read 5144 | N/A | 0xffff | 
+| read 5145 | N/A | 0xffff | 
+| read 5146 | N/A | 0xffff | 
+| read 5147 | N/A | 0xa0 | 
+| read 5148 | N/A | 0x1387 | 
+| read 5149 | N/A | 0xffff | 
+| read 5150 | N/A | 0xffff | 
+| read 5151 | N/A | 0xffff | 
+| read 5216 | N/A | N/A | 
+| read 5217 | N/A | N/A | 
+| read 5218 | N/A | N/A | 
+| read 5219 | N/A | N/A | 
+| read 5601 | N/A | 0xffff | 
+| read 5602 | N/A | 0x7fff | 
+| read 5603 | N/A | 0xffff | 
+| read 5604 | N/A | 0x7fff | 
+| read 5605 | N/A | 0xffff | 
+| read 5606 | N/A | 0x7fff | 
+| read 5607 | N/A | 0xffff | 
+| read 5608 | N/A | 0x7fff | 
+| read 5609 | N/A | N/A | 
+| read 5610 | N/A | N/A | 
+| read 5611 | N/A | N/A | 
+| read 5612 | N/A | N/A | 
+| read 5613 | N/A | N/A | 
+| read 5614 | N/A | N/A | 
+| read 5615 | N/A | N/A | 
+| read 5616 | N/A | N/A | 
+| read 5617 | N/A | N/A | 
+| read 5618 | N/A | N/A | 
+| read 5619 | N/A | 0x1bc | 
+| read 5620 | N/A | N/A | 
+| read 5621 | N/A | N/A | 
+| read 5622 | N/A | N/A | 
+| read 5623 | 0x320 | 0x320 | 
+| read 5624 | N/A | N/A | 
+| read 5625 | N/A | 0x3e8 | 
+| read 5626 | N/A | 0xffff | 
+| read 5627 | N/A | N/A | 
+| read 5628 | 0x50 | 0x50 | 
+| read 5629 | N/A | 0x2 | 
+| read 5630 | N/A | N/A | 
+| read 5631 | N/A | N/A | 
+| read 5632 | N/A | N/A | 
+| read 5633 | N/A | N/A | 
+| read 5634 | N/A | N/A | 
+| read 5635 | N/A | N/A | 
+| read 5636 | N/A | N/A | 
+| read 5637 | N/A | 0xffff | 
+| read 5638 | N/A | 0xffff | 
+| read 5639 | N/A | N/A | 
+| read 5723 | N/A | N/A | 
+| read 5724 | N/A | N/A | 
+| read 5725 | N/A | N/A | 
+| read 5726 | N/A | N/A | 
+| read 6100 | N/A | N/A | 
+| read 6101 | N/A | N/A | 
+| read 6102 | N/A | N/A | 
+| read 6103 | N/A | N/A | 
+| read 6104 | N/A | N/A | 
+| read 6105 | N/A | N/A | 
+| read 6106 | N/A | N/A | 
+| read 6107 | N/A | N/A | 
+| read 6108 | N/A | N/A | 
+| read 6109 | N/A | N/A | 
+| read 6110 | N/A | N/A | 
+| read 6111 | N/A | N/A | 
+| read 6112 | N/A | N/A | 
+| read 6113 | N/A | N/A | 
+| read 6114 | N/A | N/A | 
+| read 6115 | N/A | N/A | 
+| read 6116 | N/A | N/A | 
+| read 6117 | N/A | N/A | 
+| read 6118 | N/A | N/A | 
+| read 6119 | N/A | N/A | 
+| read 6120 | N/A | N/A | 
+| read 6121 | N/A | N/A | 
+| read 6122 | N/A | N/A | 
+| read 6123 | N/A | N/A | 
+| read 6124 | N/A | N/A | 
+| read 6125 | N/A | N/A | 
+| read 6126 | N/A | N/A | 
+| read 6127 | N/A | N/A | 
+| read 6128 | N/A | N/A | 
+| read 6129 | N/A | N/A | 
+| read 6130 | N/A | N/A | 
+| read 6131 | N/A | N/A | 
+| read 6132 | N/A | N/A | 
+| read 6133 | N/A | N/A | 
+| read 6134 | N/A | N/A | 
+| read 6135 | N/A | N/A | 
+| read 6136 | N/A | N/A | 
+| read 6137 | N/A | N/A | 
+| read 6138 | N/A | N/A | 
+| read 6139 | N/A | N/A | 
+| read 6140 | N/A | N/A | 
+| read 6141 | N/A | N/A | 
+| read 6142 | N/A | N/A | 
+| read 6143 | N/A | N/A | 
+| read 6144 | N/A | N/A | 
+| read 6145 | N/A | N/A | 
+| read 6146 | N/A | N/A | 
+| read 6147 | N/A | N/A | 
+| read 6148 | N/A | N/A | 
+| read 6149 | N/A | N/A | 
+| read 6150 | N/A | N/A | 
+| read 6151 | N/A | N/A | 
+| read 6152 | N/A | N/A | 
+| read 6153 | N/A | N/A | 
+| read 6154 | N/A | N/A | 
+| read 6155 | N/A | N/A | 
+| read 6156 | N/A | N/A | 
+| read 6157 | N/A | N/A | 
+| read 6158 | N/A | N/A | 
+| read 6159 | N/A | N/A | 
+| read 6160 | N/A | N/A | 
+| read 6161 | N/A | N/A | 
+| read 6162 | N/A | N/A | 
+| read 6163 | N/A | N/A | 
+| read 6164 | N/A | N/A | 
+| read 6165 | N/A | N/A | 
+| read 6166 | N/A | N/A | 
+| read 6167 | N/A | N/A | 
+| read 6168 | N/A | N/A | 
+| read 6169 | N/A | N/A | 
+| read 6170 | N/A | N/A | 
+| read 6171 | N/A | N/A | 
+| read 6172 | N/A | N/A | 
+| read 6173 | N/A | N/A | 
+| read 6174 | N/A | N/A | 
+| read 6175 | N/A | N/A | 
+| read 6176 | N/A | N/A | 
+| read 6177 | N/A | N/A | 
+| read 6178 | N/A | N/A | 
+| read 6179 | N/A | N/A | 
+| read 6180 | N/A | N/A | 
+| read 6181 | N/A | N/A | 
+| read 6182 | N/A | N/A | 
+| read 6183 | N/A | N/A | 
+| read 6184 | N/A | N/A | 
+| read 6185 | N/A | N/A | 
+| read 6186 | N/A | N/A | 
+| read 6187 | N/A | N/A | 
+| read 6188 | N/A | N/A | 
+| read 6189 | N/A | N/A | 
+| read 6190 | N/A | N/A | 
+| read 6191 | N/A | N/A | 
+| read 6192 | N/A | N/A | 
+| read 6193 | N/A | N/A | 
+| read 6194 | N/A | N/A | 
+| read 6195 | N/A | N/A | 
+| read 6196 | N/A | 0xd | 
+| read 6197 | N/A | 0x7 | 
+| read 6198 | N/A | 0x13 | 
+| read 6199 | N/A | 0x11 | 
+| read 6200 | N/A | 0x11 | 
+| read 6201 | N/A | 0x1 | 
+| read 6202 | N/A | 0x3 | 
+| read 6203 | N/A | 0x21 | 
+| read 6204 | N/A | 0x2a | 
+| read 6205 | N/A | 0x29 | 
+| read 6206 | N/A | 0x1a | 
+| read 6207 | N/A | 0xf | 
+| read 6208 | N/A | 0xb | 
+| read 6209 | N/A | N/A | 
+| read 6210 | N/A | N/A | 
+| read 6211 | N/A | N/A | 
+| read 6212 | N/A | N/A | 
+| read 6213 | N/A | N/A | 
+| read 6214 | N/A | N/A | 
+| read 6215 | N/A | N/A | 
+| read 6216 | N/A | N/A | 
+| read 6217 | N/A | N/A | 
+| read 6218 | N/A | N/A | 
+| read 6219 | N/A | N/A | 
+| read 6220 | N/A | N/A | 
+| read 6221 | N/A | N/A | 
+| read 6222 | N/A | N/A | 
+| read 6223 | N/A | N/A | 
+| read 6224 | N/A | N/A | 
+| read 6225 | N/A | N/A | 
+| read 6226 | N/A | N/A | 
+| read 6227 | N/A | 0xf5 | 
+| read 6228 | N/A | N/A | 
+| read 6229 | N/A | N/A | 
+| read 6230 | N/A | N/A | 
+| read 6231 | N/A | N/A | 
+| read 6232 | N/A | N/A | 
+| read 6233 | N/A | N/A | 
+| read 6234 | N/A | N/A | 
+| read 6235 | N/A | N/A | 
+| read 6236 | N/A | N/A | 
+| read 6237 | N/A | N/A | 
+| read 6238 | N/A | N/A | 
+| read 6239 | N/A | 0xffff | 
+| read 6240 | N/A | 0xffff | 
+| read 6241 | N/A | 0xffff | 
+| read 6242 | N/A | 0xffff | 
+| read 6243 | N/A | 0xffff | 
+| read 6244 | N/A | 0xffff | 
+| read 6245 | N/A | 0xffff | 
+| read 6246 | N/A | 0xffff | 
+| read 6247 | N/A | 0xffff | 
+| read 6248 | N/A | 0xffff | 
+| read 6249 | N/A | 0xffff | 
+| read 6250 | N/A | N/A | 
+| read 6251 | N/A | N/A | 
+| read 6252 | N/A | N/A | 
+| read 6253 | N/A | N/A | 
+| read 6254 | N/A | N/A | 
+| read 6255 | N/A | N/A | 
+| read 6256 | N/A | N/A | 
+| read 6257 | N/A | N/A | 
+| read 6258 | N/A | N/A | 
+| read 6259 | N/A | N/A | 
+| read 6260 | N/A | N/A | 
+| read 6261 | N/A | N/A | 
+| read 6262 | N/A | N/A | 
+| read 6263 | N/A | N/A | 
+| read 6264 | N/A | N/A | 
+| read 6265 | N/A | N/A | 
+| read 6266 | N/A | 0xc7 | 
+| read 6267 | N/A | N/A | 
+| read 6268 | N/A | 0xf5 | 
+| read 6269 | N/A | N/A | 
+| read 6270 | N/A | N/A | 
+| read 6271 | N/A | N/A | 
+| read 6272 | N/A | N/A | 
+| read 6273 | N/A | N/A | 
+| read 6274 | N/A | N/A | 
+| read 6275 | N/A | N/A | 
+| read 6276 | N/A | N/A | 
+| read 6277 | N/A | N/A | 
+| read 6278 | N/A | N/A | 
+| read 6279 | N/A | N/A | 
+| read 6280 | N/A | 0xffff | 
+| read 6281 | N/A | 0xffff | 
+| read 6282 | N/A | 0xffff | 
+| read 6283 | N/A | 0xffff | 
+| read 6284 | N/A | 0xffff | 
+| read 6285 | N/A | 0xffff | 
+| read 6286 | N/A | 0xffff | 
+| read 6287 | N/A | 0xffff | 
+| read 6288 | N/A | 0xffff | 
+| read 6289 | N/A | 0xffff | 
+| read 6290 | N/A | N/A | 
+| read 6291 | N/A | N/A | 
+| read 6292 | N/A | N/A | 
+| read 6293 | N/A | N/A | 
+| read 6294 | N/A | N/A | 
+| read 6295 | N/A | N/A | 
+| read 6296 | N/A | N/A | 
+| read 6297 | N/A | N/A | 
+| read 6298 | N/A | N/A | 
+| read 6299 | N/A | N/A | 
+| read 6300 | N/A | N/A | 
+| read 6301 | N/A | N/A | 
+| read 6302 | N/A | N/A | 
+| read 6303 | N/A | N/A | 
+| read 6304 | N/A | N/A | 
+| read 6305 | N/A | N/A | 
+| read 6306 | N/A | N/A | 
+| read 6307 | N/A | N/A | 
+| read 6308 | N/A | N/A | 
+| read 6309 | N/A | N/A | 
+| read 6310 | N/A | N/A | 
+| read 6311 | N/A | N/A | 
+| read 6312 | N/A | N/A | 
+| read 6313 | N/A | N/A | 
+| read 6314 | N/A | N/A | 
+| read 6315 | N/A | N/A | 
+| read 6316 | N/A | N/A | 
+| read 6317 | N/A | N/A | 
+| read 6318 | N/A | N/A | 
+| read 6319 | N/A | N/A | 
+| read 6320 | N/A | N/A | 
+| read 6321 | N/A | N/A | 
+| read 6322 | N/A | N/A | 
+| read 6323 | N/A | N/A | 
+| read 6324 | N/A | N/A | 
+| read 6325 | N/A | N/A | 
+| read 6326 | N/A | N/A | 
+| read 6327 | N/A | N/A | 
+| read 6328 | N/A | N/A | 
+| read 6329 | N/A | N/A | 
+| read 6330 | N/A | N/A | 
+| read 6331 | N/A | N/A | 
+| read 6332 | N/A | N/A | 
+| read 6333 | N/A | N/A | 
+| read 6334 | N/A | N/A | 
+| read 6335 | N/A | N/A | 
+| read 6336 | N/A | N/A | 
+| read 6337 | N/A | N/A | 
+| read 6338 | N/A | N/A | 
+| read 6339 | N/A | N/A | 
+| read 6340 | N/A | N/A | 
+| read 6341 | N/A | N/A | 
+| read 6342 | N/A | N/A | 
+| read 6343 | N/A | N/A | 
+| read 6344 | N/A | N/A | 
+| read 6345 | N/A | N/A | 
+| read 6346 | N/A | N/A | 
+| read 6347 | N/A | N/A | 
+| read 6348 | N/A | N/A | 
+| read 6349 | N/A | N/A | 
+| read 6350 | N/A | N/A | 
+| read 6351 | N/A | N/A | 
+| read 6352 | N/A | N/A | 
+| read 6353 | N/A | N/A | 
+| read 6354 | N/A | N/A | 
+| read 6355 | N/A | N/A | 
+| read 6356 | N/A | N/A | 
+| read 6357 | N/A | N/A | 
+| read 6358 | N/A | N/A | 
+| read 6359 | N/A | N/A | 
+| read 6360 | N/A | N/A | 
+| read 6361 | N/A | N/A | 
+| read 6362 | N/A | N/A | 
+| read 6363 | N/A | N/A | 
+| read 6364 | N/A | N/A | 
+| read 6365 | N/A | N/A | 
+| read 6366 | N/A | N/A | 
+| read 6367 | N/A | N/A | 
+| read 6368 | N/A | N/A | 
+| read 6369 | N/A | N/A | 
+| read 6370 | N/A | N/A | 
+| read 6371 | N/A | N/A | 
+| read 6372 | N/A | N/A | 
+| read 6373 | N/A | N/A | 
+| read 6374 | N/A | N/A | 
+| read 6375 | N/A | N/A | 
+| read 6376 | N/A | N/A | 
+| read 6377 | N/A | N/A | 
+| read 6378 | N/A | N/A | 
+| read 6379 | N/A | N/A | 
+| read 6380 | N/A | N/A | 
+| read 6381 | N/A | N/A | 
+| read 6382 | N/A | N/A | 
+| read 6383 | N/A | N/A | 
+| read 6384 | N/A | N/A | 
+| read 6385 | N/A | N/A | 
+| read 6386 | N/A | 0xd | 
+| read 6387 | N/A | 0x7 | 
+| read 6388 | N/A | 0x13 | 
+| read 6389 | N/A | 0x11 | 
+| read 6390 | N/A | 0x11 | 
+| read 6391 | N/A | 0x1 | 
+| read 6392 | N/A | 0x3 | 
+| read 6393 | N/A | 0x21 | 
+| read 6394 | N/A | 0x2a | 
+| read 6395 | N/A | 0x29 | 
+| read 6396 | N/A | 0x1a | 
+| read 6397 | N/A | 0xf | 
+| read 6398 | N/A | 0xb | 
+| read 6399 | N/A | N/A | 
+| read 6400 | N/A | N/A | 
+| read 6401 | N/A | N/A | 
+| read 6402 | N/A | N/A | 
+| read 6403 | N/A | N/A | 
+| read 6404 | N/A | N/A | 
+| read 6405 | N/A | N/A | 
+| read 6406 | N/A | N/A | 
+| read 6407 | N/A | N/A | 
+| read 6408 | N/A | N/A | 
+| read 6409 | N/A | N/A | 
+| read 6410 | N/A | N/A | 
+| read 6411 | N/A | N/A | 
+| read 6412 | N/A | N/A | 
+| read 6413 | N/A | N/A | 
+| read 6414 | N/A | N/A | 
+| read 6415 | N/A | N/A | 
+| read 6416 | N/A | N/A | 
+| read 6417 | N/A | 0xf5 | 
+| read 6418 | N/A | N/A | 
+| read 6419 | N/A | N/A | 
+| read 6420 | N/A | N/A | 
+| read 6421 | N/A | N/A | 
+| read 6422 | N/A | N/A | 
+| read 6423 | N/A | N/A | 
+| read 6424 | N/A | N/A | 
+| read 6425 | N/A | N/A | 
+| read 6426 | N/A | N/A | 
+| read 6427 | N/A | N/A | 
+| read 6428 | N/A | N/A | 
+| read 6429 | N/A | N/A | 
+| read 6430 | N/A | N/A | 
+| read 6431 | N/A | N/A | 
+| read 6432 | N/A | N/A | 
+| read 6433 | N/A | N/A | 
+| read 6434 | N/A | N/A | 
+| read 6435 | N/A | N/A | 
+| read 6436 | N/A | N/A | 
+| read 6437 | N/A | N/A | 
+| read 6438 | N/A | N/A | 
+| read 6439 | N/A | N/A | 
+| read 6440 | N/A | N/A | 
+| read 6441 | N/A | N/A | 
+| read 6442 | N/A | N/A | 
+| read 6443 | N/A | N/A | 
+| read 6444 | N/A | N/A | 
+| read 6445 | N/A | 0xc7 | 
+| read 6446 | N/A | N/A | 
+| read 6447 | N/A | 0xf5 | 
+| read 6448 | N/A | N/A | 
+| read 6449 | N/A | N/A | 
+| read 6450 | N/A | N/A | 
+| read 6451 | N/A | N/A | 
+| read 6452 | N/A | N/A | 
+| read 6453 | N/A | N/A | 
+| read 6454 | N/A | N/A | 
+| read 6455 | N/A | N/A | 
+| read 6456 | N/A | N/A | 
+| read 6457 | N/A | N/A | 
+| read 6458 | N/A | N/A | 
+| read 6459 | N/A | 0xffff | 
+| read 6460 | N/A | 0xffff | 
+| read 6461 | N/A | 0xffff | 
+| read 6462 | N/A | 0xffff | 
+| read 6463 | N/A | 0xffff | 
+| read 6464 | N/A | 0xffff | 
+| read 6465 | N/A | 0xffff | 
+| read 6466 | N/A | 0xffff | 
+| read 6467 | N/A | 0xffff | 
+| read 6468 | N/A | 0xffff | 
+| read 6469 | N/A | N/A | 
+| read 6470 | N/A | N/A | 
+| read 6471 | N/A | N/A | 
+| read 6472 | N/A | N/A | 
+| read 6473 | N/A | N/A | 
+| read 6474 | N/A | N/A | 
+| read 6475 | N/A | N/A | 
+| read 6476 | N/A | N/A | 
+| read 6477 | N/A | N/A | 
+| read 6478 | N/A | N/A | 
+| read 6479 | N/A | N/A | 
+| read 6480 | N/A | N/A | 
+| read 6481 | N/A | N/A | 
+| read 6482 | N/A | N/A | 
+| read 6483 | N/A | N/A | 
+| read 6484 | N/A | N/A | 
+| read 6485 | N/A | N/A | 
+| read 6486 | N/A | N/A | 
+| read 6487 | N/A | N/A | 
+| read 6488 | N/A | N/A | 
+| read 6489 | N/A | N/A | 
+| read 6490 | N/A | N/A | 
+| read 6491 | N/A | N/A | 
+| read 6492 | N/A | N/A | 
+| read 6493 | N/A | N/A | 
+| read 6494 | N/A | N/A | 
+| read 6495 | N/A | N/A | 
+| read 6496 | N/A | N/A | 
+| read 6497 | N/A | N/A | 
+| read 6498 | N/A | N/A | 
+| read 6499 | N/A | N/A | 
+| read 6500 | N/A | N/A | 
+| read 6501 | N/A | N/A | 
+| read 6502 | N/A | N/A | 
+| read 6503 | N/A | N/A | 
+| read 6504 | N/A | N/A | 
+| read 6505 | N/A | N/A | 
+| read 6506 | N/A | N/A | 
+| read 6507 | N/A | N/A | 
+| read 6508 | N/A | N/A | 
+| read 6509 | N/A | N/A | 
+| read 6510 | N/A | N/A | 
+| read 6511 | N/A | N/A | 
+| read 6512 | N/A | N/A | 
+| read 6513 | N/A | N/A | 
+| read 6514 | N/A | N/A | 
+| read 6515 | N/A | N/A | 
+| read 6516 | N/A | N/A | 
+| read 6517 | N/A | N/A | 
+| read 6518 | N/A | N/A | 
+| read 6519 | N/A | N/A | 
+| read 6520 | N/A | N/A | 
+| read 6521 | N/A | N/A | 
+| read 6522 | N/A | N/A | 
+| read 6523 | N/A | N/A | 
+| read 6524 | N/A | N/A | 
+| read 6525 | N/A | N/A | 
+| read 6526 | N/A | N/A | 
+| read 6527 | N/A | N/A | 
+| read 6528 | N/A | N/A | 
+| read 6529 | N/A | N/A | 
+| read 6530 | N/A | N/A | 
+| read 6531 | N/A | N/A | 
+| read 6532 | N/A | N/A | 
+| read 6533 | N/A | N/A | 
+| read 6534 | N/A | N/A | 
+| read 6535 | N/A | N/A | 
+| read 6536 | N/A | N/A | 
+| read 6537 | N/A | N/A | 
+| read 6538 | N/A | N/A | 
+| read 6539 | N/A | N/A | 
+| read 6540 | N/A | N/A | 
+| read 6541 | N/A | N/A | 
+| read 6542 | N/A | N/A | 
+| read 6543 | N/A | N/A | 
+| read 6544 | N/A | N/A | 
+| read 6545 | N/A | N/A | 
+| read 6546 | N/A | N/A | 
+| read 6547 | N/A | N/A | 
+| read 6548 | N/A | N/A | 
+| read 6549 | N/A | N/A | 
+| read 6550 | N/A | N/A | 
+| read 6551 | N/A | N/A | 
+| read 6552 | N/A | N/A | 
+| read 6553 | N/A | N/A | 
+| read 6554 | N/A | N/A | 
+| read 6555 | N/A | N/A | 
+| read 6556 | N/A | N/A | 
+| read 6557 | N/A | N/A | 
+| read 6558 | N/A | N/A | 
+| read 6559 | N/A | N/A | 
+| read 6560 | N/A | N/A | 
+| read 6561 | N/A | N/A | 
+| read 6562 | N/A | N/A | 
+| read 6563 | N/A | N/A | 
+| read 6564 | N/A | N/A | 
+| read 6565 | N/A | N/A | 
+| read 6566 | N/A | N/A | 
+| read 6567 | N/A | N/A | 
+| read 6568 | N/A | N/A | 
+| read 6569 | N/A | N/A | 
+| read 6570 | N/A | N/A | 
+| read 6571 | N/A | N/A | 
+| read 6572 | N/A | N/A | 
+| read 6573 | N/A | N/A | 
+| read 6574 | N/A | N/A | 
+| read 6575 | N/A | N/A | 
+| read 6576 | N/A | N/A | 
+| read 6577 | N/A | N/A | 
+| read 6578 | N/A | N/A | 
+| read 6579 | N/A | N/A | 
+| read 6580 | N/A | N/A | 
+| read 6581 | N/A | N/A | 
+| read 6582 | N/A | N/A | 
+| read 6583 | N/A | N/A | 
+| read 6584 | N/A | N/A | 
+| read 6585 | N/A | N/A | 
+| read 6586 | N/A | N/A | 
+| read 6587 | N/A | N/A | 
+| read 6588 | N/A | N/A | 
+| read 6589 | N/A | N/A | 
+| read 6590 | N/A | N/A | 
+| read 6591 | N/A | N/A | 
+| read 6592 | N/A | N/A | 
+| read 6593 | N/A | N/A | 
+| read 6594 | N/A | N/A | 
+| read 6595 | N/A | N/A | 
+| read 6596 | N/A | N/A | 
+| read 6597 | N/A | N/A | 
+| read 6598 | N/A | N/A | 
+| read 6599 | N/A | N/A | 
+| read 6600 | N/A | N/A | 
+| read 6601 | N/A | N/A | 
+| read 6602 | N/A | N/A | 
+| read 6603 | N/A | N/A | 
+| read 6604 | N/A | N/A | 
+| read 6605 | N/A | N/A | 
+| read 6606 | N/A | N/A | 
+| read 6607 | N/A | N/A | 
+| read 6608 | N/A | N/A | 
+| read 6609 | N/A | N/A | 
+| read 6610 | N/A | N/A | 
+| read 6611 | N/A | N/A | 
+| read 6612 | N/A | N/A | 
+| read 6613 | N/A | N/A | 
+| read 6614 | N/A | N/A | 
+| read 6615 | N/A | N/A | 
+| read 6616 | N/A | N/A | 
+| read 6617 | N/A | N/A | 
+| read 6618 | N/A | N/A | 
+| read 6619 | N/A | N/A | 
+| read 6620 | N/A | N/A | 
+| read 6621 | N/A | N/A | 
+| read 6622 | N/A | N/A | 
+| read 6623 | N/A | N/A | 
+| read 6624 | N/A | N/A | 
+| read 6625 | N/A | N/A | 
+| read 6626 | N/A | N/A | 
+| read 6627 | N/A | N/A | 
+| read 6628 | N/A | N/A | 
+| read 6629 | N/A | N/A | 
+| read 6630 | N/A | N/A | 
+| read 6631 | N/A | N/A | 
+| read 6632 | N/A | N/A | 
+| read 6633 | N/A | N/A | 
+| read 6634 | N/A | N/A | 
+| read 6635 | N/A | N/A | 
+| read 6636 | N/A | N/A | 
+| read 6637 | N/A | N/A | 
+| read 6638 | N/A | 0xffff | 
+| read 6639 | N/A | 0xffff | 
+| read 6640 | N/A | 0xffff | 
+| read 6641 | N/A | 0xffff | 
+| read 6642 | N/A | 0xffff | 
+| read 6643 | N/A | 0xffff | 
+| read 6644 | N/A | 0xffff | 
+| read 6645 | N/A | 0xffff | 
+| read 6646 | N/A | 0xffff | 
+| read 6647 | N/A | 0xffff | 
+| read 6648 | N/A | N/A | 
+| read 6649 | N/A | N/A | 
+| read 6650 | N/A | N/A | 
+| read 6651 | N/A | N/A | 
+| read 6652 | N/A | N/A | 
+| read 6653 | N/A | N/A | 
+| read 6654 | N/A | N/A | 
+| read 6655 | N/A | N/A | 
+| read 6656 | N/A | N/A | 
+| read 6657 | N/A | N/A | 
+| read 6658 | N/A | N/A | 
+| read 6659 | N/A | N/A | 
+| read 6660 | N/A | N/A | 
+| read 6661 | N/A | N/A | 
+| read 6662 | N/A | N/A | 
+| read 6663 | N/A | N/A | 
+| read 6664 | N/A | N/A | 
+| read 6665 | N/A | N/A | 
+| read 6666 | N/A | N/A | 
+| read 6667 | N/A | N/A | 
+| read 6668 | N/A | N/A | 
+| read 6669 | N/A | N/A | 
+| read 6670 | N/A | N/A | 
+| read 6671 | N/A | N/A | 
+| read 6672 | N/A | N/A | 
+| read 6673 | N/A | N/A | 
+| read 6674 | N/A | N/A | 
+| read 6675 | N/A | N/A | 
+| read 6676 | N/A | N/A | 
+| read 6677 | N/A | N/A | 
+| read 6678 | N/A | N/A | 
+| read 6679 | N/A | N/A | 
+| read 6680 | N/A | N/A | 
+| read 6681 | N/A | N/A | 
+| read 6682 | N/A | N/A | 
+| read 6683 | N/A | N/A | 
+| read 6684 | N/A | N/A | 
+| read 6685 | N/A | N/A | 
+| read 6686 | N/A | N/A | 
+| read 6687 | N/A | N/A | 
+| read 6688 | N/A | N/A | 
+| read 6689 | N/A | N/A | 
+| read 6690 | N/A | N/A | 
+| read 6691 | N/A | N/A | 
+| read 6692 | N/A | N/A | 
+| read 6693 | N/A | N/A | 
+| read 6694 | N/A | N/A | 
+| read 6695 | N/A | N/A | 
+| read 6696 | N/A | N/A | 
+| read 6697 | N/A | N/A | 
+| read 6698 | N/A | N/A | 
+| read 6699 | N/A | N/A | 
+| read 6700 | N/A | N/A | 
+| read 6701 | N/A | N/A | 
+| read 6702 | N/A | N/A | 
+| read 6703 | N/A | N/A | 
+| read 6704 | N/A | N/A | 
+| read 6705 | N/A | N/A | 
+| read 6706 | N/A | N/A | 
+| read 6707 | N/A | N/A | 
+| read 6708 | N/A | N/A | 
+| read 6709 | N/A | N/A | 
+| read 6710 | N/A | N/A | 
+| read 6711 | N/A | N/A | 
+| read 6712 | N/A | N/A | 
+| read 6713 | N/A | N/A | 
+| read 6714 | N/A | N/A | 
+| read 6715 | N/A | N/A | 
+| read 6716 | N/A | N/A | 
+| read 6717 | N/A | N/A | 
+| read 6718 | N/A | N/A | 
+| read 6719 | N/A | N/A | 
+| read 6720 | N/A | N/A | 
+| read 6721 | N/A | N/A | 
+| read 6722 | N/A | N/A | 
+| read 6723 | N/A | N/A | 
+| read 6724 | N/A | N/A | 
+| read 6725 | N/A | N/A | 
+| read 6726 | N/A | N/A | 
+| read 6727 | N/A | N/A | 
+| read 6728 | N/A | N/A | 
+| read 6729 | N/A | N/A | 
+| read 6730 | N/A | N/A | 
+| read 6731 | N/A | N/A | 
+| read 6732 | N/A | N/A | 
+| read 6733 | N/A | N/A | 
+| read 6734 | N/A | N/A | 
+| read 6735 | N/A | N/A | 
+| read 6736 | N/A | N/A | 
+| read 6737 | N/A | N/A | 
+| read 6738 | N/A | N/A | 
+| read 6739 | N/A | N/A | 
+| read 6740 | N/A | N/A | 
+| read 6741 | N/A | N/A | 
+| read 6742 | N/A | N/A | 
+| read 6743 | N/A | N/A | 
+| read 6744 | N/A | N/A | 
+| read 6745 | N/A | N/A | 
+| read 6746 | N/A | N/A | 
+| read 6747 | N/A | N/A | 
+| read 6748 | N/A | N/A | 
+| read 6749 | N/A | N/A | 
+| read 6750 | N/A | N/A | 
+| read 6751 | N/A | N/A | 
+| read 6752 | N/A | N/A | 
+| read 6753 | N/A | N/A | 
+| read 6754 | N/A | N/A | 
+| read 6755 | N/A | N/A | 
+| read 6756 | N/A | N/A | 
+| read 6757 | N/A | N/A | 
+| read 6758 | N/A | N/A | 
+| read 6759 | N/A | N/A | 
+| read 6760 | N/A | N/A | 
+| read 6761 | N/A | N/A | 
+| read 6762 | N/A | N/A | 
+| read 6763 | N/A | N/A | 
+| read 6764 | N/A | N/A | 
+| read 6765 | N/A | N/A | 
+| read 6766 | N/A | N/A | 
+| read 6767 | N/A | N/A | 
+| read 6768 | N/A | N/A | 
+| read 6769 | N/A | N/A | 
+| read 6770 | N/A | N/A | 
+| read 6771 | N/A | N/A | 
+| read 6772 | N/A | N/A | 
+| read 6773 | N/A | N/A | 
+| read 6774 | N/A | N/A | 
+| read 6775 | N/A | N/A | 
+| read 6776 | N/A | N/A | 
+| read 6777 | N/A | N/A | 
+| read 6778 | N/A | N/A | 
+| read 6779 | N/A | N/A | 
+| read 6780 | N/A | N/A | 
+| read 6781 | N/A | N/A | 
+| read 6782 | N/A | N/A | 
+| read 6783 | N/A | N/A | 
+| read 6784 | N/A | N/A | 
+| read 6785 | N/A | N/A | 
+| read 6786 | N/A | N/A | 
+| read 6787 | N/A | N/A | 
+| read 6788 | N/A | N/A | 
+| read 6789 | N/A | N/A | 
+| read 6790 | N/A | N/A | 
+| read 6791 | N/A | N/A | 
+| read 6792 | N/A | N/A | 
+| read 6793 | N/A | N/A | 
+| read 6794 | N/A | N/A | 
+| read 6795 | N/A | N/A | 
+| read 6796 | N/A | N/A | 
+| read 6797 | N/A | N/A | 
+| read 6798 | N/A | N/A | 
+| read 6799 | N/A | N/A | 
+| read 6800 | N/A | N/A | 
+| read 6801 | N/A | N/A | 
+| read 6802 | N/A | N/A | 
+| read 6803 | N/A | N/A | 
+| read 6804 | N/A | N/A | 
+| read 6805 | N/A | N/A | 
+| read 6806 | N/A | N/A | 
+| read 6807 | N/A | N/A | 
+| read 6808 | N/A | N/A | 
+| read 6809 | N/A | N/A | 
+| read 6810 | N/A | N/A | 
+| read 6811 | N/A | N/A | 
+| read 6812 | N/A | N/A | 
+| read 6813 | N/A | N/A | 
+| read 6814 | N/A | N/A | 
+| read 6815 | N/A | N/A | 
+| read 6816 | N/A | N/A | 
+| read 6817 | N/A | 0xffff | 
+| read 6818 | N/A | 0xffff | 
+| read 6819 | N/A | 0xffff | 
+| read 6820 | N/A | 0xffff | 
+| read 6821 | N/A | 0xffff | 
+| read 6822 | N/A | 0xffff | 
+| read 6823 | N/A | 0xffff | 
+| read 6824 | N/A | 0xffff | 
+| read 6825 | N/A | 0xffff | 
+| read 6826 | N/A | 0xffff | 
+| read 7013 | N/A | 0xffff | 
+| read 7014 | N/A | 0xffff | 
+| read 7015 | N/A | 0xffff | 
+| read 7016 | N/A | 0xffff | 
+| read 7017 | N/A | 0xffff | 
+| read 7018 | N/A | 0xffff | 
+| read 7019 | N/A | 0xffff | 
+| read 7020 | N/A | 0xffff | 
+| read 7021 | N/A | 0xffff | 
+| read 7022 | N/A | 0xffff | 
+| read 7023 | N/A | 0xffff | 
+| read 7024 | N/A | 0xffff | 
+| read 7025 | N/A | 0xffff | 
+| read 7026 | N/A | 0xffff | 
+| read 7027 | N/A | 0xffff | 
+| read 7028 | N/A | 0xffff | 
+| read 7029 | N/A | 0xffff | 
+| read 7030 | N/A | 0xffff | 
+| read 7031 | N/A | 0xffff | 
+| read 7032 | N/A | 0xffff | 
+| read 7033 | N/A | 0xffff | 
+| read 7034 | N/A | 0xffff | 
+| read 7035 | N/A | 0xffff | 
+| read 7036 | N/A | 0xffff | 
+| read 13000 | 0x1400 | 0x8 | 
+| read 13001 | N/A | N/A | 
+| read 13002 | N/A | N/A | 
+| read 13003 | 0x1bc | 0x1bc | 
+| read 13004 | N/A | N/A | 
+| read 13005 | N/A | N/A | 
+| read 13006 | N/A | N/A | 
+| read 13007 | N/A | N/A | 
+| read 13008 | N/A | N/A | 
+| read 13009 | N/A | N/A | 
+| read 13010 | N/A | N/A | 
+| read 13011 | N/A | N/A | 
+| read 13012 | N/A | N/A | 
+| read 13013 | N/A | N/A | 
+| read 13014 | N/A | N/A | 
+| read 13015 | N/A | 0x136 | 
+| read 13016 | N/A | N/A | 
+| read 13017 | N/A | N/A | 
+| read 13018 | 0x1bc | 0x1bc | 
+| read 13019 | N/A | N/A | 
+| read 13020 | N/A | N/A | 
+| read 13021 | N/A | N/A | 
+| read 13022 | N/A | N/A | 
+| read 13023 | N/A | N/A | 
+| read 13024 | N/A | N/A | 
+| read 13025 | N/A | N/A | 
+| read 13026 | N/A | N/A | 
+| read 13027 | N/A | N/A | 
+| read 13028 | N/A | N/A | 
+| read 13029 | 0x3e8 | 0x3e8 | 
+| read 13030 | N/A | 0xffff | 
+| read 13031 | N/A | N/A | 
+| read 13032 | N/A | N/A | 
+| read 13033 | N/A | N/A | 
+| read 13034 | N/A | N/A | 
+| read 13035 | N/A | N/A | 
+| read 13036 | N/A | N/A | 
+| read 13037 | N/A | N/A | 
+| read 13038 | N/A | N/A | 
+| read 13039 | N/A | N/A | 
+| read 13040 | N/A | N/A | 
+| read 13041 | N/A | N/A | 
+| read 13042 | N/A | N/A | 
+| read 13043 | 0xff | 0xff | 
+| read 13044 | N/A | N/A | 
+| read 13045 | N/A | N/A | 
+| read 13046 | N/A | N/A | 
+| read 13047 | N/A | N/A | 
+| read 13048 | N/A | N/A | 
+| read 13049 | N/A | N/A | 
+| read 13050 | N/A | N/A | 
+| read 13051 | N/A | N/A | 
+| read 13052 | N/A | N/A | 
+| read 13053 | N/A | N/A | 
+| read 13054 | N/A | N/A | 
+| read 13055 | N/A | N/A | 
+| read 13056 | N/A | N/A | 
+| read 13057 | N/A | N/A | 
+| read 13058 | N/A | N/A | 
+| read 13059 | N/A | N/A | 
+| read 13060 | N/A | N/A | 
+| read 13061 | N/A | N/A | 
+| read 13062 | N/A | N/A | 
+| read 13063 | N/A | N/A | 
+| read 13064 | N/A | N/A | 
+| read 13065 | N/A | N/A | 
+| read 13066 | 0xffff | N/A | 
+| read 13067 | 0xffff | N/A | 
+| read 13068 | 0xffff | N/A | 
+| read 13069 | 0xffff | N/A | 
+| read 13070 | N/A | N/A | 
+| read 13071 | N/A | N/A | 
+| read 13072 | N/A | N/A | 
+| read 13073 | N/A | N/A | 
+| read 13074 | N/A | N/A | 
+| read 13075 | N/A | N/A | 
+| read 13076 | N/A | N/A | 
+| read 13077 | N/A | N/A | 
+| read 13078 | N/A | N/A | 
+| read 13079 | N/A | N/A | 
+| read 13100 | N/A | 0xffff | 
+| read 13101 | N/A | 0xffff | 
+| read 13102 | N/A | 0xffff | 
+| read 13103 | N/A | 0xffff | 
+| read 13104 | N/A | 0xffff | 
+| read 13105 | N/A | 0xffff | 
+| read 13106 | N/A | 0xffff | 
+| read 13107 | N/A | 0xffff | 
+| read 13108 | N/A | 0xffff | 
+| read 13109 | N/A | 0xffff | 
+| read 13110 | N/A | 0xffff | 
+| read 13111 | N/A | 0xffff | 
+| read 13112 | N/A | 0xffff | 
+| read 13113 | N/A | 0xffff | 
+| read 13114 | N/A | 0xffff | 
+| read 13115 | N/A | 0xffff | 
+| read 13116 | N/A | 0xffff | 
+| read 13117 | N/A | 0xffff | 
+| read 13118 | N/A | 0xffff | 
+| hold 5000 | 0x7e8 | 0x7e8 | 
+| hold 5001 | 0x1 | 0x1 | 
+| hold 5002 | 0x16 | 0x16 | 
+| hold 5003 | 0x17 | 0x17 | 
+| hold 5004 | 0xc | 0xc | 
+| hold 5005 | 0x34 | 0x10 | 
+| hold 5006 | 0xcf | 0xcf | 
+| hold 5007 | 0xaa | 0xaa | 
+| hold 5008 | N/A | N/A | 
+| hold 5009 | 0xffff | 0xffff | 
+| hold 5010 | 0xffff | 0xffff | 
+| hold 5011 | 0xffff | 0xffff | 
+| hold 5012 | 0xffff | 0xffff | 
+| hold 5013 | 0xffff | 0xffff | 
+| hold 5014 | 0xffff | 0xffff | 
+| hold 5015 | 0xffff | 0xffff | 
+| hold 5016 | 0xffff | 0xffff | 
+| hold 5017 | 0xffff | 0xffff | 
+| hold 5018 | 0xffff | 0xffff | 
+| hold 5019 | 0xffff | 0xffff | 
+| hold 5020 | 0xffff | 0xffff | 
+| hold 5021 | 0xffff | 0xffff | 
+| hold 5022 | 0xffff | 0xffff | 
+| hold 5023 | 0xffff | 0xffff | 
+| hold 5024 | 0xffff | 0xffff | 
+| hold 5025 | 0xffff | 0xffff | 
+| hold 5026 | 0xffff | 0xffff | 
+| hold 5027 | 0xffff | 0xffff | 
+| hold 5028 | 0xffff | 0xffff | 
+| hold 5029 | 0xffff | 0xffff | 
+| hold 5030 | 0xffff | 0xffff | 
+| hold 5031 | 0xffff | 0xffff | 
+| hold 5032 | 0xffff | 0xffff | 
+| hold 5033 | 0xffff | 0xffff | 
+| hold 5034 | 0xffff | 0xffff | 
+| hold 5035 | 0xffff | 0xffff | 
+| hold 5036 | 0x55 | 0x55 | 
+| hold 5037 | 0xffff | 0xffff | 
+| hold 5038 | 0x4 | 0x4 | 
+| hold 5039 | 0xffff | 0xffff | 
+| hold 5040 | 0xffff | 0xffff | 
+| hold 5041 | 0xffff | 0xffff | 
+| hold 5042 | 0xffff | 0xffff | 
+| hold 5043 | 0xffff | 0xffff | 
+| hold 13000 | 0xcf | 0xcf | 
+| hold 13001 | 0xffff | 0xffff | 
+| hold 13002 | 0x3 | 0x3 | 
+| hold 13003 | N/A | N/A | 
+| hold 13004 | N/A | N/A | 
+| hold 13005 | N/A | N/A | 
+| hold 13006 | N/A | N/A | 
+| hold 13007 | N/A | N/A | 
+| hold 13008 | N/A | N/A | 
+| hold 13009 | N/A | N/A | 
+| hold 13010 | N/A | N/A | 
+| hold 13011 | 0x55 | 0x55 | 
+| hold 13012 | N/A | N/A | 
+| hold 13013 | N/A | N/A | 
+| hold 13014 | N/A | N/A | 
+| hold 13015 | N/A | N/A | 
+| hold 13016 | N/A | N/A | 
+| hold 13017 | 0xffff | 0xffff | 
+| hold 13018 | 0xffff | 0xffff | 
+| hold 13019 | 0xffff | 0xffff | 
+| hold 13020 | 0xffff | 0xffff | 
+| hold 13021 | 0xffff | 0xffff | 
+| hold 13022 | 0xffff | 0xffff | 
+| hold 13023 | 0xffff | 0xffff | 
+| hold 13024 | 0xffff | 0xffff | 
+| hold 13025 | 0xffff | 0xffff | 
+| hold 13026 | 0xffff | 0xffff | 
+| hold 13027 | 0xffff | 0xffff | 
+| hold 13028 | 0xffff | 0xffff | 
+| hold 13029 | 0xffff | 0xffff | 
+| hold 13030 | 0xffff | 0xffff | 
+| hold 13031 | 0xffff | 0xffff | 
+| hold 13032 | 0xffff | 0xffff | 
+| hold 13033 | 0xffff | 0xffff | 
+| hold 13034 | 0xffff | 0xffff | 
+| hold 13035 | 0xffff | 0xffff | 
+| hold 13036 | 0xffff | 0xffff | 
+| hold 13037 | 0xffff | 0xffff | 
+| hold 13038 | 0xffff | 0xffff | 
+| hold 13039 | 0xffff | 0xffff | 
+| hold 13040 | 0xffff | 0xffff | 
+| hold 13041 | 0xffff | 0xffff | 
+| hold 13042 | 0xffff | 0xffff | 
+| hold 13043 | 0xffff | 0xffff | 
+| hold 13044 | 0xffff | 0xffff | 
+| hold 13045 | 0xffff | 0xffff | 
+| hold 13046 | 0xffff | 0xffff | 
+| hold 13047 | 0xffff | 0xffff | 
+| hold 13048 | 0xffff | 0xffff | 
+| hold 13049 | 0xffff | 0xffff | 
+| hold 13050 | N/A | N/A | 
+| hold 13051 | 0xcc | 0xcc | 
+| hold 13052 | N/A | N/A | 
+| hold 13053 | 0xffff | 0xffff | 
+| hold 13054 | 0xffff | 0xffff | 
+| hold 13055 | 0xffff | 0xffff | 
+| hold 13056 | 0xffff | 0xffff | 
+| hold 13057 | 0xffff | 0xffff | 
+| hold 13058 | 0x3e8 | 0x3e8 | 
+| hold 13059 | N/A | N/A | 
+| hold 13060 | 0xffff | 0xffff | 
+| hold 13061 | 0xffff | 0xffff | 
+| hold 13062 | 0xffff | 0xffff | 
+| hold 13063 | 0xffff | 0xffff | 
+| hold 13064 | 0xffff | 0xffff | 
+| hold 13065 | 0xffff | 0xffff | 
+| hold 13066 | 0xffff | 0xffff | 
+| hold 13067 | 0xffff | 0xffff | 
+| hold 13068 | 0xffff | 0xffff | 
+| hold 13069 | 0xffff | 0xffff | 
+| hold 13070 | 0xffff | 0xffff | 
+| hold 13071 | 0xffff | 0xffff | 
+| hold 13072 | 0xffff | 0xffff | 
+| hold 13073 | 0xffff | 0xffff | 
+| hold 13074 | 0x1f40 | 0x1f40 | 
+| hold 13075 | 0x55 | 0x55 | 
+| hold 13076 | 0xffff | 0xffff | 
+| hold 13077 | 0xffff | 0xffff | 
+| hold 13078 | 0xffff | 0xffff | 
+| hold 13079 | 0xffff | 0xffff | 
+| hold 13080 | N/A | N/A | 
+| hold 13081 | 0xffff | 0xffff | 
+| hold 13082 | 0xffff | 0xffff | 
+| hold 13083 | 0xffff | 0xffff | 
+| hold 13084 | N/A | N/A | 
+| hold 13085 | N/A | N/A | 
+| hold 13086 | 0xaa | 0xaa | 
+| hold 13087 | 0xaa | 0xaa | 
+| hold 13100 | N/A | N/A | 
+| hold 33047 | 0x424 | 0x424 | 
+| hold 33048 | 0x424 | 0x424 | 
+| hold 33049 | N/A | N/A | 
+| hold 33149 | N/A | N/A | 
+| hold 33150 | N/A | N/A | 
+| hold 33151 | N/A | N/A | 
+| hold 33152 | N/A | N/A | 
+| hold 33153 | 0x18 | 0x18 | 
+| hold 33154 | N/A | N/A | 
+| hold 33155 | N/A | N/A | 
+| hold 33156 | N/A | N/A | 
+| hold 33157 | 0x18 | 0x18 | 
+| hold 33158 | N/A | N/A | 
+| hold 33159 | 0xffff | 0xffff | 
+| hold 33160 | 0xffff | 0xffff | 
+| hold 33161 | 0xffff | 0xffff | 
+| hold 33162 | 0xffff | 0xffff | 
+| hold 33163 | 0xffff | 0xffff | 
+| hold 33164 | 0xffff | 0xffff | 
+| hold 33165 | 0xffff | 0xffff | 
+| hold 33166 | 0xffff | 0xffff | 
+| hold 33167 | 0xffff | 0xffff | 
+| hold 33168 | 0xffff | 0xffff | 
+| hold 33169 | 0xffff | 0xffff | 
+| hold 33170 | 0xffff | 0xffff | 
+| hold 33171 | 0xffff | 0xffff | 
+| hold 33172 | 0xffff | 0xffff | 
+| hold 33173 | 0xffff | 0xffff | 
+| hold 33174 | 0xffff | 0xffff | 
+| hold 33175 | 0xffff | 0xffff | 
+| hold 33176 | 0xffff | 0xffff | 
+| hold 33177 | 0xffff | 0xffff | 
+| hold 33178 | 0xffff | 0xffff | 
+| hold 33179 | 0xaa | 0xaa | 
+| hold 33180 | N/A | N/A | 
+| hold 33181 | N/A | N/A | 
+| hold 33182 | 0x18 | 0x18 | 
+| hold 33183 | N/A | N/A | 
+| hold 33184 | N/A | N/A | 
+| hold 33185 | N/A | N/A | 
+| hold 33186 | 0x18 | 0x18 | 
+| hold 33187 | N/A | N/A | 
+| hold 33188 | 0xffff | 0xffff | 
+| hold 33189 | 0xffff | 0xffff | 
+| hold 33190 | 0xffff | 0xffff | 
+| hold 33191 | 0xffff | 0xffff | 
+| hold 33192 | 0xffff | 0xffff | 
+| hold 33193 | 0xffff | 0xffff | 
+| hold 33194 | 0xffff | 0xffff | 
+| hold 33195 | 0xffff | 0xffff | 
+| hold 33196 | 0xffff | 0xffff | 
+| hold 33197 | 0xffff | 0xffff | 
+| hold 33198 | 0xffff | 0xffff | 
+| hold 33199 | 0xffff | 0xffff | 
+| hold 33200 | 0xffff | 0xffff | 
+| hold 33201 | 0xffff | 0xffff | 
+| hold 33202 | 0xffff | 0xffff | 
+| hold 33203 | 0xffff | 0xffff | 
+| hold 33204 | 0xffff | 0xffff | 
+| hold 33205 | 0xffff | 0xffff | 
+| hold 33206 | 0xffff | 0xffff | 
+| hold 33207 | 0xffff | 0xffff | 
+| hold 33208 | 0x55 | 0x55 | 
+| hold 33209 | 0x1 | 0x1 | 
+| hold 33210 | N/A | N/A | 
+| hold 33211 | N/A | N/A | 
+| hold 33212 | N/A | N/A | 
+| hold 33213 | N/A | N/A | 
+| hold 33214 | N/A | N/A | 
+| hold 33215 | N/A | N/A | 
+| hold 33216 | N/A | N/A | 
+| hold 33217 | N/A | N/A | 
+| hold 33218 | N/A | N/A | 
+| hold 33500 | 0xaa | 0xaa | 
+| hold 33501 | 0xa1 | 0xa1 | 
+| hold 33502 | 0x2 | 0x2 | 
+| hold 5000 | 0x7e8 | 0x7e8 | 
+| hold 5001 | 0x1 | 0x1 | 
+| hold 5002 | 0x16 | 0x16 | 
+| hold 5003 | 0x17 | 0x17 | 
+| hold 5004 | 0xc | 0xc | 
+| hold 5005 | 0x34 | 0x10 | 
+| hold 5006 | 0xcf | 0xcf | 
+| hold 5007 | 0xaa | 0xaa | 
+| hold 5008 | N/A | N/A | 
+| hold 5009 | 0xffff | 0xffff | 
+| hold 5010 | 0xffff | 0xffff | 
+| hold 5011 | 0xffff | 0xffff | 
+| hold 5012 | 0xffff | 0xffff | 
+| hold 5013 | 0xffff | 0xffff | 
+| hold 5014 | 0xffff | 0xffff | 
+| hold 5015 | 0xffff | 0xffff | 
+| hold 5016 | 0xffff | 0xffff | 
+| hold 5017 | 0xffff | 0xffff | 
+| hold 5018 | 0xffff | 0xffff | 
+| hold 5019 | 0xffff | 0xffff | 
+| hold 5020 | 0xffff | 0xffff | 
+| hold 5021 | 0xffff | 0xffff | 
+| hold 5022 | 0xffff | 0xffff | 
+| hold 5023 | 0xffff | 0xffff | 
+| hold 5024 | 0xffff | 0xffff | 
+| hold 5025 | 0xffff | 0xffff | 
+| hold 5026 | 0xffff | 0xffff | 
+| hold 5027 | 0xffff | 0xffff | 
+| hold 5028 | 0xffff | 0xffff | 
+| hold 5029 | 0xffff | 0xffff | 
+| hold 5030 | 0xffff | 0xffff | 
+| hold 5031 | 0xffff | 0xffff | 
+| hold 5032 | 0xffff | 0xffff | 
+| hold 5033 | 0xffff | 0xffff | 
+| hold 5034 | 0xffff | 0xffff | 
+| hold 5035 | 0xffff | 0xffff | 
+| hold 5036 | 0x55 | 0x55 | 
+| hold 5037 | 0xffff | 0xffff | 
+| hold 5038 | 0x4 | 0x4 | 
+| hold 5039 | 0xffff | 0xffff | 
+| hold 5040 | 0xffff | 0xffff | 
+| hold 5041 | 0xffff | 0xffff | 
+| hold 5042 | 0xffff | 0xffff | 
+| hold 5043 | 0xffff | 0xffff | 
+| hold 13000 | 0xcf | 0xcf | 
+| hold 13001 | 0xffff | 0xffff | 
+| hold 13002 | 0x3 | 0x3 | 
+| hold 13003 | N/A | N/A | 
+| hold 13004 | N/A | N/A | 
+| hold 13005 | N/A | N/A | 
+| hold 13006 | N/A | N/A | 
+| hold 13007 | N/A | N/A | 
+| hold 13008 | N/A | N/A | 
+| hold 13009 | N/A | N/A | 
+| hold 13010 | N/A | N/A | 
+| hold 13011 | 0x55 | 0x55 | 
+| hold 13012 | N/A | N/A | 
+| hold 13013 | N/A | N/A | 
+| hold 13014 | N/A | N/A | 
+| hold 13015 | N/A | N/A | 
+| hold 13016 | N/A | N/A | 
+| hold 13017 | 0xffff | 0xffff | 
+| hold 13018 | 0xffff | 0xffff | 
+| hold 13019 | 0xffff | 0xffff | 
+| hold 13020 | 0xffff | 0xffff | 
+| hold 13021 | 0xffff | 0xffff | 
+| hold 13022 | 0xffff | 0xffff | 
+| hold 13023 | 0xffff | 0xffff | 
+| hold 13024 | 0xffff | 0xffff | 
+| hold 13025 | 0xffff | 0xffff | 
+| hold 13026 | 0xffff | 0xffff | 
+| hold 13027 | 0xffff | 0xffff | 
+| hold 13028 | 0xffff | 0xffff | 
+| hold 13029 | 0xffff | 0xffff | 
+| hold 13030 | 0xffff | 0xffff | 
+| hold 13031 | 0xffff | 0xffff | 
+| hold 13032 | 0xffff | 0xffff | 
+| hold 13033 | 0xffff | 0xffff | 
+| hold 13034 | 0xffff | 0xffff | 
+| hold 13035 | 0xffff | 0xffff | 
+| hold 13036 | 0xffff | 0xffff | 
+| hold 13037 | 0xffff | 0xffff | 
+| hold 13038 | 0xffff | 0xffff | 
+| hold 13039 | 0xffff | 0xffff | 
+| hold 13040 | 0xffff | 0xffff | 
+| hold 13041 | 0xffff | 0xffff | 
+| hold 13042 | 0xffff | 0xffff | 
+| hold 13043 | 0xffff | 0xffff | 
+| hold 13044 | 0xffff | 0xffff | 
+| hold 13045 | 0xffff | 0xffff | 
+| hold 13046 | 0xffff | 0xffff | 
+| hold 13047 | 0xffff | 0xffff | 
+| hold 13048 | 0xffff | 0xffff | 
+| hold 13049 | 0xffff | 0xffff | 
+| hold 13050 | N/A | N/A | 
+| hold 13051 | 0xcc | 0xcc | 
+| hold 13052 | N/A | N/A | 
+| hold 13053 | 0xffff | 0xffff | 
+| hold 13054 | 0xffff | 0xffff | 
+| hold 13055 | 0xffff | 0xffff | 
+| hold 13056 | 0xffff | 0xffff | 
+| hold 13057 | 0xffff | 0xffff | 
+| hold 13058 | 0x3e8 | 0x3e8 | 
+| hold 13059 | N/A | N/A | 
+| hold 13060 | 0xffff | 0xffff | 
+| hold 13061 | 0xffff | 0xffff | 
+| hold 13062 | 0xffff | 0xffff | 
+| hold 13063 | 0xffff | 0xffff | 
+| hold 13064 | 0xffff | 0xffff | 
+| hold 13065 | 0xffff | 0xffff | 
+| hold 13066 | 0xffff | 0xffff | 
+| hold 13067 | 0xffff | 0xffff | 
+| hold 13068 | 0xffff | 0xffff | 
+| hold 13069 | 0xffff | 0xffff | 
+| hold 13070 | 0xffff | 0xffff | 
+| hold 13071 | 0xffff | 0xffff | 
+| hold 13072 | 0xffff | 0xffff | 
+| hold 13073 | 0xffff | 0xffff | 
+| hold 13074 | 0x1f40 | 0x1f40 | 
+| hold 13075 | 0x55 | 0x55 | 
+| hold 13076 | 0xffff | 0xffff | 
+| hold 13077 | 0xffff | 0xffff | 
+| hold 13078 | 0xffff | 0xffff | 
+| hold 13079 | 0xffff | 0xffff | 
+| hold 13080 | N/A | N/A | 
+| hold 13081 | 0xffff | 0xffff | 
+| hold 13082 | 0xffff | 0xffff | 
+| hold 13083 | 0xffff | 0xffff | 
+| hold 13084 | N/A | N/A | 
+| hold 13085 | N/A | N/A | 
+| hold 13086 | 0xaa | 0xaa | 
+| hold 13087 | 0xaa | 0xaa | 
+| hold 13100 | N/A | N/A | 
+| hold 33047 | 0x424 | 0x424 | 
+| hold 33048 | 0x424 | 0x424 | 
+| hold 33049 | N/A | N/A | 
+| hold 33149 | N/A | N/A | 
+| hold 33150 | N/A | N/A | 
+| hold 33151 | N/A | N/A | 
+| hold 33152 | N/A | N/A | 
+| hold 33153 | 0x18 | 0x18 | 
+| hold 33154 | N/A | N/A | 
+| hold 33155 | N/A | N/A | 
+| hold 33156 | N/A | N/A | 
+| hold 33157 | 0x18 | 0x18 | 
+| hold 33158 | N/A | N/A | 
+| hold 33159 | 0xffff | 0xffff | 
+| hold 33160 | 0xffff | 0xffff | 
+| hold 33161 | 0xffff | 0xffff | 
+| hold 33162 | 0xffff | 0xffff | 
+| hold 33163 | 0xffff | 0xffff | 
+| hold 33164 | 0xffff | 0xffff | 
+| hold 33165 | 0xffff | 0xffff | 
+| hold 33166 | 0xffff | 0xffff | 
+| hold 33167 | 0xffff | 0xffff | 
+| hold 33168 | 0xffff | 0xffff | 
+| hold 33169 | 0xffff | 0xffff | 
+| hold 33170 | 0xffff | 0xffff | 
+| hold 33171 | 0xffff | 0xffff | 
+| hold 33172 | 0xffff | 0xffff | 
+| hold 33173 | 0xffff | 0xffff | 
+| hold 33174 | 0xffff | 0xffff | 
+| hold 33175 | 0xffff | 0xffff | 
+| hold 33176 | 0xffff | 0xffff | 
+| hold 33177 | 0xffff | 0xffff | 
+| hold 33178 | 0xffff | 0xffff | 
+| hold 33179 | 0xaa | 0xaa | 
+| hold 33180 | N/A | N/A | 
+| hold 33181 | N/A | N/A | 
+| hold 33182 | 0x18 | 0x18 | 
+| hold 33183 | N/A | N/A | 
+| hold 33184 | N/A | N/A | 
+| hold 33185 | N/A | N/A | 
+| hold 33186 | 0x18 | 0x18 | 
+| hold 33187 | N/A | N/A | 
+| hold 33188 | 0xffff | 0xffff | 
+| hold 33189 | 0xffff | 0xffff | 
+| hold 33190 | 0xffff | 0xffff | 
+| hold 33191 | 0xffff | 0xffff | 
+| hold 33192 | 0xffff | 0xffff | 
+| hold 33193 | 0xffff | 0xffff | 
+| hold 33194 | 0xffff | 0xffff | 
+| hold 33195 | 0xffff | 0xffff | 
+| hold 33196 | 0xffff | 0xffff | 
+| hold 33197 | 0xffff | 0xffff | 
+| hold 33198 | 0xffff | 0xffff | 
+| hold 33199 | 0xffff | 0xffff | 
+| hold 33200 | 0xffff | 0xffff | 
+| hold 33201 | 0xffff | 0xffff | 
+| hold 33202 | 0xffff | 0xffff | 
+| hold 33203 | 0xffff | 0xffff | 
+| hold 33204 | 0xffff | 0xffff | 
+| hold 33205 | 0xffff | 0xffff | 
+| hold 33206 | 0xffff | 0xffff | 
+| hold 33207 | 0xffff | 0xffff | 
+| hold 33208 | 0x55 | 0x55 | 
+| hold 33209 | 0x1 | 0x1 | 
+| hold 33210 | N/A | N/A | 
+| hold 33211 | N/A | N/A | 
+| hold 33212 | N/A | N/A | 
+| hold 33213 | N/A | N/A | 
+| hold 33214 | N/A | N/A | 
+| hold 33215 | N/A | N/A | 
+| hold 33216 | N/A | N/A | 
+| hold 33217 | N/A | N/A | 
+| hold 33218 | N/A | N/A | 
+| hold 33500 | 0xaa | 0xaa | 
+| hold 33501 | 0xa1 | 0xa1 | 
+| hold 33502 | 0x2 | 0x2 | 
 
 

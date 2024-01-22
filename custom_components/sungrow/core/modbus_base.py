@@ -49,6 +49,16 @@ class UnsupportedRegisterQueriedError(ModbusError):
     pass
 
 
+def map_raw_to_signal(r: RawData, signal: Signal):
+    all_available = all(
+        r.get(addr) is not None for addr in range(signal.address, signal.end)
+    )
+    if not all_available:
+        return None
+
+    return [r[signal.address + i] for i in range(signal.length)]
+
+
 def map_raw_to_signals(
     raw_data: dict[RegisterType, RawData], signal_list: list[Signal]
 ) -> MappedData:
@@ -58,9 +68,7 @@ def map_raw_to_signals(
     But for some less common use cases it might be useful to call this directly
     """
     return {
-        signal.name: ModbusConnectionBase._get_values_for_signal(
-            raw_data[signal.register_type], signal
-        )
+        signal.name: map_raw_to_signal(raw_data[signal.register_type], signal)
         for signal in signal_list
     }
 
@@ -155,7 +163,7 @@ class ModbusConnectionBase:
     async def __aenter__(self):
         """Called on 'async with' enter."""
         if not await self.connect():
-            raise CannotConnectError()
+            raise CannotConnectError("Cannot connect to inverter")
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
@@ -236,16 +244,6 @@ class ModbusConnectionBase:
             and signal.address >= register_range.start
             and signal.end <= register_range.end
         ]
-
-    @staticmethod
-    def _get_values_for_signal(r: RawData, signal: Signal):
-        all_available = all(
-            r.get(addr) is not None for addr in range(signal.address, signal.end)
-        )
-        if not all_available:
-            return None
-
-        return [r[signal.address + i] for i in range(signal.length)]
 
     async def _read_range(
         self,
