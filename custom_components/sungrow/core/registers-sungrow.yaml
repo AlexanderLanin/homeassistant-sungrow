@@ -3022,56 +3022,56 @@ hold:
     address: 33150
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekly_discharging_start_time_1_minute
     group: has_battery
     address: 33151
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekly_discharging_end_time_1_hour
     group: has_battery
     address: 33152
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekly_discharging_end_time_1_minute
     group: has_battery
     address: 33153
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekly_discharging_start_time_2_hour
     group: has_battery
     address: 33154
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekly_discharging_start_time_2_minute
     group: has_battery
     address: 33155
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekly_discharging_end_time_2_hour
     group: has_battery
     address: 33156
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekly_discharging_end_time_2_minute
     group: has_battery
     address: 33157
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekend_discharging_enable
     group: has_battery
@@ -3081,49 +3081,49 @@ hold:
     decoded:
       0xAA: "Enabled"
       0x55: "Disabled"
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekend_discharging_start_time_1_hour
     group: has_battery
     address: 33179
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekend_discharging_start_time_1_minute
     group: has_battery
     address: 33180
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekend_discharging_end_time_1_hour
     group: has_battery
     address: 33181
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekend_discharging_end_time_1_minute
     group: has_battery
     address: 33182
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekend_discharging_start_time_2_hour
     group: has_battery
     address: 33183
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: weekend_discharging_start_time_2_minute
     group: has_battery
     address: 33184
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_enable
     group: has_battery
@@ -3133,7 +3133,7 @@ hold:
     decoded:
       0xAA: "Enabled"
       0x55: "Disabled"
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_valid_time
     group: has_battery
@@ -3142,35 +3142,35 @@ hold:
     data_type: U16
     decoded:
       0x01: "Every Day"
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_start_time_1_hour
     group: has_battery
     address: 33209
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_start_time_1_minute
     group: has_battery
     address: 33210
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_end_time_1_hour
     group: has_battery
     address: 33211
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_end_time_1_minute
     group: has_battery
     address: 33212
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_target_soc_1
     group: has_battery
@@ -3179,35 +3179,35 @@ hold:
     data_type: U16
     unit_of_measurement: "%"
     accuracy: 0.1
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_start_time_2_hour
     group: has_battery
     address: 33214
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_start_time_2_minute
     group: has_battery
     address: 33215
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_end_time_2_hour
     group: has_battery
     address: 33216
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_end_time_2_minute
     group: has_battery
     address: 33217
     level: 3
     data_type: U16
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
 
   - name: forced_charging_target_soc_2
     group: has_battery
@@ -3216,4 +3216,4 @@ hold:
     data_type: U16
     unit_of_measurement: "%"
     accuracy: 0.1
-    models: ["SH.*RT"]
+    models: ["SH10.0RT"]
