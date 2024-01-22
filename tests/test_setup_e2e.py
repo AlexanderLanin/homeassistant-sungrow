@@ -7,6 +7,7 @@ clear && pytest -k config_flow_e2e --log-cli-level=DEBUG
 import logging
 
 import pytest
+from homeassistant import data_entry_flow
 from homeassistant.const import (
     CONF_HOST,
     CONF_PORT,
@@ -40,6 +41,7 @@ async def test_successful_config_flow_e2e_up_to_sensor_entities(hass: HomeAssist
     ) as simulated_inverter_port:
         logger.debug(f"Simulated inverter started on port {simulated_inverter_port}")
 
+        # Provide valid config flow input
         result = await hass.config_entries.flow.async_configure(
             flow_id,
             user_input={
@@ -48,11 +50,11 @@ async def test_successful_config_flow_e2e_up_to_sensor_entities(hass: HomeAssist
                 CONF_SLAVE: 0,  # TODO: what exactly is vol.Optional passing when empty?
             },
         )
-        # Note: this will go through the entire config flow, including entry creation
-        # via async_setup and async_setup_entry.
-        assert result.get("errors") is None
-        logger.debug(f"config flow result: {result}")
+        # Flow finished successfully
+        assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+        assert not result.get("errors")
 
+        # Device has been created
         sn = next(iter(hass.data[DOMAIN]["inverters"]))
         dr = device_registry.async_get(hass)
         device = dr.async_get_device(
@@ -60,6 +62,6 @@ async def test_successful_config_flow_e2e_up_to_sensor_entities(hass: HomeAssist
         )
         assert device
 
+        # Sensor entities have been created
         er = entity_registry.async_get(hass)
-        # ~40 sensors created
         assert len(er._entities_data) > 30

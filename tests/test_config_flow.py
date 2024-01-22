@@ -109,7 +109,7 @@ async def test_successful_config_flow_only(hass: HomeAssistant, bypass_setup_fix
                 CONF_SLAVE: 0,  # TODO: what exactly is vol.Optional passing when empty?
             },
         )
-        # Note: this will go through the entire config flow, including entry creation
-        # via async_setup and async_setup_entry.
-        assert result.get("errors") is None
-        logger.debug(f"config flow result: {result}")
+
+        # Flow finished successfully
+        assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+        assert not result.get("errors")
