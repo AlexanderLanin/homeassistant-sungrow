@@ -368,7 +368,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) == 1:
-        print("Usage: compare_access.py <host> [<host> ...]")
+        print("Usage: dump.py <host> [<host> ...]")
         print("Note: slave id can be appended to the host, separated by a slash.")
         print("Example for slave 2: 192.168.13.80/2")
         print("When no slave id is given, slave 1 is assumed.")

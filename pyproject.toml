@@ -35,3 +35,6 @@ homeassistant-stubs = "*"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+sungrow_dump = 'scripts.dump:main'
