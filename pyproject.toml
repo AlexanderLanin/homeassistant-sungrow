@@ -17,18 +17,16 @@ httpx = "*"
 websocket-client = "*"
 homeassistant = "^2024.1"
 
-[tool.poetry.group.test.dependencies]
+tabulate = "*"
+requests = "*"
+beartype = "*"
+
+[tool.poetry.group.dev.dependencies]
 pytest = "*"
 pytest-cov = "*"
 pytest-homeassistant-custom-component = "*"
 pytest-xdist = "*"
 
-[tool.poetry.group.scripts.dependencies]
-tabulate = "*"
-requests = "*"
-
-[tool.poetry.group.quality.dependencies]
-beartype = "*"
 ruff = "*"
 mypy = "*"
 types-requests = "*"
