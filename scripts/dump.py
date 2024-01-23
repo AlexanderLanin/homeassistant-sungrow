@@ -101,7 +101,7 @@ async def collect_data_via_winet_http(
         return TaskResult(
             "winet_http",
             host,
-            stats=connection.read_calls,
+            stats=connection.stats,
             raw_data=raw_data,
         )
     except modbus_base.CannotConnectError as e:
