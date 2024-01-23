@@ -12,11 +12,11 @@ import asyncio
 import json
 import logging
 import pickle
+import sys
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
 
-import fix_path  # noqa: F401
-
+import scripts.fix_path  # noqa: F401
 from custom_components.sungrow.core import (
     deserialize,
     modbus_base,
@@ -237,6 +237,10 @@ async def main(hosts: list[str]):
             task_results = pickle.load(f)
     except FileNotFoundError:
         task_results = None
+    except AttributeError:
+        task_results = None
+        logger.warning("Failed to load .compare_access_data.pickle")
+        logger.warning("Running without cached results!")
 
     # This is intentionally not within the except block, as it makes error messages
     # easier to understand.
@@ -364,9 +368,8 @@ def markdown_write_file(
         markdown_write_raw_data(f, signal_definitions, data_by_inverter)
 
 
-if __name__ == "__main__":
-    import sys
-
+def run():
+    """Entry point for console_scripts and command line execution."""
     if len(sys.argv) == 1:
         print("Usage: dump.py <host> [<host> ...]")
         print("Note: slave id can be appended to the host, separated by a slash.")
@@ -382,3 +385,7 @@ if __name__ == "__main__":
         print("command line: ", hosts)
 
         asyncio.run(main(hosts))
+
+
+if __name__ == "__main__":
+    run()

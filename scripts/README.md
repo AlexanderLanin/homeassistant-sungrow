@@ -1,20 +1,33 @@
 # Scripts
 
-## How to run scripts without cloning the repository
+## How to run scripts (pipx)
 
-**THIS DOES NOT WORK YET. IT'S JUST AN IDEA.**
+**DOES NOT WORK YET**
 
 The scripts (notably `dump.py`) are compatible with pipx.
 
-To install pipx, run the following command. This should be fine without virtualenv.
+If you don't have pipx installed, install it first as described in [pipx documentation](https://pipxproject.github.io/pipx/installation/).
 
-```bash
-python3 -m pip install pipx
-```
-
-You can now run the scripts without further worries:
+Then run:
 
 ```bash
 pipx install git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp
 pipx run sungrow_dump
+```
+
+## How to run scripts (poetry)
+
+**SEEMS TO WORK**
+
+The scripts (notably `dump.py`) are compatible with poetry.
+
+If you don't have poetry installed, install it first as described in [poetry documentation](https://python-poetry.org/docs/#installation).
+
+Then run:
+
+```bash
+git clone --branch temp https://github.com/AlexanderLanin/homeassistant-sungrow.git
+cd homeassistant-sungrow
+poetry install
+poetry run sungrow_dump
 ```

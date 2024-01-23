@@ -5,6 +5,10 @@ description = "Sungrow integration"
 authors = ["Alexander Lanin <alex@lanin.de>"]
 license = "to be decided"
 readme = "README.md"
+packages = [
+    { include = "custom_components" },
+    { include = "scripts" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
@@ -37,4 +41,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-sungrow_dump = 'scripts.dump:main'
+sungrow_dump = 'scripts.dump:run'
