@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 class HttpConnection(ModbusConnectionBase):
-    def __init__(self, host: str, port: int = 8082):
+    def __init__(self, host: str, slave, port: int = 8082):
+        _ = slave  # unused
         super().__init__(host, port, 0)  # FIXME: slave is not used. Remove from Base?
 
         self._httpx_client = httpx.AsyncClient()

@@ -16,13 +16,19 @@ import sys
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
 
-import scripts.fix_path  # noqa: F401
+try:
+    import scripts.fix_path  # noqa: F401
+except ImportError:
+    import fix_path  # noqa: F401
+
 from custom_components.sungrow.core import (
     deserialize,
     modbus_base,
-    modbus_http,
-    modbus_py,
     signals,
+)
+from custom_components.sungrow.core.inverter import (
+    InitialConnection,
+    connect_and_get_basic_data,
 )
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
@@ -45,71 +51,48 @@ class TaskResult:
     slave: int | None = None
     raw_data: dict[RegisterType, RawData] | None = None
     stats: modbus_base.ModbusConnectionBase.Stats | None = None
-    error: Exception | None = None
+    error: Exception | str | None = None
 
 
-# FIXME data collection is way too slow.
-# We need to re-add WiNet detection and/or filtering by models.
-# e.g. ~130 unsupported registers = 130 useless queries.
-
-
-async def collect_data_via_py_modbus(
-    signal_definitions: signals.SignalDefinitions, host: str, slave: int
+async def collect_data_from(
+    signal_definitions: signals.SignalDefinitions,
+    host: str,
+    slave: int,
+    connection_mode: str,
 ) -> TaskResult:
-    logger.info(f"{host}/{slave}/pymodbus: Attempting to connect...")
+    def info(msg):
+        logger.info(f"{host}/{slave}/{connection_mode}: {msg}")
+
+    info("Attempting to connect...")
     try:
-        async with modbus_py.PymodbusConnection(
-            host, port=502, slave=slave
-        ) as connection:
-            logger.info(f"{host}/{slave}/pymodbus: Connected")
-
-            raw_data = await connection.read_raw(
-                signal_definitions.all_modbus_signals()
-            )
-
-        logger.info(f"{host}/{slave}/pymodbus: {len(raw_data)} registers retrieved")
-
-        return TaskResult(
-            mode="pymodbus",
-            host=host,
-            slave=slave,
-            stats=connection.stats,
-            raw_data=raw_data,
+        ic = await connect_and_get_basic_data(
+            host, port=502, slave=slave, connection=connection_mode
         )
+        if ic:
+            async with ic.connection:
+                logger.info(f"{host}/{slave}/pymodbus: Connected")
+
+                raw_data = await ic.connection.read_raw(
+                    signal_definitions.enabled_modbus_signals()
+                )
+
+            info(f"{len(raw_data)} registers retrieved")
+
+            return TaskResult(
+                connection_mode,
+                host,
+                slave,
+                stats=ic.connection.stats,
+                raw_data=raw_data,
+            )
+        else:
+            return TaskResult(connection_mode, host, slave, error="No connection")
     except modbus_base.CannotConnectError as e:
-        logger.info(f"{host}/{slave}/pymodbus: Failed to connect ({e})")
-        return TaskResult("pymodbus", host, slave, error=e)
+        info(f"Failed to connect ({e})")
+        return TaskResult(connection_mode, host, slave, error=e)
     except modbus_base.ModbusError as e:
         logger.warning(f"{host}/{slave}/pymodbus: Failed during query ({e})")
-        return TaskResult("pymodbus", host, slave, error=e)
-
-
-async def collect_data_via_winet_http(
-    signal_definitions: signals.SignalDefinitions, host: str
-) -> TaskResult:
-    logger.info(f"{host}/winet_http: Attempting to connect...")
-    try:
-        async with modbus_http.HttpConnection(host) as connection:
-            logger.info(
-                f"{host}/winet_http: Connected (Note: this could be any HTTP server)"
-            )
-            raw_data = await connection.read_raw(
-                signal_definitions.all_modbus_signals()
-            )
-        logger.info(f"{host}/winet_http: {len(raw_data)} registers retrieved")
-
-        return TaskResult(
-            "winet_http",
-            host,
-            stats=connection.stats,
-            raw_data=raw_data,
-        )
-    except modbus_base.CannotConnectError as e:
-        logger.info(f"{host}/winet_http: Failed to connect ({e}))")
-        return TaskResult("winet_http", host, error=e)
-    except modbus_base.ModbusError as e:
-        logger.warning(f"{host}/winet_http: Error during query ({e})")
-        return TaskResult("winet_http", host, error=e)
+        return TaskResult(connection_mode, host, slave, error=e)
 
 
 async def collect_data(
@@ -119,14 +102,16 @@ async def collect_data(
 ) -> list[TaskResult]:
     tasks = []
     for host in hosts:
-        slave = 1  # in WiNet modbus, the slave is always 1
         if "/" in host:
             host, slave_str = host.split("/")
             slave = int(slave_str)
+        else:
+            slave = 1
 
-        tasks.append(collect_data_via_py_modbus(signal_definitions, host, slave))
-        tasks.append(collect_data_via_winet_http(signal_definitions, host))
+        tasks.append(collect_data_from(signal_definitions, host, slave, "pymodbus"))
+        tasks.append(collect_data_from(signal_definitions, host, slave, "http"))
 
+    # parallel will probably not work with sungrow inverters?!
     if parallel:
         return await asyncio.gather(*tasks)
     else:

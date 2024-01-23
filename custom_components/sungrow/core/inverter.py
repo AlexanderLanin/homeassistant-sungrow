@@ -105,13 +105,16 @@ async def connect_and_get_basic_data(
     Will raise ModbusException on errors
     """
 
-    # FIXME try http first!
-    if connection is None:
-        ...
+    # TODO: try http first, then fall back to modbus
+    connection_class: type[modbus_base.ModbusConnectionBase]
+    if connection is None or connection == "http":
+        connection_class = modbus_http.HttpConnection
+    else:
+        connection_class = modbus_py.PymodbusConnection
 
     # Try default modbus port
     if port is None:
-        port = 502
+        port = 8082 if connection_class is modbus_http.HttpConnection else 502
 
     if slave is None or slave == 0:
         # TODO actually detect slave.
@@ -130,7 +133,7 @@ async def connect_and_get_basic_data(
         ]
     )
 
-    async with modbus_py.PymodbusConnection(
+    async with connection_class(
         host=host, port=port, slave=slave
     ) as pymodbus_connection:
         data = await pull_raw_signals(pymodbus_connection, query)
