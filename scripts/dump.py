@@ -78,8 +78,9 @@ async def collect_data_from(
                     ic.signal_definitions.enabled_modbus_signals()
                 )
 
+            suffix = " WiNet" if await ic.is_modbus_winet() else ""
             return TaskResult(
-                connection_mode,
+                connection_mode + suffix,
                 host,
                 slave,
                 signal_definitions=ic.signal_definitions,

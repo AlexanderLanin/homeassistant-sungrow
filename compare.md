@@ -4,16 +4,16 @@
 | --- | --- | --- | --- | --- |
 | - | 192.168.13.79/1 | http | None | CannotConnectError: Cannot connect to inverter |
 | - | 192.168.13.80/2 | http | None | CannotConnectError: Cannot connect to inverter |
-| A2350415770 | 192.168.13.58/1 | http | ModbusConnectionBase.Stats(connections=1, read_calls_success=23, read_calls_failed=0, retrieved_signals_success=185, retrieved_signals_failed=0) | None |
-| A2350415770 | 192.168.13.58/1 | pymodbus | ModbusConnectionBase.Stats(connections=1, read_calls_success=11, read_calls_failed=1, retrieved_signals_success=119, retrieved_signals_failed=1) | None |
+| A2350415770 | 192.168.13.58/1 | http WiNet | ModbusConnectionBase.Stats(connections=1, read_calls_success=23, read_calls_failed=0, retrieved_signals_success=185, retrieved_signals_failed=0) | None |
+| A2350415770 | 192.168.13.58/1 | pymodbus WiNet | ModbusConnectionBase.Stats(connections=1, read_calls_success=11, read_calls_failed=1, retrieved_signals_success=119, retrieved_signals_failed=1) | None |
 | A2350415770 | 192.168.13.79/1 | pymodbus | ModbusConnectionBase.Stats(connections=1, read_calls_success=24, read_calls_failed=0, retrieved_signals_success=186, retrieved_signals_failed=0) | None |
-| A2350415779 | 192.168.13.74/1 | http | ModbusConnectionBase.Stats(connections=1, read_calls_success=23, read_calls_failed=0, retrieved_signals_success=185, retrieved_signals_failed=0) | None |
-| A2350415779 | 192.168.13.74/1 | pymodbus | ModbusConnectionBase.Stats(connections=1, read_calls_success=11, read_calls_failed=1, retrieved_signals_success=119, retrieved_signals_failed=1) | None |
+| A2350415779 | 192.168.13.74/1 | http WiNet | ModbusConnectionBase.Stats(connections=1, read_calls_success=23, read_calls_failed=0, retrieved_signals_success=185, retrieved_signals_failed=0) | None |
+| A2350415779 | 192.168.13.74/1 | pymodbus WiNet | ModbusConnectionBase.Stats(connections=1, read_calls_success=11, read_calls_failed=1, retrieved_signals_success=119, retrieved_signals_failed=1) | None |
 | A2350415779 | 192.168.13.80/2 | pymodbus | ModbusConnectionBase.Stats(connections=1, read_calls_success=24, read_calls_failed=0, retrieved_signals_success=186, retrieved_signals_failed=0) | None |
 
 
 # A2350415770
-| host/slave/mode | 192.168.13.58/1/http | 192.168.13.58/1/pymodbus | 192.168.13.79/1/pymodbus |
+| host/slave/mode | 192.168.13.58/1/http WiNet | 192.168.13.58/1/pymodbus WiNet | 192.168.13.79/1/pymodbus |
 | --- | --- | --- | --- |
 | protocol_number | 1094856704 | 1094791472 | 1094856704 | 
 | protocol_version | 16781568 | 16778496 | 16781568 | 
@@ -303,7 +303,7 @@
 
 
 # A2350415779
-| host/slave/mode | 192.168.13.74/1/http | 192.168.13.74/1/pymodbus | 192.168.13.80/2/pymodbus |
+| host/slave/mode | 192.168.13.74/1/http WiNet | 192.168.13.74/1/pymodbus WiNet | 192.168.13.80/2/pymodbus |
 | --- | --- | --- | --- |
 | protocol_number | 1094856704 | 1094791472 | 1094856704 | 
 | protocol_version | 16781568 | 16778496 | 16781568 | 
@@ -593,7 +593,7 @@
 
 
 # A2350415770
-| host/slave/mode | 192.168.13.58/1/http | 192.168.13.58/1/pymodbus | 192.168.13.79/1/pymodbus |
+| host/slave/mode | 192.168.13.58/1/http WiNet | 192.168.13.58/1/pymodbus WiNet | 192.168.13.79/1/pymodbus |
 | --- | --- | --- | --- |
 | read 4950 | 0x3000 | 0x3130 | 0x3000 | 
 | read 4951 | 0x4142 | 0x4141 | 0x4142 | 
@@ -1794,7 +1794,7 @@
 
 
 # A2350415779
-| host/slave/mode | 192.168.13.74/1/http | 192.168.13.74/1/pymodbus | 192.168.13.80/2/pymodbus |
+| host/slave/mode | 192.168.13.74/1/http WiNet | 192.168.13.74/1/pymodbus WiNet | 192.168.13.80/2/pymodbus |
 | --- | --- | --- | --- |
 | read 4950 | 0x3000 | 0x3130 | 0x3000 | 
 | read 4951 | 0x4142 | 0x4141 | 0x4142 | 

@@ -79,6 +79,35 @@ class InitialConnection:
     signal_definitions: signals.SignalDefinitions
     data: dict[str, DatapointValueType]
 
+    _is_modbus_winet: bool | None = None
+
+    async def is_modbus_winet(self):
+        """Lazy cached evaluation."""
+
+        if self._is_modbus_winet is None:
+            if isinstance(self.connection, modbus_http.HttpConnection):
+                self._is_modbus_winet = False
+            else:
+                # array_insulation_resistance is not supported by WiNet dongle
+                signal = self.signal_definitions.get_signal_definition_by_name(
+                    "array_insulation_resistance"
+                )
+                assert signal
+
+                value = await self.connection.read([signal])
+
+                if value["array_insulation_resistance"] is None:
+                    logger.debug(
+                        "array_insulation_resistance is NOT supported -> WiNet dongle"
+                    )
+                    self._is_modbus_winet = True
+                else:
+                    logger.debug(
+                        "array_insulation_resistance is supported -> NOT WiNet dongle"
+                    )
+                    self._is_modbus_winet = False
+        return self._is_modbus_winet
+
 
 def convert_raw_data_to_datapoints(
     raw_data: dict[str, DatapointValueType],
@@ -93,26 +122,6 @@ def convert_raw_data_to_datapoints(
         data[k] = Datapoint(k, v, definition.unit_of_measurement)
 
     return data
-
-
-async def is_modbus_winet(ic: InitialConnection):
-    if isinstance(ic.connection, modbus_http.HttpConnection):
-        return False
-
-    # array_insulation_resistance is not supported by WiNet dongle
-    signal = ic.signal_definitions.get_signal_definition_by_name(
-        "array_insulation_resistance"
-    )
-    assert signal
-
-    value = await ic.connection.read([signal])
-
-    if value["array_insulation_resistance"] is None:
-        logger.debug("array_insulation_resistance is NOT supported -> WiNet dongle")
-        return True
-    else:
-        logger.debug("array_insulation_resistance is supported -> NOT WiNet dongle")
-        return False
 
 
 async def connect_and_get_basic_data(
@@ -190,7 +199,7 @@ async def connect_and_get_basic_data(
 
         ic = InitialConnection(connection_obj, signal_definitions, data)
 
-        if await is_modbus_winet(ic):
+        if await ic.is_modbus_winet():
             logger.debug("Disabling all WiNet unsupported signals")
             ic.signal_definitions.disable_winet_signals()
         else:
