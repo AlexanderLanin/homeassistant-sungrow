@@ -40,10 +40,7 @@ class CannotConnectError(ModbusError):
 
 class UnsupportedRegisterQueriedError(ModbusError):
     """
-    When the implementing class throws this, the base class will try to read
-    each register individually to find out which one is not supported.
-
-    It will then avoid querying that register in the future.
+    WiNet: ALL queried registers are unsupported.
     """
 
     pass
@@ -94,8 +91,10 @@ class ModbusConnectionBase:
     @dataclass
     class Stats:
         connections: int = 0
-        read_calls: int = 0
-        read_errors: int = 0
+        read_calls_success: int = 0
+        read_calls_failed: int = 0
+        retrieved_signals_success: int = 0
+        retrieved_signals_failed: int = 0
 
     def __init__(self, host: str, port: int, slave: int):
         self._host = host
@@ -146,10 +145,14 @@ class ModbusConnectionBase:
         # So we split the signals into ranges and query each range separately.
         # Build as few ranges as possible:
         ranges = split_list(
-            signal_list, max_combined_registers, self._problematic_registers
+            # FIXME remove _problematic_registers. We don't need to skip them anymore.
+            signal_list,
+            max_combined_registers,
+            self._problematic_registers,
         )
 
         logger.debug(f"read_raw({len(signal_list)} signals) -> {len(ranges)} ranges")
+        logger.debug(f"read_raw({signal_list}) -> {ranges}")
 
         # Read each range
         raw_data: dict[RegisterType, RawData] = {r: {} for r in RegisterType}
@@ -158,16 +161,22 @@ class ModbusConnectionBase:
 
             values = await self._read_range_base(range)
             raw_data[range[0].register_type].update(values)
+
         return raw_data
 
     async def __aenter__(self):
         """Called on 'async with' enter."""
+        logger.debug(f"__aenter__({self._host}, {self._port}, {self._slave})")
         if not await self.connect():
             raise CannotConnectError("Cannot connect to inverter")
+        self._detached = False  # TODO: _detached might need to be an int counter!
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         """Called on 'async with' exit."""
+        logger.debug(
+            f"__aexit__({self._host}, {self._port}, {self._slave}) ({self._detached})"
+        )
         if not self._detached:
             await self.disconnect()
 
@@ -178,14 +187,14 @@ class ModbusConnectionBase:
         # _read_range() is implemented by the subclass.
         # It's returning a list of registers, so we need to map it.
         try:
-            self._stats.read_calls += 1
             raw_list = await self._read_range(
                 register_type=range.register_type,
                 address_start=range.start,
                 address_count=range.length,
             )
+            self._stats.read_calls_success += 1
         except Exception:
-            self._stats.read_errors += 1
+            self._stats.read_calls_failed += 1
             raise
 
         raw_dict: RawData = {range.start + i: value for i, value in enumerate(raw_list)}
@@ -205,28 +214,38 @@ class ModbusConnectionBase:
         try:
             # Try reading the entire range at once.
             # Usually this will work, except at startup.
-            return await self._call_read_raw(reg_range)
+            data = await self._call_read_raw(reg_range)
+            self.stats.retrieved_signals_success += len(signal_list)
+            return data
         except UnsupportedRegisterQueriedError:
-            logger.debug(f"{reg_range} contains unsupported registers.")
+            logger.debug(f"{reg_range} contains ONLY unsupported registers.")
 
-            # Some registers are not supported.
-            # That means we need to break up the range and try again.
-
-            # This if differentiates between first appearance of problem and
-            # second attempt (recursive call).
-            if len(signal_list) == 1:
-                signal = signal_list[0]
+            for signal in signal_list:
+                self.stats.retrieved_signals_failed += 1
                 logger.debug(f"Failed to read {signal}")
                 self._problematic_registers[signal.register_type].append(signal.address)
-                return {r: None for r in range(signal.address, signal.end)}
-            else:
-                # Split in half and try again.
-                first_half = signal_list[: len(signal_list) // 2]
-                second_half = signal_list[len(signal_list) // 2 :]
-                a = await self._read_range_base(first_half)
-                b = await self._read_range_base(second_half)
-                a.update(b)
-                return a
+
+            return {r: None for r in range(reg_range.start, reg_range.end)}
+
+            # ALL registers are not supported.
+            # # That means we need to break up the range and try again.
+
+            # # This if differentiates between first appearance of problem and
+            # # second attempt (recursive call).
+            # if len(signal_list) == 1:
+            #     signal = signal_list[0]
+            #     self.stats.retrieved_signals_failed += 1
+            #     logger.debug(f"Failed to read {signal}")
+            #     self._problematic_registers[signal.register_type].append(signal.address)
+            #     return {r: None for r in range(signal.address, signal.end)}
+            # else:
+            #     # Split in half and try again.
+            #     first_half = signal_list[: len(signal_list) // 2]
+            #     second_half = signal_list[len(signal_list) // 2 :]
+            #     a = await self._read_range_base(first_half)
+            #     b = await self._read_range_base(second_half)
+            #     a.update(b)
+            #     return a
 
     @staticmethod
     def _get_signals_in_a_register_range(

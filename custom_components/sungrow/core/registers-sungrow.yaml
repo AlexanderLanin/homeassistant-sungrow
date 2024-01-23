@@ -2995,7 +2995,6 @@ hold:
     decoded:
       0xAA: "Enabled"
       0x55: "Disabled"
-    models_exclude: ["WiNet"]
 
   - name: master_slave_role
     address: 33501
@@ -3007,13 +3006,11 @@ hold:
       0xA2: "Slave 2"
       0xA3: "Slave 3"
       0xA4: "Slave 4"
-    models_exclude: ["WiNet"]
 
   - name: slave_count
     address: 33502
     level: 2
     data_type: U16
-    models_exclude: ["WiNet"]
 
   - name: weekly_discharging_start_time_1_hour
     # Source: https://gist.github.com/rasmusbonnedal/31bc6dad78e6dc32bfedeb15b7b897df

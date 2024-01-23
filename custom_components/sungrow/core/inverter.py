@@ -3,9 +3,11 @@
 import logging
 from dataclasses import dataclass
 from datetime import datetime
+import sys
 from typing import Final, cast
 
 from custom_components.sungrow.core.inverter_types import Datapoint
+from custom_components.sungrow.core.modbus_types import RegisterRange, RegisterType
 
 from . import deserialize, extra_sensors, modbus_base, modbus_http, modbus_py, signals
 
@@ -93,6 +95,26 @@ def convert_raw_data_to_datapoints(
     return data
 
 
+async def is_modbus_winet(ic: InitialConnection):
+    if isinstance(ic.connection, modbus_http.HttpConnection):
+        return False
+
+    # array_insulation_resistance is not supported by WiNet dongle
+    signal = ic.signal_definitions.get_signal_definition_by_name(
+        "array_insulation_resistance"
+    )
+    assert signal
+
+    value = await ic.connection.read([signal])
+
+    if value["array_insulation_resistance"] is None:
+        logger.debug("array_insulation_resistance is NOT supported -> WiNet dongle")
+        return True
+    else:
+        logger.debug("array_insulation_resistance is supported -> NOT WiNet dongle")
+        return False
+
+
 async def connect_and_get_basic_data(
     host: str,
     port: int | None,
@@ -107,7 +129,10 @@ async def connect_and_get_basic_data(
 
     # TODO: try http first, then fall back to modbus
     connection_class: type[modbus_base.ModbusConnectionBase]
-    if connection is None or connection == "http":
+    if connection is None:
+        connection_class = modbus_http.HttpConnection
+        logger.debug("Using default connection HTTP")
+    if connection == "http":
         connection_class = modbus_http.HttpConnection
     else:
         connection_class = modbus_py.PymodbusConnection
@@ -115,28 +140,30 @@ async def connect_and_get_basic_data(
     # Try default modbus port
     if port is None:
         port = 8082 if connection_class is modbus_http.HttpConnection else 502
+        logger.debug(f"Using default port {port}")
 
     if slave is None or slave == 0:
         # TODO actually detect slave.
         # e.g. try 1-3 and see if we get a response.
         slave = 1
+        logger.debug(f"Using default slave {slave}")
 
     signal_definitions = signals.load_yaml()
 
     query = signal_definitions.get_signal_definitions_by_name(
         [
-            "serial_number",
-            "device_type_code",
-            "master_slave_mode",
-            "master_slave_role",
-            "output_type",
+            # basic infos:
+            "serial_number",  # 4950
+            "device_type_code",  # 5000
+            # for correct naming of master/slave:
+            "master_slave_mode",  # 33500
+            "master_slave_role",  # 33501
+            "output_type",  # 5002
         ]
     )
 
-    async with connection_class(
-        host=host, port=port, slave=slave
-    ) as pymodbus_connection:
-        data = await pull_raw_signals(pymodbus_connection, query)
+    async with connection_class(host=host, port=port, slave=slave) as connection_obj:
+        data = await pull_raw_signals(connection_obj, query)
         if not data:
             # TODO does this happen when the connected to port is not a modbus port?
             logger.warning("Failed to pull any data from inverter")
@@ -146,6 +173,7 @@ async def connect_and_get_basic_data(
             "Connected to inverter "
             f"{data['device_type_code']} / {data['serial_number']}"
         )
+        logger.debug(f"Data: {data}")
 
         if isinstance(data["device_type_code"], int):
             logger.info(
@@ -160,13 +188,16 @@ async def connect_and_get_basic_data(
                 data["device_type_code"]
             )
 
-        if data["master_slave_mode"] is None:
-            # WiNet dongle does not support master_slave_mode via modbus.
-            # Let's disable all other WiNet unsupported signals, so we don't query
-            # them.
-            signal_definitions.disable_winet_signals()
+        ic = InitialConnection(connection_obj, signal_definitions, data)
 
-        return InitialConnection(pymodbus_connection.detach(), signal_definitions, data)
+        if await is_modbus_winet(ic):
+            logger.debug("Disabling all WiNet unsupported signals")
+            ic.signal_definitions.disable_winet_signals()
+        else:
+            logger.debug("Not a WiNet dongle; all signals are supported")
+
+        connection_obj.detach()
+        return ic
 
 
 class SungrowInverter:

@@ -45,6 +45,7 @@ class PymodbusConnection(ModbusConnectionBase):
         if self._client.connected:
             return True
         else:
+            logger.debug("Connecting to %s:%s", self._host, self._port)
             self._stats.connections += 1
             return await self._client.connect()
 
@@ -54,18 +55,21 @@ class PymodbusConnection(ModbusConnectionBase):
         # so we are cleaning up properly.
         # Specifically, pytest will complain about lingering tasks if we don't wait for
         # this task to finish.
+        logger.debug("Disconnecting from %s:%s", self._host, self._port)
         reconnect_task = self._client.reconnect_task
         self._client.close()
         if reconnect_task:
             # Catch CancelledError, as this is expected.
             with contextlib.suppress(asyncio.CancelledError):
                 await reconnect_task
+        logger.debug("Disconnected from %s:%s", self._host, self._port)
 
     async def _read_range(  # noqa: C901 (Error handling here is complex, nothing we can do about it)
         self,
         register_type: RegisterType,
         address_start: int,
         address_count: int,
+        recursion=False,
     ) -> list[int]:
         """
         Reads `address_count` registers of type `register_type` starting at
@@ -73,12 +77,13 @@ class PymodbusConnection(ModbusConnectionBase):
         Note: each register is 16 bits, so `address_count` is the number of registers,
         not bytes.
         """
+        logger.debug(f"_read_range({register_type}, {address_start}, {address_count})")
         if not await self.connect():
             raise modbus_base.CannotConnectError(
                 "Cannot connect to inverter for reading"
             )
 
-        await asyncio.sleep(0.2)  # Server doesn't like it if we query too fast.
+        await asyncio.sleep(0.5)  # Server doesn't like it if we query too fast.
 
         try:
             func = {
@@ -110,6 +115,20 @@ class PymodbusConnection(ModbusConnectionBase):
                         f"Inverter does not support {address_start}-"
                         f"{address_start+address_count}: {rr}"
                     )
+                elif rr.exception_code == pymodbus.pdu.ModbusExceptions.SlaveFailure:
+                    # This may self-heal, so we don't raise an error on the first attempt.
+                    if recursion:
+                        raise modbus_base.ModbusError(
+                            f"Slave failure on {register_type} "
+                            f"{address_start}-{address_start+address_count}: {rr}"
+                        )
+                    else:
+                        return await self._read_range(
+                            register_type=register_type,
+                            address_start=address_start,
+                            address_count=address_count,
+                            recursion=True,
+                        )
                 else:
                     raise modbus_base.ModbusError(f"Unknown exception response: {rr}")
             else:

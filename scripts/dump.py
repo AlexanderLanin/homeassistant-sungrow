@@ -26,22 +26,23 @@ from custom_components.sungrow.core import (
     modbus_base,
     signals,
 )
-from custom_components.sungrow.core.inverter import (
-    InitialConnection,
-    connect_and_get_basic_data,
-)
+from custom_components.sungrow.core.inverter import connect_and_get_basic_data
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
     RawData,
     RegisterType,
 )
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(name)s %(message)s",
+
+# Log DEBUG to file.
+file_handler = logging.FileHandler("dump.log", "w")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(
+    logging.Formatter("%(asctime)s %(name)s [%(levelname)s] %(message)s")
 )
-logging.getLogger().addHandler(logging.FileHandler(".compare_access.log", "w"))
+logging.getLogger().addHandler(file_handler)
 
 
 @dataclass
@@ -49,14 +50,15 @@ class TaskResult:
     mode: str
     host: str
     slave: int | None = None
+    signal_definitions: signals.SignalDefinitions | None = None
     raw_data: dict[RegisterType, RawData] | None = None
     stats: modbus_base.ModbusConnectionBase.Stats | None = None
     error: Exception | str | None = None
 
 
 async def collect_data_from(
-    signal_definitions: signals.SignalDefinitions,
     host: str,
+    port: int | None,
     slave: int,
     connection_mode: str,
 ) -> TaskResult:
@@ -66,22 +68,21 @@ async def collect_data_from(
     info("Attempting to connect...")
     try:
         ic = await connect_and_get_basic_data(
-            host, port=502, slave=slave, connection=connection_mode
+            host, port=port, slave=slave, connection=connection_mode
         )
         if ic:
             async with ic.connection:
                 logger.info(f"{host}/{slave}/pymodbus: Connected")
 
                 raw_data = await ic.connection.read_raw(
-                    signal_definitions.enabled_modbus_signals()
+                    ic.signal_definitions.enabled_modbus_signals()
                 )
-
-            info(f"{len(raw_data)} registers retrieved")
 
             return TaskResult(
                 connection_mode,
                 host,
                 slave,
+                signal_definitions=ic.signal_definitions,
                 stats=ic.connection.stats,
                 raw_data=raw_data,
             )
@@ -96,7 +97,6 @@ async def collect_data_from(
 
 
 async def collect_data(
-    signal_definitions,
     hosts: list[str],
     parallel: bool = False,
 ) -> list[TaskResult]:
@@ -108,8 +108,11 @@ async def collect_data(
         else:
             slave = 1
 
-        tasks.append(collect_data_from(signal_definitions, host, slave, "pymodbus"))
-        tasks.append(collect_data_from(signal_definitions, host, slave, "http"))
+        # Parse port from host string?
+        port = None  # Auto
+
+        tasks.append(collect_data_from(host, port, slave, "http"))
+        tasks.append(collect_data_from(host, port, slave, "pymodbus"))
 
     # parallel will probably not work with sungrow inverters?!
     if parallel:
@@ -151,9 +154,7 @@ class DataPerConnection(TaskResult):
     decoded: dict[str, signals.DatapointValueType] | None = None
 
 
-def merge_by_inverter(
-    results: list[TaskResult], signal_definitions: signals.SignalDefinitions
-):
+def merge_by_inverter(results: list[TaskResult]):
     r: dict[str, list[DataPerConnection]] = {}
     for d in sorted(results, key=lambda d: d.host):
         dpc = DataPerConnection(
@@ -165,11 +166,12 @@ def merge_by_inverter(
             error=d.error,
         )
         if d.raw_data:
+            assert d.signal_definitions
             dpc.mapped_data = modbus_base.map_raw_to_signals(
-                d.raw_data, signal_definitions.all_modbus_signals()
+                d.raw_data, d.signal_definitions.enabled_modbus_signals()
             )
             dpc.decoded = deserialize.decode_signals(
-                signal_definitions.all_signals(), dpc.mapped_data
+                d.signal_definitions.enabled_modbus_signals(), dpc.mapped_data
             )
             sn = dpc.decoded["serial_number"]
             assert isinstance(sn, str)
@@ -182,9 +184,9 @@ def merge_by_inverter(
 
 
 def collect_all_registers(inverter_data: list[DataPerConnection]):
-    all_registers: dict[RegisterType, list[int]] = {
-        RegisterType.READ: [],
-        RegisterType.HOLD: [],
+    all_registers: dict[RegisterType, set[int]] = {
+        RegisterType.READ: set(),
+        RegisterType.HOLD: set(),
     }
 
     for per_connection in inverter_data:
@@ -192,7 +194,7 @@ def collect_all_registers(inverter_data: list[DataPerConnection]):
             continue
 
         for register_type, registers in per_connection.raw_data.items():
-            all_registers[register_type].extend(registers.keys())
+            all_registers[register_type].update(registers.keys())
 
     return all_registers
 
@@ -211,80 +213,67 @@ def write_json(task_results: list[TaskResult]):
                 return f"{o.__class__.__name__}: {o}"
             if isinstance(o, StrEnum):
                 return o.value
+            if isinstance(o, signals.SignalDefinitions):
+                return o._definitions
             return super().default(o)
 
     with open(".compare_access_data.json", "w") as file:
         json.dump(task_results, file, indent=4, cls=EnhancedJSONEncoder)
 
 
-async def main(hosts: list[str]):
-    signal_definitions = signals.load_yaml()
+async def main(hosts: list[str], cached: bool):
+    all_signals = signals.load_yaml()
 
     # Store data in file for development of this script.
     # As we don't want to query the inverter every time.
     # TODO: add command line option to force re-querying the inverter.
     task_results: list[TaskResult] | None = None
-    try:
-        with open(".compare_access_data.pickle", "rb") as f:
-            logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            logger.warning("Loading data from .compare_access_data.*")
-            logger.warning("Delete this file to re-run actual connections.")
-            logger.warning("Note: you need to delete it if you query a different host!")
-            logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            task_results = pickle.load(f)
-    except FileNotFoundError:
-        task_results = None
-    except AttributeError:
-        task_results = None
-        logger.warning("Failed to load .compare_access_data.pickle")
-        logger.warning("Running without cached results!")
+    if cached:
+        try:
+            with open(".compare_access_data.pickle", "rb") as f:
+                logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                logger.warning("Loading data from .compare_access_data.*")
+                logger.warning("Delete this file to re-run actual connections.")
+                logger.warning(
+                    "Note: you need to delete it if you query a different host!"
+                )
+                logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                task_results = pickle.load(f)
+        except FileNotFoundError:
+            pass
+        except AttributeError:
+            logger.warning("Failed to load .compare_access_data.pickle")
 
-    # This is intentionally not within the except block, as it makes error messages
-    # easier to understand.
     if task_results is None:
-        task_results = await collect_data(signal_definitions, hosts)
-        print("Writing data to .compare_access_data.yaml: ", task_results)
-
+        task_results = await collect_data(hosts)
+        print("Writing data to .compare_access_data...")
         write_pickle(task_results)
 
     # TODO: remove pickle file and use json only.
     write_json(task_results)
 
-    data_by_inverter = merge_by_inverter(task_results, signal_definitions)
+    data_by_inverter = merge_by_inverter(task_results)
 
-    markdown_write_file("compare.md", signal_definitions, data_by_inverter)
+    markdown_write_file("compare.md", all_signals, data_by_inverter)
 
 
 def markdown_write_summary(f, data_by_inverter: dict[str, list[DataPerConnection]]):
     f.write("# Summary:\n\n")
-    f.write("| SN | Host | Mode | Read Calls | Result | Errors |\n")
-    f.write("| --- | --- | --- | --- | --- | --- |\n")
+    f.write("| SN | Host | Mode | Read Calls | Errors |\n")
+    f.write("| --- | --- | --- | --- | --- |\n")
     for sn, connections in data_by_inverter.items():
         for per_connection in connections:
-            if per_connection.raw_data:
-                registers_ok = 0
-                registers_skipped = 0
-                for register_type in per_connection.raw_data:
-                    for value in per_connection.raw_data[register_type].values():
-                        if value is None:
-                            registers_skipped += 1
-                        else:
-                            registers_ok += 1
-                result = f"{registers_ok} registers retrieved"
-                error = f"{registers_skipped} registers not supported"
-            elif per_connection.error:
-                result = "Failed"
+            if per_connection.error:
                 e = per_connection.error
                 assert isinstance(e, Exception)
                 error = f"{e.__class__.__name__}: {e}"
             else:
-                result = "internal error"
-                error = "internal error"
+                error = None
 
             f.write(
                 f"| {sn} | {per_connection.host}/{per_connection.slave} | "
                 f"{per_connection.mode} | "
-                f"{per_connection.stats} | {result} | {error} |\n"
+                f"{per_connection.stats} | {error} |\n"
             )
 
     f.write("\n\n")
@@ -292,7 +281,7 @@ def markdown_write_summary(f, data_by_inverter: dict[str, list[DataPerConnection
 
 def markdown_write_signals(
     f,
-    signal_definitions: signals.SignalDefinitions,
+    all_signals: signals.SignalDefinitions,
     data_by_inverter: dict[str, list[DataPerConnection]],
 ):
     for inverter_sn, inverter_data in data_by_inverter.items():
@@ -308,7 +297,7 @@ def markdown_write_signals(
         )
         f.write("| --- " * (len(inverter_data) + 1) + "|\n")
 
-        for signal in signal_definitions._definitions.values():
+        for signal in all_signals.all_signals():
             line = f"| {signal.name} | "
             for c in inverter_data:
                 value = (
@@ -322,7 +311,6 @@ def markdown_write_signals(
 
 def markdown_write_raw_data(
     f,
-    signal_definitions: signals.SignalDefinitions,
     data_by_inverter: dict[str, list[DataPerConnection]],
 ):
     for inverter_sn, inverter_data in data_by_inverter.items():
@@ -340,7 +328,7 @@ def markdown_write_raw_data(
 
         all_registers = collect_all_registers(inverter_data)
         for register_type, registers in all_registers.items():
-            for register in registers:
+            for register in sorted(registers):
                 line = f"| {register_type} {register} | "
                 for c in inverter_data:
                     value = (
@@ -356,13 +344,13 @@ def markdown_write_raw_data(
 
 def markdown_write_file(
     outfile: str,
-    signal_definitions: signals.SignalDefinitions,
+    all_signals: signals.SignalDefinitions,
     data_by_inverter: dict[str, list[DataPerConnection]],
 ):
     with open(outfile, "w") as f:
         markdown_write_summary(f, data_by_inverter)
-        markdown_write_signals(f, signal_definitions, data_by_inverter)
-        markdown_write_raw_data(f, signal_definitions, data_by_inverter)
+        markdown_write_signals(f, all_signals, data_by_inverter)
+        markdown_write_raw_data(f, data_by_inverter)
 
 
 def run():
@@ -379,9 +367,15 @@ def run():
         exit(1)
     else:
         hosts = sys.argv[1:]
+        if hosts[0] == "--cached":
+            cached = True
+            hosts = hosts[1:]
+        else:
+            cached = False
+
         print("command line: ", hosts)
 
-        asyncio.run(main(hosts))
+        asyncio.run(main(hosts, cached=cached))
 
 
 if __name__ == "__main__":

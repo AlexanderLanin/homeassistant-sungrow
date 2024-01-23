@@ -38,6 +38,7 @@ class HttpConnection(ModbusConnectionBase):
         if self._token:
             return True
 
+        logger.debug("Connecting to %s:%s", self._host, self._port)
         self._stats.connections += 1
 
         # Reset the httpx client, otherwise it will keep the connection open.
@@ -98,18 +99,20 @@ class HttpConnection(ModbusConnectionBase):
         return True
 
     async def disconnect(self):
+        logger.debug("Disconnecting from %s:%s", self._host, self._port)
+
         self._token = None
         self._inverter = None
 
         # Reset the httpx client, otherwise it will keep the connection open.
         await self._httpx_client.aclose()
 
-    async def _handle_response(
+    async def _parse_response(
         self,
         response: dict[str, Any],
         register_type: RegisterType,
         address_start: int,
-    ) -> list[int]:
+    ) -> list[int] | str:
         logger.debug(f"Response: {response}")
         result_code = response.get("result_code", 0)
         if result_code == 1:
@@ -129,9 +132,7 @@ class HttpConnection(ModbusConnectionBase):
                 f"Token Expired: {response.get('result_msg')}"
             )
         elif result_code == 301:  # common read failed
-            # For me this really happens on the same register every time.
-            # So maybe it's not supported...
-            raise modbus_base.UnsupportedRegisterQueriedError("Common Read Failed")
+            return "retry"
         else:
             raise modbus_base.ModbusError(
                 "Unknown response while trying to query "
@@ -143,6 +144,7 @@ class HttpConnection(ModbusConnectionBase):
         register_type: RegisterType,
         address_start: int,
         address_count: int,
+        recursion=False,
     ) -> list[int]:
         """Raises modbus.CannotConnectError on WiNet misbehavior."""
 
@@ -158,7 +160,7 @@ class HttpConnection(ModbusConnectionBase):
             modbus_base.RegisterType.HOLD: 1,
         }
 
-        await asyncio.sleep(0.3)  # Server simply disconnects if we query too fast.
+        await asyncio.sleep(0.5)  # Server simply disconnects if we query too fast.
 
         params = {
             "dev_id": self._inverter["dev_id"],
@@ -184,7 +186,26 @@ class HttpConnection(ModbusConnectionBase):
 
         if r.status_code == 200:
             response = r.json()
-            return await self._handle_response(response, register_type, address_start)
+            value = await self._parse_response(response, register_type, address_start)
+            if isinstance(value, str):
+                assert value == "retry"
+
+                if recursion:
+                    raise modbus_base.ModbusError(
+                        "Unknown problem while trying to query "
+                        f"{register_type} {address_start}: {response} "
+                    )
+                else:
+                    logger.debug(
+                        "Tried to read too much too fast! Waiting 10 seconds..."
+                    )
+                    await asyncio.sleep(10)
+
+                    return await self._read_range(
+                        register_type, address_start, address_count, recursion=True
+                    )
+            else:
+                return value
         else:
             raise modbus_base.CannotConnectError(
                 f"Connection Failed: {r.status_code} {r.text}"
