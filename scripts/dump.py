@@ -135,11 +135,10 @@ async def collect_data(
             r = await task
             results.append(r)
             logger.info(f"Collected data for {r.host}/{r.slave} via {r.mode}:")
-            logger.info(f"{len(r.raw_data)} registers")
-            if r.error:
-                logger.info(f"error: {r.error}")
+            logger.info(f"retrieved: {len(r.raw_data) if r.raw_data else 0} registers")
+            logger.info(f"error: {r.error if r.error else None}")
             logger.info("Pausing 5 seconds before next task...")
-            asyncio.sleep(5)
+            await asyncio.sleep(5)
         return results
 
 
