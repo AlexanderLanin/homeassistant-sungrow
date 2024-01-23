@@ -371,12 +371,12 @@ def markdown_write_file(
 def run():
     """Entry point for console_scripts and command line execution."""
     if len(sys.argv) == 1:
-        print("Usage: dump.py <host> [<host> ...]")
+        print("Parameters: <host> [<host> ...]")
         print("Note: slave id can be appended to the host, separated by a slash.")
         print("Example for slave 2: 192.168.13.80/2")
         print("When no slave id is given, slave 1 is assumed.")
         print(
-            "Example command line: scripts/compare_access.py "
+            "Example parameters: "
             "192.168.13.79 192.168.13.58 192.168.13.80/2 192.168.13.74"
         )
         exit(1)
