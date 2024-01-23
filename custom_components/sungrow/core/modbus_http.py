@@ -40,7 +40,10 @@ class HttpConnection(ModbusConnectionBase):
         self._stats.connections += 1
 
         # Reset the httpx client, otherwise it will keep the connection open.
+        # TODO: why not simply reuse the client?
         await self._httpx_client.aclose()
+
+        # As we cannot reopen the httpx client, we need to create a new one.
         self._httpx_client = httpx.AsyncClient()
         await self._httpx_client.__aenter__()
 
@@ -96,6 +99,9 @@ class HttpConnection(ModbusConnectionBase):
     async def disconnect(self):
         self._token = None
         self._inverter = None
+
+        # Reset the httpx client, otherwise it will keep the connection open.
+        await self._httpx_client.aclose()
 
     async def _handle_response(
         self,
