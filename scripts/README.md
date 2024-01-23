@@ -2,8 +2,6 @@
 
 ## How to run scripts (pipx)
 
-**DOES NOT WORK YET**
-
 The scripts (notably `dump.py`) are compatible with pipx.
 
 This method will not pollute your system with packages as pipx creates a virtual environment for the project.
@@ -13,13 +11,10 @@ If you don't have pipx installed, install it first as described in [pipx documen
 Then run:
 
 ```bash
-pipx install git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp
-pipx run sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
+pipx run --spec git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
 ```
 
 ## How to run scripts (poetry)
-
-**SEEMS TO WORK**
 
 The scripts (notably `dump.py`) are compatible with poetry.
 
