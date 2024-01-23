@@ -13,12 +13,20 @@ Then run:
 
 ```bash
 pipx run --spec git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
+```
 
-# for updating, just tell pipx to redownload:
+For updating, just tell pipx to redownload:
+```bash
 pipx run --no-cache --spec git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
 ```
 
-## How to run scripts (poetry)
+You can also install the scripts if you which to run them more conviniently for whatever reason:
+```bash
+pipx install git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp
+sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
+```
+
+## How to run scripts (git clone + poetry)
 
 The scripts (notably `dump.py`) are compatible with poetry.
 

@@ -44,7 +44,7 @@ class TaskResult:
     host: str
     slave: int | None = None
     raw_data: dict[RegisterType, RawData] | None = None
-    stats: int | None = None
+    stats: modbus_base.ModbusConnectionBase.Stats | None = None
     error: Exception | None = None
 
 
@@ -70,9 +70,9 @@ async def collect_data_via_py_modbus(
         logger.info(f"{host}/{slave}/pymodbus: {len(raw_data)} registers retrieved")
 
         return TaskResult(
-            "pymodbus",
-            host,
-            slave,
+            mode="pymodbus",
+            host=host,
+            slave=slave,
             stats=connection.stats,
             raw_data=raw_data,
         )
