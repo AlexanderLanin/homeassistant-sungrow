@@ -302,7 +302,9 @@ def markdown_write_signals(
             line = f"| {signal.name} | "
             for c in inverter_data:
                 value = (
-                    c.decoded.get(signal.name, ["Not available"]) if c.decoded else []
+                    c.decoded.get(signal.name, "Not supported")
+                    if c.decoded
+                    else "No data"
                 )
                 line += str(value) + " | "
             f.write(line + "\n")
