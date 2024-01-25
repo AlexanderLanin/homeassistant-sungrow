@@ -7,7 +7,6 @@ from pprint import pprint
 
 import pytest
 
-import tests.core.fix_test_path as fix_test_path  # type: ignore  # noqa: F401
 from custom_components.sungrow.core import inverter, modbus_base
 from tests.e2e_setup import e2e_setup, simulated_inverter
 

@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 import pytest
 
-import tests.core.fix_test_path as fix_test_path  # type: ignore  # noqa: F401
 from custom_components.sungrow.core import inverter, modbus_base, modbus_py
 
 logging.basicConfig(level=logging.DEBUG)

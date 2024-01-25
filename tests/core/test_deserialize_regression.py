@@ -4,7 +4,6 @@ from typing import cast
 import pytest
 import yaml
 
-import tests.core.fix_test_path as fix_test_path  # type: ignore  # noqa: F401
 from custom_components.sungrow.core import deserialize, modbus_base, modbus_py, signals
 
 TEST_DATA = pathlib.Path(__file__).parent.parent / "test_data"
