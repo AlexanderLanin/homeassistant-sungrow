@@ -1,4 +1,4 @@
-import tests.core.fix_test_path as fix_test_path  # type: ignore  # noqa: F401
+import tests.core.fix_test_path as fix_test_path  # noqa: F401
 from custom_components.sungrow.core.modbus_py import RegisterType
 from custom_components.sungrow.core.signals import load_yaml
 

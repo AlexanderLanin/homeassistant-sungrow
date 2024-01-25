@@ -2,8 +2,11 @@
 
 import logging
 
-import fix_path  # noqa: F401
 import yaml
+
+if __package__ is None:
+    # Script was executed from the command line
+    import fix_path  # type: ignore  # noqa: F401
 
 from custom_components.sungrow.core import deserialize, inverter, modbus_py, signals
 

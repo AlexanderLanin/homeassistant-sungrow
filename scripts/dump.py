@@ -16,10 +16,9 @@ import sys
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
 
-try:
-    import scripts.fix_path  # noqa: F401
-except ImportError:
-    import fix_path  # noqa: F401
+if __package__ is None:
+    # Script was executed from the command line via ./scripts/dump.py
+    import fix_path  # type: ignore  # noqa: F401
 
 from custom_components.sungrow.core import (
     deserialize,
@@ -200,8 +199,11 @@ def collect_all_registers(inverter_data: list[DataPerConnection]):
     return all_registers
 
 
+pickle_filename = ".dump.pickle"
+
+
 def write_pickle(task_results: list[TaskResult]):
-    with open(".compare_access_data.pickle", "wb") as file:
+    with open(pickle_filename, "wb") as file:
         pickle.dump(task_results, file)
 
 
@@ -218,7 +220,7 @@ def write_json(task_results: list[TaskResult]):
                 return o._definitions
             return super().default(o)
 
-    with open(".compare_access_data.json", "w") as file:
+    with open("dump.json", "w") as file:
         json.dump(task_results, file, indent=4, cls=EnhancedJSONEncoder)
 
 
@@ -231,9 +233,9 @@ async def main(hosts: list[str], cached: bool):
     task_results: list[TaskResult] | None = None
     if cached:
         try:
-            with open(".compare_access_data.pickle", "rb") as f:
+            with open(pickle_filename, "rb") as f:
                 logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                logger.warning("Loading data from .compare_access_data.*")
+                logger.warning(f"Loading data from {pickle_filename}")
                 logger.warning("Delete this file to re-run actual connections.")
                 logger.warning(
                     "Note: you need to delete it if you query a different host!"
@@ -243,11 +245,11 @@ async def main(hosts: list[str], cached: bool):
         except FileNotFoundError:
             pass
         except AttributeError:
-            logger.warning("Failed to load .compare_access_data.pickle")
+            logger.warning(f"Failed to load data from {pickle_filename}.")
 
     if task_results is None:
         task_results = await collect_data(hosts)
-        print("Writing data to .compare_access_data...")
+        print(f"Writing data to {pickle_filename}...")
         write_pickle(task_results)
 
     # TODO: remove pickle file and use json only.
@@ -255,7 +257,7 @@ async def main(hosts: list[str], cached: bool):
 
     data_by_inverter = merge_by_inverter(task_results)
 
-    markdown_write_file("compare.md", all_signals, data_by_inverter)
+    markdown_write_file("dump.md", all_signals, data_by_inverter)
 
 
 def markdown_write_summary(f, data_by_inverter: dict[str, list[DataPerConnection]]):

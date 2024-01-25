@@ -11,7 +11,7 @@ def calculate(new_data: dict[str, DatapointValueType]) -> dict[str, Datapoint]:
     return extra_data
 
 
-_subclasses: list[type["_ExtraSensor"]] = []
+_subclasses: list = []
 
 
 class _ExtraSensor:

@@ -2,11 +2,14 @@
 
 from pathlib import Path
 
-import fix_path  # noqa: F401
 import requests
 import yaml
 from beartype.claw import beartype_all
 from tabulate import tabulate
+
+if __package__ is None:
+    # Script was executed from the command line
+    import fix_path  # type: ignore  # noqa: F401
 
 from custom_components.sungrow.core.modbus_py import RegisterType
 from custom_components.sungrow.core.signals import (
