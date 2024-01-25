@@ -66,16 +66,14 @@ async def collect_data_from(
 
     info("Attempting to connect...")
     try:
-        ic = await connect_and_get_basic_data(
+        async with await connect_and_get_basic_data(
             host, port=port, slave=slave, connection=connection_mode
-        )
-        if ic:
-            async with ic.connection:
-                logger.info(f"{host}/{slave}/pymodbus: Connected")
+        ) as ic:
+            logger.info(f"{host}/{slave}/pymodbus: Connected")
 
-                raw_data = await ic.connection.read_raw(
-                    ic.signal_definitions.enabled_modbus_signals()
-                )
+            raw_data = await ic.connection.read_raw(
+                ic.signal_definitions.enabled_modbus_signals()
+            )
 
             suffix = " WiNet" if await ic.is_modbus_winet() else ""
             return TaskResult(
@@ -86,8 +84,6 @@ async def collect_data_from(
                 stats=ic.connection.stats,
                 raw_data=raw_data,
             )
-        else:
-            return TaskResult(connection_mode, host, slave, error="No connection")
     except modbus_base.CannotConnectError as e:
         info(f"Failed to connect ({e})")
         return TaskResult(connection_mode, host, slave, error=e)

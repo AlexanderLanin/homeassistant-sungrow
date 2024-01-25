@@ -2116,6 +2116,20 @@ files = [
 pytest = ">=3.6.3"
 
 [[package]]
+name = "pytest-stub"
+version = "1.1.0"
+description = "Stub packages, modules and attributes."
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-stub-1.1.0.tar.gz", hash = "sha256:276043d91cbad863ba56b99f6b781a4a1bc19e1d2e928a5f8e76979ee02c8099"},
+    {file = "pytest_stub-1.1.0-py2.py3-none-any.whl", hash = "sha256:5de0e3247f8e51321c4dc6d94bbe53c8a96a51edcf722d3df3cb20d4d32b27d7"},
+]
+
+[package.dependencies]
+pytest = ">=2.9.0"
+
+[[package]]
 name = "pytest-sugar"
 version = "0.9.7"
 description = "pytest-sugar is a plugin for pytest that changes the default look and feel of pytest (e.g. progressbar, show tests that fail instantly)."
@@ -3096,4 +3110,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "e79fc654afb8a88b6a17a4f449252cdc1220ba57a0d00073e93aecf09239cf4b"
+content-hash = "a1532d48fd0110e9c701b42be031e576f47cf70c1d27d61a5e5617e1e12d0e1b"

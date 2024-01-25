@@ -73,14 +73,37 @@ def mark_unavailable_signals_as_disabled(
 
 @dataclass
 class InitialConnection:
-    connection: modbus_py.ModbusConnectionBase
+    connection: modbus_py.ModbusConnectionBase | None
     signal_definitions: signals.SignalDefinitions
     data: dict[str, DatapointValueType]
 
     _is_modbus_winet: bool | None = None
+    _is_context_managed = 0
+
+    async def __aenter__(self):
+        self._is_context_managed += 1
+        if self.connection:
+            await self.connection.__aenter__()
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        self._is_context_managed -= 1
+
+        # TODO: in case we need nested context managing, remove this assert and
+        # consider implications.
+        assert self._is_context_managed == 0
+
+        if self.connection:
+            await self.connection.__aexit__(exc_type, exc_value, traceback)
+
+    @property
+    def is_context_managed(self):
+        return self._is_context_managed > 0
 
     async def is_modbus_winet(self):
         """Lazy cached evaluation."""
+        if not self.connection:
+            raise RuntimeError("Not connected")
 
         if self._is_modbus_winet is None:
             if isinstance(self.connection, modbus_http.HttpConnection):
@@ -122,12 +145,12 @@ def convert_raw_data_to_datapoints(
     return data
 
 
-async def connect_and_get_basic_data(
+async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
     host: str,
     port: int | None,
     slave: int | None,
     connection: str | None,
-):
+) -> InitialConnection:
     """
     Create a connection and retrieve some initial data to test the connection.
 
@@ -169,12 +192,19 @@ async def connect_and_get_basic_data(
         ]
     )
 
-    async with connection_class(host=host, port=port, slave=slave) as connection_obj:
+    connection_obj = connection_class(host=host, port=port, slave=slave)
+    if not connection_obj.connect():
+        # Don't even return the connection object, as it's not connected.
+        # This should reduce consequent bugs of handling an unconnected object.
+        return InitialConnection(None, signal_definitions, {})
+
+    try:
         data = await pull_raw_signals(connection_obj, query)
         if not data:
-            # TODO does this happen when the connected to port is not a modbus port?
-            logger.warning("Failed to pull any data from inverter")
-            return None
+            # TODO does this happen when the connected to a non modbus port?
+            raise modbus_base.CannotConnectError("Failed to pull data from inverter")
+
+        ic = InitialConnection(connection_obj, signal_definitions, data)
 
         logger.debug(
             "Connected to inverter "
@@ -195,16 +225,16 @@ async def connect_and_get_basic_data(
                 data["device_type_code"]
             )
 
-        ic = InitialConnection(connection_obj, signal_definitions, data)
-
         if await ic.is_modbus_winet():
             logger.debug("Disabling all WiNet unsupported signals")
             ic.signal_definitions.disable_winet_signals()
         else:
             logger.debug("Not a WiNet dongle; all signals are supported")
 
-        connection_obj.detach()
         return ic
+    except Exception:
+        await connection_obj.disconnect()
+        raise
 
 
 class SungrowInverter:
@@ -214,40 +244,38 @@ class SungrowInverter:
 
     @staticmethod
     async def create(ic: InitialConnection):
-        # TODO: move all of this to __init__?
-        async with ic.connection:
-            # We now need to pull all data which belongs to a group,
-            # so we can detect groups which do not apply, like "has_battery".
-            query = [
-                signal
-                for signal in ic.signal_definitions._definitions.values()
-                if signal.group and not signal.disabled and signal.name not in ic.data
-            ]
-            data = await pull_raw_signals(ic.connection, query)
-            if not data:
-                raise RuntimeError("Failed to pull data from inverter")
+        # TODO: move all of this to __init__!!
 
-            extra_data = mark_unavailable_signals_as_disabled(
-                ic.signal_definitions, data
-            )
+        # We now need to pull all data which belongs to a group,
+        # so we can detect groups which do not apply, like "has_battery".
+        query = [
+            signal
+            for signal in ic.signal_definitions._definitions.values()
+            if signal.group and not signal.disabled and signal.name not in ic.data
+        ]
+        data = await pull_raw_signals(ic.connection, query)
+        if not data:
+            raise RuntimeError("Failed to pull data from inverter")
 
-            # TODO config.get("level", 1)
-            ic.signal_definitions.mark_signals_below_level_as_disabled(1)
+        extra_data = mark_unavailable_signals_as_disabled(ic.signal_definitions, data)
 
-            for signal in ic.signal_definitions._definitions.values():
-                if signal.disabled:
-                    data.pop(signal.name, None)
+        # TODO config.get("level", 1)
+        ic.signal_definitions.mark_signals_below_level_as_disabled(1)
 
-            # Let's keep both
-            data.update(ic.data)
+        for signal in ic.signal_definitions._definitions.values():
+            if signal.disabled:
+                data.pop(signal.name, None)
 
-            my_config = SungrowInverter.Config(
-                initial_data=data,
-                active_groups=extra_data,
-                signals=ic.signal_definitions,
-            )
+        # Let's keep both
+        data.update(ic.data)
 
-            return SungrowInverter(ic.connection.detach(), my_config)
+        my_config = SungrowInverter.Config(
+            initial_data=data,
+            active_groups=extra_data,
+            signals=ic.signal_definitions,
+        )
+
+        return SungrowInverter(ic.connection, my_config)
 
     @dataclass
     class Config:

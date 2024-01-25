@@ -35,6 +35,7 @@ from custom_components.sungrow.core.inverter import (
     connect_and_get_basic_data,
 )
 from custom_components.sungrow.core.inverter_types import Datapoint
+from custom_components.sungrow.core.modbus_base import CannotConnectError
 
 logger = logging.getLogger(__name__)
 
@@ -165,17 +166,20 @@ async def async_setup_entry(
         # No connection yet. We'll create a new one.
         # (This happens when HA is restarted)
         logger.debug(f"Creating new connection to inverter {sn}")
-        ic = await connect_and_get_basic_data(
-            user_input[CONF_HOST],
-            user_input[CONF_PORT],
-            user_input[CONF_SLAVE],
-            user_input["connection"],
-        )
-        if not ic:
+        try:
+            ic = await connect_and_get_basic_data(
+                user_input[CONF_HOST],
+                user_input[CONF_PORT],
+                user_input[CONF_SLAVE],
+                user_input["connection"],
+            )
+        except CannotConnectError:
             # When we cannot connect to the inverter at HA startup,
             # we don't assume wrong address.
             # We'll assume the inverter is offline at the moment.
-            raise ConfigEntryNotReady("Failed to connect to inverter; retrying later.")
+            raise ConfigEntryNotReady(
+                "Failed to connect to inverter; retrying later."
+            ) from None
 
     async with await SungrowInverter.create(ic) as inverter:
         update_interval = max(

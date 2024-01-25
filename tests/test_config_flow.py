@@ -61,7 +61,8 @@ async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
     if DOMAIN in hass.data:
         for ic in hass.data[DOMAIN]["inverters"].values():
             assert isinstance(ic, InitialConnection)
-            await ic.connection.disconnect()
+            if ic.connection:
+                await ic.connection.disconnect()
 
 
 async def start_config_flow(hass: HomeAssistant) -> str:

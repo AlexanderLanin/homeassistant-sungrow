@@ -7,7 +7,7 @@ import pymodbus.datastore
 import pymodbus.framer
 import pymodbus.server
 import pytest
-import pytest_socket
+import pytest_socket  # type: ignore
 import yaml
 
 from custom_components.sungrow.core import inverter

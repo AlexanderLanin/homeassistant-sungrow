@@ -8,7 +8,7 @@ if __package__ is None:
     # Script was executed from the command line
     import fix_path  # type: ignore  # noqa: F401
 
-from custom_components.sungrow.core import deserialize, inverter, modbus_py, signals
+from custom_components.sungrow.core import deserialize, inverter, modbus_base, modbus_py
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("pymodbus").setLevel(logging.WARNING)
@@ -23,25 +23,18 @@ async def main():
 
 
 async def dump(host: str, port: int, slave: int, filename: str) -> None:
-    signal_definitions = signals.load_yaml()
-
-    is_winet = await inverter.is_WiNet(host)
-    if is_winet:
-        logging.info("Detected WiNet inverter, disabling necessary signals")
-        # signal_definitions.disable_winet_signals()
-    else:
-        logging.info("Detected non-WiNet inverter, querying all signals")
-
-    async with modbus_py.PymodbusConnection(host, port, slave) as connection:
-        raw_data = await connection.read_raw(
-            signal_definitions.enabled_modbus_signals()
+    async with await inverter.connect_and_get_basic_data(
+        host, port, slave, "pymodbus"
+    ) as ic:
+        raw_data = await ic.connection.read_raw(
+            ic.signal_definitions.enabled_modbus_signals()
         )
 
-    signal_raw_data = connection.map_raw_to_signals(
-        raw_data, signal_definitions.enabled_modbus_signals()
+    signal_raw_data = modbus_base.map_raw_to_signals(
+        raw_data, ic.signal_definitions.enabled_modbus_signals()
     )
 
-    signal_data = deserialize.decode_signals(signal_definitions, signal_raw_data)
+    signal_data = deserialize.decode_signals(ic.signal_definitions, signal_raw_data)
 
     with open(filename, "w") as dump_file:
         yaml.dump(
