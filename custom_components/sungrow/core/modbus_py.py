@@ -116,7 +116,7 @@ class PymodbusConnection(ModbusConnectionBase):
                         f"{address_start+address_count}: {rr}"
                     )
                 elif rr.exception_code == pymodbus.pdu.ModbusExceptions.SlaveFailure:
-                    # This may self-heal, so we don't raise an error on the first attempt.
+                    # This may self-heal, don't raise an error on the first attempt.
                     if recursion:
                         raise modbus_base.ModbusError(
                             f"Slave failure on {register_type} "

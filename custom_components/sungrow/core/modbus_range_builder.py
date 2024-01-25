@@ -71,7 +71,7 @@ def _build_ranges(
 def split_list(
     signals: list[Signal],
     max_registers_per_range: int,
-    blocked_registers: dict[RegisterType, list[int]],
+    blocked_registers: dict[RegisterType, list[int]] | None = None,
 ) -> list[list[Signal]]:
     """
     Split the list of signals into ranges.
@@ -88,12 +88,12 @@ def split_list(
             RegisterType.READ,
             signals,
             max_registers_per_range,
-            blocked_registers[RegisterType.READ],
+            blocked_registers[RegisterType.READ] if blocked_registers else [],
         ),
         *_build_ranges(
             RegisterType.HOLD,
             signals,
             max_registers_per_range,
-            blocked_registers[RegisterType.HOLD],
+            blocked_registers[RegisterType.HOLD] if blocked_registers else [],
         ),
     ]

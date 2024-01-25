@@ -3,11 +3,9 @@
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-import sys
 from typing import Final, cast
 
 from custom_components.sungrow.core.inverter_types import Datapoint
-from custom_components.sungrow.core.modbus_types import RegisterRange, RegisterType
 
 from . import deserialize, extra_sensors, modbus_base, modbus_http, modbus_py, signals
 

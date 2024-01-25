@@ -1,5 +1,4 @@
 import tests.core.fix_test_path as fix_test_path  # type: ignore  # noqa: F401
-
 from custom_components.sungrow.core import deserialize, modbus_py, signals
 
 

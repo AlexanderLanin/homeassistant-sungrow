@@ -144,12 +144,7 @@ class ModbusConnectionBase:
         # We cannot query all signals at once, as the inverter will not respond.
         # So we split the signals into ranges and query each range separately.
         # Build as few ranges as possible:
-        ranges = split_list(
-            # FIXME remove _problematic_registers. We don't need to skip them anymore.
-            signal_list,
-            max_combined_registers,
-            self._problematic_registers,
-        )
+        ranges = split_list(signal_list, max_combined_registers)
 
         logger.debug(f"read_raw({len(signal_list)} signals) -> {len(ranges)} ranges")
         logger.debug(f"read_raw({signal_list}) -> {ranges}")
@@ -226,26 +221,6 @@ class ModbusConnectionBase:
                 self._problematic_registers[signal.register_type].append(signal.address)
 
             return {r: None for r in range(reg_range.start, reg_range.end)}
-
-            # ALL registers are not supported.
-            # # That means we need to break up the range and try again.
-
-            # # This if differentiates between first appearance of problem and
-            # # second attempt (recursive call).
-            # if len(signal_list) == 1:
-            #     signal = signal_list[0]
-            #     self.stats.retrieved_signals_failed += 1
-            #     logger.debug(f"Failed to read {signal}")
-            #     self._problematic_registers[signal.register_type].append(signal.address)
-            #     return {r: None for r in range(signal.address, signal.end)}
-            # else:
-            #     # Split in half and try again.
-            #     first_half = signal_list[: len(signal_list) // 2]
-            #     second_half = signal_list[len(signal_list) // 2 :]
-            #     a = await self._read_range_base(first_half)
-            #     b = await self._read_range_base(second_half)
-            #     a.update(b)
-            #     return a
 
     @staticmethod
     def _get_signals_in_a_register_range(
