@@ -72,7 +72,7 @@ async def simulated_inverter(yaml_file: str | pathlib.Path | None):
         # no response
         context = pymodbus.datastore.ModbusServerContext(single=False)
 
-    server = pymodbus.server.ModbusTcpServer(context=context, address=("localhost", 0))
+    server = pymodbus.server.ModbusTcpServer(context=context, address=("0.0.0.0", 0))
 
     # Block connect() to all hosts except localhost
     pytest_socket.socket_allow_hosts("localhost")

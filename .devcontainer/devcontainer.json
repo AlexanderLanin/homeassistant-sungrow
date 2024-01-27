@@ -1,8 +1,10 @@
 {
     "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
-    "postCreateCommand": "pip3 install poetry && poetry install --no-interaction && echo 'source $(poetry env info --path)/bin/activate' >> ~/.bashrc",
+    "postCreateCommand": "pip3 install poetry && poetry config virtualenvs.in-project true && poetry install --no-interaction && echo 'source $(poetry env info --path)/bin/activate' >> ~/.bashrc",
     "customizations": {
         "vscode": {
+            // virtualenvs.in-project seems a better choice, as we get .venv easily accessible!
+            // "python.venvPath": "~/.cache/pypoetry/virtualenvs",
             "extensions": [
                 "charliermarsh.ruff",
                 "ryanluker.vscode-coverage-gutters",
