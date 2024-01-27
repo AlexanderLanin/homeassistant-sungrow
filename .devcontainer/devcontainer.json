@@ -25,16 +25,22 @@
                         "source.organizeImports": true
                     }
                 },
-                "python.venvPath": "${containerWorkspaceFolder}/.venv"
+                "python.venvPath": "${containerWorkspaceFolder}/.venv",
+                "python.testing.pytestArgs": [
+                    "tests"
+                ],
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestEnabled": true,
+                "python.experiments.optOutFrom": [
+                    // Tests with sockets disabled don't show up otherwise.
+                    // Ancient old issue.
+                    "pythonTestAdapter"
+                ]
             },
             "extensions": [
                 "charliermarsh.ruff",
                 "ryanluker.vscode-coverage-gutters",
                 "ms-python.mypy-type-checker"
-            ],
-            // Not sure if it will work from here:
-            "python.experiments.optOutFrom": [
-                "pythonTestAdapter"
             ]
         }
     }
