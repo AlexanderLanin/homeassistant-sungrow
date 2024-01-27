@@ -1,14 +1,12 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/python:0-3.11-bullseye",
-    "postCreateCommand": [
-        "pip install poetry",
-        "poetry install",
-        "poetry shell" // Will this affect the default shell?
-    ],
+    "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+    "postCreateCommand": "pip3 install poetry && poetry install --no-interaction && echo 'source $(poetry env info --path)/bin/activate' >> ~/.bashrc",
     "customizations": {
         "vscode": {
             "extensions": [
-                "charliermarsh.ruff"
+                "charliermarsh.ruff",
+                "ryanluker.vscode-coverage-gutters",
+                "ms-python.mypy-type-checker"
             ],
             // Not sure if it will work from here:
             "python.experiments.optOutFrom": [

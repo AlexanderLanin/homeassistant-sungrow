@@ -25,16 +25,6 @@ This guide assumes you already have HACS installed.
 
   You can probably leave everything else at the defaults
 
-### Installation without Home Assistant
-
-In order to try this integration without Home Assistant, you can use the following command:
-
-*NOT SUPPORTED YET*
-
-```bash
-pipx install git+https://github.com/AlexanderLanin/homeassistant-sungrow.git
-...
-```
 
 ## Configuration
 
@@ -55,22 +45,12 @@ To be determined... Apache 2.0? MIT? GPL?
 
 ## Development
 
-No proper documentation yet, but here are some pointers:
-* See https://github.com/alangibson/homeassistant-sungrow/issues/14
-* In case tests don't show up in VS Code: https://github.com/microsoft/vscode-python/issues/22383
-* Don't use GitHub Codespaces if you want to connect to your inverter ;-)
+For many things you can open this repository within a Codespace, but if you want access to your local inverter or home assistant you need to clone this repository.
 
-### Poetry
 
-This project is using poetry for dependency management.
-The author has no experience with poetry, so please bear with me.
-
-To install poetry, see https://python-poetry.org/docs/#installation
-
-To install dependencies, run `poetry install`
-
-To run tests, run `poetry run pytest`.
-
-Alternatively, you can run `poetry shell` to activate the virtual environment and then run `pytest`.
-
-Run `poertry lock` to update the lock file.
+### Development without docker
+This is poorly maintained, but it should work in general:
+* In case you don't have it, you can install poetry via `curl -sSL https://install.python-poetry.org | python3 -` or some other method as described on https://python-poetry.org/docs/#installing-with-the-official-installer
+* Then you need to run `poetry install` and it will install everything you need for development.
+* Run `poetry shell` to switch to that virtual environment where all dependencies are available.
+* Have a look at the extensions and settings listed in `.devcontainer/decontainer.json`

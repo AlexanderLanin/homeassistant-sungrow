@@ -28,16 +28,10 @@ async def pull_raw_signals(
     signal_definitions_base = cast(list[modbus_base.Signal], signal_definitions)
 
     # Load all registers from inverer
-    try:
-        data = deserialize.decode_signals(
-            signal_definitions,
-            await client.read(signal_definitions_base),
-        )
-
-    except modbus_base.ModbusError as e:
-        logger.info(f"Pulling data from inverter failed: {e}")
-        # return none or throw exception?
-        return None
+    data = deserialize.decode_signals(
+        signal_definitions,
+        await client.read(signal_definitions_base),
+    )
 
     elapsed = datetime.now() - pull_start
     # data["pull_time"] = f"{elapsed.seconds}.{elapsed.microseconds}"
@@ -153,6 +147,7 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
 ) -> InitialConnection:
     """
     Create a connection and retrieve some initial data to test the connection.
+    This will return a connected or unconnected InitialConnection object.
 
     Will raise ModbusException on errors
     """
