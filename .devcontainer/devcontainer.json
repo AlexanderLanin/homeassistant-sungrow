@@ -1,10 +1,32 @@
 {
     "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
-    "postCreateCommand": "pip3 install poetry && poetry config virtualenvs.in-project true && poetry install --no-interaction && echo 'source $(poetry env info --path)/bin/activate' >> ~/.bashrc",
+    "features": {
+        "ghcr.io/devcontainers-contrib/features/pipx-package": {},
+        "ghcr.io/devcontainers-contrib/features/poetry": {},
+        "ghcr.io/stuartleeks/dev-container-features/shell-history": {}
+    },
+    "postCreateCommand": "poetry config virtualenvs.in-project true && poetry install --no-interaction",
+    "postAttachCommand": "poetry shell",
     "customizations": {
         "vscode": {
-            // virtualenvs.in-project seems a better choice, as we get .venv easily accessible!
-            // "python.venvPath": "~/.cache/pypoetry/virtualenvs",
+            "settings": {
+                "terminal.integrated.profiles.linux": {
+                    "poetry-shell": {
+                        "path": "poetry",
+                        "icon": "terminal-bash",
+                        "args": [
+                            "shell"
+                        ]
+                    }
+                },
+                "[python]": {
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.ruff": true,
+                        "source.organizeImports": true
+                    }
+                },
+                "python.venvPath": "${containerWorkspaceFolder}/.venv"
+            },
             "extensions": [
                 "charliermarsh.ruff",
                 "ryanluker.vscode-coverage-gutters",
