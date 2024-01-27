@@ -17,8 +17,8 @@ DatapointValueType = signals.DatapointValueType
 async def pull_raw_signals(
     client: modbus_py.ModbusConnectionBase,
     signal_definitions: list[signals.SungrowSignalDefinition],
-) -> dict[str, DatapointValueType] | None:
-    """Pull data from inverter. Return None on failure."""
+) -> dict[str, DatapointValueType]:
+    """Pull data from inverter"""
 
     data: dict[str, DatapointValueType] = {}
 
@@ -194,10 +194,12 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
         return InitialConnection(None, signal_definitions, {})
 
     try:
-        data = await pull_raw_signals(connection_obj, query)
-        if not data:
-            # TODO does this happen when the connected to a non modbus port?
-            raise modbus_base.CannotConnectError("Failed to pull data from inverter")
+        try:
+            data = await pull_raw_signals(connection_obj, query)
+        except modbus_base.ModbusError:
+            # TCP Connected. But counterpart is potentially not a modbus server!
+            connection_obj.disconnect()
+            return InitialConnection(None, signal_definitions, {})
 
         ic = InitialConnection(connection_obj, signal_definitions, data)
 
@@ -239,6 +241,9 @@ class SungrowInverter:
 
     @staticmethod
     async def create(ic: InitialConnection):
+        if not ic.connection:
+            raise RuntimeError("Not connected")
+
         # TODO: move all of this to __init__!!
 
         # We now need to pull all data which belongs to a group,

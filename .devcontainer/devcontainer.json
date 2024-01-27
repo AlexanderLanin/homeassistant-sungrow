@@ -5,11 +5,16 @@
         "ghcr.io/devcontainers-contrib/features/poetry": {},
         "ghcr.io/stuartleeks/dev-container-features/shell-history": {}
     },
-    "postCreateCommand": "poetry config virtualenvs.in-project true && poetry install --no-interaction",
-    "postAttachCommand": "poetry shell",
+    // poetry installs everything to a virtual environment, which is actually super annoying.
+    // As there is no convoinient way to always activate it, we add activation to .bashrc
+    "updateContentCommand": "poetry config virtualenvs.in-project true && poetry install --no-interaction --no-ansi && echo 'source $(poetry env info --path)/bin/activate' >> ~/.bashrc",
+    // This keeps VS Code GUI stuck in "Configuring Dev Container" :-(
+    // "postAttachCommand": "poetry shell",
+    // "postStartCommand": "poetry shell",
     "customizations": {
         "vscode": {
             "settings": {
+                // This is actually not needed, as we add .venv/bin/activate to .bashrc
                 "terminal.integrated.profiles.linux": {
                     "poetry-shell": {
                         "path": "poetry",
@@ -27,7 +32,7 @@
                 },
                 "python.venvPath": "${containerWorkspaceFolder}/.venv",
                 "python.testing.pytestArgs": [
-                    "tests"
+                    "${containerWorkspaceFolder}/tests"
                 ],
                 "python.testing.unittestEnabled": false,
                 "python.testing.pytestEnabled": true,
