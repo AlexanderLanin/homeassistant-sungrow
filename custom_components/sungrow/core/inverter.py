@@ -188,7 +188,7 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
     )
 
     connection_obj = connection_class(host=host, port=port, slave=slave)
-    if not connection_obj.connect():
+    if not await connection_obj.connect():
         # Don't even return the connection object, as it's not connected.
         # This should reduce consequent bugs of handling an unconnected object.
         return InitialConnection(None, signal_definitions, {})
@@ -198,7 +198,7 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
             data = await pull_raw_signals(connection_obj, query)
         except modbus_base.ModbusError:
             # TCP Connected. But counterpart is potentially not a modbus server!
-            connection_obj.disconnect()
+            await connection_obj.disconnect()
             return InitialConnection(None, signal_definitions, {})
 
         ic = InitialConnection(connection_obj, signal_definitions, data)
