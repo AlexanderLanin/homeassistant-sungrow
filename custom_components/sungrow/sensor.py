@@ -36,6 +36,10 @@ from custom_components.sungrow.core.inverter import (
 )
 from custom_components.sungrow.core.inverter_types import Datapoint
 from custom_components.sungrow.core.modbus_base import CannotConnectError
+from custom_components.sungrow.core.utils import (
+    async_keep_valid_unless_exception,
+    replace_exception,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -166,22 +170,24 @@ async def async_setup_entry(
         # No connection yet. We'll create a new one.
         # (This happens when HA is restarted)
         logger.debug(f"Creating new connection to inverter {sn}")
-        try:
+        with replace_exception(
+            CannotConnectError,
+            ConfigEntryNotReady,
+            "Failed to connect to inverter; retrying later.",
+        ):
+            # When we cannot connect to the inverter at HA startup,
+            # we don't assume wrong address.
+            # We'll assume the inverter is offline at the moment.
             ic = await connect_and_get_basic_data(
                 user_input[CONF_HOST],
                 user_input[CONF_PORT],
                 user_input[CONF_SLAVE],
                 user_input["connection"],
             )
-        except CannotConnectError:
-            # When we cannot connect to the inverter at HA startup,
-            # we don't assume wrong address.
-            # We'll assume the inverter is offline at the moment.
-            raise ConfigEntryNotReady(
-                "Failed to connect to inverter; retrying later."
-            ) from None
 
-    async with await SungrowInverter.create(ic) as inverter:
+    async with async_keep_valid_unless_exception(
+        await SungrowInverter.create(ic)
+    ) as inverter:
         update_interval = max(
             timedelta(seconds=user_input.get(CONF_SCAN_INTERVAL, 60)),
             MIN_TIME_BETWEEN_UPDATES,
@@ -213,8 +219,6 @@ async def async_setup_entry(
         )
         logger.warning(f"async_setup_entry -> async_add_entities({len(entities)})")
         async_add_entities(entities, update_before_add=True)
-
-        inverter.detach()
 
 
 class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):

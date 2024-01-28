@@ -26,9 +26,11 @@
                 },
                 "[python]": {
                     "editor.codeActionsOnSave": {
-                        "source.fixAll.ruff": true,
+                        // This is actually annoying: you cannot e.g. add an unused imort which you want to use in 10 seconds.
+                        // "source.fixAll.ruff": true,
                         "source.organizeImports": true
-                    }
+                    },
+                    "editor.defaultFormatter": "charliermarsh.ruff"
                 },
                 "python.venvPath": "${containerWorkspaceFolder}/.venv",
                 "python.testing.pytestArgs": [

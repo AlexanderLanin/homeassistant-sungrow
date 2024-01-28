@@ -7,7 +7,15 @@ from typing import Final, cast
 
 from custom_components.sungrow.core.inverter_types import Datapoint
 
-from . import deserialize, extra_sensors, modbus_base, modbus_http, modbus_py, signals
+from . import (
+    deserialize,
+    extra_sensors,
+    modbus_base,
+    modbus_http,
+    modbus_py,
+    signals,
+    utils,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -67,41 +75,25 @@ def mark_unavailable_signals_as_disabled(
 
 @dataclass
 class InitialConnection:
-    connection: modbus_py.ModbusConnectionBase | None
+    connection: modbus_py.ModbusConnectionBase
     signal_definitions: signals.SignalDefinitions
     data: dict[str, DatapointValueType]
 
     _is_modbus_winet: bool | None = None
-    _is_context_managed = 0
 
     async def __aenter__(self):
-        self._is_context_managed += 1
-        if self.connection:
-            await self.connection.__aenter__()
+        await self.connection.__aenter__()
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        self._is_context_managed -= 1
-
-        # TODO: in case we need nested context managing, remove this assert and
-        # consider implications.
-        assert self._is_context_managed == 0
-
-        if self.connection:
-            await self.connection.__aexit__(exc_type, exc_value, traceback)
-
-    @property
-    def is_context_managed(self):
-        return self._is_context_managed > 0
+        await self.connection.__aexit__(exc_type, exc_value, traceback)
 
     async def is_modbus_winet(self):
         """Lazy cached evaluation."""
-        if not self.connection:
-            raise RuntimeError("Not connected")
-
         if self._is_modbus_winet is None:
+            # FIXME: are the same registers unsupported via pymodbus and http?
             if isinstance(self.connection, modbus_http.HttpConnection):
-                self._is_modbus_winet = False
+                self._is_modbus_winet = True
             else:
                 # array_insulation_resistance is not supported by WiNet dongle
                 signal = self.signal_definitions.get_signal_definition_by_name(
@@ -139,7 +131,7 @@ def convert_raw_data_to_datapoints(
     return data
 
 
-async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
+async def connect_and_get_basic_data(  # (TODO: redesign)
     host: str,
     port: int | None,
     slave: int | None,
@@ -149,7 +141,10 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
     Create a connection and retrieve some initial data to test the connection.
     This will return a connected or unconnected InitialConnection object.
 
-    Will raise ModbusException on errors
+    Will raise CannotConnectException when connection fails and generic ModbusError on
+    other problems.
+    This is to make error handling easier for the caller, otherwise we would have to
+    check for not connected and for exceptions.
     """
 
     # TODO: try http first, then fall back to modbus
@@ -175,6 +170,7 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
 
     signal_definitions = signals.load_yaml()
 
+    # TODO: maybe add all static signals to the query?
     query = signal_definitions.get_signal_definitions_by_name(
         [
             # basic infos:
@@ -187,19 +183,10 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
         ]
     )
 
-    connection_obj = connection_class(host=host, port=port, slave=slave)
-    if not await connection_obj.connect():
-        # Don't even return the connection object, as it's not connected.
-        # This should reduce consequent bugs of handling an unconnected object.
-        return InitialConnection(None, signal_definitions, {})
-
-    try:
-        try:
-            data = await pull_raw_signals(connection_obj, query)
-        except modbus_base.ModbusError:
-            # TCP Connected. But counterpart is potentially not a modbus server!
-            await connection_obj.disconnect()
-            return InitialConnection(None, signal_definitions, {})
+    async with utils.async_keep_valid_unless_exception(
+        connection_class(host=host, port=port, slave=slave)
+    ) as connection_obj:
+        data = await pull_raw_signals(connection_obj, query)
 
         ic = InitialConnection(connection_obj, signal_definitions, data)
 
@@ -229,9 +216,6 @@ async def connect_and_get_basic_data(  # noqa: C901 (TODO: redesign)
             logger.debug("Not a WiNet dongle; all signals are supported")
 
         return ic
-    except Exception:
-        await connection_obj.disconnect()
-        raise
 
 
 class SungrowInverter:
@@ -332,17 +316,10 @@ class SungrowInverter:
                 return on_error
 
     async def __aenter__(self):
-        self._detached = False
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        if not self._detached:
-            await self.disconnect()
-
-    def detach(self):
-        """Detach from the context manager."""
-        self._detached = True
-        return self
+        await self.disconnect()
 
     @property
     def serial_number(self):

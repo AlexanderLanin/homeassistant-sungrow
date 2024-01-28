@@ -55,34 +55,26 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
                 user_input[CONF_SLAVE],
                 user_input["connection"],
             ) as ic:
-                if ic.connection:
-                    # Connection established
+                # Store the inverter in hass.data, so we can access it from the sensor
+                # platform without establishing a new connection.
+                self.hass.data.setdefault(DOMAIN, {"inverters": {}})
+                self.hass.data[DOMAIN]["inverters"][ic.data["serial_number"]] = ic
 
-                    # Store the inverter in hass.data, so we can access it from the sensor
-                    # platform without establishing a new connection.
-                    self.hass.data.setdefault(DOMAIN, {"inverters": {}})
-                    self.hass.data[DOMAIN]["inverters"][ic.data["serial_number"]] = ic
+                # We need to pass the serial number to the sensor platform,
+                # otherwise it won't know which connection to use.
+                # data will be stored persistently in the config entry.
+                # So we want to keep it as small as possible.
+                data = dict(user_input)
+                data["serial_number"] = ic.data["serial_number"]
 
-                    # We need to pass the serial number to the sensor platform,
-                    # otherwise it won't know which connection to use.
-                    # data will be stored persistently in the config entry.
-                    # So we want to keep it as small as possible.
-                    data = dict(user_input)
-                    data["serial_number"] = ic.data["serial_number"]
-
-                    return self.async_create_entry(
-                        # Note: name can be changed in the UI!
-                        title="Sungrow Inverter "
-                        + slave_master_standalone_str(ic.data),
-                        data=data,
-                        # TODO: description=f"Found inverter {inverter.serial_number}", etc
-                    )
-                else:
-                    #  Connection failed
-                    errors = {"base": "cannot_connect"}
-                    return await self._async_show_user_form(user_input, errors)
-        except modbus_base.CannotConnectError as e:
-            #  Some serious error beyond connection problems
-            logger.error(f"Cannot connect to inverter: {e}")
+                return self.async_create_entry(
+                    # Note: name can be changed in the UI!
+                    title="Sungrow Inverter "
+                    + slave_master_standalone_str(ic.data),
+                    data=data,
+                    # TODO: description=f"Found inverter {inverter.serial_number}", etc
+                )
+        except modbus_base.ModbusError as e:
+            logger.debug(f"Cannot connect to inverter: {e}")
             errors = {"base": f"cannot_connect: {e}"}
             return await self._async_show_user_form(user_input, errors)

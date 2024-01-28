@@ -100,7 +100,6 @@ class ModbusConnectionBase:
         self._host = host
         self._port = port
         self._slave = slave
-        self._detached = False
         self._stats = ModbusConnectionBase.Stats()
 
         # These signals are not supported by the inverter.
@@ -114,11 +113,6 @@ class ModbusConnectionBase:
     @property
     def stats(self):
         return self._stats
-
-    def detach(self):
-        """Detach from context manager."""
-        self._detached = True
-        return self
 
     async def connect(self):
         # Note: for proper stats, you need to increase self._stats.connections
@@ -164,16 +158,12 @@ class ModbusConnectionBase:
         logger.debug(f"__aenter__({self._host}, {self._port}, {self._slave})")
         if not await self.connect():
             raise CannotConnectError("Cannot connect to inverter")
-        self._detached = False  # TODO: _detached might need to be an int counter!
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         """Called on 'async with' exit."""
-        logger.debug(
-            f"__aexit__({self._host}, {self._port}, {self._slave}) ({self._detached})"
-        )
-        if not self._detached:
-            await self.disconnect()
+        logger.debug(f"__aexit__({self._host}, {self._port}, {self._slave})")
+        await self.disconnect()
 
     async def _call_read_raw(self, range: RegisterRange) -> RawData:
         """Wrapper for _read_range() that returns RawData."""
