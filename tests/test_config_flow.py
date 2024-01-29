@@ -80,7 +80,9 @@ async def start_config_flow(hass: HomeAssistant) -> str:
     return result["flow_id"]
 
 
-async def simulate_config_flow_input(hass: HomeAssistant, port: int, slave: int):
+async def simulate_config_flow_input(
+    hass: HomeAssistant, port: int, slave: int, connection: str
+):
     flow_id = await start_config_flow(hass)
 
     return await hass.config_entries.flow.async_configure(
@@ -89,6 +91,7 @@ async def simulate_config_flow_input(hass: HomeAssistant, port: int, slave: int)
             CONF_HOST: "localhost",
             CONF_PORT: port,
             CONF_SLAVE: slave,
+            "connection": connection,
         },
     )
 
@@ -111,9 +114,11 @@ async def test_non_responding_inverter(hass: HomeAssistant):
         assert result["errors"]["base"].startswith("cannot_connect")
 
 
-async def test_config_flow_detects_modbus(hass: HomeAssistant, bypass_setup_fixture):
+async def test_config_flow_connects_to_modbus(
+    hass: HomeAssistant, bypass_setup_fixture
+):
     async with e2e_setup.simulate_modbus_inverter("dump_master.yaml") as port:
-        result = await simulate_config_flow_input(hass, port, 0)
+        result = await simulate_config_flow_input(hass, port, 0, "modbus")
 
     assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
     assert not result.get("errors")
@@ -121,11 +126,15 @@ async def test_config_flow_detects_modbus(hass: HomeAssistant, bypass_setup_fixt
     pprint(result)
 
 
-async def test_config_flow_detects_http(hass: HomeAssistant, bypass_setup_fixture):
+async def test_config_flow_connects_to_http(hass: HomeAssistant, bypass_setup_fixture):
+    # Note: this test might trigger error logs from aiohttp. Ignore them.
     async with e2e_setup.simulated_http_inverter("dump_master.yaml") as port:
-        result = await simulate_config_flow_input(hass, port, 0)
+        result = await simulate_config_flow_input(hass, port, 0, "http")
 
     assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
     assert not result.get("errors")
 
     pprint(result)
+
+
+# TODO: test_config_flow_detects_http, test_config_flow_detects_modbus

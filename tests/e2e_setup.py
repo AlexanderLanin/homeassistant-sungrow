@@ -58,11 +58,13 @@ def use_yaml_for_responses(
 async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
     # TODO: since we have aiohttp here anyway, do we need httpx?
     async def http_handler(request):
+        logger.warning(f"Got http request: {request}")
         # return web.Response(text="Hello, world")
         data = {"some": "data"}
         return web.json_response(data)
 
     async def websocket_handler(request):
+        logger.warning(f"Got websocket request: {request}")
         ws = web.WebSocketResponse()
         await ws.prepare(request)
 
@@ -85,19 +87,28 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
     pytest_socket.enable_socket()
 
     app = web.Application()
-    app.add_routes([web.get("/", http_handler), web.get("/ws", websocket_handler)])
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.addHandler(logging.StreamHandler())
+
+    app.add_routes(
+        [web.get("/", http_handler), web.get("/ws/home/overview", websocket_handler)]
+    )
     runner = web.AppRunner(app)
     await runner.setup()
 
     site = web.TCPSite(runner, "0.0.0.0", 0)
+
     await site.start()
 
-    port = site._server.sockets[0].getsockname()[1]  # type: ignore
+    port = runner.addresses[0][1]
     assert port
     assert isinstance(port, int), port
+    logger.debug(f"Started web server on port {port}")
+
     try:
         yield port
     finally:
+        logger.debug("Stopping web server")
         await runner.cleanup()
 
 

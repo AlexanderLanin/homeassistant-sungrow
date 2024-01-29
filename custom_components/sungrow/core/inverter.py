@@ -169,7 +169,10 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
     check for not connected and for exceptions.
     """
 
+    logger.debug(f"Connecting to {host}:{port} (slave {slave}) with {connection}")
+
     # TODO: try http first, then fall back to modbus
+    # TODO: improve guess from port, if port is given
     connection_class: type[modbus_base.ModbusConnectionBase]
     if connection is None:
         connection_class = modbus_http.HttpConnection

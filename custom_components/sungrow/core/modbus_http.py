@@ -51,7 +51,8 @@ class HttpConnection(ModbusConnectionBase):
 
         endpoint = f"ws://{self._host}:{self._port}/ws/home/overview"
         try:
-            socket = create_connection(endpoint, timeout=2)
+            logger.debug(f"Connecting to websocket server at {endpoint}")
+            socket = create_connection(endpoint, timeout=7)
         except Exception as e:
             # FIXME: this is actually debug, but I want to see what it looks like
             logger.warning(e)

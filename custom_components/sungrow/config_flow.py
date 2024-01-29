@@ -27,7 +27,7 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
             vol.Optional(CONF_PORT, default=user_input.get(CONF_PORT, "")): int,
             vol.Optional(CONF_SLAVE, default=user_input.get(CONF_SLAVE, "")): int,
             vol.Optional(
-                "connection", default=user_input.get("connection", "modbus")
+                "connection", default=user_input.get("connection", "auto")
             ): SelectSelector(
                 SelectSelectorConfig(
                     options=["auto", "modbus", "http"], translation_key="connection"
@@ -48,14 +48,19 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is None:
             return await self._async_show_user_form({}, {})
 
+        # TODO: schema has two ways of specifying defaults. Which one is better?
+        host: str = user_input[CONF_HOST]
+        port: int = user_input[CONF_PORT]
+        slave: int = user_input[CONF_SLAVE]
+        connection: str | None = (
+            None if user_input["connection"] == "auto" else user_input["connection"]
+        )
+
         try:
-            ic = await connect_and_get_basic_data(
-                user_input[CONF_HOST],
-                user_input[CONF_PORT],
-                user_input[CONF_SLAVE],
-                user_input["connection"],
-            )
+            ic = await connect_and_get_basic_data(host, port, slave, connection)
             if ic:
+                logger.debug(f"Connected to inverter: {ic.data}")
+
                 # Store the inverter in hass.data, so we can access it from the sensor
                 # platform without establishing a new connection.
                 self.hass.data.setdefault(DOMAIN, {"inverters": {}})
