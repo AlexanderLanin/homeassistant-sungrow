@@ -206,14 +206,17 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
     )
 
     connection_obj = connection_class(host=host, port=port, slave=slave)
-    if not connection_obj:
+    if not await connection_obj.connect():
+        # TCP error
         return None
 
     else:
         try:
             data = await pull_raw_signals(connection_obj, query)
         except modbus_base.ModbusError:
-            # It's probably not a modbus device
+            # TCP success, but no data -> it's probably not a modbus device.
+            # Or wrong slave.
+            await connection_obj.disconnect()
             return None
 
         logger.debug(
