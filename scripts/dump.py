@@ -66,9 +66,11 @@ async def collect_data_from(
 
     info("Attempting to connect...")
     try:
-        async with await connect_and_get_basic_data(
+        ic = await connect_and_get_basic_data(
             host, port=port, slave=slave, connection=connection_mode
-        ) as ic:
+        )
+        assert ic
+        async with ic:
             logger.info(f"{host}/{slave}/pymodbus: Connected")
 
             raw_data = await ic.connection.read_raw(

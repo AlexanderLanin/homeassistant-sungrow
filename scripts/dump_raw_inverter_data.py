@@ -23,18 +23,20 @@ async def main():
 
 
 async def dump(host: str, port: int, slave: int, filename: str) -> None:
-    async with await inverter.connect_and_get_basic_data(
-        host, port, slave, "pymodbus"
-    ) as ic:
-        raw_data = await ic.connection.read_raw(
-            ic.signal_definitions.enabled_modbus_signals()
-        )
+    ic = await inverter.connect_and_get_basic_data(host, port, slave, "pymodbus")
+    assert ic
+    raw_data = await ic.connection.read_raw(
+        ic.signal_definitions.enabled_modbus_signals()
+    )
+    ic.connection.disconnect()
 
     signal_raw_data = modbus_base.map_raw_to_signals(
         raw_data, ic.signal_definitions.enabled_modbus_signals()
     )
 
-    signal_data = deserialize.decode_signals(ic.signal_definitions, signal_raw_data)
+    signal_data = deserialize.decode_signals(
+        ic.signal_definitions.enabled_signals(), signal_raw_data
+    )
 
     with open(filename, "w") as dump_file:
         yaml.dump(

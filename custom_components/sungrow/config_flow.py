@@ -49,12 +49,13 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
             return await self._async_show_user_form({}, {})
 
         try:
-            async with await connect_and_get_basic_data(
+            ic = await connect_and_get_basic_data(
                 user_input[CONF_HOST],
                 user_input[CONF_PORT],
                 user_input[CONF_SLAVE],
                 user_input["connection"],
-            ) as ic:
+            )
+            if ic:
                 # Store the inverter in hass.data, so we can access it from the sensor
                 # platform without establishing a new connection.
                 self.hass.data.setdefault(DOMAIN, {"inverters": {}})
@@ -69,12 +70,17 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
 
                 return self.async_create_entry(
                     # Note: name can be changed in the UI!
-                    title="Sungrow Inverter "
-                    + slave_master_standalone_str(ic.data),
+                    title="Sungrow Inverter " + slave_master_standalone_str(ic.data),
                     data=data,
                     # TODO: description=f"Found inverter {inverter.serial_number}", etc
                 )
+            else:
+                logger.debug("Cannot connect to inverter")
+                return await self._async_show_user_form(
+                    user_input, {"base": "cannot_connect"}
+                )
         except modbus_base.ModbusError as e:
             logger.debug(f"Cannot connect to inverter: {e}")
-            errors = {"base": f"cannot_connect: {e}"}
-            return await self._async_show_user_form(user_input, errors)
+            return await self._async_show_user_form(
+                user_input, {"base": f"cannot_connect: {e}"}
+            )

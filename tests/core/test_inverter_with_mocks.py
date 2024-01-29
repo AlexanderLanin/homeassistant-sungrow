@@ -25,6 +25,7 @@ async def test_create_inverter_with_mocked_modbus():
         ic = await inverter.connect_and_get_basic_data(
             host="<fake ip>", port=502, slave=1, connection="pymodbus"
         )
+        assert ic
 
         # inv = await inverter.SungrowInverter.create(
         #     {"host": "<fake ip>", "port": 502, "unit": 1}

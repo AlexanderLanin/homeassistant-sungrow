@@ -14,7 +14,6 @@ from . import (
     modbus_http,
     modbus_py,
     signals,
-    utils,
 )
 
 logger = logging.getLogger(__name__)
@@ -115,6 +114,29 @@ class InitialConnection:
                     self._is_modbus_winet = False
         return self._is_modbus_winet
 
+    async def disable_winet_signals_in_case_of_winet_dongle(self):
+        if await self.is_modbus_winet():
+            logger.debug("Disabling all WiNet unsupported signals")
+            self.signal_definitions.disable_winet_signals()
+        else:
+            logger.debug("Not a WiNet dongle; all signals are supported")
+
+    def disable_signals_not_supported_by_model(self):
+        """Disable signals which are not supported by the inverter model."""
+
+        if isinstance(self.data["device_type_code"], int):
+            logger.info(
+                f"Unknown inverter model detected: {self.data['device_type_code']}. "
+                "Please report this to the developers."
+            )
+        else:
+            # Now that we have the model, we can disable unsupported signals.
+            # This is required, as querying a hundred unsupported signals, will result
+            # in 100 queries (best case).
+            self.signal_definitions.mark_signals_not_in_this_model_as_disabled(
+                self.data["device_type_code"]
+            )
+
 
 def convert_raw_data_to_datapoints(
     raw_data: dict[str, DatapointValueType],
@@ -136,7 +158,7 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
     port: int | None,
     slave: int | None,
     connection: str | None,
-) -> InitialConnection:
+) -> InitialConnection | None:
     """
     Create a connection and retrieve some initial data to test the connection.
     This will return a connected or unconnected InitialConnection object.
@@ -183,38 +205,25 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
         ]
     )
 
-    async with utils.async_keep_valid_unless_exception(
-        connection_class(host=host, port=port, slave=slave)
-    ) as connection_obj:
-        data = await pull_raw_signals(connection_obj, query)
+    connection_obj = connection_class(host=host, port=port, slave=slave)
+    if not connection_obj:
+        return None
 
-        ic = InitialConnection(connection_obj, signal_definitions, data)
+    else:
+        try:
+            data = await pull_raw_signals(connection_obj, query)
+        except modbus_base.ModbusError:
+            # It's probably not a modbus device
+            return None
 
         logger.debug(
             "Connected to inverter "
             f"{data['device_type_code']} / {data['serial_number']}"
         )
-        logger.debug(f"Data: {data}")
 
-        if isinstance(data["device_type_code"], int):
-            logger.info(
-                f"Unknown inverter type code detected: {data['device_type_code']}. "
-                "Please report this to the developers."
-            )
-        else:
-            # Now that we have the model, we can disable unsupported signals.
-            # This is required, as querying a hundred unsupported signals, will result
-            # in 100 queries (best case).
-            signal_definitions.mark_signals_not_in_this_model_as_disabled(
-                data["device_type_code"]
-            )
-
-        if await ic.is_modbus_winet():
-            logger.debug("Disabling all WiNet unsupported signals")
-            ic.signal_definitions.disable_winet_signals()
-        else:
-            logger.debug("Not a WiNet dongle; all signals are supported")
-
+        ic = InitialConnection(connection_obj, signal_definitions, data)
+        ic.disable_signals_not_supported_by_model()
+        await ic.disable_winet_signals_in_case_of_winet_dongle()
         return ic
 
 

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
-from typing import cast
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.sensor.const import (
@@ -36,10 +35,6 @@ from custom_components.sungrow.core.inverter import (
 )
 from custom_components.sungrow.core.inverter_types import Datapoint
 from custom_components.sungrow.core.modbus_base import CannotConnectError
-from custom_components.sungrow.core.utils import (
-    async_keep_valid_unless_exception,
-    replace_exception,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +143,39 @@ class InverterCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("Failed pulling data from Sungrow Inverter")
 
 
+async def fetch_or_establish_connection(
+    user_input: dict[str, str | int], data: dict[str, InitialConnection]
+):
+    sn = user_input["serial_number"]
+    assert isinstance(sn, str)
+    if sn in data:
+        # We already have a connection to this inverter. We'll reuse that one.
+        # (This happens when a new config entry is created via config_flow)
+        logger.debug(f"Reusing existing connection to inverter {sn}")
+        ic = data[sn]
+    else:
+        # No connection yet. We'll create a new one.
+        # (This happens when HA is restarted)
+        logger.debug(f"Creating new connection to inverter {sn}")
+        try:
+            # When we cannot connect to the inverter at HA startup,
+            # we don't assume wrong address.
+            # We'll assume the inverter is offline at the moment.
+            ic = await connect_and_get_basic_data(
+                user_input[CONF_HOST],  # type: ignore
+                user_input[CONF_PORT],  # type: ignore
+                user_input[CONF_SLAVE],  # type: ignore
+                user_input["connection"],  # type: ignore
+            )
+        except CannotConnectError:
+            raise ConfigEntryNotReady(
+                "Failed to connect to inverter; retrying later."
+            ) from None
+        data[sn] = ic
+
+    return ic
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -160,65 +188,43 @@ async def async_setup_entry(
     """
     user_input = config_entry.data
 
-    sn = user_input["serial_number"]
-    if sn in hass.data[DOMAIN]["inverters"]:
-        # We already have a connection to this inverter. We'll reuse that one.
-        # (This happens when a new config entry is created via config_flow)
-        logger.debug(f"Reusing existing connection to inverter {sn}")
-        ic = cast(InitialConnection, hass.data[DOMAIN]["inverters"][sn])
-    else:
-        # No connection yet. We'll create a new one.
-        # (This happens when HA is restarted)
-        logger.debug(f"Creating new connection to inverter {sn}")
-        with replace_exception(
-            CannotConnectError,
-            ConfigEntryNotReady,
-            "Failed to connect to inverter; retrying later.",
-        ):
-            # When we cannot connect to the inverter at HA startup,
-            # we don't assume wrong address.
-            # We'll assume the inverter is offline at the moment.
-            ic = await connect_and_get_basic_data(
-                user_input[CONF_HOST],
-                user_input[CONF_PORT],
-                user_input[CONF_SLAVE],
-                user_input["connection"],
-            )
+    ic = await fetch_or_establish_connection(user_input, hass.data[DOMAIN]["inverters"])
 
-    async with async_keep_valid_unless_exception(
-        await SungrowInverter.create(ic)
-    ) as inverter:
-        update_interval = max(
-            timedelta(seconds=user_input.get(CONF_SCAN_INTERVAL, 60)),
-            MIN_TIME_BETWEEN_UPDATES,
-        )
-        coordinator = InverterCoordinator(
-            hass,
-            inverter=inverter,
-            update_interval=update_interval,
-        )
+    # Note: from here on we don't disconnect the inverter on error.
+    # We keep the connection open within hass.data
 
-        # Fetch data once so it's available for the first update.
-        # ToDo: is this really needed?
-        # await coordinator.async_config_entry_first_refresh()
+    inverter = await SungrowInverter.create(ic)
+    update_interval = max(
+        timedelta(seconds=user_input.get(CONF_SCAN_INTERVAL, 60)),
+        MIN_TIME_BETWEEN_UPDATES,
+    )
+    coordinator = InverterCoordinator(
+        hass,
+        inverter=inverter,
+        update_interval=update_interval,
+    )
 
-        # Register our inverter device
-        dr = device_registry.async_get(hass)
-        device_entry = dr.async_get_or_create(
-            config_entry_id=config_entry.entry_id,
-            identifiers={(DOMAIN, inverter.serial_number)},
-            manufacturer="Sungrow",
-            # Note: name can be changed in the UI!
-            name=f"Sungrow {inverter.slave_master_standalone}",
-            model=inverter.model,
-            serial_number=inverter.serial_number,
-        )
+    # Fetch data once so it's available for the first update.
+    # ToDo: is this really needed?
+    # await coordinator.async_config_entry_first_refresh()
 
-        entities = await create_sensor_entities(
-            inverter, device_entry.identifiers, coordinator
-        )
-        logger.warning(f"async_setup_entry -> async_add_entities({len(entities)})")
-        async_add_entities(entities, update_before_add=True)
+    # Register our inverter device
+    dr = device_registry.async_get(hass)
+    device_entry = dr.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={(DOMAIN, inverter.serial_number)},
+        manufacturer="Sungrow",
+        # Note: name can be changed in the UI!
+        name=f"Sungrow {inverter.slave_master_standalone}",
+        model=inverter.model,
+        serial_number=inverter.serial_number,
+    )
+
+    entities = await create_sensor_entities(
+        inverter, device_entry.identifiers, coordinator
+    )
+    logger.warning(f"async_setup_entry -> async_add_entities({len(entities)})")
+    async_add_entities(entities, update_before_add=True)
 
 
 class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
