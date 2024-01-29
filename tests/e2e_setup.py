@@ -3,12 +3,14 @@ import logging
 import pathlib
 from contextlib import asynccontextmanager, suppress
 
+import aiohttp
 import pymodbus.datastore
 import pymodbus.framer
 import pymodbus.server
 import pytest
 import pytest_socket  # type: ignore
 import yaml
+from aiohttp import web
 
 from custom_components.sungrow.core import inverter
 
@@ -53,7 +55,54 @@ def use_yaml_for_responses(
 
 
 @asynccontextmanager
-async def simulated_inverter(yaml_file: str | pathlib.Path | None):
+async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
+    # TODO: since we have aiohttp here anyway, do we need httpx?
+    async def http_handler(request):
+        # return web.Response(text="Hello, world")
+        data = {"some": "data"}
+        return web.json_response(data)
+
+    async def websocket_handler(request):
+        ws = web.WebSocketResponse()
+        await ws.prepare(request)
+
+        async for msg in ws:
+            if msg.type == aiohttp.WSMsgType.TEXT:
+                if msg.data == "close":
+                    await ws.close()
+                else:
+                    await ws.send_str(msg.data + "/answer")
+            elif msg.type == aiohttp.WSMsgType.ERROR:
+                print("ws connection closed with exception %s" % ws.exception())
+
+        print("websocket connection closed")
+
+        return ws
+
+    # Block connect() to all hosts except localhost
+    pytest_socket.socket_allow_hosts("localhost")
+    # Restore sockets in general
+    pytest_socket.enable_socket()
+
+    app = web.Application()
+    app.add_routes([web.get("/", http_handler), web.get("/ws", websocket_handler)])
+    runner = web.AppRunner(app)
+    await runner.setup()
+
+    site = web.TCPSite(runner, "0.0.0.0", 0)
+    await site.start()
+
+    port = site._server.sockets[0].getsockname()[1]  # type: ignore
+    assert port
+    assert isinstance(port, int), port
+    try:
+        yield port
+    finally:
+        await runner.cleanup()
+
+
+@asynccontextmanager
+async def simulate_modbus_inverter(yaml_file: str | pathlib.Path | None):
     """
     Simulate a Sungrow inverter by running a Modbus server with a response context
     based on the given yaml file.
@@ -119,7 +168,7 @@ async def sungrow_inverter_client(port, params):
 async def e2e_setup(yaml_file, inverter_params):
     logging.getLogger("pymodbus").setLevel(logging.INFO)
     async with (
-        simulated_inverter(TEST_DATA / yaml_file) as port,
+        simulate_modbus_inverter(TEST_DATA / yaml_file) as port,
         sungrow_inverter_client(port, inverter_params) as inv,
     ):
         yield inv

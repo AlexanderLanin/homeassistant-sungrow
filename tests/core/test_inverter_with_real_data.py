@@ -8,7 +8,7 @@ from pprint import pprint
 import pytest
 
 from custom_components.sungrow.core import inverter, modbus_base
-from tests.e2e_setup import e2e_setup, simulated_inverter
+from tests.e2e_setup import e2e_setup, simulate_modbus_inverter
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -81,7 +81,7 @@ async def test_e2e_fail_no_server():
 
 @pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_fail_wrong_slave():
-    async with simulated_inverter(None) as port:
+    async with simulate_modbus_inverter(None) as port:
         with pytest.raises((modbus_base.InvalidSlaveError, modbus_base.ModbusError)):
             # Note: simulation runs with slave 1
             await inverter.connect_and_get_basic_data(

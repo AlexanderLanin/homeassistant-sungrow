@@ -5,6 +5,7 @@ You can run this file e.g. via:
 clear && pytest -k config_flow --log-cli-level=DEBUG
 """
 import logging
+from pprint import pprint
 from unittest.mock import patch
 
 import pytest
@@ -79,10 +80,23 @@ async def start_config_flow(hass: HomeAssistant) -> str:
     return result["flow_id"]
 
 
+async def simulate_config_flow_input(hass: HomeAssistant, port: int, slave: int):
+    flow_id = await start_config_flow(hass)
+
+    return await hass.config_entries.flow.async_configure(
+        flow_id,
+        user_input={
+            CONF_HOST: "localhost",
+            CONF_PORT: port,
+            CONF_SLAVE: slave,
+        },
+    )
+
+
 async def test_non_responding_inverter(hass: HomeAssistant):
     flow_id = await start_config_flow(hass)
 
-    async with e2e_setup.simulated_inverter(None) as simulated_inverter_port:
+    async with e2e_setup.simulate_modbus_inverter(None) as simulated_inverter_port:
         result = await hass.config_entries.flow.async_configure(
             flow_id,
             user_input={
@@ -97,23 +111,21 @@ async def test_non_responding_inverter(hass: HomeAssistant):
         assert result["errors"]["base"].startswith("cannot_connect")
 
 
-async def test_successful_config_flow_only(hass: HomeAssistant, bypass_setup_fixture):
-    flow_id = await start_config_flow(hass)
+async def test_config_flow_detects_modbus(hass: HomeAssistant, bypass_setup_fixture):
+    async with e2e_setup.simulate_modbus_inverter("dump_master.yaml") as port:
+        result = await simulate_config_flow_input(hass, port, 0)
 
-    async with e2e_setup.simulated_inverter(
-        "dump_master.yaml"
-    ) as simulated_inverter_port:
-        logger.debug(f"Simulated inverter started on port {simulated_inverter_port}")
+    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert not result.get("errors")
 
-        result = await hass.config_entries.flow.async_configure(
-            flow_id,
-            user_input={
-                CONF_HOST: "localhost",
-                CONF_PORT: simulated_inverter_port,
-                CONF_SLAVE: 0,  # TODO: what exactly is vol.Optional passing when empty?
-            },
-        )
+    pprint(result)
 
-        # Flow finished successfully
-        assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
-        assert not result.get("errors")
+
+async def test_config_flow_detects_http(hass: HomeAssistant, bypass_setup_fixture):
+    async with e2e_setup.simulated_http_inverter("dump_master.yaml") as port:
+        result = await simulate_config_flow_input(hass, port, 0)
+
+    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert not result.get("errors")
+
+    pprint(result)

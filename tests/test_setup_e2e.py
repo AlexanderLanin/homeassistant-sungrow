@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 async def test_successful_config_flow_e2e_up_to_sensor_entities(hass: HomeAssistant):
     flow_id = await start_config_flow(hass)
 
-    async with e2e_setup.simulated_inverter(
+    async with e2e_setup.simulate_modbus_inverter(
         "dump_master.yaml"
     ) as simulated_inverter_port:
         logger.debug(f"Simulated inverter started on port {simulated_inverter_port}")
