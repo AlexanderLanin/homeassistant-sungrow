@@ -40,6 +40,7 @@ class PymodbusConnection(ModbusConnectionBase):
         self._client = pymodbus.client.AsyncModbusTcpClient(
             host=host, port=port, timeout=2, retries=1, retry_on_empty=True
         )
+        self._ever_succeeded = False
 
     async def connect(self):
         if self._client.connected:
@@ -50,6 +51,8 @@ class PymodbusConnection(ModbusConnectionBase):
             return await self._client.connect()
 
     async def disconnect(self):
+        self._ever_succeeded = False
+
         # The _client has a 'reconnect_task' which it will cancel and delete on close().
         # But we want to wait for it to actually finish before returning,
         # so we are cleaning up properly.
@@ -93,6 +96,14 @@ class PymodbusConnection(ModbusConnectionBase):
             # Note: sending address = protocol address - 1.
             # This is the only line in the module that needs to know about this detail!
             rr = await func(address_start - 1, count=address_count, slave=self._slave)  # type: ignore
+        except pymodbus.exceptions.ModbusIOException as e:
+            if not self._ever_succeeded:
+                raise modbus_base.InvalidSlaveError() from e
+            else:
+                raise modbus_base.ModbusError(
+                    f"IO error (for {register_type}, "
+                    f"{address_start}-{address_start+address_count})"
+                ) from e
         except pymodbus.ModbusException as e:
             # e.g. no response from device
             raise modbus_base.ModbusError(
@@ -141,4 +152,9 @@ class PymodbusConnection(ModbusConnectionBase):
             )
 
         assert isinstance(rr.registers, list)
+
+        self._ever_succeeded = True
         return rr.registers
+
+    def __str__(self):
+        return f"PymodbusConnection({self._host}, {self._port}, {self._slave})"

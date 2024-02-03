@@ -178,6 +178,7 @@ read:
     address: 5006
     data_type: U32
     unit_of_measurement: "h"
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "internal_temperature"
     level: 2
@@ -230,7 +231,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "mppt_3_current"
     group: mppt3
@@ -239,7 +240,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "total_dc_power" # pv power
     level: 1
@@ -339,49 +340,49 @@ read:
       0x8200: "Dispatch Run"
       0x5500: "Fault"
       0x2500: "Communication Fault"
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_year"
     level: 3
     address: 5039
     data_type: U16
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_month"
     level: 3
     address: 5040
     data_type: U16
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_day"
     level: 3
     address: 5041
     data_type: U16
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_hour"
     level: 3
     address: 5042
     data_type: U16
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_minute"
     level: 3
     address: 5043
     data_type: U16
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_second"
     level: 3
     address: 5045
     data_type: U16
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_code_1" # See Appendix 3
     level: 3
     address: 5045
     data_type: U16
-    models_exclude: ["SH.*", "WiNet"]
+    models_exclude: ["SH*", "WiNet"]
 
   - name: "nominal_reactive_power"
     level: 2
@@ -403,7 +404,7 @@ read:
     address: 5077
     data_type: U32
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "reactive_power_regulation_setpoint"
     level: 2
@@ -431,7 +432,7 @@ read:
       13: "Communication Fault"
       17: "Total Run Bit"
       18: "Total Fault Bit"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "meter_power"
     level: 2
@@ -439,7 +440,8 @@ read:
     data_type: S32
     smart_meter: True
     unit_of_measurement: "W"
-    models: ["SG[0-9]+KTL-MT?"]
+    # Note: this seems to return garbage values on other inverters, instead of proper NotSupported.
+    models: ["SG*KTL-M*"]
     models_exclude: ["WiNet"]
 
   - name: "meter_a_phase_power"
@@ -447,7 +449,8 @@ read:
     address: 5085
     data_type: S32
     unit_of_measurement: "W"
-    models: ["SG[0-9]+KTL-MT?"]
+    # Note: this seems to return garbage values on other inverters, instead of proper NotSupported.
+    models: ["SG*KTL-M*"]
     models_exclude: ["WiNet"]
 
   - name: "meter_b_phase_power"
@@ -455,16 +458,16 @@ read:
     address: 5087
     data_type: S32
     unit_of_measurement: "W"
-    models: ["SG[0-9]+KTL-MT?"]
-    models_exclude: ["WiNet"]
+    # Note: this seems to return garbage values on other inverters, instead of proper NotSupported.
+    models: ["SG*KTL-M*"]
 
   - name: "meter_c_phase_power"
     level: 2
     address: 5089
     data_type: S32
     unit_of_measurement: "W"
-    models: ["SG[0-9]+KTL-MT?"]
-    models_exclude: ["WiNet"]
+    # Note: this seems to return garbage values on other inverters, instead of proper NotSupported.
+    models: ["SG*KTL-M*"]
 
   - name: "meter_load_power"
     level: 2
@@ -472,8 +475,8 @@ read:
     data_type: S32
     smart_meter: True
     unit_of_measurement: "W"
-    models: ["SG[0-9]+KTL-MT?"]
-    models_exclude: ["WiNet"]
+    # Note: this seems to return garbage values on other inverters, instead of proper NotSupported.
+    models: ["SG*KTL-M*"]
 
   - name: "daily_export_energy"
     level: 1
@@ -481,8 +484,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models: ["SG[0-9]+KTL-MT?"]
-    models_exclude: ["WiNet"]
+    models: ["SG*KTL-M*"]
 
   - name: "total_export_energy"
     level: 1
@@ -490,8 +492,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models: ["SG[0-9]+KTL-MT?"]
-    models_exclude: ["WiNet"]
+    models: ["SG*KTL-M*"]
 
   - name: "daily_import_energy"
     level: 1
@@ -499,8 +500,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models: ["SG[0-9]+KTL-MT?"]
-    models_exclude: ["WiNet"]
+    models: ["SG*KTL-M*"]
 
   - name: "total_import_energy"
     level: 1
@@ -508,7 +508,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "daily_direct_energy_consumption"
     level: 1
@@ -516,7 +516,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models: ["SG[0-9]+KTL-MT?"]
+    models: ["SG*KTL-M*"]
     models_exclude: ["WiNet"]
 
   - name: "total_direct_energy_consumption"
@@ -525,7 +525,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models: ["SG[0-9]+KTL-MT?"]
+    models: ["SG*KTL-M*"]
     models_exclude: ["WiNet"]
 
   - name: "daily_running_time"
@@ -533,7 +533,7 @@ read:
     address: 5113
     data_type: U16
     unit_of_measurement: "min"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "mppt_4_voltage"
     models:
@@ -592,8 +592,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_5_voltage"
-    models:
-      ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     group: mppt5
     level: 1
     address: 5117
@@ -603,8 +602,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "mppt_5_current"
-    models:
-      ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     group: mppt5
     level: 1
     address: 5118
@@ -615,7 +613,7 @@ read:
 
   - name: "mppt_6_voltage"
     group: mppt6
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5119
     data_type: U16
@@ -625,7 +623,7 @@ read:
 
   - name: "mppt_6_current"
     group: mppt6
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5120
     data_type: U16
@@ -635,7 +633,7 @@ read:
 
   - name: "mppt_7_voltage"
     group: mppt7
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5121
     data_type: U16
@@ -645,7 +643,7 @@ read:
 
   - name: "mppt_7_current"
     group: mppt7
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5122
     data_type: U16
@@ -655,7 +653,7 @@ read:
 
   - name: "mppt_8_voltage"
     group: mppt8
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5123
     data_type: U16
@@ -665,7 +663,7 @@ read:
 
   - name: "mppt_8_current"
     group: mppt8
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5124
     data_type: U16
@@ -680,11 +678,11 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "mppt_9_voltage"
     group: mppt9
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5130
     data_type: U16
@@ -694,7 +692,7 @@ read:
 
   - name: "mppt_9_current"
     group: mppt9
-    models: ["SG110CX", "SG250HX.*", "SG100CX.*", "SG75CX"]
+    models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     level: 2
     address: 5131
     data_type: U16
@@ -704,7 +702,7 @@ read:
 
   - name: "mppt_10_voltage"
     group: mppt10
-    models: ["SG250HX.*"]
+    models: ["SG250HX*"]
     level: 2
     address: 5132
     data_type: U16
@@ -714,7 +712,7 @@ read:
 
   - name: "mppt_10_current"
     group: mppt10
-    models: ["SG250HX.*"]
+    models: ["SG250HX*"]
     level: 2
     address: 5133
     data_type: U16
@@ -724,7 +722,7 @@ read:
 
   - name: "mppt_11_voltage"
     group: mppt11
-    models: ["SG250HX.*"]
+    models: ["SG250HX*"]
     level: 2
     address: 5134
     data_type: U16
@@ -734,7 +732,7 @@ read:
 
   - name: "mppt_11_current"
     group: mppt11
-    models: ["SG250HX.*"]
+    models: ["SG250HX*"]
     level: 2
     address: 5135
     data_type: U16
@@ -744,7 +742,7 @@ read:
 
   - name: "mppt_12_voltage"
     group: mppt12
-    models: ["SG250HX.*"]
+    models: ["SG250HX*"]
     level: 2
     address: 5136
     data_type: U16
@@ -754,7 +752,7 @@ read:
 
   - name: "mppt_12_current"
     group: mppt12
-    models: ["SG250HX.*"]
+    models: ["SG250HX*"]
     level: 2
     address: 5137
     data_type: U16
@@ -769,7 +767,7 @@ read:
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "negative_voltage_to_the_ground"
     level: 3
@@ -803,7 +801,7 @@ read:
       2: "PID Recover Operation"
       4: "Anti-PID Operation"
       8: "PID Abnormity"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "pid_alarm_code"
     level: 2
@@ -813,7 +811,7 @@ read:
       432: "PID resistance abnormal"
       433: "PID function abnormal"
       434: "PID overvoltage/overcurrent protection"
-    models_exclude: ["WiNet"]
+    models_exclude: ["SH8.0RT-20"]
 
   - name: "export_power"
     level: 2
@@ -1075,7 +1073,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["SG*", "LP_P34KSG"]
 
   - name: "string_2_current"
     level: 2
@@ -1083,7 +1081,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["SG*", "LP_P34KSG"]
 
   - name: "string_3_current"
     level: 2
@@ -1091,63 +1089,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models:
-      [
-        "SG30KTL",
-        "SG10KTL",
-        "SG12KTL",
-        "SG15KTL",
-        "SG20KTL",
-        "SG30KU",
-        "SG36KTL",
-        "SG36KU",
-        "SG40KTL",
-        "SG40KTL-M",
-        "SG50KTL-M",
-        "SG60KTL-M",
-        "SG60KU",
-        "SG30KTL-M",
-        "SG30KTL-M-V31",
-        "SG33KTL-M",
-        "SG36KTL-M",
-        "SG33K3J",
-        "SG49K5J",
-        "SG34KJ",
-        "LP_P34KSG",
-        "SG50KTL-M-20",
-        "SG60KTL",
-        "SG80KTL",
-        "SG80KTL-20",
-        "SG60KU-M",
-        "SG10KTL-MT",
-        "SG12KTL-M",
-        "SG15KTL-M",
-        "SG17KTL-M",
-        "SG20KTL-M",
-        "SG80KTL-M",
-        "SG111HV",
-        "SG125HV",
-        "SG125HV-20",
-        "SG30CX",
-        "SG33CX",
-        "SG36CX-US",
-        "SG40CX",
-        "SG50CX",
-        "SG60CX-US",
-        "SG110CX",
-        "SG250HX",
-        "SG250HX-US",
-        "SG100CX",
-        "SG100CX-JP",
-        "SG250HX-IN",
-        "SG25CX-SA",
-        "SG75CX",
-        "SG7.0RT",
-        "SG8.0RT",
-        "SG10RT",
-        "SG12RT",
-      ]
-    models_exclude: ["WiNet"]
+    models: ["SG*", "LP_P34KSG"]
 
   - name: "string_4_current"
     level: 2
@@ -1155,59 +1097,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models:
-      [
-        "SG30KTL",
-        "SG10KTL",
-        "SG12KTL",
-        "SG15KTL",
-        "SG20KTL",
-        "SG30KU",
-        "SG36KTL",
-        "SG36KU",
-        "SG40KTL",
-        "SG40KTL-M",
-        "SG50KTL-M",
-        "SG60KTL-M",
-        "SG60KU",
-        "SG30KTL-M",
-        "SG30KTL-M-V31",
-        "SG33KTL-M",
-        "SG36KTL-M",
-        "SG33K3J",
-        "SG49K5J",
-        "SG34KJ",
-        "LP_P34KSG",
-        "SG50KTL-M-20",
-        "SG60KTL",
-        "SG80KTL",
-        "SG80KTL-20",
-        "SG60KU-M",
-        "SG10KTL-MT",
-        "SG12KTL-M",
-        "SG15KTL-M",
-        "SG17KTL-M",
-        "SG20KTL-M",
-        "SG80KTL-M",
-        "SG111HV",
-        "SG125HV",
-        "SG125HV-20",
-        "SG30CX",
-        "SG33CX",
-        "SG36CX-US",
-        "SG40CX",
-        "SG50CX",
-        "SG60CX-US",
-        "SG110CX",
-        "SG250HX",
-        "SG250HX-US",
-        "SG100CX",
-        "SG100CX-JP",
-        "SG250HX-IN",
-        "SG25CX-SA",
-        "SG75CX",
-      ]
-    models_exclude: ["WiNet"]
+    models: ["SG*", "LP_P34KSG"]
 
   - name: "string_5_current"
     level: 2
@@ -1215,53 +1105,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models:
-      [
-        "SG30KTL",
-        "SG10KTL",
-        "SG12KTL",
-        "SG15KTL",
-        "SG20KTL",
-        "SG30KU",
-        "SG36KTL",
-        "SG36KU",
-        "SG40KTL",
-        "SG40KTL-M",
-        "SG50KTL-M",
-        "SG60KTL-M",
-        "SG60KU",
-        "SG30KTL-M",
-        "SG30KTL-M-V31",
-        "SG33KTL-M",
-        "SG36KTL-M",
-        "SG33K3J",
-        "SG49K5J",
-        "SG34KJ",
-        "SG50KTL-M-20",
-        "SG60KTL",
-        "SG80KTL",
-        "SG80KTL-20",
-        "SG60KU-M",
-        "SG80KTL-M",
-        "SG111HV",
-        "SG125HV",
-        "SG125HV-20",
-        "SG30CX",
-        "SG33CX",
-        "SG36CX-US",
-        "SG40CX",
-        "SG50CX",
-        "SG60CX-US",
-        "SG110CX",
-        "SG250HX",
-        "SG250HX-US",
-        "SG100CX",
-        "SG100CX-JP",
-        "SG250HX-IN",
-        "SG25CX-SA",
-        "SG75CX",
-      ]
-    models_exclude: ["WiNet"]
+    models: ["SG*", "LP_P34KSG"]
 
   - name: "string_6_current"
     level: 2
@@ -1269,53 +1113,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models:
-      [
-        "SG30KTL",
-        "SG10KTL",
-        "SG12KTL",
-        "SG15KTL",
-        "SG20KTL",
-        "SG30KU",
-        "SG36KTL",
-        "SG36KU",
-        "SG40KTL",
-        "SG40KTL-M",
-        "SG50KTL-M",
-        "SG60KTL-M",
-        "SG60KU",
-        "SG30KTL-M",
-        "SG30KTL-M-V31",
-        "SG33KTL-M",
-        "SG36KTL-M",
-        "SG33K3J",
-        "SG49K5J",
-        "SG34KJ",
-        "SG50KTL-M-20",
-        "SG60KTL",
-        "SG80KTL",
-        "SG80KTL-20",
-        "SG60KU-M",
-        "SG80KTL-M",
-        "SG111HV",
-        "SG125HV",
-        "SG125HV-20",
-        "SG30CX",
-        "SG33CX",
-        "SG36CX-US",
-        "SG40CX",
-        "SG50CX",
-        "SG60CX-US",
-        "SG110CX",
-        "SG250HX",
-        "SG250HX-US",
-        "SG100CX",
-        "SG100CX-JP",
-        "SG250HX-IN",
-        "SG25CX-SA",
-        "SG75CX",
-      ]
-    models_exclude: ["WiNet"]
+    models: ["SG*", "LP_P34KSG"]
 
   - name: "string_7_current"
     level: 2
@@ -1361,7 +1159,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_8_current"
     level: 2
@@ -1406,7 +1203,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_9_current"
     level: 2
@@ -1443,7 +1239,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_10_current"
     level: 2
@@ -1478,7 +1273,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_11_current"
     level: 2
@@ -1508,7 +1302,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_12_current"
     level: 2
@@ -1538,7 +1331,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_13_current"
     level: 2
@@ -1565,7 +1357,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_14_current"
     level: 2
@@ -1597,7 +1388,6 @@ read:
         "SG5.0RS",
         "SG6.0RT",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_15_current"
     level: 2
@@ -1620,7 +1410,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_16_current"
     level: 2
@@ -1643,7 +1432,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_17_current"
     level: 2
@@ -1663,7 +1451,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_18_current"
     level: 2
@@ -1683,7 +1470,6 @@ read:
         "SG250HX-IN",
         "SG75CX",
       ]
-    models_exclude: ["WiNet"]
 
   - name: "string_19_current"
     level: 2
@@ -1691,7 +1477,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["Not supported by any model"]
 
   - name: "string_20_current"
     level: 2
@@ -1699,7 +1485,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["Not supported by any model"]
 
   - name: "string_21_current"
     level: 2
@@ -1707,7 +1493,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["Not supported by any model"]
 
   - name: "string_22_current"
     level: 2
@@ -1715,7 +1501,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["Not supported by any model"]
 
   - name: "string_23_current"
     level: 2
@@ -1723,7 +1509,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["Not supported by any model"]
 
   - name: "string_24_current"
     level: 2
@@ -1731,7 +1517,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    models: ["Not supported by any model"]
 
   - name: "running_state"
     level: 2
@@ -1952,7 +1738,7 @@ read:
     decoded:
       0xAA: "Off-grid"
       0x55: "On-grid"
-    # Does not need exlusion, but is not available on WiNet
+    models_exclude: ["SH8.0RT-20"] # Only via WiNet ?!!
 
   - name: "phase_a_current"
     level: 2
@@ -2097,7 +1883,7 @@ read:
     address: 13066
     data_type: U32
     accuracy: 0.1
-    # Does not need exlusion, but is not available on WiNet
+    models_exclude: ["WiNet"]
 
   - name: "battery_alarm"
     group: has_battery
@@ -2105,7 +1891,7 @@ read:
     address: 13068
     data_type: U32
     accuracy: 0.1
-    # Does not need exlusion, but is not available on WiNet
+    models_exclude: ["WiNet"]
 
   - name: "bms_alarm"
     level: 3
@@ -2441,19 +2227,16 @@ hold:
     level: 3
     address: 5000
     data_type: U16
-    models_exclude: ["WiNet"]
 
   - name: "month"
     level: 3
     address: 5001
     data_type: U16
-    models_exclude: ["WiNet"]
 
   - name: "day"
     level: 3
     address: 5002
     data_type: U16
-    models_exclude: ["WiNet"]
 
   - name: "hour"
     level: 3
@@ -2477,7 +2260,6 @@ hold:
     decoded:
       0xCF: "Start"
       0xCE: "Stop"
-    models_exclude: ["WiNet"]
 
   - name: "power_limitation_switch"
     level: 3
@@ -2486,7 +2268,6 @@ hold:
     decoded:
       0xAA: "Enable"
       0x55: "Disable"
-    models_exclude: ["WiNet"]
 
   - name: "power_limitation_setting"
     level: 3
@@ -2638,6 +2419,7 @@ hold:
     address: 5019
     data_type: U16
     accuracy: 0.001
+    models_exclude: ["SH*"]
 
   - name: "scheduling_achieve_active_overload"
     level: 3
@@ -2743,6 +2525,7 @@ hold:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "kW"
+    models_exclude: ["SH*"]
 
   - name: "reactive_power_adjustment"
     level: 3
@@ -2865,7 +2648,8 @@ hold:
     address: 13052
     data_type: U16
     unit_of_measurement: W
-    models: ["SH.*RS"] # Note: ".*" will trigger regex matching
+    models: ["SH*RS*"]
+    models_exclude: ["WiNet"]
 
   - name: battery_forced_charge_discharge_power
     group: has_battery
@@ -2873,7 +2657,8 @@ hold:
     address: 13052
     data_type: U16
     unit_of_measurement: "%"
-    models: ["SH.*RT"] # Note: ".*" will trigger regex matching
+    models: ["SH*RT*"]
+    models_exclude: ["WiNet"]
 
   - name: Max_SoC
     level: 3
@@ -2969,7 +2754,7 @@ hold:
     data_type: U16
     unit_of_measurement: "kWh"
     accuracy: 0.01
-    models_exclude: ["SH8.0RT-20"]
+    models_exclude: ["SH8.0RT-20", "WiNet"]
 
   - name: battery_charge_start_power
     group: has_battery
@@ -2978,6 +2763,7 @@ hold:
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
+    models_exclude: ["WiNet"]
 
   - name: battery_charge_stop_power
     group: has_battery
@@ -3016,201 +2802,201 @@ hold:
     # Source: https://gist.github.com/rasmusbonnedal/31bc6dad78e6dc32bfedeb15b7b897df
     # Note: very different addresses at https://github.com/tjhowse/modbus4mqtt/blob/master/modbus4mqtt/Sungrow_SH5k_20.yaml
     group: has_battery
-    address: 33150
-    level: 3
-    data_type: U16
-    models: ["SH10.0RT"]
-
-  - name: weekly_discharging_start_time_1_minute
-    group: has_battery
     address: 33151
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekly_discharging_end_time_1_hour
+  - name: weekly_discharging_start_time_1_minute
     group: has_battery
     address: 33152
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekly_discharging_end_time_1_minute
+  - name: weekly_discharging_end_time_1_hour
     group: has_battery
     address: 33153
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekly_discharging_start_time_2_hour
+  - name: weekly_discharging_end_time_1_minute
     group: has_battery
     address: 33154
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekly_discharging_start_time_2_minute
+  - name: weekly_discharging_start_time_2_hour
     group: has_battery
     address: 33155
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekly_discharging_end_time_2_hour
+  - name: weekly_discharging_start_time_2_minute
     group: has_battery
     address: 33156
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekly_discharging_end_time_2_minute
+  - name: weekly_discharging_end_time_2_hour
     group: has_battery
     address: 33157
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekend_discharging_enable
+  - name: weekly_discharging_end_time_2_minute
     group: has_battery
-    address: 33178
+    address: 33158
     level: 3
     data_type: U16
-    decoded:
-      0xAA: "Enabled"
-      0x55: "Disabled"
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekend_discharging_start_time_1_hour
+  - name: weekend_discharging_enable
     group: has_battery
     address: 33179
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    decoded:
+      0xAA: "Enabled"
+      0x55: "Disabled"
+    models: ["SH*RT*"]
 
-  - name: weekend_discharging_start_time_1_minute
+  - name: weekend_discharging_start_time_1_hour
     group: has_battery
     address: 33180
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekend_discharging_end_time_1_hour
+  - name: weekend_discharging_start_time_1_minute
     group: has_battery
     address: 33181
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekend_discharging_end_time_1_minute
+  - name: weekend_discharging_end_time_1_hour
     group: has_battery
     address: 33182
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekend_discharging_start_time_2_hour
+  - name: weekend_discharging_end_time_1_minute
     group: has_battery
     address: 33183
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: weekend_discharging_start_time_2_minute
+  - name: weekend_discharging_start_time_2_hour
     group: has_battery
     address: 33184
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_enable
+  - name: weekend_discharging_start_time_2_minute
     group: has_battery
-    address: 33207
+    address: 33185
     level: 3
     data_type: U16
-    decoded:
-      0xAA: "Enabled"
-      0x55: "Disabled"
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_valid_time
+  - name: forced_charging_enable
     group: has_battery
     address: 33208
     level: 3
     data_type: U16
     decoded:
-      0x01: "Every Day"
-    models: ["SH10.0RT"]
+      0xAA: "Enabled"
+      0x55: "Disabled"
+    models: ["SH*RT*"]
 
-  - name: forced_charging_start_time_1_hour
+  - name: forced_charging_valid_time
     group: has_battery
     address: 33209
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    decoded:
+      0x01: "Every Day"
+    models: ["SH*RT*"]
 
-  - name: forced_charging_start_time_1_minute
+  - name: forced_charging_start_time_1_hour
     group: has_battery
     address: 33210
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_end_time_1_hour
+  - name: forced_charging_start_time_1_minute
     group: has_battery
     address: 33211
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_end_time_1_minute
+  - name: forced_charging_end_time_1_hour
     group: has_battery
     address: 33212
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_target_soc_1
+  - name: forced_charging_end_time_1_minute
     group: has_battery
     address: 33213
     level: 3
     data_type: U16
-    unit_of_measurement: "%"
-    accuracy: 0.1
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_start_time_2_hour
+  - name: forced_charging_target_soc_1
     group: has_battery
     address: 33214
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    unit_of_measurement: "%"
+    accuracy: 0.1
+    models: ["SH*RT*"]
 
-  - name: forced_charging_start_time_2_minute
+  - name: forced_charging_start_time_2_hour
     group: has_battery
     address: 33215
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_end_time_2_hour
+  - name: forced_charging_start_time_2_minute
     group: has_battery
     address: 33216
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_end_time_2_minute
+  - name: forced_charging_end_time_2_hour
     group: has_battery
     address: 33217
     level: 3
     data_type: U16
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]
 
-  - name: forced_charging_target_soc_2
+  - name: forced_charging_end_time_2_minute
     group: has_battery
     address: 33218
     level: 3
     data_type: U16
+    models: ["SH*RT*"]
+
+  - name: forced_charging_target_soc_2
+    group: has_battery
+    address: 33219
+    level: 3
+    data_type: U16
     unit_of_measurement: "%"
     accuracy: 0.1
-    models: ["SH10.0RT"]
+    models: ["SH*RT*"]

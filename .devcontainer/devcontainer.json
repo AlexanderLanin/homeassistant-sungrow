@@ -47,7 +47,8 @@
             "extensions": [
                 "charliermarsh.ruff",
                 "ryanluker.vscode-coverage-gutters",
-                "ms-python.mypy-type-checker"
+                "ms-python.mypy-type-checker",
+                "redhat.vscode-yaml"
             ]
         }
     }

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Compare our signal definitions with those from mkaiser and bohdans."""
 
 from pathlib import Path
 

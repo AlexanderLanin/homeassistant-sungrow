@@ -157,16 +157,6 @@ class SignalDefinitions:
         return groups
 
     # ToDo: move to inverter.py. This is clearly business logic.
-    def mark_signals_not_in_this_model_as_disabled(self, model):
-        unknown_model = isinstance(model, int)
-        if not unknown_model:
-            for signal in self._definitions.values():
-                if (signal.models and model not in signal.models) or (
-                    signal.models_exclude and model in signal.models_exclude
-                ):
-                    signal.disabled.append("signal not available for this model")
-
-    # ToDo: move to inverter.py. This is clearly business logic.
     def mark_signals_disabled_based_on_groups(self, data):
         """Note: this returns extra_data to be included!"""
 

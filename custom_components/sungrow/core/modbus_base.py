@@ -26,11 +26,6 @@ class ModbusError(Exception):
 
 
 class InvalidSlaveError(ModbusError):
-    """
-    Unfortunately this error almost never happens.
-    Usually we simply get no response from the device.
-    """
-
     pass
 
 
@@ -41,19 +36,27 @@ class CannotConnectError(ModbusError):
 class UnsupportedRegisterQueriedError(ModbusError):
     """
     WiNet: ALL queried registers are unsupported.
+
+    Note: this exception is raised by implementations of ModbusConnectionBase, but it's
+    never forwared to the user. Instead, the implementation will return None for the
+    unsupported registers.
     """
 
     pass
 
 
 def map_raw_to_signal(r: RawData, signal: Signal):
-    all_available = all(
-        r.get(addr) is not None for addr in range(signal.address, signal.end)
-    )
-    if not all_available:
+    # We'll use the first register to check if signal is supported.
+    if r[signal.address] is None:
         return None
-
-    return [r[signal.address + i] for i in range(signal.length)]
+    else:
+        result: list[int] = []
+        for i in range(signal.length):
+            v = r[signal.address + i]
+            if v is None:
+                raise ValueError(f"Signal {signal.name} is not fully supported")
+            result.append(v)
+        return result
 
 
 def map_raw_to_signals(
@@ -146,7 +149,9 @@ class ModbusConnectionBase:
         # Read each range
         raw_data: dict[RegisterType, RawData] = {r: {} for r in RegisterType}
         for range in ranges:
-            assert range[-1].end - range[0].address <= max_combined_registers
+            # Sometimes a single signal will not fit within max_combined_registers.
+            # In such cases max_combined_registers will be ignored.
+            # assert range[-1].end - range[0].address <= max_combined_registers
 
             values = await self._read_range_base(range)
             raw_data[range[0].register_type].update(values)
@@ -186,7 +191,10 @@ class ModbusConnectionBase:
         return raw_dict
 
     async def _read_range_base(self, signal_list: list[Signal]) -> RawData:
-        """Wrapper for _read_range() that handles unsupported registers."""
+        """
+        Wrapper for _read_range() that handles unsupported registers.
+        Returns None for unsupported registers.
+        """
         assert signal_list
 
         reg_range = RegisterRange(
@@ -203,7 +211,7 @@ class ModbusConnectionBase:
             self.stats.retrieved_signals_success += len(signal_list)
             return data
         except UnsupportedRegisterQueriedError:
-            logger.debug(f"{reg_range} contains ONLY unsupported registers.")
+            logger.info(f"{reg_range} contains ONLY unsupported registers.")
 
             for signal in signal_list:
                 self.stats.retrieved_signals_failed += 1

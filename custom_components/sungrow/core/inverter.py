@@ -3,6 +3,7 @@
 import logging
 from dataclasses import dataclass
 from datetime import datetime
+from fnmatch import fnmatch
 from typing import Final, cast
 
 from custom_components.sungrow.core.inverter_types import Datapoint
@@ -21,10 +22,32 @@ logger = logging.getLogger(__name__)
 DatapointValueType = signals.DatapointValueType
 
 
-async def pull_raw_signals(
+async def pull_single_signal(
+    client: modbus_py.ModbusConnectionBase,
+    signal: signals.SungrowSignalDefinition,
+) -> DatapointValueType | None:
+    """pull_raw_signals is more efficient than pull_raw_signal for multiple signals!!"""
+
+    pull_start = datetime.now()
+
+    raw = (await client.read([signal]))[signal.name]
+
+    data = deserialize.decode_signal(signal, raw) if raw is not None else None
+
+    elapsed = datetime.now() - pull_start
+
+    logger.debug(
+        "Inverter: Successfully pulled data in "
+        f"{elapsed.seconds}.{elapsed.microseconds} secs"
+    )
+
+    return data
+
+
+async def pull_signals(
     client: modbus_py.ModbusConnectionBase,
     signal_definitions: list[signals.SungrowSignalDefinition],
-) -> dict[str, DatapointValueType]:
+) -> dict[str, DatapointValueType | None]:
     """Pull data from inverter"""
 
     data: dict[str, DatapointValueType] = {}
@@ -72,6 +95,31 @@ def mark_unavailable_signals_as_disabled(
     return extra_data
 
 
+def has_match(value: str, patterns: list[str]) -> bool:
+    return any(fnmatch(value, pattern) for pattern in patterns)
+
+
+def mark_signals_not_in_this_model_as_disabled(
+    signal_definitions: list[signals.SungrowSignalDefinition], model: str
+):
+    for signal in signal_definitions:
+        # Only certain models supported
+        if signal.models and not has_match(model, signal.models):
+            logger.debug(
+                f"Signal {signal.name} with filter {signal.models} "
+                f"is NOT available for model {model}"
+            )
+            signal.disabled.append("signal not available for this model")
+
+        # Some models explicitly excluded
+        if signal.models_exclude and has_match(model, signal.models_exclude):
+            logger.debug(
+                f"Signal {signal.name} with filter {signal.models_exclude} "
+                f"is explicitly NOT available for model {model}"
+            )
+            signal.disabled.append("signal not available for this model")
+
+
 @dataclass
 class InitialConnection:
     connection: modbus_py.ModbusConnectionBase
@@ -89,6 +137,8 @@ class InitialConnection:
 
     async def is_modbus_winet(self):
         """Lazy cached evaluation."""
+        # TODO: move this to __init__ and remove the lazy evaluation
+
         if self._is_modbus_winet is None:
             # FIXME: are the same registers unsupported via pymodbus and http?
             if isinstance(self.connection, modbus_http.HttpConnection):
@@ -130,11 +180,13 @@ class InitialConnection:
                 "Please report this to the developers."
             )
         else:
+            model = self.data["device_type_code"]
+            assert isinstance(model, str)
             # Now that we have the model, we can disable unsupported signals.
             # This is required, as querying a hundred unsupported signals, will result
             # in 100 queries (best case).
-            self.signal_definitions.mark_signals_not_in_this_model_as_disabled(
-                self.data["device_type_code"]
+            mark_signals_not_in_this_model_as_disabled(
+                self.signal_definitions.all_signals(), model
             )
 
 
@@ -151,6 +203,16 @@ def convert_raw_data_to_datapoints(
         data[k] = Datapoint(k, v, definition.unit_of_measurement)
 
     return data
+
+
+async def try_slave(con: modbus_base.ModbusConnectionBase, slave: int, query):
+    con._slave = slave
+    try:
+        data = await pull_signals(con, query)
+    except modbus_base.InvalidSlaveError:
+        return False
+    else:
+        return data
 
 
 async def connect_and_get_basic_data(  # (TODO: redesign)
@@ -191,9 +253,15 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
         # TODO actually detect slave.
         # e.g. try 1-3 and see if we get a response.
         slave = 1
+        slave_guessed = True
         logger.debug(f"Using default slave {slave}")
+    else:
+        slave_guessed = False
 
     signal_definitions = signals.load_yaml()
+
+    # FIXME: meter_active_power readable? This determines if a meter is connected.
+    # disable phase a, b, c accordingly.
 
     # TODO: maybe add all static signals to the query?
     query = signal_definitions.get_signal_definitions_by_name(
@@ -215,10 +283,14 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
 
     else:
         try:
-            data = await pull_raw_signals(connection_obj, query)
-        except modbus_base.ModbusError:
-            # TCP success, but no data -> it's probably not a modbus device.
-            # Or wrong slave.
+            data = await try_slave(connection_obj, slave, query)
+            if not data and slave_guessed:
+                data = await try_slave(connection_obj, 2, query)
+            if not data:
+                await connection_obj.disconnect()
+                return None
+        except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
+            logger.warning("Error connecting to inverter")
             await connection_obj.disconnect()
             return None
 
@@ -243,8 +315,6 @@ class SungrowInverter:
         if not ic.connection:
             raise RuntimeError("Not connected")
 
-        # TODO: move all of this to __init__!!
-
         # We now need to pull all data which belongs to a group,
         # so we can detect groups which do not apply, like "has_battery".
         query = [
@@ -252,7 +322,7 @@ class SungrowInverter:
             for signal in ic.signal_definitions._definitions.values()
             if signal.group and not signal.disabled and signal.name not in ic.data
         ]
-        data = await pull_raw_signals(ic.connection, query)
+        data = await pull_signals(ic.connection, query)
         if not data:
             raise RuntimeError("Failed to pull data from inverter")
 
@@ -303,7 +373,7 @@ class SungrowInverter:
         """Pull data from inverter and update self.data"""
         # ToDo: drop on_error
 
-        new_data = await pull_raw_signals(
+        new_data = await pull_signals(
             self._client, self._config.signals.enabled_signals()
         )
         if new_data:

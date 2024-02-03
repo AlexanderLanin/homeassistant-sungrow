@@ -89,7 +89,7 @@ async def collect_data_from(
     except modbus_base.CannotConnectError as e:
         info(f"Failed to connect ({e})")
         return TaskResult(connection_mode, host, slave, error=e)
-    except modbus_base.ModbusError as e:
+    except Exception as e:
         logger.warning(f"{host}/{slave}/pymodbus: Failed during query ({e})")
         return TaskResult(connection_mode, host, slave, error=e)
 
