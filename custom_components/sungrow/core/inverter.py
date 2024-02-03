@@ -189,6 +189,28 @@ class InitialConnection:
                 self.signal_definitions.all_signals(), model
             )
 
+    async def disable_meter_signals_if_no_meter_available(self):
+        # This is be a better distinction than simply disabling meter via a grooup,
+        # because all signals are 0.
+        if (
+            await pull_single_signal(
+                self.connection,
+                self.signal_definitions.get_signal_definition_by_name(
+                    "meter_active_power"
+                ),
+            )
+            is None
+        ):
+            for signal in self.signal_definitions.get_signal_definitions_by_name(
+                [
+                    "meter_active_power",
+                    "meter_active_power_phase_a",
+                    "meter_active_power_phase_b",
+                    "meter_active_power_phase_c",
+                ]
+            ):
+                signal.disabled.append("Meter not connected")
+
 
 def convert_raw_data_to_datapoints(
     raw_data: dict[str, DatapointValueType],
@@ -260,9 +282,6 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
 
     signal_definitions = signals.load_yaml()
 
-    # FIXME: meter_active_power readable? This determines if a meter is connected.
-    # disable phase a, b, c accordingly.
-
     # TODO: maybe add all static signals to the query?
     query = signal_definitions.get_signal_definitions_by_name(
         [
@@ -301,6 +320,7 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
 
         ic = InitialConnection(connection_obj, signal_definitions, data)
         ic.disable_signals_not_supported_by_model()
+        await ic.disable_meter_signals_if_no_meter_available()
         await ic.disable_winet_signals_in_case_of_winet_dongle()
         return ic
 

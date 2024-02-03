@@ -211,8 +211,6 @@ class ModbusConnectionBase:
             self.stats.retrieved_signals_success += len(signal_list)
             return data
         except UnsupportedRegisterQueriedError:
-            logger.info(f"{reg_range} contains ONLY unsupported registers.")
-
             for signal in signal_list:
                 self.stats.retrieved_signals_failed += 1
                 logger.debug(f"Failed to read {signal}")
