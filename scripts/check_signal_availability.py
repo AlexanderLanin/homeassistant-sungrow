@@ -36,7 +36,7 @@ async def check(host: str):
     await check_signals(ic)
 
 
-async def check_signals(ic: inverter.InitialConnection):
+async def check_signals(ic: inverter.InverterConnection):
     for signal in tqdm(ic.signal_definitions.all_signals()):
         value = await pull_single_signal(ic.connection, signal)
 

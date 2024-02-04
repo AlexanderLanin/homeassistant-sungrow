@@ -17,7 +17,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 
-from custom_components.sungrow.core.inverter import InitialConnection
+from custom_components.sungrow.core.inverter import InverterConnection
 from tests import e2e_setup
 
 pytestmark = [pytest.mark.asyncio]
@@ -61,7 +61,7 @@ async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
     # access it from here.
     if DOMAIN in hass.data:
         for ic in hass.data[DOMAIN]["inverters"].values():
-            assert isinstance(ic, InitialConnection)
+            assert isinstance(ic, InverterConnection)
             if ic.connection:
                 await ic.connection.disconnect()
 

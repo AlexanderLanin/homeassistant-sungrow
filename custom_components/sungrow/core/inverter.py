@@ -121,7 +121,7 @@ def mark_signals_not_in_this_model_as_disabled(
 
 
 @dataclass
-class InitialConnection:
+class InverterConnection:
     connection: modbus_py.ModbusConnectionBase
     signal_definitions: signals.SignalDefinitions
     data: dict[str, DatapointValueType]  # rename to initial_data?
@@ -138,7 +138,7 @@ class InitialConnection:
     @staticmethod
     async def create(
         host: str, port: int | None, slave: int | None, connection: str | None
-    ) -> "InitialConnection" | None:
+    ) -> "InverterConnection" | None:
         """
         Create a connection and retrieve some initial data to test the connection.
         This will return a connected or unconnected InitialConnection object.
@@ -168,7 +168,7 @@ class InitialConnection:
 
         signal_definitions = signals.load_yaml()
 
-        ic = InitialConnection(connection_obj, signal_definitions, {})
+        ic = InverterConnection(connection_obj, signal_definitions, {})
         if not await ic._query_initial_data(slave):
             ic.connection.disconnect()
             return None
@@ -346,9 +346,9 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
     port: int | None,
     slave: int | None,
     connection: str | None,
-) -> InitialConnection | None:
+) -> InverterConnection | None:
     logger.debug("Usage of connect_and_get_basic_data is deprecated")
-    return await InitialConnection.create(host, port, slave, connection)
+    return await InverterConnection.create(host, port, slave, connection)
 
 
 class SungrowInverter:
@@ -357,7 +357,7 @@ class SungrowInverter:
     # * is it one inverter with multiple connections? (http, WiNet, modbus-proxy, ...)
 
     @staticmethod
-    async def create(ic: InitialConnection):
+    async def create(ic: InverterConnection):
         if not ic.connection:
             raise RuntimeError("Not connected")
 

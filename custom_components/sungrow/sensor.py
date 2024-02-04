@@ -29,7 +29,7 @@ from homeassistant.helpers.update_coordinator import (
 
 from custom_components.sungrow.const import DOMAIN
 from custom_components.sungrow.core.inverter import (
-    InitialConnection,
+    InverterConnection,
     SungrowInverter,
     connect_and_get_basic_data,
 )
@@ -144,7 +144,7 @@ class InverterCoordinator(DataUpdateCoordinator):
 
 
 async def fetch_or_establish_connection(
-    user_input: dict[str, str | int], data: dict[str, InitialConnection]
+    user_input: dict[str, str | int], data: dict[str, InverterConnection]
 ):
     sn = user_input["serial_number"]
     assert isinstance(sn, str)
