@@ -124,7 +124,7 @@ def mark_signals_not_in_this_model_as_disabled(
 class InitialConnection:
     connection: modbus_py.ModbusConnectionBase
     signal_definitions: signals.SignalDefinitions
-    data: dict[str, DatapointValueType]
+    data: dict[str, DatapointValueType]  # rename to initial_data?
 
     _is_modbus_winet: bool | None = None
 
@@ -134,6 +134,89 @@ class InitialConnection:
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         await self.connection.__aexit__(exc_type, exc_value, traceback)
+
+    @staticmethod
+    async def create(
+        host: str, port: int | None, slave: int | None, connection: str | None
+    ) -> "InitialConnection" | None:
+        """
+        Create a connection and retrieve some initial data to test the connection.
+        This will return a connected or unconnected InitialConnection object.
+
+        Will raise CannotConnectException when connection fails and generic ModbusError on
+        other problems.
+        This is to make error handling easier for the caller, otherwise we would have to
+        check for not connected and for exceptions.
+        """
+
+        logger.debug(f"Connecting to {host}:{port} (slave {slave}) with {connection}")
+
+        connection_classes = guess_connection_class(connection, port)
+        for cc in connection_classes:
+            cc_port = port
+            if cc_port is None:
+                cc_port = 8082 if cc is modbus_http.HttpConnection else 502
+                logger.debug(f"Using default port {port}")
+
+            # ToDo: consider removing slave from constructor
+            connection_obj = cc(host=host, port=cc_port, slave=slave or 1)
+            if await connection_obj.connect():
+                break
+        else:
+            logger.debug("Failed to connect to inverter")
+            return None
+
+        signal_definitions = signals.load_yaml()
+
+        ic = InitialConnection(connection_obj, signal_definitions, {})
+        if not await ic._query_initial_data(slave):
+            ic.connection.disconnect()
+            return None
+
+        logger.debug(
+            "Connected to inverter "
+            f"{ic.data['device_type_code']} / {ic.data['serial_number']}"
+        )
+
+        ic.disable_signals_not_supported_by_model()
+        await ic.disable_meter_signals_if_no_meter_available()
+        await ic.disable_winet_signals_in_case_of_winet_dongle()
+        return ic
+
+    async def _query_initial_data(self, slave: int | None = None):
+        """
+        Query some initial data to test the connection.
+        Mostly to determine correct slave number.
+        """
+
+        # TODO: maybe add all static signals to the query which we never need to
+        # query again. This would needless queries of static data.
+        signal_definitions = signals.load_yaml()
+        query = signal_definitions.get_signal_definitions_by_name(
+            [
+                # basic infos:
+                "serial_number",  # 4950
+                "device_type_code",  # 5000
+                # for correct naming of master/slave:
+                "master_slave_mode",  # 33500
+                "master_slave_role",  # 33501
+                "output_type",  # 5002
+            ]
+        )
+        try:
+            try:
+                self.data = await pull_signals(self.connection, query)
+                return True
+            except modbus_base.InvalidSlaveError:
+                if slave is None:
+                    self.connection._slave = 2
+                    self.data = await pull_signals(self.connection, query)
+                    return True
+                else:
+                    return False
+        except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
+            logger.warning("Error connecting to inverter")
+            return False
 
     async def is_modbus_winet(self):
         """Lazy cached evaluation."""
@@ -227,14 +310,35 @@ def convert_raw_data_to_datapoints(
     return data
 
 
-async def try_slave(con: modbus_base.ModbusConnectionBase, slave: int, query):
-    con._slave = slave
-    try:
-        data = await pull_signals(con, query)
-    except modbus_base.InvalidSlaveError:
-        return False
+async def try_connection(
+    host: str, port: int, slave: int, connection: str
+) -> modbus_base.ModbusConnectionBase | None:
+    connection_class = {
+        "http": modbus_http.HttpConnection,
+        "modbus": modbus_py.PymodbusConnection,
+    }[connection]
+    connection_obj: modbus_base.ModbusConnectionBase = connection_class(
+        host=host, port=port, slave=1
+    )
+    if await connection_obj.connect():
+        return connection_obj
     else:
-        return data
+        return None
+
+
+def guess_connection_class(
+    connection: str | None, port: int | None
+) -> list[type[modbus_base.ModbusConnectionBase]]:
+    """Returns connection classes worth trying."""
+
+    if connection == "http" or port == 8082:
+        return [modbus_http.HttpConnection]
+
+    elif connection is None and port is None:
+        return [modbus_http.HttpConnection, modbus_py.PymodbusConnection]
+
+    else:
+        return [modbus_py.PymodbusConnection]
 
 
 async def connect_and_get_basic_data(  # (TODO: redesign)
@@ -243,86 +347,8 @@ async def connect_and_get_basic_data(  # (TODO: redesign)
     slave: int | None,
     connection: str | None,
 ) -> InitialConnection | None:
-    """
-    Create a connection and retrieve some initial data to test the connection.
-    This will return a connected or unconnected InitialConnection object.
-
-    Will raise CannotConnectException when connection fails and generic ModbusError on
-    other problems.
-    This is to make error handling easier for the caller, otherwise we would have to
-    check for not connected and for exceptions.
-    """
-
-    logger.debug(f"Connecting to {host}:{port} (slave {slave}) with {connection}")
-
-    # TODO: try http first, then fall back to modbus
-    # TODO: improve guess from port, if port is given
-    connection_class: type[modbus_base.ModbusConnectionBase]
-    if connection is None:
-        connection_class = modbus_http.HttpConnection
-        logger.debug("Using default connection HTTP")
-    if connection == "http":
-        connection_class = modbus_http.HttpConnection
-    else:
-        connection_class = modbus_py.PymodbusConnection
-
-    # Try default modbus port
-    if port is None:
-        port = 8082 if connection_class is modbus_http.HttpConnection else 502
-        logger.debug(f"Using default port {port}")
-
-    if slave is None or slave == 0:
-        # TODO actually detect slave.
-        # e.g. try 1-3 and see if we get a response.
-        slave = 1
-        slave_guessed = True
-        logger.debug(f"Using default slave {slave}")
-    else:
-        slave_guessed = False
-
-    signal_definitions = signals.load_yaml()
-
-    # TODO: maybe add all static signals to the query?
-    query = signal_definitions.get_signal_definitions_by_name(
-        [
-            # basic infos:
-            "serial_number",  # 4950
-            "device_type_code",  # 5000
-            # for correct naming of master/slave:
-            "master_slave_mode",  # 33500
-            "master_slave_role",  # 33501
-            "output_type",  # 5002
-        ]
-    )
-
-    connection_obj = connection_class(host=host, port=port, slave=slave)
-    if not await connection_obj.connect():
-        # TCP error
-        return None
-
-    else:
-        try:
-            data = await try_slave(connection_obj, slave, query)
-            if not data and slave_guessed:
-                data = await try_slave(connection_obj, 2, query)
-            if not data:
-                await connection_obj.disconnect()
-                return None
-        except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
-            logger.warning("Error connecting to inverter")
-            await connection_obj.disconnect()
-            return None
-
-        logger.debug(
-            "Connected to inverter "
-            f"{data['device_type_code']} / {data['serial_number']}"
-        )
-
-        ic = InitialConnection(connection_obj, signal_definitions, data)
-        ic.disable_signals_not_supported_by_model()
-        await ic.disable_meter_signals_if_no_meter_available()
-        await ic.disable_winet_signals_in_case_of_winet_dongle()
-        return ic
+    logger.debug("Usage of connect_and_get_basic_data is deprecated")
+    return await InitialConnection.create(host, port, slave, connection)
 
 
 class SungrowInverter:
