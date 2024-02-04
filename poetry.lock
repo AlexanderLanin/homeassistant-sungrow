@@ -2746,22 +2746,6 @@ files = [
 voluptuous = "*"
 
 [[package]]
-name = "websocket-client"
-version = "1.7.0"
-description = "WebSocket client for Python with low level API options"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "websocket-client-1.7.0.tar.gz", hash = "sha256:10e511ea3a8c744631d3bd77e61eb17ed09304c413ad42cf6ddfa4c7787e8fe6"},
-    {file = "websocket_client-1.7.0-py3-none-any.whl", hash = "sha256:f4c3d22fec12a2461427a29957ff07d35098ee2d976d3ba244e688b8b4057588"},
-]
-
-[package.extras]
-docs = ["Sphinx (>=6.0)", "sphinx-rtd-theme (>=1.1.0)"]
-optional = ["python-socks", "wsaccel"]
-test = ["websockets"]
-
-[[package]]
 name = "winrt-runtime"
 version = "2.0.0b1"
 description = "Python projection of Windows Runtime (WinRT) APIs"
@@ -3137,4 +3121,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "7aef0cbcfc9a159d8593b21b05c174125b3f96189ad9755e553d56b40ceebc17"
+content-hash = "67ebd4abc938c4e7c8764a7e06aa72e89dff3f9c8201de701bd43cc9edf763f3"

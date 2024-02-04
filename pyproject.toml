@@ -13,8 +13,6 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 pymodbus = { git = "https://github.com/pymodbus-dev/pymodbus.git", rev = "54c734c823bbaf9d3915fa29f9460eb0b11ce197" }
-httpx = "*"
-websocket-client = "*"
 homeassistant = ">=2024"
 tqdm = "*"
 
