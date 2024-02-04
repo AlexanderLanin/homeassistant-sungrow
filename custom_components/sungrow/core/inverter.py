@@ -180,9 +180,9 @@ class InverterConnection:
             f"{ic.data['device_type_code']} / {ic.data['serial_number']}"
         )
 
-        ic.disable_signals_not_supported_by_model()
-        await ic.disable_meter_signals_if_no_meter_available()
-        await ic.disable_winet_signals_in_case_of_winet_dongle()
+        ic._disable_signals_not_supported_by_model()
+        await ic._disable_meter_signals_if_no_meter_available()
+        await ic._disable_winet_signals_in_case_of_winet_dongle()
         return ic
 
     async def _query_initial_data(self, slave: int | None = None):
@@ -193,6 +193,7 @@ class InverterConnection:
 
         # TODO: maybe add all static signals to the query which we never need to
         # query again. This would needless queries of static data.
+        # As we store the result, this doesn't need to be a minimal set!
         signal_definitions = signals.load_yaml()
         query = signal_definitions.get_signal_definitions_by_name(
             [
@@ -249,14 +250,14 @@ class InverterConnection:
                     self._is_modbus_winet = False
         return self._is_modbus_winet
 
-    async def disable_winet_signals_in_case_of_winet_dongle(self):
+    async def _disable_winet_signals_in_case_of_winet_dongle(self):
         if await self.is_modbus_winet():
             logger.debug("Disabling all WiNet unsupported signals")
             self.signal_definitions.disable_winet_signals()
         else:
             logger.debug("Not a WiNet dongle; all signals are supported")
 
-    def disable_signals_not_supported_by_model(self):
+    def _disable_signals_not_supported_by_model(self):
         """Disable signals which are not supported by the inverter model."""
 
         if isinstance(self.data["device_type_code"], int):
@@ -274,7 +275,7 @@ class InverterConnection:
                 self.signal_definitions.all_signals(), model
             )
 
-    async def disable_meter_signals_if_no_meter_available(self):
+    async def _disable_meter_signals_if_no_meter_available(self):
         # This is be a better distinction than simply disabling meter via a grooup,
         # because all signals are 0.
         if (

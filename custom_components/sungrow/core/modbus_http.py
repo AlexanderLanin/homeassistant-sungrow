@@ -1,11 +1,9 @@
 import asyncio
-import json
 import logging
 import time
 from typing import Any
 
-import httpx
-from websocket import create_connection
+import aiohttp
 
 import custom_components.sungrow.core.modbus_base as modbus_base
 from custom_components.sungrow.core.modbus_base import (
@@ -21,7 +19,8 @@ class HttpConnection(ModbusConnectionBase):
         _ = slave  # unused
         super().__init__(host, port, 0)  # FIXME: slave is not used. Remove from Base?
 
-        self._httpx_client = httpx.AsyncClient()
+        self._aio_client = aiohttp.ClientSession()
+        self._ws: aiohttp.client.ClientWebSocketResponse | None = None
 
         self._token: str | None = None
         self._inverter: dict[str, str | int] | None = None
@@ -41,39 +40,28 @@ class HttpConnection(ModbusConnectionBase):
         logger.debug("Connecting to %s:%s", self._host, self._port)
         self._stats.connections += 1
 
-        # Reset the httpx client, otherwise it will keep the connection open.
-        # TODO: why not simply reuse the client?
-        await self._httpx_client.aclose()
-
-        # As we cannot reopen the httpx client, we need to create a new one.
-        self._httpx_client = httpx.AsyncClient()
-        await self._httpx_client.__aenter__()
-
         endpoint = f"ws://{self._host}:{self._port}/ws/home/overview"
         try:
-            logger.debug(f"Connecting to websocket server at {endpoint}")
-            socket = create_connection(endpoint, timeout=7)
-        except Exception as e:
-            # FIXME: this is actually debug, but I want to see what it looks like
-            logger.warning(e)
-            return False
+            # We'll manage lifetime via connect/disconnect ourselfes
+            self._ws = await self._aio_client.ws_connect(endpoint).__aenter__()
 
-        logger.debug("Connection to websocket server established")
+            logger.debug("Connection to websocket server established")
 
-        socket.send(json.dumps({"lang": "en_us", "token": "", "service": "connect"}))
-        response = json.loads(socket.recv())
-
-        if response["result_msg"] == "success":
-            self._token = response["result_data"]["token"]
-            logger.info(f"Token Retrieved: {self._token}")
-        else:
-            raise modbus_base.CannotConnectError(
-                f"Connection Failed {response['result_msg']}"
+            await self._ws.send_json(
+                {"lang": "en_us", "token": "", "service": "connect"}
             )
+            response = await self._ws.receive_json(timeout=5)
 
-        logger.debug("Requesting Device Information")
-        socket.send(
-            json.dumps(
+            if response["result_msg"] == "success":
+                self._token = response["result_data"]["token"]
+                logger.info(f"Token Retrieved: {self._token}")
+            else:
+                raise modbus_base.CannotConnectError(
+                    f"Connection Failed {response['result_msg']}"
+                )
+
+            logger.debug("Requesting Device Information")
+            await self._ws.send_json(
                 {
                     "lang": "en_us",
                     "token": self._token,
@@ -82,22 +70,24 @@ class HttpConnection(ModbusConnectionBase):
                     "is_check_token": "0",
                 }
             )
-        )
 
-        response = json.loads(socket.recv())
-        logger.debug(response)
-        # pprint(response)
+            response = self._ws.receive_json(timeout=5)
+            logger.debug(response)
+            # pprint(response)
 
-        if response["result_msg"] == "success":
-            # The first device is always the inverter.
-            # ToDo: can we do anything with the others?
-            self._inverter = response["result_data"]["list"][0]
-        else:
-            raise modbus_base.CannotConnectError(
-                f"Connection Failed {response['result_msg']}"
-            )
+            if response["result_msg"] == "success":
+                # The first device is always the inverter.
+                # ToDo: can we do anything with the others?
+                self._inverter = response["result_data"]["list"][0]
+            else:
+                raise modbus_base.CannotConnectError(
+                    f"Connection Failed {response['result_msg']}"
+                )
 
-        return True
+            return True
+        except Exception:
+            await self.disconnect()
+            return False
 
     async def disconnect(self):
         logger.debug("Disconnecting from %s:%s", self._host, self._port)
@@ -105,8 +95,12 @@ class HttpConnection(ModbusConnectionBase):
         self._token = None
         self._inverter = None
 
-        # Reset the httpx client, otherwise it will keep the connection open.
-        await self._httpx_client.aclose()
+        if self._ws:
+            await self._ws.close()
+            self._ws = None
+
+        # Force completely new connections on next connect()
+        await self._aio_client.close()
 
     async def _parse_response(
         self,
@@ -163,6 +157,7 @@ class HttpConnection(ModbusConnectionBase):
 
         await asyncio.sleep(0.5)  # Server simply disconnects if we query too fast.
 
+        url = f"http://{self._host}/device/getParam"
         params = {
             "dev_id": self._inverter["dev_id"],
             "dev_type": self._inverter["dev_type"],
@@ -175,39 +170,42 @@ class HttpConnection(ModbusConnectionBase):
             "lang": "en_us",
             "time123456": time.time(),
         }
-        url = f"http://{self._host}/device/getParam?"
-        for k, v in params.items():
-            url += f"{k}={v}&"
+        logger.debug(f"getting: {url} / {params}")
 
-        logger.debug(f"getting: {url}")
         try:
-            r = await self._httpx_client.get(url)
-        except Exception as e:
-            raise modbus_base.CannotConnectError(f"Connection Failed: {e}") from None
-
-        if r.status_code == 200:
-            response = r.json()
-            value = await self._parse_response(response, register_type, address_start)
-            if isinstance(value, str):
-                assert value == "retry"
-
-                if recursion:
-                    raise modbus_base.ModbusError(
-                        "Unknown problem while trying to query "
-                        f"{register_type} {address_start}: {response} "
+            async with await self._aio_client.get(url, params=params) as r:
+                if r.status == 200:
+                    response = await r.json()
+                    value = await self._parse_response(
+                        response, register_type, address_start
                     )
+                    if isinstance(value, str):
+                        assert value == "retry"
+
+                        if recursion:
+                            raise modbus_base.ModbusError(
+                                "Unknown problem while trying to query "
+                                f"{register_type} {address_start}: {response} "
+                            )
+                        else:
+                            logger.debug(
+                                "Tried to read too much too fast! Waiting 10 seconds..."
+                            )
+                            await asyncio.sleep(10)
+
+                            return await self._read_range(
+                                register_type,
+                                address_start,
+                                address_count,
+                                recursion=True,
+                            )
+                    else:
+                        return value
                 else:
-                    logger.debug(
-                        "Tried to read too much too fast! Waiting 10 seconds..."
+                    raise modbus_base.CannotConnectError(
+                        f"Connection Failed: {r.status} {r.text}"
                     )
-                    await asyncio.sleep(10)
 
-                    return await self._read_range(
-                        register_type, address_start, address_count, recursion=True
-                    )
-            else:
-                return value
-        else:
-            raise modbus_base.CannotConnectError(
-                f"Connection Failed: {r.status_code} {r.text}"
-            )
+        except Exception as e:
+            # e.g. response is not valid json
+            raise modbus_base.CannotConnectError(f"Connection Failed: {e}") from None

@@ -33,6 +33,8 @@
                     "editor.defaultFormatter": "charliermarsh.ruff"
                 },
                 "python.venvPath": "${containerWorkspaceFolder}/.venv",
+                "python.pythonPath": "${containerWorkspaceFolder}/.venv/bin/python",
+                "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
                 "python.testing.pytestArgs": [
                     "${containerWorkspaceFolder}/tests"
                 ],

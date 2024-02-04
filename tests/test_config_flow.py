@@ -95,6 +95,8 @@ async def simulate_config_flow_input(
         },
     )
 
+    # FIXME: close connection!!
+
 
 async def test_non_responding_inverter(hass: HomeAssistant):
     flow_id = await start_config_flow(hass)
