@@ -37,7 +37,7 @@ types-tabulate = "*"
 homeassistant-stubs = "*"
 types-tqdm = "*"
 aiohttp = "*"
-aiohttp-stubs = "*"
+# aiohttp-stubs = "*"
 
 [build-system]
 requires = ["poetry-core"]
