@@ -88,7 +88,7 @@ async def simulate_config_flow_input(
     return await hass.config_entries.flow.async_configure(
         flow_id,
         user_input={
-            CONF_HOST: "localhost",
+            CONF_HOST: "127.0.0.1",
             CONF_PORT: port,
             CONF_SLAVE: slave,
             "connection": connection,
@@ -103,7 +103,7 @@ async def test_non_responding_inverter(hass: HomeAssistant):
         result = await hass.config_entries.flow.async_configure(
             flow_id,
             user_input={
-                CONF_HOST: "localhost",
+                CONF_HOST: "127.0.0.1",
                 CONF_PORT: simulated_inverter_port,
                 CONF_SLAVE: 0,
             },

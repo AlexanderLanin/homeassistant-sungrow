@@ -45,7 +45,7 @@ async def test_successful_config_flow_e2e_up_to_sensor_entities(hass: HomeAssist
         result = await hass.config_entries.flow.async_configure(
             flow_id,
             user_input={
-                CONF_HOST: "localhost",
+                CONF_HOST: "127.0.0.1",
                 CONF_PORT: simulated_inverter_port,
                 CONF_SLAVE: 0,  # TODO: what exactly is vol.Optional passing when empty?
             },

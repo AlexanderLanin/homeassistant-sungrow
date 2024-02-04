@@ -1,5 +1,7 @@
 """This file contains the main SungrowInverter class."""
 
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from datetime import datetime
@@ -138,13 +140,13 @@ class InverterConnection:
     @staticmethod
     async def create(
         host: str, port: int | None, slave: int | None, connection: str | None
-    ) -> "InverterConnection" | None:
+    ) -> InverterConnection | None:
         """
         Create a connection and retrieve some initial data to test the connection.
         This will return a connected or unconnected InitialConnection object.
 
-        Will raise CannotConnectException when connection fails and generic ModbusError on
-        other problems.
+        Will raise CannotConnectException when connection fails and generic ModbusError
+        on other problems.
         This is to make error handling easier for the caller, otherwise we would have to
         check for not connected and for exceptions.
         """
@@ -170,7 +172,7 @@ class InverterConnection:
 
         ic = InverterConnection(connection_obj, signal_definitions, {})
         if not await ic._query_initial_data(slave):
-            ic.connection.disconnect()
+            await ic.connection.disconnect()
             return None
 
         logger.debug(
