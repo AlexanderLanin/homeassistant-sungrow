@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class HttpConnection(ModbusConnectionBase):
-    def __init__(self, host: str, slave, port: int = 8082):
+    def __init__(self, host: str, slave: int, port: int = 8082):
         _ = slave  # unused
         super().__init__(host, port, 0)  # FIXME: slave is not used. Remove from Base?
 
@@ -50,7 +50,9 @@ class HttpConnection(ModbusConnectionBase):
             await self._ws.send_json(
                 {"lang": "en_us", "token": "", "service": "connect"}
             )
+            logger.debug("Reading Token...")
             response = await self._ws.receive_json(timeout=5)
+            logger.debug(f"Response: {response}")
 
             if response["result_msg"] == "success":
                 self._token = response["result_data"]["token"]
@@ -71,8 +73,8 @@ class HttpConnection(ModbusConnectionBase):
                 }
             )
 
-            response = self._ws.receive_json(timeout=5)
-            logger.debug(response)
+            response = await self._ws.receive_json(timeout=5)
+            logger.debug(f"Response 2: {response}")
             # pprint(response)
 
             if response["result_msg"] == "success":
@@ -85,7 +87,8 @@ class HttpConnection(ModbusConnectionBase):
                 )
 
             return True
-        except Exception:
+        except Exception as e:
+            logger.debug(f"Connection failed: {e}")
             await self.disconnect()
             return False
 
@@ -122,7 +125,7 @@ class HttpConnection(ModbusConnectionBase):
             return data
         elif result_code == 106:  # token expired
             self._token = None
-            self.disconnect()
+            await self.disconnect()
             raise modbus_base.CannotConnectError(
                 f"Token Expired: {response.get('result_msg')}"
             )
@@ -139,12 +142,12 @@ class HttpConnection(ModbusConnectionBase):
         register_type: RegisterType,
         address_start: int,
         address_count: int,
-        recursion=False,
+        recursion: bool = False,
     ) -> list[int]:
         """Raises modbus.CannotConnectError on WiNet misbehavior."""
 
         if not self._token:
-            connected = self.connect()
+            connected = await self.connect()
             if not connected:
                 raise modbus_base.CannotConnectError("Connection failed")
 

@@ -95,8 +95,6 @@ async def simulate_config_flow_input(
         },
     )
 
-    # FIXME: close connection!!
-
 
 async def test_non_responding_inverter(hass: HomeAssistant):
     flow_id = await start_config_flow(hass)
@@ -122,7 +120,7 @@ async def test_config_flow_connects_to_modbus(
     async with e2e_setup.simulate_modbus_inverter("dump_master.yaml") as port:
         result = await simulate_config_flow_input(hass, port, 0, "modbus")
 
-    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert not result.get("errors")
 
     pprint(result)
@@ -133,7 +131,7 @@ async def test_config_flow_connects_to_http(hass: HomeAssistant, bypass_setup_fi
     async with e2e_setup.simulated_http_inverter("dump_master.yaml") as port:
         result = await simulate_config_flow_input(hass, port, 0, "http")
 
-    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert not result.get("errors")
 
     pprint(result)

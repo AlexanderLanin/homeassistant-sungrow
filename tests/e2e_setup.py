@@ -70,10 +70,37 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
 
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
-                if msg.data == "close":
-                    await ws.close()
+                m = msg.json()
+                if m["service"] == "connect":
+                    assert m["token"] == ""
+                    assert m["lang"] == "en_us"
+                    await ws.send_json(
+                        {
+                            "result_msg": "success",
+                            "result_data": {"token": "12345"},
+                        }
+                    )
+                elif m["service"] == "devicelist":
+                    assert m["token"] == "12345"
+                    assert m["lang"] == "en_us"
+                    assert m["type"] == "0"
+                    assert m["is_check_token"] == "0"
+                    await ws.send_json(
+                        {
+                            "result_msg": "success",
+                            "result_data": {
+                                "list": [
+                                    {
+                                        "dev_id": "12345",
+                                        "dev_type": "inv_type",
+                                        "dev_code": "23456",
+                                    }
+                                ]
+                            },
+                        }
+                    )
                 else:
-                    await ws.send_str(msg.data + "/answer")
+                    raise Exception(f"Unexpected message: {m}")
             elif msg.type == aiohttp.WSMsgType.ERROR:
                 print("ws connection closed with exception %s" % ws.exception())
 
