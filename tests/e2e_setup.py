@@ -57,13 +57,13 @@ def use_yaml_for_responses(
 @asynccontextmanager
 async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
     # TODO: since we have aiohttp here anyway, do we need httpx?
-    async def http_handler(request):
+    async def http_handler(request: web.Request):
         logger.warning(f"Got http request: {request}")
         # return web.Response(text="Hello, world")
         data = {"some": "data"}
         return web.json_response(data)
 
-    async def websocket_handler(request):
+    async def websocket_handler(request: web.Request):
         logger.warning(f"Got websocket request: {request}")
         ws = web.WebSocketResponse()
         await ws.prepare(request)
@@ -170,14 +170,14 @@ async def simulate_modbus_inverter(yaml_file: str | pathlib.Path | None):
     server_task = asyncio.create_task(server.serve_forever())
 
     # Wait for server to actually start.
-    for _attempt in range(20):
+    for attempt in range(20):  # noqa: B007
         if server.transport:
             break
         await asyncio.sleep(0.1)
-    if not server.transport:
+    else:
         raise Exception("Server failed to start.")
-    if _attempt > 1:
-        logger.warning(f"Server start took {_attempt/10} seconds.")
+    if attempt > 1:
+        logger.warning(f"Server start took {attempt/10} seconds.")
     port = server.transport.sockets[0].getsockname()[1]  # type: ignore
     logger.debug(f"Server started on port {port}")
     assert port
