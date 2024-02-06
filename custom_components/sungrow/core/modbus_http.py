@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import time
-from typing import Any
+from typing import Any, cast
 
 import aiohttp
 
@@ -23,7 +23,41 @@ class HttpConnection(ModbusConnectionBase):
         self._ws: aiohttp.client.ClientWebSocketResponse | None = None
 
         self._token: str | None = None
-        self._inverter: dict[str, str | int] | None = None
+        self._inverter: dict[str, str] | None = None
+
+    async def _ws_query(self, query: dict[str, str | int]) -> dict:
+        assert self._ws is not None
+
+        await self._ws.send_json(query)
+
+        response: dict = await self._ws.receive_json()
+
+        if response["result_msg"] == "success":
+            return cast(dict, response["result_data"])
+        else:
+            raise modbus_base.ModbusError(
+                f"Inverter responded with: {response['result_msg']}"
+            )
+
+    async def _get_new_token(self) -> str:
+        response = await self._ws_query(
+            {"lang": "en_us", "token": "", "service": "connect"}
+        )
+        return cast(str, response["token"])
+
+    async def _get_connected_devices(self) -> list[dict[str, str]]:
+        assert self._token is not None
+
+        response = await self._ws_query(
+            {
+                "lang": "en_us",
+                "token": self._token,
+                "service": "devicelist",
+                "type": "0",
+                "is_check_token": "0",
+            }
+        )
+        return cast(list[dict[str, str]], response["list"])
 
     async def connect(self):
         """
@@ -47,48 +81,15 @@ class HttpConnection(ModbusConnectionBase):
 
             logger.debug("Connection to websocket server established")
 
-            await self._ws.send_json(
-                {"lang": "en_us", "token": "", "service": "connect"}
-            )
-            logger.debug("Reading Token...")
-            response = await self._ws.receive_json(timeout=5)
-            logger.debug(f"Response: {response}")
+            self._token = await self._get_new_token()
 
-            if response["result_msg"] == "success":
-                self._token = response["result_data"]["token"]
-                logger.info(f"Token Retrieved: {self._token}")
-            else:
-                raise modbus_base.CannotConnectError(
-                    f"Connection Failed {response['result_msg']}"
-                )
-
-            logger.debug("Requesting Device Information")
-            await self._ws.send_json(
-                {
-                    "lang": "en_us",
-                    "token": self._token,
-                    "service": "devicelist",
-                    "type": "0",
-                    "is_check_token": "0",
-                }
-            )
-
-            response = await self._ws.receive_json(timeout=5)
-            logger.debug(f"Response 2: {response}")
-            # pprint(response)
-
-            if response["result_msg"] == "success":
-                # The first device is always the inverter.
-                # ToDo: can we do anything with the others?
-                self._inverter = response["result_data"]["list"][0]
-            else:
-                raise modbus_base.CannotConnectError(
-                    f"Connection Failed {response['result_msg']}"
-                )
+            # The first device is always the inverter.
+            # ToDo: can we do anything with the others?
+            self._inverter = (await self._get_connected_devices())[0]
 
             return True
         except Exception as e:
-            logger.debug(f"Connection failed: {e}")
+            logger.debug(f"Connection failed: {e}", exc_info=True)
             await self.disconnect()
             return False
 
@@ -146,6 +147,9 @@ class HttpConnection(ModbusConnectionBase):
     ) -> list[int]:
         """Raises modbus.CannotConnectError on WiNet misbehavior."""
 
+        # TODO: query via websocket instead of http!!
+        # That's the whole point of the websocket.
+
         if not self._token:
             connected = await self.connect()
             if not connected:
@@ -173,7 +177,7 @@ class HttpConnection(ModbusConnectionBase):
             "lang": "en_us",
             "time123456": time.time(),
         }
-        logger.debug(f"getting: {url} / {params}")
+        logger.debug(f"getting: {url} with {params}")
 
         try:
             async with await self._aio_client.get(url, params=params) as r:
@@ -183,6 +187,8 @@ class HttpConnection(ModbusConnectionBase):
                         response, register_type, address_start
                     )
                     if isinstance(value, str):
+                        # This interface is beyond stupid, but not worth cleaning up.
+                        # Switch to websocket instead.
                         assert value == "retry"
 
                         if recursion:

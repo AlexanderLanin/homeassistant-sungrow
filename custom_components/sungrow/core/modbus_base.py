@@ -143,8 +143,7 @@ class ModbusConnectionBase:
         # Build as few ranges as possible:
         ranges = split_list(signal_list, max_combined_registers)
 
-        logger.debug(f"read_raw({len(signal_list)} signals) -> {len(ranges)} ranges")
-        logger.debug(f"read_raw({signal_list}) -> {ranges}")
+        logger.debug(f"read_raw({len(signal_list)} signals) in {len(ranges)} ranges")
 
         # Read each range
         raw_data: dict[RegisterType, RawData] = {r: {} for r in RegisterType}

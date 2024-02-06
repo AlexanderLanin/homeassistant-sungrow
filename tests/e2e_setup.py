@@ -56,12 +56,28 @@ def use_yaml_for_responses(
 
 @asynccontextmanager
 async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
-    # TODO: since we have aiohttp here anyway, do we need httpx?
+    """
+    Run a web server that simulates a Sungrow inverter's WiNet dongle.
+    For now this only supports the websocket part of the WiNet dongle.
+    For now it responds with valid data.
+    TODO: Add support for invalid data, to check error handling.
+    """
+
     async def http_handler(request: web.Request):
-        logger.warning(f"Got http request: {request}")
-        # return web.Response(text="Hello, world")
-        data = {"some": "data"}
-        return web.json_response(data)
+        logger.debug(f"Got HTTP request: {request}")
+        data = request.query
+        assert data["dev_id"] == "12345"
+        assert data["dev_type"] == "inv_type"
+        assert data["dev_code"] == "23456"
+        assert data["token"] == "12345"
+        return web.json_response(
+            {
+                "result_code": "1",
+                "result_data": {
+                    "param_value": "00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F FF"
+                },
+            }
+        )
 
     async def websocket_handler(request: web.Request):
         logger.warning(f"Got websocket request: {request}")
@@ -118,7 +134,10 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
     app.logger.addHandler(logging.StreamHandler())
 
     app.add_routes(
-        [web.get("/", http_handler), web.get("/ws/home/overview", websocket_handler)]
+        [
+            web.get("/device/getParam", http_handler),
+            web.get("/ws/home/overview", websocket_handler),
+        ]
     )
     runner = web.AppRunner(app)
     await runner.setup()

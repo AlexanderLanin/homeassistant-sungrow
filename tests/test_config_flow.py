@@ -73,7 +73,7 @@ async def start_config_flow(hass: HomeAssistant) -> str:
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "user"
     assert result["errors"] == {}
     assert isinstance(result["flow_id"], str)
