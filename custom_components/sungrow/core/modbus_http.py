@@ -4,6 +4,7 @@ import time
 from typing import Any, cast
 
 import aiohttp
+from attr import dataclass
 
 import custom_components.sungrow.core.modbus_base as modbus_base
 from custom_components.sungrow.core.modbus_base import (
@@ -25,15 +26,16 @@ class HttpConnection(ModbusConnectionBase):
         self._token: str | None = None
         self._inverter: dict[str, str] | None = None
 
-    async def _ws_query(self, query: dict[str, str | int]) -> dict:
+    async def _ws_query(self, query: dict[str, str | int]) -> dict[str, Any]:
+        # Potential services: connect, devicelist, state, statistics, runtime, real
         assert self._ws is not None
 
         await self._ws.send_json(query)
 
         response: dict = await self._ws.receive_json()
 
-        if response["result_msg"] == "success":
-            return cast(dict, response["result_data"])
+        if response["result_code"] == 1 and response["result_msg"] == "success":
+            return cast(dict[str, Any], response["result_data"])
         else:
             raise modbus_base.ModbusError(
                 f"Inverter responded with: {response['result_msg']}"
@@ -88,7 +90,12 @@ class HttpConnection(ModbusConnectionBase):
             self._inverter = (await self._get_connected_devices())[0]
 
             return True
+        except aiohttp.ClientError:
+            # Cannot connect
+            await self.disconnect()
+            return False
         except Exception as e:
+            # Some other error
             logger.debug(f"Connection failed: {e}", exc_info=True)
             await self.disconnect()
             return False
@@ -106,56 +113,21 @@ class HttpConnection(ModbusConnectionBase):
         # Force completely new connections on next connect()
         await self._aio_client.close()
 
-    async def _parse_response(
-        self,
-        response: dict[str, Any],
-        register_type: RegisterType,
-        address_start: int,
-    ) -> list[int] | str:
-        logger.debug(f"Response: {response}")
-        result_code = response.get("result_code", 0)
-        if result_code == 1:
-            modbus_data = response["result_data"]["param_value"].split(" ")
-            modbus_data.pop()  # remove null on the end
-            data: list[int] = []
-            # Merge two consecutive bytes into 16 bit integers, same as modbus.
-            # Maybe it would be better to use bytes everywhere...
-            # but modbus was here first.
-            for i in range(0, len(modbus_data), 2):
-                data.append(int(modbus_data[i], 16) * 256 + int(modbus_data[i + 1], 16))
-            return data
-        elif result_code == 106:  # token expired
-            self._token = None
-            await self.disconnect()
-            raise modbus_base.CannotConnectError(
-                f"Token Expired: {response.get('result_msg')}"
-            )
-        elif result_code == 301:  # common read failed
-            return "retry"
-        else:
-            raise modbus_base.ModbusError(
-                "Unknown response while trying to query "
-                f"{register_type} {address_start}: {response} "
-            )
+    @dataclass
+    class Retry:
+        delay: int
 
-    async def _read_range(
+    async def _query_http_json(
         self,
-        register_type: RegisterType,
         address_start: int,
         address_count: int,
-        recursion: bool = False,
-    ) -> list[int]:
-        """Raises modbus.CannotConnectError on WiNet misbehavior."""
-
-        # TODO: query via websocket instead of http!!
-        # That's the whole point of the websocket.
-
-        if not self._token:
-            connected = await self.connect()
-            if not connected:
-                raise modbus_base.CannotConnectError("Connection failed")
+        register_type: modbus_base.RegisterType,
+    ) -> dict | Retry:
+        if not await self.connect():
+            raise modbus_base.CannotConnectError("Connection failed")
 
         assert self._inverter
+        assert self._token
 
         param_types = {
             modbus_base.RegisterType.READ: 0,
@@ -182,39 +154,58 @@ class HttpConnection(ModbusConnectionBase):
         try:
             async with await self._aio_client.get(url, params=params) as r:
                 if r.status == 200:
-                    response = await r.json()
-                    value = await self._parse_response(
-                        response, register_type, address_start
-                    )
-                    if isinstance(value, str):
-                        # This interface is beyond stupid, but not worth cleaning up.
-                        # Switch to websocket instead.
-                        assert value == "retry"
-
-                        if recursion:
-                            raise modbus_base.ModbusError(
-                                "Unknown problem while trying to query "
-                                f"{register_type} {address_start}: {response} "
-                            )
-                        else:
-                            logger.debug(
-                                "Tried to read too much too fast! Waiting 10 seconds..."
-                            )
-                            await asyncio.sleep(10)
-
-                            return await self._read_range(
-                                register_type,
-                                address_start,
-                                address_count,
-                                recursion=True,
-                            )
+                    response = cast(dict, await r.json())
+                    if response["result_code"] == 1:
+                        return cast(dict, response["result_data"])
+                    elif response["result_code"] == 106:
+                        self._token = None
+                        # Assumption: to get a new token, we need simply reconnect.
+                        await self.disconnect()
+                        return HttpConnection.Retry(1)
+                    elif response["result_code"] == 301:
+                        return HttpConnection.Retry(10)
                     else:
-                        return value
+                        raise modbus_base.ModbusError(
+                            f"Unknown response from inverter: {response}"
+                        )
                 else:
-                    raise modbus_base.CannotConnectError(
-                        f"Connection Failed: {r.status} {r.text}"
+                    raise modbus_base.ModbusError(
+                        f"Invalid response from inverter: {r.status} {r.text}"
                     )
-
         except Exception as e:
             # e.g. response is not valid json
-            raise modbus_base.CannotConnectError(f"Connection Failed: {e}") from None
+            raise modbus_base.ModbusError(f"Connection Failed: {e}") from e
+
+    async def _read_range(
+        self,
+        register_type: RegisterType,
+        address_start: int,
+        address_count: int,
+    ) -> list[int]:
+        """Raises modbus.CannotConnectError on WiNet misbehavior."""
+
+        # Note: websocket does not allow access to all possible registers.
+        # Not quite clear whether it's worth the effort to query some via websocket and
+        # only the rest via http.
+
+        response_json = await self._query_http_json(
+            address_start, address_count, register_type
+        )
+        # TODO: should retry be handled here or in _query_http_json?
+        if isinstance(response_json, HttpConnection.Retry):
+            await asyncio.sleep(response_json.delay)
+            response_json = await self._query_http_json(
+                address_start, address_count, register_type
+            )
+            if isinstance(response_json, HttpConnection.Retry):
+                raise modbus_base.ModbusError("Unknown problem while trying to query")
+
+        modbus_data = response_json["param_value"].split(" ")
+        modbus_data.pop()  # remove null on the end
+        data: list[int] = []
+        # Merge two consecutive bytes into 16 bit integers, same as modbus.
+        # Maybe it would be better to use bytes everywhere...
+        # but modbus was here first.
+        for i in range(0, len(modbus_data), 2):
+            data.append(int(modbus_data[i], 16) * 256 + int(modbus_data[i + 1], 16))
+        return data

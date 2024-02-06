@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 
@@ -17,9 +18,11 @@ logger = logging.getLogger(__name__)
 
 
 async def main():
-    connection = HttpConnection("127.0.0.1", 1, 8082)
+    connection = HttpConnection("192.168.13.58", 1, 8082)
     connected = await connection.connect()
-    assert connected
+    if not connected:
+        logger.error("Could not connect to inverter")
+        return
 
     assert connection._inverter
     assert connection._token
@@ -41,3 +44,7 @@ async def main():
     print(response)
 
     await connection.disconnect()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
