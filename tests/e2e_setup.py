@@ -178,7 +178,7 @@ async def simulate_modbus_inverter(yaml_file: str | pathlib.Path | None):
         raise Exception("Server failed to start.")
     if attempt > 1:
         logger.warning(f"Server start took {attempt/10} seconds.")
-    port = server.transport.sockets[0].getsockname()[1]  # type: ignore
+    port: int = server.transport.sockets[0].getsockname()[1]  # type: ignore
     logger.debug(f"Server started on port {port}")
     assert port
 
