@@ -72,10 +72,8 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
         assert data["token"] == "12345"
         return web.json_response(
             {
-                "result_code": "1",
-                "result_data": {
-                    "param_value": "00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F FF"
-                },
+                "result_code": 1,  # as int
+                "result_data": {"param_value": "CC " * int(data["param_num"]) + "00"},
             }
         )
 
@@ -93,6 +91,7 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
                     await ws.send_json(
                         {
                             "result_msg": "success",
+                            "result_code": "1",
                             "result_data": {"token": "12345"},
                         }
                     )
@@ -104,6 +103,7 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
                     await ws.send_json(
                         {
                             "result_msg": "success",
+                            "result_code": "1",
                             "result_data": {
                                 "list": [
                                     {

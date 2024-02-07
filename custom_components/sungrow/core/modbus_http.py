@@ -1,10 +1,12 @@
 import asyncio
 import logging
+import os
 import time
 from typing import Any, cast
 
 import aiohttp
 from attr import dataclass
+from pytest import param
 
 import custom_components.sungrow.core.modbus_base as modbus_base
 from custom_components.sungrow.core.modbus_base import (
@@ -34,12 +36,14 @@ class HttpConnection(ModbusConnectionBase):
 
         response: dict = await self._ws.receive_json()
 
-        if response["result_code"] == 1 and response["result_msg"] == "success":
+        if (
+            response.get("result_code") == "1"
+            and response.get("result_msg") == "success"
+            and response.get("result_data") is not None
+        ):
             return cast(dict[str, Any], response["result_data"])
         else:
-            raise modbus_base.ModbusError(
-                f"Inverter responded with: {response['result_msg']}"
-            )
+            raise modbus_base.ModbusError(f"Inverter responded with: {response}")
 
     async def _get_new_token(self) -> str:
         response = await self._ws_query(
@@ -113,6 +117,22 @@ class HttpConnection(ModbusConnectionBase):
         # Force completely new connections on next connect()
         await self._aio_client.close()
 
+    async def _get_json(self, url: str, params: dict[str, str | int]) -> dict[str, Any]:
+        try:
+            async with await self._aio_client.get(url, params=params) as r:
+                logger.debug(f"Got r response: {r}")
+                if r.status == 200:
+                    v = cast(dict, await r.json())
+                    logger.debug(f"{url} with {params} --> {v}")
+                    return v
+                else:
+                    raise modbus_base.ModbusError(
+                        f"Invalid response from inverter: {r.status} {r.text}"
+                    )
+        except Exception as e:
+            # e.g. response is not valid json
+            raise modbus_base.ModbusError(f"Connection Failed: {e}") from e
+
     @dataclass
     class Retry:
         delay: int
@@ -136,8 +156,16 @@ class HttpConnection(ModbusConnectionBase):
 
         await asyncio.sleep(0.5)  # Server simply disconnects if we query too fast.
 
-        url = f"http://{self._host}/device/getParam"
-        params = {
+        # Usually port 80, but we cannot use a hardcoded port in tests.
+        # In tests we'll simply reuse the port of the websocket server.
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            logger.warning("Running in test mode, using websocket port for http")
+            port = self._port
+        else:
+            port = 80
+
+        url = f"http://{self._host}:{port}/device/getParam"
+        params: dict[str, str | int] = {
             "dev_id": self._inverter["dev_id"],
             "dev_type": self._inverter["dev_type"],
             "dev_code": self._inverter["dev_code"],
@@ -147,34 +175,29 @@ class HttpConnection(ModbusConnectionBase):
             "param_type": param_types[register_type],
             "token": self._token,
             "lang": "en_us",
-            "time123456": time.time(),
+            "time123456": int(time.time()),
         }
         logger.debug(f"getting: {url} with {params}")
 
         try:
-            async with await self._aio_client.get(url, params=params) as r:
-                if r.status == 200:
-                    response = cast(dict, await r.json())
-                    if response["result_code"] == 1:
-                        return cast(dict, response["result_data"])
-                    elif response["result_code"] == 106:
-                        self._token = None
-                        # Assumption: to get a new token, we need simply reconnect.
-                        await self.disconnect()
-                        return HttpConnection.Retry(1)
-                    elif response["result_code"] == 301:
-                        return HttpConnection.Retry(10)
-                    else:
-                        raise modbus_base.ModbusError(
-                            f"Unknown response from inverter: {response}"
-                        )
-                else:
-                    raise modbus_base.ModbusError(
-                        f"Invalid response from inverter: {r.status} {r.text}"
-                    )
+            response = await self._get_json(url, params)
+            logger.debug(f"Response: {response}")
+            if response["result_code"] == 1:
+                return cast(dict, response["result_data"])
+            elif response["result_code"] == 106:
+                self._token = None
+                # Assumption: to get a new token, we need simply reconnect.
+                await self.disconnect()
+                return HttpConnection.Retry(1)
+            elif response["result_code"] == 301:
+                return HttpConnection.Retry(10)
+            else:
+                raise modbus_base.ModbusError(
+                    f"Unknown response from inverter: {response}"
+                )
         except Exception as e:
             # e.g. response is not valid json
-            raise modbus_base.ModbusError(f"Connection Failed: {e}") from e
+            raise modbus_base.ModbusError(f"Handling Failed: {e}") from e
 
     async def _read_range(
         self,
@@ -200,7 +223,10 @@ class HttpConnection(ModbusConnectionBase):
             if isinstance(response_json, HttpConnection.Retry):
                 raise modbus_base.ModbusError("Unknown problem while trying to query")
 
+        logger.debug(f"Got data: {response_json}")
+
         modbus_data = response_json["param_value"].split(" ")
+        logger.debug(f"Got modbus data: {modbus_data}")
         modbus_data.pop()  # remove null on the end
         data: list[int] = []
         # Merge two consecutive bytes into 16 bit integers, same as modbus.
