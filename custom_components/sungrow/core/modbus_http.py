@@ -6,7 +6,6 @@ from typing import Any, cast
 
 import aiohttp
 from attr import dataclass
-from pytest import param
 
 import custom_components.sungrow.core.modbus_base as modbus_base
 from custom_components.sungrow.core.modbus_base import (

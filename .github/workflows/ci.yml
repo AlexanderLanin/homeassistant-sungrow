@@ -1,0 +1,39 @@
+name: all-in-one
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Run linter
+      run: poetry run ruff .
+
+    - name: Run mypy
+      run: poetry run mypy .
+
+    - name: Run quick tests
+      run: poetry run pytest tests/quick
+
+    - name: Run slow tests
+      # Run them in parallel?
+      run: poetry run pytest tests/slow

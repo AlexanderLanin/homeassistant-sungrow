@@ -3,6 +3,8 @@ __pycache__/
 !.vscode/extensions.json
 !.vscode/tasks.json
 !.devcontainer
+!.github
+!.gitignore
 
 coverage.xml
 
