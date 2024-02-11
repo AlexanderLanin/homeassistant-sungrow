@@ -8,7 +8,7 @@ from pprint import pprint
 import pytest
 
 from custom_components.sungrow.core import inverter, modbus_base
-from tests.e2e_setup import e2e_setup, simulate_modbus_inverter
+from tests.slow.e2e_setup import e2e_setup, simulate_modbus_inverter
 
 logging.basicConfig(level=logging.DEBUG)
 

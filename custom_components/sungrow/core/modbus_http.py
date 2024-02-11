@@ -228,6 +228,12 @@ class HttpConnection(ModbusConnectionBase):
         modbus_data = response_json["param_value"].split(" ")
         logger.debug(f"Got modbus data: {modbus_data}")
         modbus_data.pop()  # remove null on the end
+
+        if len(modbus_data) != address_count * 2:
+            raise modbus_base.ModbusError(
+                f"Invalid param_value received from inverter: {modbus_data}"
+            )
+
         data: list[int] = []
         # Merge two consecutive bytes into 16 bit integers, same as modbus.
         # Maybe it would be better to use bytes everywhere...

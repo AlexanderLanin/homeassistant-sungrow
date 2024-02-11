@@ -18,7 +18,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 
 from custom_components.sungrow.core.inverter import InverterConnection
-from tests import e2e_setup
+from tests.slow import e2e_setup
 
 pytestmark = [pytest.mark.asyncio]
 DOMAIN = "sungrow"
