@@ -55,18 +55,22 @@ def bypass_setup_fixture():
         logger.debug("Unpatched async_setup and async_setup_entry")
 
 
-@pytest.fixture(autouse=True)
 async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
-    yield
-    # Unfortunately tests here are not even aware of any connection, as it's internal
-    # to the config_flow.
-    # Fortunately the connection is stored in the global hass object, so we can
-    # access it from here.
     if DOMAIN in hass.data:
         for ic in hass.data[DOMAIN]["inverters"].values():
             assert isinstance(ic, InverterConnection)
             if ic.connection:
                 await ic.connection.disconnect()
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_lingering_inverter_connections_fixture(hass: HomeAssistant):
+    yield
+    # Unfortunately tests here are not even aware of any connection, as it's internal
+    # to the config_flow.
+    # Fortunately the connection is stored in the global hass object, so we can
+    # access it from here.
+    await cleanup_lingering_inverter_connections(hass)
 
 
 async def start_config_flow(hass: HomeAssistant) -> str:
@@ -133,6 +137,11 @@ async def test_config_flow_connects_to_http(hass: HomeAssistant, bypass_setup_fi
     # Note: this test might trigger error logs from aiohttp. Ignore them.
     async with e2e_setup.simulated_http_inverter("dump_master.yaml") as port:
         result = await simulate_config_flow_input(hass, port, 0, "http")
+
+        # At this point inverter and server are running, and therefore blocking
+        # leaving the context manager. So we need to stop them manually.
+        # ToDo: should leaving the context manager force close all connections?
+        await cleanup_lingering_inverter_connections(hass)
 
     assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert not result.get("errors")
