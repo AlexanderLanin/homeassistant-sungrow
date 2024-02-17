@@ -131,7 +131,7 @@ class HttpConnection(ModbusConnectionBase):
             # e.g. response is not valid json
             raise modbus_base.ModbusError(f"Connection Failed: {e}") from e
 
-    def _build_address_for_register_query(  # noqa: N802
+    def _build_address_for_register_query(
         self,
         address_start: int,
         address_count: int,
