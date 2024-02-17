@@ -49,7 +49,10 @@
                 "charliermarsh.ruff",
                 "ryanluker.vscode-coverage-gutters",
                 "ms-python.mypy-type-checker",
-                "redhat.vscode-yaml"
+                "redhat.vscode-yaml",
+                // Although not all people may like/have it, hopefully it doesn't hurt.
+                // And I personally like it :-)
+                "github.copilot-chat"
             ]
         }
     }

@@ -24,6 +24,7 @@ pytestmark = [pytest.mark.asyncio]
 DOMAIN = "sungrow"
 
 # log everything... except pymodbus
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("pymodbus").setLevel(logging.WARNING)
 logging.getLogger("asyncio").setLevel(logging.WARNING)
@@ -49,7 +50,9 @@ def bypass_setup_fixture():
         "custom_components.sungrow.async_setup_entry",
         return_value=True,
     ):
+        logger.debug("Patched async_setup and async_setup_entry")
         yield
+        logger.debug("Unpatched async_setup and async_setup_entry")
 
 
 @pytest.fixture(autouse=True)

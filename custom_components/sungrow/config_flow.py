@@ -11,7 +11,7 @@ from custom_components.sungrow.core import modbus_base
 from .const import DOMAIN
 from .core.inverter import connect_and_get_basic_data, slave_master_standalone_str
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__ + " @ ")
 
 
 class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -73,6 +73,7 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
                 data = dict(user_input)
                 data["serial_number"] = ic.data["serial_number"]
 
+                logger.debug(f"Calling async_create_entry({data})")
                 return self.async_create_entry(
                     # Note: name can be changed in the UI!
                     title="Sungrow Inverter " + slave_master_standalone_str(ic.data),
