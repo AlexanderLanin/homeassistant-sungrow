@@ -11,10 +11,13 @@ import pytest
 import pytest_socket  # type: ignore
 import yaml
 from aiohttp import web
+from homeassistant.core import HomeAssistant
 
 from custom_components.sungrow.core import inverter
+from custom_components.sungrow.core.inverter import InverterConnection
 
 TEST_DATA = pathlib.Path(__file__).parent / "test_data"
+DOMAIN = "sungrow"
 
 pytest_plugins = ("pytest_asyncio",)
 
@@ -232,3 +235,21 @@ async def e2e_setup(yaml_file, inverter_params):
         sungrow_inverter_client(port, inverter_params) as inv,
     ):
         yield inv
+
+
+async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
+    if DOMAIN in hass.data:
+        for ic in hass.data[DOMAIN]["inverters"].values():
+            assert isinstance(ic, InverterConnection)
+            if ic.connection:
+                await ic.connection.disconnect()
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_lingering_inverter_connections_fixture(hass: HomeAssistant):
+    yield
+    # Unfortunately tests here are not even aware of any connection, as it's internal
+    # to the config_flow.
+    # Fortunately the connection is stored in the global hass object, so we can
+    # access it from here.
+    await cleanup_lingering_inverter_connections(hass)

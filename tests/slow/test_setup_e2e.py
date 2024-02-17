@@ -2,7 +2,7 @@
 Test the Simple Integration config flow.
 
 You can run this file e.g. via:
-clear && pytest -k config_flow_e2e --log-cli-level=DEBUG
+clear && pytest -k e2e --log-cli-level=DEBUG
 """
 import logging
 
@@ -17,9 +17,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry, entity_registry
 
 from tests.slow import e2e_setup
+from tests.slow.e2e_setup import (
+    cleanup_lingering_inverter_connections_fixture,  # noqa: F401
+)
 from tests.slow.test_config_flow import (
     always_enable_custom_integrations,  # noqa: F401
-    cleanup_lingering_inverter_connections,  # noqa: F401
     start_config_flow,
 )
 
@@ -33,7 +35,7 @@ logging.getLogger("asyncio").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-async def test_successful_config_flow_e2e_up_to_sensor_entities(hass: HomeAssistant):
+async def test_e2e_successful_config_flow_creates_sensor_entities(hass: HomeAssistant):
     flow_id = await start_config_flow(hass)
 
     async with e2e_setup.simulate_modbus_inverter(

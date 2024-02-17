@@ -17,8 +17,10 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 
-from custom_components.sungrow.core.inverter import InverterConnection
 from tests.slow import e2e_setup
+from tests.slow.e2e_setup import (
+    cleanup_lingering_inverter_connections_fixture,  # noqa: F401
+)
 
 pytestmark = [pytest.mark.asyncio]
 DOMAIN = "sungrow"
@@ -53,24 +55,6 @@ def bypass_setup_fixture():
         logger.debug("Patched async_setup and async_setup_entry")
         yield
         logger.debug("Unpatched async_setup and async_setup_entry")
-
-
-async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
-    if DOMAIN in hass.data:
-        for ic in hass.data[DOMAIN]["inverters"].values():
-            assert isinstance(ic, InverterConnection)
-            if ic.connection:
-                await ic.connection.disconnect()
-
-
-@pytest.fixture(autouse=True)
-async def cleanup_lingering_inverter_connections_fixture(hass: HomeAssistant):
-    yield
-    # Unfortunately tests here are not even aware of any connection, as it's internal
-    # to the config_flow.
-    # Fortunately the connection is stored in the global hass object, so we can
-    # access it from here.
-    await cleanup_lingering_inverter_connections(hass)
 
 
 async def start_config_flow(hass: HomeAssistant) -> str:
@@ -141,7 +125,8 @@ async def test_config_flow_connects_to_http(hass: HomeAssistant, bypass_setup_fi
         # At this point inverter and server are running, and therefore blocking
         # leaving the context manager. So we need to stop them manually.
         # ToDo: should leaving the context manager force close all connections?
-        await cleanup_lingering_inverter_connections(hass)
+        #       see
+        await e2e_setup.cleanup_lingering_inverter_connections(hass)
 
     assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert not result.get("errors")
