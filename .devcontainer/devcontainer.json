@@ -2,8 +2,7 @@
     "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
     "features": {
         "ghcr.io/devcontainers-contrib/features/pipx-package": {},
-        "ghcr.io/devcontainers-contrib/features/poetry": {},
-        "ghcr.io/stuartleeks/dev-container-features/shell-history": {}
+        "ghcr.io/devcontainers-contrib/features/poetry": {}
     },
     // poetry installs everything to a virtual environment, which is actually super annoying.
     // As there is no convoinient way to always activate it, we add activation to .bashrc
