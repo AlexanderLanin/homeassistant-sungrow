@@ -2,7 +2,7 @@
 Test the Simple Integration config flow.
 
 You can run this file e.g. via:
-clear && pytest -k config_flow --log-cli-level=DEBUG
+clear && pytest -k test_config_flow_connects_to_http --log-cli-level=DEBUG
 """
 import logging
 from pprint import pprint

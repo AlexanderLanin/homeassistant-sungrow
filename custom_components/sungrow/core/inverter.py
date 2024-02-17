@@ -252,7 +252,7 @@ class InverterConnection:
 
     async def _disable_winet_signals_in_case_of_winet_dongle(self):
         if await self.is_modbus_winet():
-            logger.debug("Disabling all WiNet unsupported signals")
+            logger.debug("WiNet dongle detected; Disabling all unsupported signals")
             self.signal_definitions.disable_winet_signals()
         else:
             logger.debug("Not a WiNet dongle; all signals are supported")

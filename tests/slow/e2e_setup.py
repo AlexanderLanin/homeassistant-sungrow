@@ -73,7 +73,9 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
         return web.json_response(
             {
                 "result_code": 1,  # as int
-                "result_data": {"param_value": "CC " * int(data["param_num"]) + "00"},
+                "result_data": {
+                    "param_value": "01 " * int(data["param_num"]) * 2 + "00"
+                },
             }
         )
 
@@ -154,6 +156,7 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
     try:
         yield port
     finally:
+        # TODO: if any connections are still open, close them
         logger.debug("Stopping web server")
         await runner.cleanup()
 
