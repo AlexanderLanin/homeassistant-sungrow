@@ -13,11 +13,11 @@ import yaml
 from aiohttp import web
 from homeassistant.core import HomeAssistant
 
+from custom_components.sungrow.const import DOMAIN
 from custom_components.sungrow.core import inverter
 from custom_components.sungrow.core.inverter import InverterConnection
 
 TEST_DATA = pathlib.Path(__file__).parent / "test_data"
-DOMAIN = "sungrow"
 
 pytest_plugins = ("pytest_asyncio",)
 

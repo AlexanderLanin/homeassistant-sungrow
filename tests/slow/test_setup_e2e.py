@@ -16,6 +16,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry, entity_registry
 
+from custom_components.sungrow.const import DOMAIN
 from tests.slow import e2e_setup
 from tests.slow.e2e_setup import (
     cleanup_lingering_inverter_connections_fixture,  # noqa: F401
@@ -26,7 +27,6 @@ from tests.slow.test_config_flow import (
 )
 
 pytestmark = [pytest.mark.asyncio]
-DOMAIN = "sungrow"
 
 # log everything... except pymodbus
 logging.basicConfig(level=logging.INFO)

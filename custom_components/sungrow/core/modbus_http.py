@@ -7,6 +7,7 @@ from typing import Any, cast
 
 import aiohttp
 
+import custom_components.sungrow.core.const as const
 import custom_components.sungrow.core.modbus_base as modbus_base
 from custom_components.sungrow.core.modbus_base import (
     ModbusConnectionBase,
@@ -17,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 class HttpConnection(ModbusConnectionBase):
-    def __init__(self, host: str, slave: int, port: int = 8082):
+    def __init__(
+        self, host: str, slave: int, port: int = const.SUNGROW_DEFEAULT_HTTP_PORT
+    ):
         _ = slave  # unused
         super().__init__(host, port, 0)  # FIXME: slave is not used. Remove from Base?
 

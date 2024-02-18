@@ -8,6 +8,7 @@ from datetime import datetime
 from fnmatch import fnmatch
 from typing import Final, cast
 
+import custom_components.sungrow.core.const as const
 from custom_components.sungrow.core.inverter_types import Datapoint
 
 from . import (
@@ -138,6 +139,15 @@ class InverterConnection:
         await self.connection.__aexit__(exc_type, exc_value, traceback)
 
     @staticmethod
+    def _get_default_port(connection: type[modbus_base.ModbusConnectionBase]):
+        if connection == modbus_http.HttpConnection:
+            return const.SUNGROW_DEFEAULT_HTTP_PORT
+        elif connection == modbus_py.PymodbusConnection:
+            return const.SUNGROW_DEFEAULT_MODBUS_PORT
+        else:
+            raise RuntimeError("Unknown connection type")
+
+    @staticmethod
     async def create(
         host: str, port: int | None, slave: int | None, connection: str | None
     ) -> InverterConnection | None:
@@ -154,14 +164,14 @@ class InverterConnection:
         logger.debug(f"Connecting to {host}:{port} (slave {slave}) with {connection}")
 
         connection_classes = guess_connection_class(connection, port)
+        logger.debug(f"Trying connection classes: {connection_classes}")
         for cc in connection_classes:
-            cc_port = port
-            if cc_port is None:
-                cc_port = 8082 if cc is modbus_http.HttpConnection else 502
-                logger.debug(f"Using default port {port}")
+            cc_port = port or InverterConnection._get_default_port(cc)
 
             # ToDo: consider removing slave from constructor
             connection_obj = cc(host=host, port=cc_port, slave=slave or 1)
+
+            logger.debug(f"Trying to connect to {connection_obj}...")
             if await connection_obj.connect():
                 break
         else:
@@ -334,13 +344,18 @@ def guess_connection_class(
 ) -> list[type[modbus_base.ModbusConnectionBase]]:
     """Returns connection classes worth trying."""
 
-    if connection == "http" or port == 8082:
+    if connection == "http" or port == const.SUNGROW_DEFEAULT_HTTP_PORT:
         return [modbus_http.HttpConnection]
 
+    if connection == "modbus" or port == const.SUNGROW_DEFEAULT_MODBUS_PORT:
+        return [modbus_py.PymodbusConnection]
+
     elif connection is None and port is None:
-        return [modbus_http.HttpConnection, modbus_py.PymodbusConnection]
+        # TODO: which one do we prefer?
+        return [modbus_py.PymodbusConnection, modbus_http.HttpConnection]
 
     else:
+        # Non standard port can only mean modbus proxy
         return [modbus_py.PymodbusConnection]
 
 
