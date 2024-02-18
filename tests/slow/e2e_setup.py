@@ -75,6 +75,7 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
         assert data["token"] == "12345"
         return web.json_response(
             {
+                # TODO: respond with data from yaml file
                 "result_code": 1,  # as int
                 "result_data": {
                     "param_value": "01 " * int(data["param_num"]) * 2 + "00"

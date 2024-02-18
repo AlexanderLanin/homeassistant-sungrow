@@ -105,19 +105,23 @@ async def test_non_responding_inverter(hass: HomeAssistant):
         assert result["errors"]["base"].startswith("cannot_connect")
 
 
-async def test_config_flow_connects_to_modbus(
-    hass: HomeAssistant, bypass_setup_fixture
-):
+async def test_config_flow_explicit_modbus(hass: HomeAssistant, bypass_setup_fixture):
     async with e2e_setup.simulate_modbus_inverter("dump_master.yaml") as port:
         result = await simulate_config_flow_input(hass, port, 0, "modbus")
 
     assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert not result.get("errors")
 
-    pprint(result)
+
+async def test_config_flow_detects_modbus(hass: HomeAssistant, bypass_setup_fixture):
+    async with e2e_setup.simulate_modbus_inverter("dump_master.yaml") as port:
+        result = await simulate_config_flow_input(hass, port, 0, "auto")
+
+    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
+    assert not result.get("errors")
 
 
-async def test_config_flow_connects_to_http(hass: HomeAssistant, bypass_setup_fixture):
+async def test_config_flow_explicit_http(hass: HomeAssistant, bypass_setup_fixture):
     # Note: this test might trigger error logs from aiohttp. Ignore them.
     async with e2e_setup.simulated_http_inverter("dump_master.yaml") as port:
         result = await simulate_config_flow_input(hass, port, 0, "http")
@@ -131,7 +135,11 @@ async def test_config_flow_connects_to_http(hass: HomeAssistant, bypass_setup_fi
     assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert not result.get("errors")
 
-    pprint(result)
 
+async def test_config_flow_detects_http(hass: HomeAssistant, bypass_setup_fixture):
+    # Note: this test might trigger error logs from aiohttp. Ignore them.
+    async with e2e_setup.simulated_http_inverter("dump_master.yaml") as port:
+        result = await simulate_config_flow_input(hass, port, 0, "auto")
 
-# TODO: test_config_flow_detects_http, test_config_flow_detects_modbus
+    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
+    assert not result.get("errors")
