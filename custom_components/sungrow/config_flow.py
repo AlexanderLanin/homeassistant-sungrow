@@ -22,6 +22,7 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
     async def _async_show_user_form(
         self, user_input: dict[str, Any], errors: dict[str, str]
     ):
+        # TODO: define CONFIG_SCHEMA, see https://github.com/home-assistant/core/pull/93587
         schema = {
             vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): str,
             vol.Optional(CONF_PORT, default=user_input.get(CONF_PORT, "")): int,

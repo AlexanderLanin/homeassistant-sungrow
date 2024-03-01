@@ -3,10 +3,14 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation
 
 from .const import DOMAIN
 
 logger = logging.getLogger(__name__)
+
+# TODO: see https://github.com/home-assistant/core/pull/93587
+CONFIG_SCHEMA = config_validation.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
@@ -47,4 +51,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     logger.debug(f"async_unload_entry(entry={entry})")
 
     # Forward the unloading to the sensor platform (sensor.py)
+    return await hass.config_entries.async_unload_platforms(entry, Platform.SENSOR)
     return await hass.config_entries.async_unload_platforms(entry, Platform.SENSOR)

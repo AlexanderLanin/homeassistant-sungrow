@@ -27,10 +27,10 @@
     "selector": {
         "connection": {
             "options": {
-                "_auto": "Auto-detect",
-                "_modbus": "MODBUS: Use this when connecting to internal LAN port (preferred)",
-                "_sungrow": "MODBUS_Sungrow: Some inverters require this instead of modbus",
-                "_http": "HTTP: Use this when connecting to WiNet-S (bad idea)"
+                "DISABLED_auto": "Auto-detect",
+                "DISABLED_modbus": "MODBUS: Use this when connecting to internal LAN port (preferred)",
+                "DISABLED_sungrow": "MODBUS_Sungrow: Some inverters require this instead of modbus",
+                "DISABLED_http": "HTTP: Use this when connecting to WiNet-S (bad idea)"
             }
         }
     }
