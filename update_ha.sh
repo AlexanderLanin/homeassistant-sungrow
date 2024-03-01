@@ -2,8 +2,8 @@
 set -euo pipefail
 
 echo "Running code analysis..."
-ruff .
-mypy .
+poetry run ruff check .
+poetry run mypy .
 
 
 echo "Copying files to home assistant..."

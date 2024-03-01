@@ -14,5 +14,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: poetry install --no-interaction --no-ansi
-      - run: poetry run ruff
-      - run: poetry run mypy
+      - run: poetry run ruff check .
+      - run: poetry run mypy .

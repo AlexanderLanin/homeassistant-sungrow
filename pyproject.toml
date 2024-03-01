@@ -1,20 +1,18 @@
 [tool.poetry]
 name = "homeassistant-sungrow"
-version = "0.0.1dev"
+version = "0.0.2"
 description = "Sungrow integration"
 authors = ["Alexander Lanin <alex@lanin.de>"]
 license = "to be decided"
 readme = "README.md"
-packages = [
-    { include = "custom_components" },
-    { include = "scripts" },
-]
+packages = [{ include = "custom_components" }, { include = "scripts" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-pymodbus = { git = "https://github.com/pymodbus-dev/pymodbus.git", rev = "54c734c823bbaf9d3915fa29f9460eb0b11ce197" }
+pymodbus = ">=3.6.4"
 homeassistant = ">=2024"
 tqdm = "*"
+aiohttp = ">=3.9.3"
 
 tabulate = "*"
 requests = "*"
@@ -34,8 +32,6 @@ types-PyYAML = "*"
 types-tabulate = "*"
 homeassistant-stubs = "*"
 types-tqdm = "*"
-aiohttp = "*"
-# aiohttp-stubs = "*"
 
 [build-system]
 requires = ["poetry-core"]

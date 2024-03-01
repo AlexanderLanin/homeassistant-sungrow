@@ -52,4 +52,3 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Forward the unloading to the sensor platform (sensor.py)
     return await hass.config_entries.async_unload_platforms(entry, Platform.SENSOR)
-    return await hass.config_entries.async_unload_platforms(entry, Platform.SENSOR)
