@@ -6,7 +6,7 @@
   ],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/AlexanderLanin/homeassistant-sungrow/blob/main/INFO.md",
+  "documentation": "https://github.com/AlexanderLanin/homeassistant-sungrow/blob/temp/INFO.md",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
   "requirements": [
@@ -14,5 +14,5 @@
     "httpx~=0.25",
     "websocket-client~=1.7.0"
   ],
-  "version": "0.0.1"
+  "version": "0.0.2"
 }
