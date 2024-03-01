@@ -2,13 +2,9 @@
 
 ## Known limitations
 * Only tested with SH8.0RT-20
-* Works only with internal LAN port (not via WiNet-S etc)
+* Only tested with one home assistant version (see poetry.lock)
 * Early alpha, expect bugs!
 
-Next steps:
-* [ ] Add more tests
-* [ ] Add CI/CD
-* [ ] Add ability to report issues (with data attached)
 
 ## Installation
 
@@ -46,6 +42,8 @@ To be determined... Apache 2.0? MIT? GPL?
 ## Development
 
 For many things you can open this repository within a Codespace, but if you want access to your local inverter or home assistant you need to clone this repository.
+Best supported method is to use the devcontainer, which is a docker container with all the necessary tools and dependencies.
+(Use the "Reopen in Container" button in the lower right corner of VS Code)
 
 
 ### Development without docker
