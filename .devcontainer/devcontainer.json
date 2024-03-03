@@ -43,7 +43,15 @@
                     // Tests with sockets disabled don't show up otherwise.
                     // Ancient old issue.
                     "pythonTestAdapter"
-                ]
+                ],
+                "files.exclude": {
+                    // Be VERY careful with these, as now VS Code doesn't show the real file system
+                    ".mypy_cache": true,
+                    ".pytest_cache": true,
+                    ".ruff_cache": true,
+                    "**/__pycache__": true
+                },
+                "files.insertFinalNewline": true
             },
             "extensions": [
                 "charliermarsh.ruff",
