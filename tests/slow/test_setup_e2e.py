@@ -4,6 +4,7 @@ Test the Simple Integration config flow.
 You can run this file e.g. via:
 clear && pytest -k e2e --log-cli-level=DEBUG
 """
+
 import logging
 
 import pytest

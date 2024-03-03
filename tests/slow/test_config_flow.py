@@ -4,6 +4,7 @@ Test the Simple Integration config flow.
 You can run this file e.g. via:
 clear && pytest -k test_config_flow_connects_to_http --log-cli-level=DEBUG
 """
+
 import logging
 from contextlib import contextmanager
 from unittest.mock import patch
@@ -46,12 +47,15 @@ async def always_enable_custom_integrations(
 @pytest.fixture(autouse=True)
 def bypass_setup_fixture():
     """Prevent actual setup of the integration, so these tests run faster."""
-    with patch(
-        "custom_components.sungrow.async_setup",
-        return_value=True,
-    ), patch(
-        "custom_components.sungrow.async_setup_entry",
-        return_value=True,
+    with (
+        patch(
+            "custom_components.sungrow.async_setup",
+            return_value=True,
+        ),
+        patch(
+            "custom_components.sungrow.async_setup_entry",
+            return_value=True,
+        ),
     ):
         logger.debug("Patched async_setup and async_setup_entry")
         yield

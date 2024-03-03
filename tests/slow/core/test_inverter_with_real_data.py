@@ -2,6 +2,7 @@
 This is an end-to-end test that will connect to a fake inverter and pull data from it.
 It's really great to test the whole stack, but (mostly) it's limited to the happy path.
 """
+
 import logging
 from pprint import pprint
 

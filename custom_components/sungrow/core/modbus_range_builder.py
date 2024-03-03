@@ -2,6 +2,7 @@
 Builds the register ranges for the modbus read and hold requests.
 This is complex enough to deserve its own module.
 """
+
 import logging
 
 from custom_components.sungrow.core.modbus_types import (

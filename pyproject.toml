@@ -11,20 +11,24 @@ packages = [{ include = "custom_components" }, { include = "scripts" }]
 python = ">=3.11,<3.13"
 pymodbus = ">=3.6.4"
 homeassistant = ">=2024"
-tqdm = "*"
 aiohttp = ">=3.9.3"
-
-tabulate = "*"
-requests = "*"
 beartype = "*"
 
+# runtime dependencies for tools
+tabulate = "*"
+requests = "*"
+tqdm = "*"
+
 [tool.poetry.group.dev.dependencies]
+# tests
 pytest = "*"
 pytest-stub = "*"
 pytest-cov = "*"
 pytest-homeassistant-custom-component = "*"
 pytest-xdist = "*"
 
+# linting
+pre-commit = "*"
 ruff = "*"
 mypy = "*"
 types-requests = "*"
