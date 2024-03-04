@@ -9,7 +9,7 @@ Actually you don't even need python installed, let alone the correct version!
 
 If you don't have pipx installed, install it first as described in [pipx documentation](https://pipxproject.github.io/pipx/installation/).
 
-Then run:
+### One time execution
 
 ```bash
 pipx run --spec git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
@@ -20,10 +20,16 @@ For updating, just tell pipx to redownload:
 pipx run --no-cache --spec git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
 ```
 
+### Installation
 You can also install the scripts if you which to run them more conviniently for whatever reason:
 ```bash
 pipx install git+https://github.com/AlexanderLanin/homeassistant-sungrow@temp
 sungrow_dump YOUR_INVERTER_IP ANOTHER_INVERTER_IP ...
+```
+
+For updating:
+```bash
+pipx upgrade sungrow_dump
 ```
 
 ## How to run scripts (git clone + poetry)
