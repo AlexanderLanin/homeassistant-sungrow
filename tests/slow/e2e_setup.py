@@ -96,9 +96,16 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
                     assert m["lang"] == "en_us"
                     await ws.send_json(
                         {
+                            "result_code": 1,
                             "result_msg": "success",
-                            "result_code": "1",
-                            "result_data": {"token": "12345"},
+                            "result_data": {
+                                "service": "connect",
+                                "token": "12e3a456-dab7-0f0a-b5fd-b1e234b50607",
+                                "uid": 1,
+                                "tips_disable": 1,
+                                "virgin_flag": 0,
+                                "isFirstLogin": 0,
+                            },
                         }
                     )
                 elif m["service"] == "devicelist":

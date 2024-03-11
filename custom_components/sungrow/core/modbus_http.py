@@ -30,6 +30,19 @@ class HttpConnection(ModbusConnectionBase):
         self._token: str | None = None
         self._inverter: dict[str, str] | None = None
 
+    @staticmethod
+    def _parse_ws_response(response: dict[str, Any]) -> dict[str, Any]:
+        if (
+            response.get("result_code") == 1
+            and response.get("result_msg") == "success"
+            and response.get("result_data") is not None
+        ):
+            return cast(dict[str, Any], response["result_data"])
+        else:
+            raise modbus_base.ModbusError(
+                f"Inverter responded with: {type(response)} {response}"
+            )
+
     async def _ws_query(self, query: dict[str, str | int]) -> dict[str, Any]:
         # Potential services: connect, devicelist, state, statistics, runtime, real
         assert self._ws is not None
@@ -38,14 +51,7 @@ class HttpConnection(ModbusConnectionBase):
 
         response: dict = await self._ws.receive_json()
 
-        if (
-            response.get("result_code") == "1"
-            and response.get("result_msg") == "success"
-            and response.get("result_data") is not None
-        ):
-            return cast(dict[str, Any], response["result_data"])
-        else:
-            raise modbus_base.ModbusError(f"Inverter responded with: {response}")
+        return HttpConnection._parse_ws_response(response)
 
     async def _get_new_token(self) -> str:
         response = await self._ws_query(
