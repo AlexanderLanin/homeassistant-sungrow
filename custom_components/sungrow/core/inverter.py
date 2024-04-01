@@ -125,6 +125,8 @@ def mark_signals_not_in_this_model_as_disabled(
 
 @dataclass
 class InverterConnection:
+    # FIXME: Rename + Refactor to InverterConnectionFactory?!
+    # This would resolve the confusion with the SungrowInverter class!
     connection: modbus_py.ModbusConnectionBase
     signal_definitions: signals.SignalDefinitions
     data: dict[str, DatapointValueType]  # rename to initial_data?
@@ -148,6 +150,45 @@ class InverterConnection:
             raise RuntimeError("Unknown connection type")
 
     @staticmethod
+    async def _connect(connection: str | None, host: str, port: int | None):
+        connection_classes = guess_connection_classes(connection, port)
+        for cc in connection_classes:
+            connection_obj = cc(host, port or InverterConnection._get_default_port(cc))
+
+            logger.debug(f"Trying to connect to {connection_obj}...")
+            if await connection_obj.connect():
+                return connection_obj
+        else:
+            logger.debug("Failed to connect to inverter")
+            return None
+
+    @staticmethod
+    async def _fetch_initial_data(connection_obj: modbus_base.ModbusConnectionBase, slave: int | None)
+    
+        slaves_to_attempt = [1, 2] if slave is None else [slave]
+
+        ic = InverterConnection(
+            connection_obj, signal_definitions=signals.load_yaml(), data={}
+        )
+
+        for slave in slaves_to_attempt:
+            if await ic._query_initial_data(slave):
+                break
+        else:
+            await ic.connection.disconnect()
+            return None
+
+    async def _disable_all_unsupported_signals(self):
+        self._disable_signals_not_supported_by_model()
+        await self._disable_meter_signals_if_no_meter_available()
+
+        # TODO: are the same registers unsupported via pymodbus and http?
+        if await self._determine_is_modbus_winet():
+            logger.debug("WiNet dongle detected; Disabling all unsupported signals")
+            self.signal_definitions.disable_winet_signals()
+
+
+    @staticmethod
     async def create(
         host: str, port: int | None, slave: int | None, connection: str | None
     ) -> InverterConnection | None:
@@ -161,28 +202,12 @@ class InverterConnection:
         check for not connected and for exceptions.
         """
 
-        logger.debug(f"Connecting to {host}:{port} (slave {slave}) with {connection}")
-
-        connection_classes = guess_connection_class(connection, port)
-        logger.debug(f"Trying connection classes: {connection_classes}")
-        for cc in connection_classes:
-            cc_port = port or InverterConnection._get_default_port(cc)
-
-            # ToDo: consider removing slave from constructor
-            connection_obj = cc(host=host, port=cc_port, slave=slave or 1)
-
-            logger.debug(f"Trying to connect to {connection_obj}...")
-            if await connection_obj.connect():
-                break
-        else:
-            logger.debug("Failed to connect to inverter")
+        connection_obj = await InverterConnection._connect(connection, host, port)
+        if connection_obj is None:
             return None
 
-        signal_definitions = signals.load_yaml()
-
-        ic = InverterConnection(connection_obj, signal_definitions, {})
-        if not await ic._query_initial_data(slave):
-            await ic.connection.disconnect()
+        ic = await InverterConnection._fetch_initial_data(connection_obj, slave)
+        if ic is None:
             return None
 
         logger.debug(
@@ -190,82 +215,75 @@ class InverterConnection:
             f"{ic.data['device_type_code']} / {ic.data['serial_number']}"
         )
 
-        ic._disable_signals_not_supported_by_model()
-        await ic._disable_meter_signals_if_no_meter_available()
-        await ic._disable_winet_signals_in_case_of_winet_dongle()
+        await ic._disable_all_unsupported_signals()
+
         return ic
 
-    async def _query_initial_data(self, slave: int | None = None):
+    async def pull_signals(self, signal_list: list[str]):
+        return await pull_signals(
+            self.connection,
+            self.signal_definitions.get_signal_definitions_by_name(signal_list),
+        )
+
+    async def pull_single_signal(self, signal_name: str):
+        return await pull_single_signal(
+            self.connection,
+            self.signal_definitions.get_signal_definition_by_name(signal_name),
+        )
+
+    async def _query_initial_data(self, slave: int):
         """
         Query some initial data to test the connection.
-        Mostly to determine correct slave number.
         """
 
+        self.connection.slave = slave
+
         # TODO: maybe add all static signals to the query which we never need to
-        # query again. This would needless queries of static data.
+        # query again. This would reduce needless queries of static data.
+        # TODO: Store static/dynamic separation directly in yaml.
+        # However stuff like master slave mode is not truly static.
+        # We just simplify it here.
         # As we store the result, this doesn't need to be a minimal set!
-        signal_definitions = signals.load_yaml()
-        query = signal_definitions.get_signal_definitions_by_name(
-            [
-                # basic infos:
-                "serial_number",  # 4950
-                "device_type_code",  # 5000
-                # for correct naming of master/slave:
-                "master_slave_mode",  # 33500
-                "master_slave_role",  # 33501
-                "output_type",  # 5002
-            ]
-        )
         try:
-            try:
-                self.data = await pull_signals(self.connection, query)
-                return True
-            except modbus_base.InvalidSlaveError:
-                if slave is None:
-                    self.connection._slave = 2
-                    self.data = await pull_signals(self.connection, query)
-                    return True
-                else:
-                    return False
+            self.data = await self.pull_signals(
+                [
+                    # basic infos:
+                    "serial_number",  # 4950
+                    "device_type_code",  # 5000
+                    # for correct naming of master/slave:
+                    "master_slave_mode",  # 33500
+                    "master_slave_role",  # 33501
+                    "output_type",  # 5002
+                ]
+            )
         except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
-            logger.warning("Error connecting to inverter")
+            logger.debug("Error connecting to inverter")
             return False
 
-    async def is_modbus_winet(self):
-        """Lazy cached evaluation."""
-        # TODO: move this to __init__ and remove the lazy evaluation
-
-        if self._is_modbus_winet is None:
-            # FIXME: are the same registers unsupported via pymodbus and http?
-            if isinstance(self.connection, modbus_http.HttpConnection):
-                self._is_modbus_winet = True
-            else:
-                # array_insulation_resistance is not supported by WiNet dongle
-                signal = self.signal_definitions.get_signal_definition_by_name(
-                    "array_insulation_resistance"
-                )
-                assert signal
-
-                value = await self.connection.read([signal])
-
-                if value["array_insulation_resistance"] is None:
-                    logger.debug(
-                        "array_insulation_resistance is NOT supported -> WiNet dongle"
-                    )
-                    self._is_modbus_winet = True
-                else:
-                    logger.debug(
-                        "array_insulation_resistance is supported -> NOT WiNet dongle"
-                    )
-                    self._is_modbus_winet = False
+    @property
+    def is_modbus_winet(self):
+        assert self._is_modbus_winet is None, "This is set in constructor"
         return self._is_modbus_winet
 
-    async def _disable_winet_signals_in_case_of_winet_dongle(self):
-        if await self.is_modbus_winet():
-            logger.debug("WiNet dongle detected; Disabling all unsupported signals")
-            self.signal_definitions.disable_winet_signals()
+    async def _determine_is_modbus_winet(self):
+        assert self._is_modbus_winet is None, "This should be called only once"
+
+        if isinstance(self.connection, modbus_http.HttpConnection):
+            self._is_modbus_winet = True
         else:
-            logger.debug("Not a WiNet dongle; all signals are supported")
+            # array_insulation_resistance is not supported by WiNet dongle
+            value = await self.pull_single_signal("array_insulation_resistance")
+
+            if value is None:
+                logger.debug(
+                    "array_insulation_resistance is NOT supported -> WiNet dongle"
+                )
+                self._is_modbus_winet = True
+            else:
+                logger.debug(
+                    "array_insulation_resistance is supported -> NOT WiNet dongle"
+                )
+                self._is_modbus_winet = False
 
     def _disable_signals_not_supported_by_model(self):
         """Disable signals which are not supported by the inverter model."""
@@ -339,7 +357,7 @@ async def try_connection(
         return None
 
 
-def guess_connection_class(
+def guess_connection_classes(
     connection: str | None, port: int | None
 ) -> list[type[modbus_base.ModbusConnectionBase]]:
     """Returns connection classes worth trying."""

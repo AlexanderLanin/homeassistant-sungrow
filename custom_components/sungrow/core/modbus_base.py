@@ -99,11 +99,11 @@ class ModbusConnectionBase:
         retrieved_signals_success: int = 0
         retrieved_signals_failed: int = 0
 
-    def __init__(self, host: str, port: int, slave: int):
+    def __init__(self, host: str, port: int):
         self._host = host
         self._port = port
-        self._slave = slave
         self._stats = ModbusConnectionBase.Stats()
+        self._slave: int | None = None
 
         # These signals are not supported by the inverter.
         # This is required, as we read entire ranges at once and need to avoid having
@@ -112,6 +112,14 @@ class ModbusConnectionBase:
             RegisterType.READ: [],
             RegisterType.HOLD: [],
         }
+
+    @property
+    def slave(self):
+        return self._slave
+
+    @slave.setter
+    def slave(self, value: int):
+        self._slave = value
 
     @property
     def stats(self):

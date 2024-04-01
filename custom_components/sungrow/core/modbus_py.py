@@ -9,7 +9,6 @@ can perform a clever optimization to reduce the number of queries.
 import asyncio
 import contextlib
 import logging
-import sys
 
 import pymodbus
 import pymodbus.client
@@ -24,18 +23,15 @@ from custom_components.sungrow.core.modbus_base import (
 
 logger = logging.getLogger(__name__)
 
-if pymodbus.__version__ <= "3.6.3":
-    print("pymodbus had a bug in <= 3.6.3 which would lead to many reconnects.")
-    print("As our inverters don't like that, this script requires > 3.6.3.")
-    print("Please run 'pip install --upgrade -r requirements.txt' to upgrade.")
-    sys.exit(1)
+# Annoying bug, let's be very sure we run a version that is not affected.
+assert pymodbus.__version__ >= "3.6.4"
 
 
 class PymodbusConnection(ModbusConnectionBase):
     """A pymodbus connection to a single slave."""
 
-    def __init__(self, host: str, port: int, slave: int):
-        super().__init__(host, port, slave)
+    def __init__(self, host: str, port: int):
+        super().__init__(host, port)
 
         self._client = pymodbus.client.AsyncModbusTcpClient(
             host=host, port=port, timeout=2, retries=1, retry_on_empty=True
@@ -80,6 +76,8 @@ class PymodbusConnection(ModbusConnectionBase):
         Note: each register is 16 bits, so `address_count` is the number of registers,
         not bytes.
         """
+        assert self._slave is not None, "Slave ID not set"
+
         logger.debug(f"_read_range({register_type}, {address_start}, {address_count})")
         if not await self.connect():
             raise modbus_base.CannotConnectError(
@@ -118,9 +116,6 @@ class PymodbusConnection(ModbusConnectionBase):
                         f"Slave ID {self._slave} is invalid"
                     )
                 elif rr.exception_code == pymodbus.pdu.ModbusExceptions.IllegalAddress:
-                    if pymodbus.__version__ == "3.6.3":
-                        # pymodbus bug, see https://github.com/pymodbus-dev/pymodbus/pull/1931
-                        await self.disconnect()
                     # ToDo: consider returning None instead of raising an error
                     raise modbus_base.UnsupportedRegisterQueriedError(
                         f"Inverter does not support {address_start}-"

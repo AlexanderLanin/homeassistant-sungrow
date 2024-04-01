@@ -25,7 +25,7 @@ from custom_components.sungrow.core import (
     modbus_base,
     signals,
 )
-from custom_components.sungrow.core.inverter import connect_and_get_basic_data
+from custom_components.sungrow.core.inverter import InverterConnection
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
     RawData,
@@ -46,7 +46,7 @@ logging.getLogger().addHandler(file_handler)
 
 @dataclass
 class TaskResult:
-    mode: str
+    mode: str | None
     host: str
     slave: int | None = None
     signal_definitions: signals.SignalDefinitions | None = None
@@ -58,26 +58,37 @@ class TaskResult:
 async def collect_data_from(
     host: str,
     port: int | None,
-    slave: int,
-    connection_mode: str,
+    slave: int | None,
+    connection_mode: str | None,
 ) -> TaskResult:
-    def info(msg):
+    def info_msg(msg):
         logger.info(f"{host}/{slave}/{connection_mode}: {msg}")
 
-    info("Attempting to connect...")
+    info_msg(f"Attempting to connect via {connection_mode}...")
     try:
-        ic = await connect_and_get_basic_data(
+        ic = await InverterConnection.create(
             host, port=port, slave=slave, connection=connection_mode
         )
-        assert ic
+        if not ic:
+            info_msg("Failed to connect")
+            return TaskResult(connection_mode, host, slave, error="Failed to connect")
+
         async with ic:
-            logger.info(f"{host}/{slave}/pymodbus: Connected")
+            info_msg(f"{host}/{slave}/pymodbus: Connected")
 
             raw_data = await ic.connection.read_raw(
                 ic.signal_definitions.enabled_modbus_signals()
             )
 
             suffix = " WiNet" if await ic.is_modbus_winet() else ""
+
+            if raw_data:
+                info_msg(
+                    f"retrieved registers: {len(raw_data[RegisterType.READ])} READ + "
+                    f"{len(raw_data[RegisterType.HOLD])} HOLD"
+                )
+            info_msg(f"stats: {ic.connection.stats}")
+
             return TaskResult(
                 connection_mode + suffix,
                 host,
@@ -87,10 +98,10 @@ async def collect_data_from(
                 raw_data=raw_data,
             )
     except modbus_base.CannotConnectError as e:
-        info(f"Failed to connect ({e})")
+        info_msg(f"Failed to connect ({e})")
         return TaskResult(connection_mode, host, slave, error=e)
     except Exception as e:
-        logger.warning(f"{host}/{slave}/pymodbus: Failed during query ({e})")
+        info_msg(f"{host}/{slave}/pymodbus: Failed during query ({e})")
         return TaskResult(connection_mode, host, slave, error=e)
 
 
@@ -104,34 +115,18 @@ async def collect_data(
             host, slave_str = host.split("/")
             slave = int(slave_str)
         else:
-            slave = 1
+            slave = None
 
         # Parse port from host string?
         port = None  # Auto
 
-        tasks.append(collect_data_from(host, port, slave, "http"))
-        tasks.append(collect_data_from(host, port, slave, "pymodbus"))
+        tasks.append(collect_data_from(host, port, slave, None))
 
     # parallel will probably not work with sungrow inverters?!
     if parallel:
         return await asyncio.gather(*tasks)
     else:
-        results = []
-        for task in tasks:
-            r = await task
-            results.append(r)
-            logger.info(f"Collected data for {r.host}/{r.slave} via {r.mode}:")
-            if r.raw_data:
-                logger.info(
-                    f"registers: {len(r.raw_data[RegisterType.READ])} READ + "
-                    f"{len(r.raw_data[RegisterType.HOLD])} HOLD"
-                )
-            if r.error:
-                logger.info(f"error: {r.error}")
-            logger.info(f"stats: {r.stats}")
-            logger.info("Pausing 5 seconds before next task...")
-            await asyncio.sleep(5)
-        return results
+        return [await task for task in tasks]
 
 
 def get_sn_from_raw_data(
@@ -266,8 +261,10 @@ def markdown_write_summary(f, data_by_inverter: dict[str, list[DataPerConnection
         for per_connection in connections:
             if per_connection.error:
                 e = per_connection.error
-                assert isinstance(e, Exception)
-                error = f"{e.__class__.__name__}: {e}"
+                if isinstance(e, Exception):
+                    error = f"{e.__class__.__name__}: {e}"
+                else:
+                    error = str(e)
             else:
                 error = None
 

@@ -11,7 +11,8 @@
   "issue_tracker": "https://github.com/AlexanderLanin/homeassistant-sungrow/issues",
   "requirements": [
     "pymodbus~=3.6.4",
-    "aiohttp~=3.9.3"
+    "aiohttp~=3.9.3",
+    "result~=0.16.1"
   ],
   "version": "0.0.2"
 }

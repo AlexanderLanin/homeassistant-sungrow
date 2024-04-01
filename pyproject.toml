@@ -13,6 +13,7 @@ pymodbus = ">=3.6.4"
 homeassistant = ">=2024"
 aiohttp = ">=3.9.3"
 beartype = "*"
+result = "*"
 
 # runtime dependencies for tools
 tabulate = "*"
