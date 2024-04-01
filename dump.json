@@ -1,20 +1,11 @@
 [
     {
-        "mode": "http",
+        "mode": null,
         "host": "192.168.13.58",
         "slave": null,
         "signal_definitions": null,
         "raw_data": null,
         "stats": null,
-        "error": "Failed to connect"
-    },
-    {
-        "mode": "pymodbus",
-        "host": "192.168.13.58",
-        "slave": null,
-        "signal_definitions": null,
-        "raw_data": null,
-        "stats": null,
-        "error": "ModbusError: IO error (for read, 4950-5037)"
+        "error": "ModbusError: IO error (for read, 5013-5015)"
     }
 ]

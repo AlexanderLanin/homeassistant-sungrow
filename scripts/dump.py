@@ -25,7 +25,7 @@ from custom_components.sungrow.core import (
     modbus_base,
     signals,
 )
-from custom_components.sungrow.core.inverter import InverterConnection
+from custom_components.sungrow.core.inverter import SungrowInverter
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
     RawData,
@@ -33,6 +33,7 @@ from custom_components.sungrow.core.modbus_types import (
 )
 
 logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("pymodbus").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Log DEBUG to file.
@@ -62,39 +63,45 @@ async def collect_data_from(
     connection_mode: str | None,
 ) -> TaskResult:
     def info_msg(msg):
-        logger.info(f"{host}/{slave}/{connection_mode}: {msg}")
+        logger.info(
+            f"{host}(slave: {slave or 'unknown'}, mode: {connection_mode or 'any'}):"
+            + msg
+        )
 
-    info_msg(f"Attempting to connect via {connection_mode}...")
+    info_msg("Connecting...")
     try:
-        ic = await InverterConnection.create(
+        inv = await SungrowInverter.create(
             host, port=port, slave=slave, connection=connection_mode
         )
-        if not ic:
+        if not inv:
             info_msg("Failed to connect")
             return TaskResult(connection_mode, host, slave, error="Failed to connect")
 
-        async with ic:
-            info_msg(f"{host}/{slave}/pymodbus: Connected")
+        async with inv:
+            slave = inv._client.slave
+            # mode = inv.get_connection_mode() TODO: implement this in SungrowInverter
+            info_msg("Connected")
 
-            raw_data = await ic.connection.read_raw(
-                ic.signal_definitions.enabled_modbus_signals()
+            raw_data = await inv._client.read_raw(
+                inv._signal_definitions.enabled_modbus_signals()
             )
 
-            suffix = " WiNet" if await ic.is_modbus_winet() else ""
+            suffix = " WiNet" if await inv.is_modbus_winet() else ""
 
             if raw_data:
                 info_msg(
                     f"retrieved registers: {len(raw_data[RegisterType.READ])} READ + "
                     f"{len(raw_data[RegisterType.HOLD])} HOLD"
                 )
-            info_msg(f"stats: {ic.connection.stats}")
+            info_msg(f"stats: {inv._client.stats}")
 
             return TaskResult(
-                connection_mode + suffix,
+                # TODO: retrieve connection mode from inverter object.
+                (connection_mode or "NA") + suffix,
                 host,
                 slave,
-                signal_definitions=ic.signal_definitions,
-                stats=ic.connection.stats,
+                signal_definitions=inv._signal_definitions,
+                stats=inv._client.stats,
                 raw_data=raw_data,
             )
     except modbus_base.CannotConnectError as e:

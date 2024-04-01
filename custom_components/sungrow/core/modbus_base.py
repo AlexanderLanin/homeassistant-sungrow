@@ -119,6 +119,7 @@ class ModbusConnectionBase:
 
     @slave.setter
     def slave(self, value: int):
+        logger.debug(f"Setting slave to {value}")
         self._slave = value
 
     @property
@@ -179,7 +180,7 @@ class ModbusConnectionBase:
 
     async def _call_read_raw(self, range: RegisterRange) -> RawData:
         """Wrapper for _read_range() that returns RawData."""
-        logger.debug(f"_call_read_raw({range})")
+        # logger.debug(f"_call_read_raw({range})")
 
         # _read_range() is implemented by the subclass.
         # It's returning a list of registers, so we need to map it.
@@ -209,7 +210,7 @@ class ModbusConnectionBase:
             signal_list[0].address,
             signal_list[-1].end - signal_list[0].address,
         )
-        logger.debug(f"_read_range_base({reg_range})")
+        # logger.debug(f"_read_range_base({reg_range})")
 
         try:
             # Try reading the entire range at once.
@@ -220,7 +221,10 @@ class ModbusConnectionBase:
         except UnsupportedRegisterQueriedError:
             for signal in signal_list:
                 self.stats.retrieved_signals_failed += 1
-                logger.debug(f"Failed to read {signal}")
+                logger.debug(
+                    "Unuspported Register: "
+                    f"{signal.name} ({signal.address} - {signal.end})"
+                )
                 self._problematic_registers[signal.register_type].append(signal.address)
 
             return {r: None for r in range(reg_range.start, reg_range.end)}

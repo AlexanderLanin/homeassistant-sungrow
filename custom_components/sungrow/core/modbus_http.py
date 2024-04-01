@@ -307,6 +307,9 @@ class HttpConnection(ModbusConnectionBase):
 
         return _parse_modbus_data(response_json, address_count)
 
+    def __str__(self):
+        return f"http({self._host}:{self._port}, slave: {self._slave or 'unknown'})"
+
 
 def _parse_modbus_data(
     response_json: dict[str, Any], expected_length: int

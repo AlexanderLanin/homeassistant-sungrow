@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from fnmatch import fnmatch
-from typing import Final, cast
+from typing import cast
 
 import custom_components.sungrow.core.const as const
 from custom_components.sungrow.core.inverter_types import Datapoint
@@ -80,6 +80,8 @@ def mark_unavailable_signals_as_disabled(
     all_signals: signals.SignalDefinitions,
     data: dict[str, DatapointValueType],
 ):
+    """Mark signals not available within `data` as disabled in `all_signals`."""
+
     # mark signals as disabled if they are not supported by the inverter
     for name, value in data.items():
         if value is None:
@@ -98,13 +100,12 @@ def mark_unavailable_signals_as_disabled(
     return extra_data
 
 
-def has_match(value: str, patterns: list[str]) -> bool:
-    return any(fnmatch(value, pattern) for pattern in patterns)
-
-
 def mark_signals_not_in_this_model_as_disabled(
     signal_definitions: list[signals.SungrowSignalDefinition], model: str
 ):
+    def has_match(value: str, patterns: list[str]) -> bool:
+        return any(fnmatch(value, pattern) for pattern in patterns)
+
     for signal in signal_definitions:
         # Only certain models supported
         if signal.models and not has_match(model, signal.models):
@@ -123,209 +124,6 @@ def mark_signals_not_in_this_model_as_disabled(
             signal.disabled.append("signal not available for this model")
 
 
-@dataclass
-class InverterConnection:
-    # FIXME: Rename + Refactor to InverterConnectionFactory?!
-    # This would resolve the confusion with the SungrowInverter class!
-    connection: modbus_py.ModbusConnectionBase
-    signal_definitions: signals.SignalDefinitions
-    data: dict[str, DatapointValueType]  # rename to initial_data?
-
-    _is_modbus_winet: bool | None = None
-
-    async def __aenter__(self):
-        await self.connection.__aenter__()
-        return self
-
-    async def __aexit__(self, exc_type, exc_value, traceback):
-        await self.connection.__aexit__(exc_type, exc_value, traceback)
-
-    @staticmethod
-    def _get_default_port(connection: type[modbus_base.ModbusConnectionBase]):
-        if connection == modbus_http.HttpConnection:
-            return const.SUNGROW_DEFEAULT_HTTP_PORT
-        elif connection == modbus_py.PymodbusConnection:
-            return const.SUNGROW_DEFEAULT_MODBUS_PORT
-        else:
-            raise RuntimeError("Unknown connection type")
-
-    @staticmethod
-    async def _connect(connection: str | None, host: str, port: int | None):
-        connection_classes = guess_connection_classes(connection, port)
-        for cc in connection_classes:
-            connection_obj = cc(host, port or InverterConnection._get_default_port(cc))
-
-            logger.debug(f"Trying to connect to {connection_obj}...")
-            if await connection_obj.connect():
-                return connection_obj
-        else:
-            logger.debug("Failed to connect to inverter")
-            return None
-
-    @staticmethod
-    async def _fetch_initial_data(connection_obj: modbus_base.ModbusConnectionBase, slave: int | None)
-    
-        slaves_to_attempt = [1, 2] if slave is None else [slave]
-
-        ic = InverterConnection(
-            connection_obj, signal_definitions=signals.load_yaml(), data={}
-        )
-
-        for slave in slaves_to_attempt:
-            if await ic._query_initial_data(slave):
-                break
-        else:
-            await ic.connection.disconnect()
-            return None
-
-    async def _disable_all_unsupported_signals(self):
-        self._disable_signals_not_supported_by_model()
-        await self._disable_meter_signals_if_no_meter_available()
-
-        # TODO: are the same registers unsupported via pymodbus and http?
-        if await self._determine_is_modbus_winet():
-            logger.debug("WiNet dongle detected; Disabling all unsupported signals")
-            self.signal_definitions.disable_winet_signals()
-
-
-    @staticmethod
-    async def create(
-        host: str, port: int | None, slave: int | None, connection: str | None
-    ) -> InverterConnection | None:
-        """
-        Create a connection and retrieve some initial data to test the connection.
-        This will return a connected or unconnected InitialConnection object.
-
-        Will raise CannotConnectException when connection fails and generic ModbusError
-        on other problems.
-        This is to make error handling easier for the caller, otherwise we would have to
-        check for not connected and for exceptions.
-        """
-
-        connection_obj = await InverterConnection._connect(connection, host, port)
-        if connection_obj is None:
-            return None
-
-        ic = await InverterConnection._fetch_initial_data(connection_obj, slave)
-        if ic is None:
-            return None
-
-        logger.debug(
-            "Connected to inverter "
-            f"{ic.data['device_type_code']} / {ic.data['serial_number']}"
-        )
-
-        await ic._disable_all_unsupported_signals()
-
-        return ic
-
-    async def pull_signals(self, signal_list: list[str]):
-        return await pull_signals(
-            self.connection,
-            self.signal_definitions.get_signal_definitions_by_name(signal_list),
-        )
-
-    async def pull_single_signal(self, signal_name: str):
-        return await pull_single_signal(
-            self.connection,
-            self.signal_definitions.get_signal_definition_by_name(signal_name),
-        )
-
-    async def _query_initial_data(self, slave: int):
-        """
-        Query some initial data to test the connection.
-        """
-
-        self.connection.slave = slave
-
-        # TODO: maybe add all static signals to the query which we never need to
-        # query again. This would reduce needless queries of static data.
-        # TODO: Store static/dynamic separation directly in yaml.
-        # However stuff like master slave mode is not truly static.
-        # We just simplify it here.
-        # As we store the result, this doesn't need to be a minimal set!
-        try:
-            self.data = await self.pull_signals(
-                [
-                    # basic infos:
-                    "serial_number",  # 4950
-                    "device_type_code",  # 5000
-                    # for correct naming of master/slave:
-                    "master_slave_mode",  # 33500
-                    "master_slave_role",  # 33501
-                    "output_type",  # 5002
-                ]
-            )
-        except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
-            logger.debug("Error connecting to inverter")
-            return False
-
-    @property
-    def is_modbus_winet(self):
-        assert self._is_modbus_winet is None, "This is set in constructor"
-        return self._is_modbus_winet
-
-    async def _determine_is_modbus_winet(self):
-        assert self._is_modbus_winet is None, "This should be called only once"
-
-        if isinstance(self.connection, modbus_http.HttpConnection):
-            self._is_modbus_winet = True
-        else:
-            # array_insulation_resistance is not supported by WiNet dongle
-            value = await self.pull_single_signal("array_insulation_resistance")
-
-            if value is None:
-                logger.debug(
-                    "array_insulation_resistance is NOT supported -> WiNet dongle"
-                )
-                self._is_modbus_winet = True
-            else:
-                logger.debug(
-                    "array_insulation_resistance is supported -> NOT WiNet dongle"
-                )
-                self._is_modbus_winet = False
-
-    def _disable_signals_not_supported_by_model(self):
-        """Disable signals which are not supported by the inverter model."""
-
-        if isinstance(self.data["device_type_code"], int):
-            logger.info(
-                f"Unknown inverter model detected: {self.data['device_type_code']}. "
-                "Please report this to the developers."
-            )
-        else:
-            model = self.data["device_type_code"]
-            assert isinstance(model, str)
-            # Now that we have the model, we can disable unsupported signals.
-            # This is required, as querying a hundred unsupported signals, will result
-            # in 100 queries (best case).
-            mark_signals_not_in_this_model_as_disabled(
-                self.signal_definitions.all_signals(), model
-            )
-
-    async def _disable_meter_signals_if_no_meter_available(self):
-        # This is be a better distinction than simply disabling meter via a grooup,
-        # because all signals are 0.
-        if (
-            await pull_single_signal(
-                self.connection,
-                self.signal_definitions.get_signal_definition_by_name(
-                    "meter_active_power"
-                ),
-            )
-            is None
-        ):
-            for signal in self.signal_definitions.get_signal_definitions_by_name(
-                [
-                    "meter_active_power",
-                    "meter_active_power_phase_a",
-                    "meter_active_power_phase_b",
-                    "meter_active_power_phase_c",
-                ]
-            ):
-                signal.disabled.append("Meter not connected")
-
-
 def convert_raw_data_to_datapoints(
     raw_data: dict[str, DatapointValueType],
     signal_list: signals.SignalDefinitions,
@@ -341,23 +139,7 @@ def convert_raw_data_to_datapoints(
     return data
 
 
-async def try_connection(
-    host: str, port: int, slave: int, connection: str
-) -> modbus_base.ModbusConnectionBase | None:
-    connection_class = {
-        "http": modbus_http.HttpConnection,
-        "modbus": modbus_py.PymodbusConnection,
-    }[connection]
-    connection_obj: modbus_base.ModbusConnectionBase = connection_class(
-        host=host, port=port, slave=1
-    )
-    if await connection_obj.connect():
-        return connection_obj
-    else:
-        return None
-
-
-def guess_connection_classes(
+def _guess_connection_classes(
     connection: str | None, port: int | None
 ) -> list[type[modbus_base.ModbusConnectionBase]]:
     """Returns connection classes worth trying."""
@@ -377,94 +159,257 @@ def guess_connection_classes(
         return [modbus_py.PymodbusConnection]
 
 
-async def connect_and_get_basic_data(  # (TODO: redesign)
-    host: str,
-    port: int | None,
-    slave: int | None,
-    connection: str | None,
-) -> InverterConnection | None:
-    logger.debug("Usage of connect_and_get_basic_data is deprecated")
-    return await InverterConnection.create(host, port, slave, connection)
-
-
 class SungrowInverter:
-    # FIXME: SungrowInverter:
-    # * is it one connection to one inverter?
-    # * is it one inverter with multiple connections? (http, WiNet, modbus-proxy, ...)
+    async def __aenter__(self):
+        """Ensures the connection is established."""
+        await self._client.__aenter__()
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        """Ensures the connection is closed."""
+        await self._client.__aexit__(exc_type, exc_value, traceback)
 
     @staticmethod
-    async def create(ic: InverterConnection):
-        if not ic.connection:
-            raise RuntimeError("Not connected")
+    def _get_default_port(connection: type[modbus_base.ModbusConnectionBase]):
+        if connection == modbus_http.HttpConnection:
+            return const.SUNGROW_DEFEAULT_HTTP_PORT
+        elif connection == modbus_py.PymodbusConnection:
+            return const.SUNGROW_DEFEAULT_MODBUS_PORT
+        else:
+            raise RuntimeError("Unknown connection type")
 
-        # We now need to pull all data which belongs to a group,
-        # so we can detect groups which do not apply, like "has_battery".
-        query = [
-            signal
-            for signal in ic.signal_definitions._definitions.values()
-            if signal.group and not signal.disabled and signal.name not in ic.data
-        ]
-        data = await pull_signals(ic.connection, query)
-        if not data:
-            raise RuntimeError("Failed to pull data from inverter")
+    @staticmethod
+    async def _attempt_connect(connection: str | None, host: str, port: int | None):
+        connection_classes = _guess_connection_classes(connection, port)
+        for cc in connection_classes:
+            connection_obj = cc(host, port or SungrowInverter._get_default_port(cc))
 
-        extra_data = mark_unavailable_signals_as_disabled(ic.signal_definitions, data)
+            logger.debug(f"Trying to connect to {connection_obj}...")
+            if await connection_obj.connect():
+                return connection_obj
+        else:
+            logger.debug("Failed to connect to inverter")
+            return None
 
-        # TODO config.get("level", 1)
-        ic.signal_definitions.mark_signals_below_level_as_disabled(1)
+    @staticmethod
+    async def create(
+        host: str, port: int | None, slave: int | None, connection: str | None
+    ) -> SungrowInverter | None:
+        """Create a connection, with heuristics for port, slave and connection type."""
 
-        for signal in ic.signal_definitions._definitions.values():
-            if signal.disabled:
-                data.pop(signal.name, None)
+        connection_obj = await SungrowInverter._attempt_connect(connection, host, port)
+        if connection_obj is None:
+            return None
 
-        # Let's keep both
-        data.update(ic.data)
+        inv = SungrowInverter(connection_obj)
 
-        my_config = SungrowInverter.Config(
-            initial_data=data,
-            active_groups=extra_data,
-            signals=ic.signal_definitions,
+        slaves_to_attempt = [1, 2] if slave is None else [slave]
+        for slave in slaves_to_attempt:
+            if await inv._set_slave_and_query_initial_data(slave):
+                break
+        else:
+            logger.debug("Failed to connect to inverter. Exotic slave ID?")
+            await inv.disconnect()
+            return None
+
+        # assert isinstance(inv, SungrowInverter)  # for mypy
+
+        logger.debug(
+            "Connected to inverter "
+            f"{inv.data['device_type_code']} / {inv.data['serial_number']}"
         )
 
-        return SungrowInverter(ic.connection, my_config)
+        await inv._disable_all_unsupported_signals()
 
-    @dataclass
-    class Config:
-        initial_data: dict[str, DatapointValueType]
-        active_groups: dict[str, bool]
-        signals: signals.SignalDefinitions
+        return inv
 
     def __init__(
         self,
         client: modbus_base.ModbusConnectionBase,
-        config: Config,
+        signal_definitions: signals.SignalDefinitions | None = None,
     ):
-        """Note: you should use create() instead!"""
-
-        logger.debug(f"Creating SungrowInverter({config})")
+        """Use create() factory method!!"""
 
         self._client = client
-        self._config: Final = config
-
         self.data: dict[str, Datapoint] = {}
+        self._signal_definitions = signal_definitions or signals.load_yaml()
+
+        # TODO config.get("level", 1)
+        self._signal_definitions.mark_signals_below_level_as_disabled(1)
+
+        # Remove disabled signals from data
+        for signal in self._signal_definitions._definitions.values():
+            if signal.disabled and signal.name in self.data:
+                logger.warning(
+                    f"Disabling pre-acquired signal {signal.name} due to: {signal.disabled}"
+                )
+                self.data.pop(signal.name, None)
+
+        self._is_modbus_winet: bool | None = None
+        self._active_groups: dict[str, bool] | None = None
+
+    async def _disable_all_unsupported_signals(self):
+        # Move to separate file, as it's quite a lot?!
+
+        assert (
+            self._signal_definitions
+        ), "Must be loaded before this function is called."
+
+        self._disable_signals_not_supported_by_model()
+        await self._disable_meter_signals_if_no_meter_available()
+
+        # TODO: are the same registers unsupported via pymodbus and http?
+        if await self._determine_is_modbus_winet():
+            logger.debug("WiNet dongle detected; Disabling all unsupported signals")
+            self._signal_definitions.disable_winet_signals()
+
+        # We now need to pull all data which belongs to a group,
+        # so we can detect groups which do not apply, like "has_battery".
+        query = [
+            signal.name
+            for signal in self._signal_definitions._definitions.values()
+            if signal.group and not signal.disabled and signal.name not in self.data
+        ]
+        data = await self.pull_signals(query)
+        if not data:
+            raise RuntimeError("Failed to pull data from inverter")
+
+        self._active_groups = mark_unavailable_signals_as_disabled(
+            self._signal_definitions, data
+        )
+
+    async def pull_signals(self, signal_list: list[str]):
+        return await pull_signals(
+            self._client,
+            self._signal_definitions.get_signal_definitions_by_name(signal_list),
+        )
+
+    async def pull_single_signal(self, signal_name: str):
+        return await pull_single_signal(
+            self._client,
+            self._signal_definitions.get_signal_definition_by_name(signal_name),
+        )
+
+    async def _set_slave_and_query_initial_data(self, slave: int):
+        """
+        Query some initial data to test the connection.
+        """
+
+        self._client.slave = slave
+
+        # TODO: maybe add all static signals to the query which we never need to
+        # query again. This would reduce needless queries of static data.
+        # TODO: Store static/dynamic separation directly in yaml.
+        # However stuff like master slave mode is not truly static.
+        # We just simplify it here.
+        # As we store the result, this doesn't need to be a minimal set!
+        try:
+            self.data = await self.pull_signals(
+                [
+                    # basic infos:
+                    "serial_number",  # 4950
+                    "device_type_code",  # 5000
+                    # for correct naming of master/slave:
+                    "master_slave_mode",  # 33500
+                    "master_slave_role",  # 33501
+                    "output_type",  # 5002
+                ]
+            )
+            return True
+        except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
+            logger.debug("Error connecting to inverter")
+            return False
+
+    @property
+    def is_modbus_winet(self):
+        assert (
+            self._is_modbus_winet is not None
+        ), "should have been determined by factory method"
+        return self._is_modbus_winet
+
+    async def _determine_is_modbus_winet(self):
+        assert self._is_modbus_winet is None, "This should be called only once"
+
+        if isinstance(self._client, modbus_http.HttpConnection):
+            self._is_modbus_winet = True
+        else:
+            # array_insulation_resistance is not supported by WiNet dongle
+            value = await self.pull_single_signal("array_insulation_resistance")
+
+            if value is None:
+                logger.debug(
+                    "array_insulation_resistance is NOT supported -> WiNet dongle"
+                )
+                self._is_modbus_winet = True
+            else:
+                logger.debug(
+                    "array_insulation_resistance is supported -> NOT WiNet dongle"
+                )
+                self._is_modbus_winet = False
+
+    def _disable_signals_not_supported_by_model(self):
+        """Disable signals which are not supported by the inverter model."""
+
+        assert "device_type_code" in self.data, "device_type_code must be available."
+        assert (
+            self._signal_definitions
+        ), "Must be loaded before this function is called."
+
+        if isinstance(self.data["device_type_code"], int):
+            logger.info(
+                f"Unknown inverter model detected: {self.data['device_type_code']}. "
+                "Please report this to the developers."
+            )
+        else:
+            model = self.data["device_type_code"]
+            assert isinstance(model, str)
+            # Now that we have the model, we can disable unsupported signals.
+            # This is required, as querying a hundred unsupported signals, will result
+            # in 100 queries (best case).
+            mark_signals_not_in_this_model_as_disabled(
+                self._signal_definitions.all_signals(), model
+            )
+
+    async def _disable_meter_signals_if_no_meter_available(self):
+        # This is be a better distinction than simply disabling meter via a grooup,
+        # because all signals are 0.
+        # TODO: Introduce is_disabled / is_available flag?
+        if await self.pull_single_signal("meter_active_power") is None:
+            for signal in self._signal_definitions.get_signal_definitions_by_name(
+                [
+                    "meter_active_power",
+                    "meter_active_power_phase_a",
+                    "meter_active_power_phase_b",
+                    "meter_active_power_phase_c",
+                ]
+            ):
+                signal.disabled.append("Meter not connected")
+
+    # @dataclass
+    # class Config:
+    #     initial_data: dict[str, DatapointValueType]
+    #     active_groups: dict[str, bool]
+    #     signals: signals.SignalDefinitions
 
     async def disconnect(self):
         await self._client.disconnect()
 
     async def pull_data(self, on_error=None):
         """Pull data from inverter and update self.data"""
-        # ToDo: drop on_error
+        # TODO: drop on_error
+
+        assert self._active_groups is not None, "Must be set by factory method"
 
         new_data = await pull_signals(
-            self._client, self._config.signals.enabled_signals()
+            self._client, self._signal_definitions.enabled_signals()
         )
         if new_data:
-            temp = convert_raw_data_to_datapoints(new_data, self._config.signals)
+            temp = convert_raw_data_to_datapoints(new_data, self._signal_definitions)
 
-            for g in self._config.active_groups:
+            for g in self._active_groups:
                 temp[g] = Datapoint(
                     name=g,
-                    value=self._config.active_groups[g],
+                    value=self._active_groups[g],
                     unit_of_measurement=None,
                 )
 
@@ -482,19 +427,13 @@ class SungrowInverter:
             else:
                 return on_error
 
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, exc_type, exc_value, traceback):
-        await self.disconnect()
-
     @property
     def serial_number(self):
-        return self._config.initial_data["serial_number"]
+        return self.data["serial_number"]
 
     @property
     def model(self) -> str | int:
-        model = self._config.initial_data["device_type_code"]
+        model = self.data["device_type_code"]
         assert isinstance(model, str | int)
         return model
 
@@ -502,7 +441,7 @@ class SungrowInverter:
         # Helpful function for debugging
 
         data = {}
-        for signal in self._config.signals.get_signals_for_group(group):
+        for signal in self._signal_definitions.get_signals_for_group(group):
             if signal in self.data:
                 data[signal] = self.data[signal]
         return data
@@ -513,9 +452,7 @@ class SungrowInverter:
         Simple heuristic to determine if this is a master or slave inverter.
         """
 
-        return slave_master_standalone_str(
-            self._config.initial_data, self._config.active_groups
-        )
+        return slave_master_standalone_str(self.data, self._active_groups)
 
 
 def slave_master_standalone_str(initial_data, active_groups=None):

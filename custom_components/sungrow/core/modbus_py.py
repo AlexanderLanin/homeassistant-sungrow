@@ -78,7 +78,7 @@ class PymodbusConnection(ModbusConnectionBase):
         """
         assert self._slave is not None, "Slave ID not set"
 
-        logger.debug(f"_read_range({register_type}, {address_start}, {address_count})")
+        # logger.debug(f"_read_range({register_type}, {address_start}, {address_count})")
         if not await self.connect():
             raise modbus_base.CannotConnectError(
                 "Cannot connect to inverter for reading"
@@ -152,4 +152,4 @@ class PymodbusConnection(ModbusConnectionBase):
         return rr.registers
 
     def __str__(self):
-        return f"PymodbusConnection({self._host}, {self._port}, {self._slave})"
+        return f"modbus({self._host}:{self._port}, slave: {self._slave or 'unknown'})"
