@@ -1,123 +1,129 @@
-2024-04-01 21:25:49,694 asyncio [DEBUG] Using selector: EpollSelector
-2024-04-01 21:25:49,849 scripts.dump [INFO] 192.168.13.58(slave: unknown, mode: any):Connecting...
-2024-04-01 21:25:49,850 custom_components.sungrow.core.inverter [DEBUG] Trying to connect to modbus(192.168.13.58:502, slave: unknown)...
-2024-04-01 21:25:49,850 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.58:502
-2024-04-01 21:25:50,005 custom_components.sungrow.core.modbus_base [DEBUG] Setting slave to 1
-2024-04-01 21:25:50,006 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(5 signals) in 2 ranges
-2024-04-01 21:25:51,216 custom_components.sungrow.core.inverter [DEBUG] Inverter: Successfully pulled data in 1.210355 secs
-2024-04-01 21:25:51,216 custom_components.sungrow.core.inverter [DEBUG] Connected to inverter SH8.0RT-20 / A2350415770
-2024-04-01 21:25:51,217 custom_components.sungrow.core.inverter [DEBUG] Signal total_running_time with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,217 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_3_voltage with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,217 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_3_current with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,217 custom_components.sungrow.core.inverter [DEBUG] Signal work_state_1 with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,217 custom_components.sungrow.core.inverter [DEBUG] Signal alarm_time_year with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,217 custom_components.sungrow.core.inverter [DEBUG] Signal alarm_time_month with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,217 custom_components.sungrow.core.inverter [DEBUG] Signal alarm_time_day with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal alarm_time_hour with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal alarm_time_minute with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal alarm_time_second with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal alarm_code_1 with filter ['SH*', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal active_power_regulation_setpoint with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal work_state_2 with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal meter_power with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal meter_a_phase_power with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,218 custom_components.sungrow.core.inverter [DEBUG] Signal meter_b_phase_power with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal meter_c_phase_power with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal meter_load_power with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal daily_export_energy with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal total_export_energy with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal daily_import_energy with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal total_import_energy with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal daily_direct_energy_consumption with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,219 custom_components.sungrow.core.inverter [DEBUG] Signal total_direct_energy_consumption with filter ['SG*KTL-M*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,220 custom_components.sungrow.core.inverter [DEBUG] Signal daily_running_time with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_4_voltage with filter ['SG50KTL-M', 'SG60KTL-M', 'SG49K5J', 'SG50KTL-M-20', 'SG60KU-M', 'SG80KTL-M', 'SG40CX', 'SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_4_current with filter ['SG50KTL-M', 'SG60KTL-M', 'SG49K5J', 'SG50KTL-M-20', 'SG60KU-M', 'SG80KTL-M', 'SG40CX', 'SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_5_voltage with filter ['SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_5_current with filter ['SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_6_voltage with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_6_current with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_7_voltage with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,221 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_7_current with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_8_voltage with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_8_current with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal monthly_power_yields with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_9_voltage with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_9_current with filter ['SG110CX', 'SG250HX*', 'SG100CX*', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_10_voltage with filter ['SG250HX*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_10_current with filter ['SG250HX*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,222 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_11_voltage with filter ['SG250HX*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,223 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_11_current with filter ['SG250HX*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,223 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_12_voltage with filter ['SG250HX*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,223 custom_components.sungrow.core.inverter [DEBUG] Signal mppt_12_current with filter ['SG250HX*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,223 custom_components.sungrow.core.inverter [DEBUG] Signal total_power_yields with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,223 custom_components.sungrow.core.inverter [DEBUG] Signal pid_work_state with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,223 custom_components.sungrow.core.inverter [DEBUG] Signal pid_alarm_code with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,224 custom_components.sungrow.core.inverter [DEBUG] Signal string_1_current with filter ['SG*', 'LP_P34KSG'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,224 custom_components.sungrow.core.inverter [DEBUG] Signal string_2_current with filter ['SG*', 'LP_P34KSG'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,224 custom_components.sungrow.core.inverter [DEBUG] Signal string_3_current with filter ['SG*', 'LP_P34KSG'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,224 custom_components.sungrow.core.inverter [DEBUG] Signal string_4_current with filter ['SG*', 'LP_P34KSG'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,225 custom_components.sungrow.core.inverter [DEBUG] Signal string_5_current with filter ['SG*', 'LP_P34KSG'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,225 custom_components.sungrow.core.inverter [DEBUG] Signal string_6_current with filter ['SG*', 'LP_P34KSG'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,226 custom_components.sungrow.core.inverter [DEBUG] Signal string_7_current with filter ['SG30KTL', 'SG30KU', 'SG36KTL', 'SG36KU', 'SG40KTL', 'SG40KTL-M', 'SG50KTL-M', 'SG60KTL-M', 'SG60KU', 'SG30KTL-M', 'SG30KTL-M-V31', 'SG33KTL-M', 'SG36KTL-M', 'SG33K3J', 'SG49K5J', 'SG34KJ', 'SG50KTL-M-20', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG40CX', 'SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,226 custom_components.sungrow.core.inverter [DEBUG] Signal string_8_current with filter ['SG30KTL', 'SG30KU', 'SG36KTL', 'SG36KU', 'SG40KTL', 'SG40KTL-M', 'SG50KTL-M', 'SG60KTL-M', 'SG30KTL-M', 'SG30KTL-M-V31', 'SG33KTL-M', 'SG36KTL-M', 'SG33K3J', 'SG49K5J', 'SG34KJ', 'SG50KTL-M-20', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG40CX', 'SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,226 custom_components.sungrow.core.inverter [DEBUG] Signal string_9_current with filter ['SG30KU', 'SG36KTL', 'SG36KU', 'SG40KTL-M', 'SG50KTL-M', 'SG60KTL-M', 'SG33K3J', 'SG49K5J', 'SG50KTL-M-20', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,226 custom_components.sungrow.core.inverter [DEBUG] Signal string_10_current with filter ['SG30KU', 'SG36KTL', 'SG36KU', 'SG50KTL-M', 'SG60KTL-M', 'SG49K5J', 'SG50KTL-M-20', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG50CX', 'SG60CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,226 custom_components.sungrow.core.inverter [DEBUG] Signal string_11_current with filter ['SG50KTL-M', 'SG60KTL-M', 'SG49K5J', 'SG50KTL-M-20', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,227 custom_components.sungrow.core.inverter [DEBUG] Signal string_12_current with filter ['SG50KTL-M', 'SG60KTL-M', 'SG49K5J', 'SG50KTL-M-20', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,227 custom_components.sungrow.core.inverter [DEBUG] Signal string_13_current with filter ['SG60KTL-M', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,227 custom_components.sungrow.core.inverter [DEBUG] Signal string_14_current with filter ['SG60KTL-M', 'SG60KTL', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG30CX', 'SG33CX', 'SG36CX-US', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX', 'SG3.0RT', 'SG4.0RT', 'SG5.0RT', 'SG5.0RS', 'SG6.0RT'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,227 custom_components.sungrow.core.inverter [DEBUG] Signal string_15_current with filter ['SG60KTL-M', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_16_current with filter ['SG60KTL-M', 'SG80KTL', 'SG80KTL-20', 'SG60KU-M', 'SG80KTL-M', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_17_current with filter ['SG80KTL', 'SG80KTL-20', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_18_current with filter ['SG80KTL', 'SG80KTL-20', 'SG110CX', 'SG250HX', 'SG250HX-US', 'SG100CX', 'SG100CX-JP', 'SG250HX-IN', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_19_current with filter ['Not supported by any model'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_20_current with filter ['Not supported by any model'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_21_current with filter ['Not supported by any model'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_22_current with filter ['Not supported by any model'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,228 custom_components.sungrow.core.inverter [DEBUG] Signal string_23_current with filter ['Not supported by any model'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,229 custom_components.sungrow.core.inverter [DEBUG] Signal string_24_current with filter ['Not supported by any model'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,229 custom_components.sungrow.core.inverter [DEBUG] Signal grid_state with filter ['SH8.0RT-20'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,229 custom_components.sungrow.core.inverter [DEBUG] Signal bms_status with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,229 custom_components.sungrow.core.inverter [DEBUG] Signal max_charging_current with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,229 custom_components.sungrow.core.inverter [DEBUG] Signal max_discharging_current with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,229 custom_components.sungrow.core.inverter [DEBUG] Signal warning with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal protection with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal fault1 with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal fault2 with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal soc with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal soh with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal battery_current_ with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal battery_voltage_ with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,230 custom_components.sungrow.core.inverter [DEBUG] Signal cycle_count with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,231 custom_components.sungrow.core.inverter [DEBUG] Signal average_cell_voltage with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,231 custom_components.sungrow.core.inverter [DEBUG] Signal max_cell_voltage with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,231 custom_components.sungrow.core.inverter [DEBUG] Signal min_cell_voltage with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,231 custom_components.sungrow.core.inverter [DEBUG] Signal battery_pack_voltage with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,231 custom_components.sungrow.core.inverter [DEBUG] Signal average_cell_temp with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,231 custom_components.sungrow.core.inverter [DEBUG] Signal max_cell_temp with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,231 custom_components.sungrow.core.inverter [DEBUG] Signal min_cell_temp with filter ['SH5K-20', 'SH3K6', 'SH4K6', 'SH5K-V13', 'SH5K-30', 'SH3K6-30', 'SH4K6-30'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,232 custom_components.sungrow.core.inverter [DEBUG] Signal export_power_limitation with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,232 custom_components.sungrow.core.inverter [DEBUG] Signal export_power_limitation_value with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,232 custom_components.sungrow.core.inverter [DEBUG] Signal current_transformer_output_current with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,233 custom_components.sungrow.core.inverter [DEBUG] Signal current_transformer_range with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,233 custom_components.sungrow.core.inverter [DEBUG] Signal current_transformer with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,233 custom_components.sungrow.core.inverter [DEBUG] Signal export_power_limitation_percentage with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,233 custom_components.sungrow.core.inverter [DEBUG] Signal installed_pv_power with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,234 custom_components.sungrow.core.inverter [DEBUG] Signal power_factor_setting with filter ['SH*'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,235 custom_components.sungrow.core.inverter [DEBUG] Signal scheduling_achieve_active_overload with filter ['SG33CX', 'SG40CX', 'SG50CX', 'SG75CX', 'SG110CX', 'SG136TX', 'SG250HX', 'SG30CX', 'SG36CX-US', 'SG60CX-US', 'SG250HX-US', 'SG250HX-IN', 'SG225HX', 'SG250HX', 'SG25CX-SA', 'SG100CX', 'SG3.0RT', 'SG4.0RT', 'SG5.0RT', 'SG5.0RS', 'SG6.0RT', 'SG7.0RT', 'SG8.0RT', 'SG10RT', 'SG12RT', 'SG15RT', 'SG17RT', 'SG20RT'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,235 custom_components.sungrow.core.inverter [DEBUG] Signal night_svg_switch with filter ['SG3.0RT', 'SG4.0RT', 'SG5.0RT', 'SG5.0RS', 'SG6.0RT', 'SG7.0RT', 'SG8.0RT', 'SG10RT', 'SG12RT', 'SG15RT', 'SG17RT', 'SG20RT', 'SG80KTL-M', 'SG125HV-20', 'SG33CX', 'SG40CX', 'SG50CX', 'SG110CX', 'SG136TX', 'SG250HX', 'SG30CX', 'SG36CX-US', 'SG60CX-US', 'SG250HX-US', 'SG250HX-IN', 'SG225HX', 'SG250HX', 'SG25CX-SA', 'SG100CX', 'SG75CX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,235 custom_components.sungrow.core.inverter [DEBUG] Signal power_limitation_adjustment with filter ['SH*'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,236 custom_components.sungrow.core.inverter [DEBUG] Signal pid_recovery with filter ['SG5KTL-MT', 'SG6KTL-MT', 'SG8KTL-M', 'SG10KTL-M', 'SG10KTL-MT', 'SG12KTL-M', 'SG15KTL-M', 'SG17KTL-M', 'SG20KTL-M', 'SG3.0RT', 'SG4.0RT', 'SG5.0RT', 'SG5.0RS', 'SG6.0RT', 'SG7.0RT', 'SG8.0RT', 'SG10RT', 'SG12RT', 'SG15RT', 'SG17RT', 'SG20RT', 'SG80KTL-M', 'SG125HV', 'SG125HV-20', 'SG80KTL', 'SG33CX', 'SG40CX', 'SG50CX', 'SG100CX、SG75CX', 'SG110CX', 'SG136TX', 'SG250HX', 'SG30CX', 'SG36CX-US', 'SG60CX-US', 'SG250HX-US', 'SG250HX-IN', 'SG25CX-SA', 'SG225HX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,236 custom_components.sungrow.core.inverter [DEBUG] Signal anti_pid with filter ['SG125HV', 'SG125HV-20', 'SG250HX', 'SG250HX-US', 'SG250HX-IN', 'SG136TX', 'SG100CX-JP', 'SG225HX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,236 custom_components.sungrow.core.inverter [DEBUG] Signal fullday_pid_suppression with filter ['SG250HX', 'SG250HX-US', 'SG250HX-IN', 'SG225HX'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,236 custom_components.sungrow.core.inverter [DEBUG] Signal battery_forced_charge_discharge_power with filter ['SH*RS*'] is NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,236 custom_components.sungrow.core.inverter [DEBUG] Signal battery_capacity_2 with filter ['SH8.0RT-20', 'WiNet'] is explicitly NOT available for model SH8.0RT-20
-2024-04-01 21:25:51,237 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(1 signals) in 1 ranges
-2024-04-01 21:25:51,745 custom_components.sungrow.core.inverter [DEBUG] Inverter: Successfully pulled data in 0.508057 secs
-2024-04-01 21:25:51,745 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(1 signals) in 1 ranges
-2024-04-01 21:25:52,252 custom_components.sungrow.core.modbus_base [DEBUG] Unuspported Register: array_insulation_resistance (5071 - 5072)
-2024-04-01 21:25:52,252 custom_components.sungrow.core.inverter [DEBUG] Inverter: Successfully pulled data in 0.507567 secs
-2024-04-01 21:25:52,252 custom_components.sungrow.core.inverter [DEBUG] array_insulation_resistance is NOT supported -> WiNet dongle
-2024-04-01 21:25:52,253 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(17 signals) in 3 ranges
-2024-04-01 21:25:56,759 scripts.dump [INFO] 192.168.13.58(slave: unknown, mode: any):192.168.13.58/None/pymodbus: Failed during query (IO error (for read, 5013-5015))
+2024-04-08 19:24:00,075 asyncio [DEBUG] Using selector: EpollSelector
+2024-04-08 19:24:00,230 scripts.dump [INFO] 192.168.13.58(slave: unknown, mode: any):Connecting...
+2024-04-08 19:24:00,231 custom_components.sungrow.core.inverter [DEBUG] Trying to connect to modbus(192.168.13.58:502, slave: unknown)...
+2024-04-08 19:24:00,231 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.58:502
+2024-04-08 19:24:00,231 pymodbus.logging [DEBUG] Connecting to 192.168.13.58:502.
+2024-04-08 19:24:00,231 pymodbus.logging [DEBUG] Connecting comm
+2024-04-08 19:24:00,234 pymodbus.logging [DEBUG] Connected to comm
+2024-04-08 19:24:00,385 custom_components.sungrow.core.modbus_base [DEBUG] Setting slave to 1
+2024-04-08 19:24:00,386 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(5 signals) in 2 ranges
+2024-04-08 19:24:00,386 custom_components.sungrow.core.modbus_base [DEBUG] * read 4990 - 5003
+2024-04-08 19:24:00,386 custom_components.sungrow.core.modbus_base [DEBUG] * hold 33500 - 33502
+2024-04-08 19:24:00,386 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 4990, 13)
+2024-04-08 19:24:02,234 pymodbus.logging [DEBUG] Adding transaction 1
+2024-04-08 19:24:02,234 pymodbus.logging [DEBUG] send: 0x0 0x1 0x0 0x0 0x0 0x6 0x1 0x4 0x13 0x7d 0x0 0xd
+2024-04-08 19:24:02,241 pymodbus.logging [DEBUG] recv: 0x0 0x1 0x0 0x0 0x0 0x1d 0x1 0x4 0x1a 0x41 0x32 0x33 0x35 0x30 0x34 0x31 0x35 0x37 0x37 0x30 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0xe 0x12 0x0 0x50 0x0 0x1 old_data:  addr=None
+2024-04-08 19:24:02,241 pymodbus.logging [DEBUG] Processing: 0x0 0x1 0x0 0x0 0x0 0x1d 0x1 0x4 0x1a 0x41 0x32 0x33 0x35 0x30 0x34 0x31 0x35 0x37 0x37 0x30 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0xe 0x12 0x0 0x50 0x0 0x1
+2024-04-08 19:24:02,241 pymodbus.logging [DEBUG] Factory Response[ReadInputRegistersResponse': 4]
+2024-04-08 19:24:02,241 pymodbus.logging [DEBUG] Getting transaction 1
+2024-04-08 19:24:02,241 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(hold, 33500, 2)
+2024-04-08 19:24:04,237 pymodbus.logging [DEBUG] Adding transaction 2
+2024-04-08 19:24:04,237 pymodbus.logging [DEBUG] send: 0x0 0x2 0x0 0x0 0x0 0x6 0x1 0x3 0x82 0xdb 0x0 0x2
+2024-04-08 19:24:04,482 pymodbus.logging [DEBUG] recv: 0x0 0x2 0x0 0x0 0x0 0x7 0x1 0x3 0x4 0x0 0xaa 0x0 0xa0 old_data:  addr=None
+2024-04-08 19:24:04,482 pymodbus.logging [DEBUG] Processing: 0x0 0x2 0x0 0x0 0x0 0x7 0x1 0x3 0x4 0x0 0xaa 0x0 0xa0
+2024-04-08 19:24:04,482 pymodbus.logging [DEBUG] Factory Response[ReadHoldingRegistersResponse': 3]
+2024-04-08 19:24:04,482 pymodbus.logging [DEBUG] Getting transaction 2
+2024-04-08 19:24:04,483 custom_components.sungrow.core.inverter [DEBUG] Inverter: Successfully pulled data in 4.97801 secs
+2024-04-08 19:24:04,484 custom_components.sungrow.core.inverter [DEBUG] Connected to inverter SH8.0RT-20 / A2350415770
+2024-04-08 19:24:04,484 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (initial): daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,mppt_3_voltage,mppt_3_current,total_dc_power,total_active_power,work_state_1,daily_export_energy,total_export_energy,daily_import_energy,total_import_energy,daily_direct_energy_consumption,total_direct_energy_consumption,mppt_4_voltage,mppt_4_current,mppt_5_voltage,mppt_5_current,monthly_power_yields,total_power_yields,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,battery_capacity_high_precision,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,grid_state,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy,battery_capacity_2
+2024-04-08 19:24:04,489 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (filtered for SH8.0RT-20): daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,total_dc_power,total_active_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,battery_capacity_high_precision,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy
+2024-04-08 19:24:04,489 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['meter_active_power'])
+2024-04-08 19:24:04,489 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 5601, 2)
+2024-04-08 19:24:06,239 pymodbus.logging [DEBUG] Adding transaction 3
+2024-04-08 19:24:06,240 pymodbus.logging [DEBUG] send: 0x0 0x3 0x0 0x0 0x0 0x6 0x1 0x4 0x15 0xe0 0x0 0x2
+2024-04-08 19:24:06,245 pymodbus.logging [DEBUG] recv: 0x0 0x3 0x0 0x0 0x0 0x7 0x1 0x4 0x4 0xff 0xe0 0xff 0xff old_data:  addr=None
+2024-04-08 19:24:06,245 pymodbus.logging [DEBUG] Processing: 0x0 0x3 0x0 0x0 0x0 0x7 0x1 0x4 0x4 0xff 0xe0 0xff 0xff
+2024-04-08 19:24:06,246 pymodbus.logging [DEBUG] Factory Response[ReadInputRegistersResponse': 4]
+2024-04-08 19:24:06,246 pymodbus.logging [DEBUG] Getting transaction 3
+2024-04-08 19:24:06,246 custom_components.sungrow.core.inverter [DEBUG] Inverter: pulled data in 1.756953 secs
+2024-04-08 19:24:06,246 custom_components.sungrow.core.inverter [DEBUG] Meter is connected
+2024-04-08 19:24:06,246 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (meter filtered): daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,total_dc_power,total_active_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,battery_capacity_high_precision,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy
+2024-04-08 19:24:06,246 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['array_insulation_resistance'])
+2024-04-08 19:24:06,247 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 5071, 1)
+2024-04-08 19:24:08,242 pymodbus.logging [DEBUG] Adding transaction 4
+2024-04-08 19:24:08,242 pymodbus.logging [DEBUG] send: 0x0 0x4 0x0 0x0 0x0 0x6 0x1 0x4 0x13 0xce 0x0 0x1
+2024-04-08 19:24:08,248 pymodbus.logging [DEBUG] recv: 0x0 0x4 0x0 0x0 0x0 0x2 0x1 0x84 0x2 old_data:  addr=None
+2024-04-08 19:24:08,249 pymodbus.logging [DEBUG] Processing: 0x0 0x4 0x0 0x0 0x0 0x2 0x1 0x84 0x2
+2024-04-08 19:24:08,249 pymodbus.logging [DEBUG] Factory Response[132]
+2024-04-08 19:24:08,249 pymodbus.logging [DEBUG] Getting transaction 4
+2024-04-08 19:24:08,249 custom_components.sungrow.core.modbus_base [DEBUG] Unuspported Register: array_insulation_resistance (5071 - 5072)
+2024-04-08 19:24:08,249 custom_components.sungrow.core.inverter [DEBUG] Inverter: pulled data in 2.2765 secs
+2024-04-08 19:24:08,249 custom_components.sungrow.core.inverter [DEBUG] array_insulation_resistance is NOT supported -> WiNet dongle
+2024-04-08 19:24:08,249 custom_components.sungrow.core.inverter [DEBUG] WiNet dongle detected; Disabling all unsupported signals
+2024-04-08 19:24:08,250 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (WiNet filtered): daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,total_dc_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy
+2024-04-08 19:24:08,250 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(16 signals) in 2 ranges
+2024-04-08 19:24:08,250 custom_components.sungrow.core.modbus_base [DEBUG] * read 5013 - 5015
+2024-04-08 19:24:08,250 custom_components.sungrow.core.modbus_base [DEBUG] * read 13005 - 13048
+2024-04-08 19:24:08,250 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 5013, 2)
+2024-04-08 19:24:10,245 pymodbus.logging [DEBUG] Adding transaction 5
+2024-04-08 19:24:10,245 pymodbus.logging [DEBUG] send: 0x0 0x5 0x0 0x0 0x0 0x6 0x1 0x4 0x13 0x94 0x0 0x2
+2024-04-08 19:24:10,250 pymodbus.logging [DEBUG] recv: 0x0 0x5 0x0 0x0 0x0 0x7 0x1 0x4 0x4 0x3 0x49 0x0 0x0 old_data:  addr=None
+2024-04-08 19:24:10,251 pymodbus.logging [DEBUG] Processing: 0x0 0x5 0x0 0x0 0x0 0x7 0x1 0x4 0x4 0x3 0x49 0x0 0x0
+2024-04-08 19:24:10,251 pymodbus.logging [DEBUG] Factory Response[ReadInputRegistersResponse': 4]
+2024-04-08 19:24:10,251 pymodbus.logging [DEBUG] Getting transaction 5
+2024-04-08 19:24:10,251 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 13005, 43)
+2024-04-08 19:24:12,248 pymodbus.logging [DEBUG] Adding transaction 6
+2024-04-08 19:24:12,248 pymodbus.logging [DEBUG] send: 0x0 0x6 0x0 0x0 0x0 0x6 0x1 0x4 0x32 0xcc 0x0 0x2b
+2024-04-08 19:24:12,257 pymodbus.logging [DEBUG] recv: 0x0 0x6 0x0 0x0 0x0 0x59 0x1 0x4 0x56 0x0 0xbb 0x9 0xb4 0x0 0x0 0x8 0x2b 0x0 0x0 0xff 0xfc 0xff 0xff 0x0 0x25 0xd 0xe6 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x11 0x9 0x4f 0x0 0x0 0x7 0x9e 0x0 0x72 0x8 0x27 0x2 0xa1 0x3 0xde 0x0 0xdc 0x0 0x48 0x19 0xe0 0x0 0x0 0x0 0x53 0x0 0x0 0x0 0x1e 0x0 0x1e 0x0 0x1e 0x8 0x27 0x0 0x0 0x0 0x5 0x47 0xbd 0x0 0x0 0x3 0xc0 0x0 0x5d 0x1c 0xa9 0x0 0x0 0x0 0xff 0x0 0x0 0x1 0x4 0xe 0x80 0x0 0x0 old_data:  addr=None
+2024-04-08 19:24:12,258 pymodbus.logging [DEBUG] Processing: 0x0 0x6 0x0 0x0 0x0 0x59 0x1 0x4 0x56 0x0 0xbb 0x9 0xb4 0x0 0x0 0x8 0x2b 0x0 0x0 0xff 0xfc 0xff 0xff 0x0 0x25 0xd 0xe6 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x11 0x9 0x4f 0x0 0x0 0x7 0x9e 0x0 0x72 0x8 0x27 0x2 0xa1 0x3 0xde 0x0 0xdc 0x0 0x48 0x19 0xe0 0x0 0x0 0x0 0x53 0x0 0x0 0x0 0x1e 0x0 0x1e 0x0 0x1e 0x8 0x27 0x0 0x0 0x0 0x5 0x47 0xbd 0x0 0x0 0x3 0xc0 0x0 0x5d 0x1c 0xa9 0x0 0x0 0x0 0xff 0x0 0x0 0x1 0x4 0xe 0x80 0x0 0x0
+2024-04-08 19:24:12,258 pymodbus.logging [DEBUG] Factory Response[ReadInputRegistersResponse': 4]
+2024-04-08 19:24:12,258 pymodbus.logging [DEBUG] Getting transaction 6
+2024-04-08 19:24:12,258 custom_components.sungrow.core.inverter [DEBUG] Inverter: Successfully pulled data in 4.8414 secs
+2024-04-08 19:24:12,259 custom_components.sungrow.core.signals [INFO] Group is_master: Signal daily_pv_export is not zero: 18.7
+2024-04-08 19:24:12,259 custom_components.sungrow.core.signals [INFO] Group is_master: Signal daily_imported_energy is not zero: 0.5
+2024-04-08 19:24:12,259 custom_components.sungrow.core.signals [INFO] Group is_master: Signal total_imported_energy is not zero: 1836.5
+2024-04-08 19:24:12,259 custom_components.sungrow.core.signals [INFO] Group is_master: Signal daily_exported_energy is not zero: 26.0
+2024-04-08 19:24:12,259 custom_components.sungrow.core.signals [INFO] Group is_master: Signal total_exported_energy is not zero: 371.2
+2024-04-08 19:24:12,259 custom_components.sungrow.core.signals [INFO] Group mppt2: Signal mppt_2_voltage is not zero: 84.1
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt3: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt4: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt5: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt6: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt7: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt8: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt9: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt10: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt11: not supported by inverter
+2024-04-08 19:24:12,260 custom_components.sungrow.core.signals [INFO] Group mppt12: not supported by inverter
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal daily_battery_charge_from_pv is not zero: 3.7
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal total_battery_charge_from_pv is not zero: 355.8
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal battery_power is not zero: 2087
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal battery_level is not zero: 67.3
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal daily_battery_discharge_energy is not zero: 7.2
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal total_battery_discharge_energy is not zero: 662.4
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal battery_capacity is not zero: 96.0
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal daily_battery_charge_energy is not zero: 9.3
+2024-04-08 19:24:12,261 custom_components.sungrow.core.signals [INFO] Group has_battery: Signal total_battery_charge_energy is not zero: 733.7
+2024-04-08 19:24:12,262 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (groups filtered): daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,total_dc_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy
+2024-04-08 19:24:12,262 custom_components.sungrow.core.modbus_base [DEBUG] __aenter__(192.168.13.58, 502, 1)
+2024-04-08 19:24:12,262 scripts.dump [INFO] 192.168.13.58(slave: 1, mode: any):Connected
+2024-04-08 19:24:12,262 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(30 signals) in 3 ranges
+2024-04-08 19:24:12,262 custom_components.sungrow.core.modbus_base [DEBUG] * read 5003 - 5019
+2024-04-08 19:24:12,262 custom_components.sungrow.core.modbus_base [DEBUG] * read 5601 - 5609
+2024-04-08 19:24:12,263 custom_components.sungrow.core.modbus_base [DEBUG] * read 13002 - 13048
+2024-04-08 19:24:12,263 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 5003, 16)
+2024-04-08 19:24:14,250 pymodbus.logging [DEBUG] Adding transaction 7
+2024-04-08 19:24:14,250 pymodbus.logging [DEBUG] send: 0x0 0x7 0x0 0x0 0x0 0x6 0x1 0x4 0x13 0x8a 0x0 0x10
+2024-04-08 19:24:14,261 pymodbus.logging [DEBUG] recv: 0x0 0x7 0x0 0x0 0x0 0x23 0x1 0x4 0x20 0x1 0xc 0x2b 0xd1 0x0 0x0 0x0 0x0 0x0 0x0 0x1 0x92 0x0 0x0 0x0 0x0 0x5 0xc4 0x0 0x0 0x3 0x48 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 old_data:  addr=None
+2024-04-08 19:24:14,261 pymodbus.logging [DEBUG] Processing: 0x0 0x7 0x0 0x0 0x0 0x23 0x1 0x4 0x20 0x1 0xc 0x2b 0xd1 0x0 0x0 0x0 0x0 0x0 0x0 0x1 0x92 0x0 0x0 0x0 0x0 0x5 0xc4 0x0 0x0 0x3 0x48 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0
+2024-04-08 19:24:14,261 pymodbus.logging [DEBUG] Factory Response[ReadInputRegistersResponse': 4]
+2024-04-08 19:24:14,262 pymodbus.logging [DEBUG] Getting transaction 7
+2024-04-08 19:24:14,262 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 5601, 8)
+2024-04-08 19:24:16,253 pymodbus.logging [DEBUG] Adding transaction 8
+2024-04-08 19:24:16,253 pymodbus.logging [DEBUG] send: 0x0 0x8 0x0 0x0 0x0 0x6 0x1 0x4 0x15 0xe0 0x0 0x8
+2024-04-08 19:24:16,261 pymodbus.logging [DEBUG] recv: 0x0 0x8 0x0 0x0 0x0 0x13 0x1 0x4 0x10 0xff 0xf9 0xff 0xff 0x0 0x69 0x0 0x0 0x0 0x3a 0x0 0x0 0xff 0x54 0xff 0xff old_data:  addr=None
+2024-04-08 19:24:16,261 pymodbus.logging [DEBUG] Processing: 0x0 0x8 0x0 0x0 0x0 0x13 0x1 0x4 0x10 0xff 0xf9 0xff 0xff 0x0 0x69 0x0 0x0 0x0 0x3a 0x0 0x0 0xff 0x54 0xff 0xff
+2024-04-08 19:24:16,261 pymodbus.logging [DEBUG] Factory Response[ReadInputRegistersResponse': 4]
+2024-04-08 19:24:16,261 pymodbus.logging [DEBUG] Getting transaction 8
+2024-04-08 19:24:16,261 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(read, 13002, 46)
+2024-04-08 19:24:18,256 pymodbus.logging [DEBUG] Adding transaction 9
+2024-04-08 19:24:18,256 pymodbus.logging [DEBUG] send: 0x0 0x9 0x0 0x0 0x0 0x6 0x1 0x4 0x32 0xc9 0x0 0x2e
+2024-04-08 19:24:18,264 pymodbus.logging [DEBUG] recv: 0x0 0x9 0x0 0x0 0x0 0x5f 0x1 0x4 0x5c 0x0 0xf1 0x20 0xe9 0x0 0x0 0x0 0xbb 0x9 0xb4 0x0 0x0 0x8 0x2d 0x0 0x0 0xff 0xf2 0xff 0xff 0x0 0x25 0xd 0xe6 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x11 0x9 0x4f 0x0 0x0 0x7 0x9e 0x0 0x71 0x8 0x1f 0x2 0xa1 0x3 0xde 0x0 0xdc 0x0 0x48 0x19 0xe0 0x0 0x0 0x0 0x53 0x0 0x0 0x0 0x1e 0x0 0x1e 0x0 0x1e 0x8 0x1f 0x0 0x0 0x0 0x5 0x47 0xbd 0x0 0x0 0x3 0xc0 0x0 0x5d 0x1c 0xa9 0x0 0x0 0x0 0xff 0x0 0x0 0x1 0x4 0xe 0x80 0x0 0x0 old_data:  addr=None
+2024-04-08 19:24:18,265 pymodbus.logging [DEBUG] Processing: 0x0 0x9 0x0 0x0 0x0 0x5f 0x1 0x4 0x5c 0x0 0xf1 0x20 0xe9 0x0 0x0 0x0 0xbb 0x9 0xb4 0x0 0x0 0x8 0x2d 0x0 0x0 0xff 0xf2 0xff 0xff 0x0 0x25 0xd 0xe6 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x11 0x9 0x4f 0x0 0x0 0x7 0x9e 0x0 0x71 0x8 0x1f 0x2 0xa1 0x3 0xde 0x0 0xdc 0x0 0x48 0x19 0xe0 0x0 0x0 0x0 0x53 0x0 0x0 0x0 0x1e 0x0 0x1e 0x0 0x1e 0x8 0x1f 0x0 0x0 0x0 0x5 0x47 0xbd 0x0 0x0 0x3 0xc0 0x0 0x5d 0x1c 0xa9 0x0 0x0 0x0 0xff 0x0 0x0 0x1 0x4 0xe 0x80 0x0 0x0
+2024-04-08 19:24:18,265 pymodbus.logging [DEBUG] Factory Response[ReadInputRegistersResponse': 4]
+2024-04-08 19:24:18,265 pymodbus.logging [DEBUG] Getting transaction 9
+2024-04-08 19:24:18,265 scripts.dump [INFO] 192.168.13.58(slave: 1, mode: any):retrieved registers: 70 READ + 0 HOLD
+2024-04-08 19:24:18,265 scripts.dump [INFO] 192.168.13.58(slave: 1, mode: any):stats: ModbusConnectionBase.Stats(connections=1, read_calls_success=8, read_calls_failed=1, retrieved_signals_success=52, retrieved_signals_failed=1)
+2024-04-08 19:24:18,265 custom_components.sungrow.core.modbus_base [DEBUG] __aexit__(192.168.13.58, 502, 1)
+2024-04-08 19:24:18,265 custom_components.sungrow.core.modbus_py [DEBUG] Disconnecting from 192.168.13.58:502
+2024-04-08 19:24:20,259 custom_components.sungrow.core.modbus_py [DEBUG] Disconnected from 192.168.13.58:502

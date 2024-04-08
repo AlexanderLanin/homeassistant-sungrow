@@ -32,19 +32,14 @@ async def pull_single_signal(
     """pull_raw_signals is more efficient than pull_raw_signal for multiple signals!!"""
 
     pull_start = datetime.now()
-
     raw = (await client.read([signal]))[signal.name]
-
-    data = deserialize.decode_signal(signal, raw) if raw is not None else None
-
     elapsed = datetime.now() - pull_start
 
     logger.debug(
-        "Inverter: Successfully pulled data in "
-        f"{elapsed.seconds}.{elapsed.microseconds} secs"
+        "Inverter: pulled data in " f"{elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
-    return data
+    return deserialize.decode_signal(signal, raw) if raw is not None else None
 
 
 async def pull_signals(
@@ -109,19 +104,11 @@ def mark_signals_not_in_this_model_as_disabled(
     for signal in signal_definitions:
         # Only certain models supported
         if signal.models and not has_match(model, signal.models):
-            logger.debug(
-                f"Signal {signal.name} with filter {signal.models} "
-                f"is NOT available for model {model}"
-            )
-            signal.disabled.append("signal not available for this model")
+            signal.disabled.append("signal not available for this model (not included)")
 
         # Some models explicitly excluded
         if signal.models_exclude and has_match(model, signal.models_exclude):
-            logger.debug(
-                f"Signal {signal.name} with filter {signal.models_exclude} "
-                f"is explicitly NOT available for model {model}"
-            )
-            signal.disabled.append("signal not available for this model")
+            signal.disabled.append("signal not available for this model (excluded)")
 
 
 def convert_raw_data_to_datapoints(
@@ -208,11 +195,12 @@ class SungrowInverter:
             if await inv._set_slave_and_query_initial_data(slave):
                 break
         else:
-            logger.debug("Failed to connect to inverter. Exotic slave ID?")
+            logger.warning(
+                "Failed to connect to inverter. Exotic slave ID? "
+                "You'll have to enter it manually"
+            )
             await inv.disconnect()
             return None
-
-        # assert isinstance(inv, SungrowInverter)  # for mypy
 
         logger.debug(
             "Connected to inverter "
@@ -255,13 +243,31 @@ class SungrowInverter:
             self._signal_definitions
         ), "Must be loaded before this function is called."
 
+        def print_enabled_signals(prefix):
+            logger.debug(
+                f"Enabled signals ({prefix}): "
+                + ",".join(
+                    [
+                        signal.name
+                        for signal in self._signal_definitions.all_signals()
+                        if not signal.disabled
+                    ]
+                )
+            )
+
+        print_enabled_signals("initial")
+
         self._disable_signals_not_supported_by_model()
-        await self._disable_meter_signals_if_no_meter_available()
+        print_enabled_signals(f"filtered for {self.model}")
+
+        await self._disable_all_meter_signals_if_no_meter_available()
+        print_enabled_signals("meter filtered")
 
         # TODO: are the same registers unsupported via pymodbus and http?
         if await self._determine_is_modbus_winet():
             logger.debug("WiNet dongle detected; Disabling all unsupported signals")
             self._signal_definitions.disable_winet_signals()
+            print_enabled_signals("WiNet filtered")
 
         # We now need to pull all data which belongs to a group,
         # so we can detect groups which do not apply, like "has_battery".
@@ -277,6 +283,7 @@ class SungrowInverter:
         self._active_groups = mark_unavailable_signals_as_disabled(
             self._signal_definitions, data
         )
+        print_enabled_signals("groups filtered")
 
     async def pull_signals(self, signal_list: list[str]):
         return await pull_signals(
@@ -297,19 +304,15 @@ class SungrowInverter:
 
         self._client.slave = slave
 
-        # TODO: maybe add all static signals to the query which we never need to
-        # query again. This would reduce needless queries of static data.
-        # TODO: Store static/dynamic separation directly in yaml.
-        # However stuff like master slave mode is not truly static.
-        # We just simplify it here.
-        # As we store the result, this doesn't need to be a minimal set!
+        # TODO: Handling of "assumed static" signals.
+        # e.g. re-query once a day? once any of the signals change?
         try:
             self.data = await self.pull_signals(
                 [
-                    # basic infos:
+                    # basic infos (truly static)
                     "serial_number",  # 4950
                     "device_type_code",  # 5000
-                    # for correct naming of master/slave:
+                    # for correct naming of master/slave (assumed static)
                     "master_slave_mode",  # 33500
                     "master_slave_role",  # 33501
                     "output_type",  # 5002
@@ -347,6 +350,8 @@ class SungrowInverter:
                 )
                 self._is_modbus_winet = False
 
+        return self._is_modbus_winet
+
     def _disable_signals_not_supported_by_model(self):
         """Disable signals which are not supported by the inverter model."""
 
@@ -370,7 +375,7 @@ class SungrowInverter:
                 self._signal_definitions.all_signals(), model
             )
 
-    async def _disable_meter_signals_if_no_meter_available(self):
+    async def _disable_all_meter_signals_if_no_meter_available(self):
         # This is be a better distinction than simply disabling meter via a grooup,
         # because all signals are 0.
         # TODO: Introduce is_disabled / is_available flag?
@@ -384,6 +389,9 @@ class SungrowInverter:
                 ]
             ):
                 signal.disabled.append("Meter not connected")
+            logger.debug("Disabed all meter signals as meter is not connected")
+        else:
+            logger.debug("Meter is connected")
 
     # @dataclass
     # class Config:
@@ -400,6 +408,9 @@ class SungrowInverter:
 
         assert self._active_groups is not None, "Must be set by factory method"
 
+        logger.debug(
+            f"Pulling data from inverter: {','.join([s.name for s in self._signal_definitions.enabled_signals()])}"
+        )
         new_data = await pull_signals(
             self._client, self._signal_definitions.enabled_signals()
         )

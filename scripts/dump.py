@@ -33,7 +33,7 @@ from custom_components.sungrow.core.modbus_types import (
 )
 
 logging.basicConfig(level=logging.DEBUG)
-logging.getLogger("pymodbus").setLevel(logging.INFO)
+# logging.getLogger("pymodbus").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Log DEBUG to file.
@@ -86,7 +86,7 @@ async def collect_data_from(
                 inv._signal_definitions.enabled_modbus_signals()
             )
 
-            suffix = " WiNet" if await inv.is_modbus_winet() else ""
+            suffix = " WiNet" if inv.is_modbus_winet else ""
 
             if raw_data:
                 info_msg(
@@ -106,9 +106,11 @@ async def collect_data_from(
             )
     except modbus_base.CannotConnectError as e:
         info_msg(f"Failed to connect ({e})")
+        logger.debug("Details:", exc_info=True)
         return TaskResult(connection_mode, host, slave, error=e)
     except Exception as e:
         info_msg(f"{host}/{slave}/pymodbus: Failed during query ({e})")
+        logger.debug("Details:", exc_info=True)
         return TaskResult(connection_mode, host, slave, error=e)
 
 

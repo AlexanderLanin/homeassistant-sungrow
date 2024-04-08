@@ -9,10 +9,12 @@ can perform a clever optimization to reduce the number of queries.
 import asyncio
 import contextlib
 import logging
+from datetime import datetime, timedelta
 
 import pymodbus
 import pymodbus.client
 import pymodbus.exceptions
+import pymodbus.framer.base
 import pymodbus.pdu
 
 import custom_components.sungrow.core.modbus_base as modbus_base
@@ -23,20 +25,58 @@ from custom_components.sungrow.core.modbus_base import (
 
 logger = logging.getLogger(__name__)
 
-# Annoying bug, let's be very sure we run a version that is not affected.
-assert pymodbus.__version__ >= "3.6.4"
+
+# WiNet-S responds with slightly incorrect message headers in case of errors.
+# Version: M_WiNet-S_V01_V01_A
+# Pymodbus will trigger a needless TCP reconnect, and it will report "no message
+# received". While we can deal with the latter, the former is a bit more annoying.
+# The root cause is WiNet transmits 3 bytes of data, but reports to transmit 2.
+# As we know what exactly is wrong with the message, we simply need to fix the header
+# length before pymodbus tries to decode it.
+# pymodbus 3.6.6 has a function named _validate_slave_id which is called just at the
+# right time to fix the message header. We don't particularly care about what it
+# actually does, as we can simply inject our fix right before it is called:
+def inject_message_header_fix():
+    if pymodbus.__version__ != "3.6.6":
+        raise RuntimeError("This fix needs to be adjusted")
+
+    real_validate_slave_id = pymodbus.framer.base.ModbusFramer._validate_slave_id
+
+    def injected(self, a, b):
+        if self._buffer[self._hsize] & 0x80 and self._header["len"] == 2:
+            self._header["len"] = 3
+        return real_validate_slave_id(self, a, b)
+
+    pymodbus.framer.base.ModbusFramer._validate_slave_id = injected  # type: ignore
+
+
+inject_message_header_fix()
 
 
 class PymodbusConnection(ModbusConnectionBase):
     """A pymodbus connection to a single slave."""
 
+    MIN_DELAY = timedelta(seconds=2)
+
     def __init__(self, host: str, port: int):
         super().__init__(host, port)
 
         self._client = pymodbus.client.AsyncModbusTcpClient(
-            host=host, port=port, timeout=2, retries=1, retry_on_empty=True
+            host=host, port=port, timeout=2, retries=0, retry_on_empty=True
         )
+
         self._ever_succeeded = False
+
+        self._next_allowed_call = datetime.min
+
+    async def _throttle(self):
+        now = datetime.now()
+        if now < self._next_allowed_call:
+            delay = self._next_allowed_call - now
+            await asyncio.sleep(delay.total_seconds())
+        # FIXME: next_allowed_call must be set AFTER the function has finished
+        # executing. Use a context manager instead?!
+        self._next_allowed_call = datetime.now() + self.MIN_DELAY
 
     async def connect(self):
         if self._client.connected:
@@ -44,6 +84,7 @@ class PymodbusConnection(ModbusConnectionBase):
         else:
             logger.debug("Connecting to %s:%s", self._host, self._port)
             self._stats.connections += 1
+            await self._throttle()
             return await self._client.connect()
 
     async def disconnect(self):
@@ -56,6 +97,7 @@ class PymodbusConnection(ModbusConnectionBase):
         # this task to finish.
         logger.debug("Disconnecting from %s:%s", self._host, self._port)
         reconnect_task = self._client.reconnect_task
+        await self._throttle()
         self._client.close()
         if reconnect_task:
             # Catch CancelledError, as this is expected.
@@ -78,13 +120,13 @@ class PymodbusConnection(ModbusConnectionBase):
         """
         assert self._slave is not None, "Slave ID not set"
 
-        # logger.debug(f"_read_range({register_type}, {address_start}, {address_count})")
+        logger.debug(f"_read_range({register_type}, {address_start}, {address_count})")
         if not await self.connect():
             raise modbus_base.CannotConnectError(
                 "Cannot connect to inverter for reading"
             )
 
-        await asyncio.sleep(0.5)  # Server doesn't like it if we query too fast.
+        await self._throttle()
 
         try:
             func = {
@@ -95,48 +137,41 @@ class PymodbusConnection(ModbusConnectionBase):
             # This is the only line in the module that needs to know about this detail!
             rr = await func(address_start - 1, count=address_count, slave=self._slave)  # type: ignore
         except pymodbus.exceptions.ModbusIOException as e:
-            if not self._ever_succeeded:
-                raise modbus_base.InvalidSlaveError() from e
-            else:
-                raise modbus_base.ModbusError(
-                    f"IO error (for {register_type}, "
-                    f"{address_start}-{address_start+address_count})"
-                ) from e
-        except pymodbus.ModbusException as e:
-            # e.g. no response from device
-            raise modbus_base.ModbusError(
-                f"connection error (for {register_type}, "
-                f"{address_start}-{address_start+address_count})"
-            ) from e
+            raise modbus_base.ModbusError("Unknown IO Error") from e
 
-        if rr.isError():
-            if isinstance(rr, pymodbus.pdu.ExceptionResponse):
-                if rr.exception_code == pymodbus.pdu.ModbusExceptions.GatewayNoResponse:
-                    raise modbus_base.InvalidSlaveError(
-                        f"Slave ID {self._slave} is invalid"
+        if rr.isError() and isinstance(rr, pymodbus.pdu.ExceptionResponse):
+            if rr.exception_code == pymodbus.pdu.ModbusExceptions.GatewayNoResponse:
+                raise modbus_base.InvalidSlaveError(
+                    f"Slave ID {self._slave} is invalid"
+                )
+            elif rr.exception_code == pymodbus.pdu.ModbusExceptions.IllegalAddress:
+                raise modbus_base.UnsupportedRegisterQueriedError(
+                    f"Inverter does not support {address_start}-"
+                    f"{address_start+address_count}: {rr}"
+                )
+            elif rr.exception_code == pymodbus.pdu.ModbusExceptions.SlaveFailure:
+                # Deprecated? Do we need this?
+                if recursion:
+                    logger.warning(
+                        "Slave failure on %s %s-%s: %s. Please inform the developer.",
+                        register_type,
+                        address_start,
+                        address_start + address_count,
+                        rr,
                     )
-                elif rr.exception_code == pymodbus.pdu.ModbusExceptions.IllegalAddress:
-                    # ToDo: consider returning None instead of raising an error
-                    raise modbus_base.UnsupportedRegisterQueriedError(
-                        f"Inverter does not support {address_start}-"
-                        f"{address_start+address_count}: {rr}"
+                    raise modbus_base.ModbusError(
+                        f"Slave failure on {register_type} "
+                        f"{address_start}-{address_start+address_count}: {rr}"
                     )
-                elif rr.exception_code == pymodbus.pdu.ModbusExceptions.SlaveFailure:
-                    # This may self-heal, don't raise an error on the first attempt.
-                    if recursion:
-                        raise modbus_base.ModbusError(
-                            f"Slave failure on {register_type} "
-                            f"{address_start}-{address_start+address_count}: {rr}"
-                        )
-                    else:
-                        return await self._read_range(
-                            register_type=register_type,
-                            address_start=address_start,
-                            address_count=address_count,
-                            recursion=True,
-                        )
                 else:
-                    raise modbus_base.ModbusError(f"Unknown exception response: {rr}")
+                    x = await self._read_range(
+                        register_type=register_type,
+                        address_start=address_start,
+                        address_count=address_count,
+                        recursion=True,
+                    )
+                    assert isinstance(x, list)  # for mypy
+                    return x
             else:
                 raise modbus_base.ModbusError(f"Unknown error response: {rr}")
 
@@ -145,8 +180,6 @@ class PymodbusConnection(ModbusConnectionBase):
                 f"Mismatched number of registers "
                 f"(requested {address_count}) and responded {len(rr.registers)})"
             )
-
-        assert isinstance(rr.registers, list)
 
         self._ever_succeeded = True
         return rr.registers
