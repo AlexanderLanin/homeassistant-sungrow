@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
 from datetime import datetime
 from fnmatch import fnmatch
 from typing import cast
@@ -229,7 +228,8 @@ class SungrowInverter:
         for signal in self._signal_definitions._definitions.values():
             if signal.disabled and signal.name in self.data:
                 logger.warning(
-                    f"Disabling pre-acquired signal {signal.name} due to: {signal.disabled}"
+                    "Disabling pre-acquired signal "
+                    f"{signal.name} due to: {signal.disabled}"
                 )
                 self.data.pop(signal.name, None)
 
@@ -409,7 +409,8 @@ class SungrowInverter:
         assert self._active_groups is not None, "Must be set by factory method"
 
         logger.debug(
-            f"Pulling data from inverter: {','.join([s.name for s in self._signal_definitions.enabled_signals()])}"
+            "Pulling data from inverter: "
+            + ",".join([s.name for s in self._signal_definitions.enabled_signals()])
         )
         new_data = await pull_signals(
             self._client, self._signal_definitions.enabled_signals()
@@ -464,6 +465,17 @@ class SungrowInverter:
         """
 
         return slave_master_standalone_str(self.data, self._active_groups)
+
+    @property
+    def connection_mode(self):
+        suffix = " WiNet" if self.is_modbus_winet else ""
+
+        if isinstance(self._client, modbus_http.HttpConnection):
+            return "http" + suffix
+        elif isinstance(self._client, modbus_py.PymodbusConnection):
+            return "modbus" + suffix
+        else:
+            raise RuntimeError("Unknown connection type")
 
 
 def slave_master_standalone_str(initial_data, active_groups=None):

@@ -158,6 +158,8 @@ class SignalDefinitions:
 
     # ToDo: move to inverter.py. This is clearly business logic.
     def mark_signals_disabled_based_on_groups(self, data):
+        assert data, "data must have been pulled from the inverter first!"
+
         """Note: this returns extra_data to be included!"""
 
         extra_data = {}
@@ -171,16 +173,16 @@ class SignalDefinitions:
                 if not signal.disabled:
                     has_enabled_signal = True
                     if not is_zero(v):
-                        logger.info(
+                        logger.debug(
                             f"Group {group}: Signal {signal.name} is not zero: {v}"
                         )
                         all_zero = False
 
             if not has_enabled_signal:
-                logger.info(f"Group {group}: not supported by inverter")
+                logger.debug(f"Group {group}: not supported by inverter")
                 # extra_data[group] = False
             elif all_zero:
-                logger.info(f"Group {group}: all signals are zero")
+                logger.debug(f"Group {group}: all signals are zero")
                 for signal in group_signals.values():
                     signal.disabled.append(f"all (enabled) signals in {group} are zero")
                 # extra_data[group] = False

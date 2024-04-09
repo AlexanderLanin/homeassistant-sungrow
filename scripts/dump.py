@@ -32,7 +32,7 @@ from custom_components.sungrow.core.modbus_types import (
     RegisterType,
 )
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 # logging.getLogger("pymodbus").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -62,11 +62,14 @@ async def collect_data_from(
     slave: int | None,
     connection_mode: str | None,
 ) -> TaskResult:
+    inv: SungrowInverter | None = None
+
     def info_msg(msg):
-        logger.info(
-            f"{host}(slave: {slave or 'unknown'}, mode: {connection_mode or 'any'}):"
-            + msg
-        )
+        if inv:
+            prefix = f"slave: {inv._client.slave}, mode: {inv.connection_mode}"
+        else:
+            prefix = f"slave: {slave or 'unknown'}, mode: {connection_mode or 'any'}"
+        logger.info(f"{host} ({prefix}): {msg}")
 
     info_msg("Connecting...")
     try:
@@ -78,15 +81,12 @@ async def collect_data_from(
             return TaskResult(connection_mode, host, slave, error="Failed to connect")
 
         async with inv:
-            slave = inv._client.slave
             # mode = inv.get_connection_mode() TODO: implement this in SungrowInverter
-            info_msg("Connected")
+            info_msg(f"Connected via {inv.connection_mode}")
 
             raw_data = await inv._client.read_raw(
                 inv._signal_definitions.enabled_modbus_signals()
             )
-
-            suffix = " WiNet" if inv.is_modbus_winet else ""
 
             if raw_data:
                 info_msg(
@@ -96,10 +96,9 @@ async def collect_data_from(
             info_msg(f"stats: {inv._client.stats}")
 
             return TaskResult(
-                # TODO: retrieve connection mode from inverter object.
-                (connection_mode or "NA") + suffix,
+                inv.connection_mode,
                 host,
-                slave,
+                inv._client.slave,
                 signal_definitions=inv._signal_definitions,
                 stats=inv._client.stats,
                 raw_data=raw_data,
@@ -175,6 +174,7 @@ def merge_by_inverter(results: list[TaskResult]):
             dpc.decoded = deserialize.decode_signals(
                 d.signal_definitions.enabled_modbus_signals(), dpc.mapped_data
             )
+            print(dpc.decoded)
             sn = dpc.decoded["serial_number"]
             assert isinstance(sn, str)
         else:
