@@ -1,4 +1,22 @@
-2024-04-09 18:34:01,852 scripts.dump [INFO] 192.168.13.58 (slave: unknown, mode: any): Connecting...
-2024-04-09 18:34:13,879 scripts.dump [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): Connected via modbus WiNet
-2024-04-09 18:34:19,888 scripts.dump [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): retrieved registers: 70 READ + 0 HOLD
-2024-04-09 18:34:19,888 scripts.dump [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): stats: ModbusConnectionBase.Stats(connections=1, read_calls_success=8, read_calls_failed=1, retrieved_signals_success=52, retrieved_signals_failed=1)
+2024-04-10 19:19:03,864 asyncio [DEBUG] Using selector: EpollSelector
+2024-04-10 19:19:04,020 scripts.dump [INFO] 192.168.13.58 (slave: unknown, mode: any): Connecting...
+2024-04-10 19:19:04,021 custom_components.sungrow.core.inverter [DEBUG] Trying to connect to modbus(192.168.13.58:502, slave: unknown)...
+2024-04-10 19:19:04,021 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.58:502
+2024-04-10 19:19:04,021 pymodbus.logging [DEBUG] Connecting to 192.168.13.58:502.
+2024-04-10 19:19:04,022 pymodbus.logging [DEBUG] Connecting comm
+2024-04-10 19:19:04,025 pymodbus.logging [DEBUG] Connected to comm
+2024-04-10 19:19:04,179 custom_components.sungrow.core.modbus_base [DEBUG] Setting slave to 1
+2024-04-10 19:19:04,181 custom_components.sungrow.core.modbus_base [DEBUG] read_raw([])
+2024-04-10 19:19:04,181 custom_components.sungrow.core.inverter [DEBUG] Inverter: Successfully pulled data in 0.755 secs
+2024-04-10 19:19:04,181 custom_components.sungrow.core.inverter [DEBUG] Initial data: {}
+2024-04-10 19:19:04,181 scripts.dump [INFO] 192.168.13.58 (slave: unknown, mode: any): 192.168.13.58/None/pymodbus: Failed during query ('device_type_code')
+2024-04-10 19:19:04,181 scripts.dump [DEBUG] Details:
+Traceback (most recent call last):
+  File "/workspaces/homeassistant-sungrow/scripts/dump.py", line 76, in collect_data_from
+    inv = await SungrowInverter.create(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter.create) at 0x7fe1df87dbc0>", line 100, in create
+  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 207, in create
+    f"{inv.data['device_type_code']} / {inv.data['serial_number']}"
+       ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'device_type_code'

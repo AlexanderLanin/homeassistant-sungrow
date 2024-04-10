@@ -122,6 +122,15 @@ class SignalDefinitions:
                 match.append(signal)
         return match
 
+    def get_signals_for_level(self, level: int):
+        """Return all signals that are enabled on the given level."""
+
+        match: list[str] = []
+        for signal in self._definitions.values():
+            if signal.level and signal.level <= level and not signal.disabled:
+                match.append(signal.name)
+        return match
+
     def get_signal_definition_by_name(self, name: str):
         # Note: differentiating between read and hold registers is not needed here.
         # They do not overlap.

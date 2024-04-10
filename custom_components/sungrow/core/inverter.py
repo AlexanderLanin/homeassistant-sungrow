@@ -201,6 +201,7 @@ class SungrowInverter:
             await inv.disconnect()
             return None
 
+        logger.debug(f"Initial data: {inv.data}")
         logger.debug(
             "Connected to inverter "
             f"{inv.data['device_type_code']} / {inv.data['serial_number']}"
@@ -304,19 +305,9 @@ class SungrowInverter:
 
         self._client.slave = slave
 
-        # TODO: Handling of "assumed static" signals.
-        # e.g. re-query once a day? once any of the signals change?
         try:
             self.data = await self.pull_signals(
-                [
-                    # basic infos (truly static)
-                    "serial_number",  # 4950
-                    "device_type_code",  # 5000
-                    # for correct naming of master/slave (assumed static)
-                    "master_slave_mode",  # 33500
-                    "master_slave_role",  # 33501
-                    "output_type",  # 5002
-                ]
+                self._signal_definitions.get_signals_for_level(0)
             )
             return True
         except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
@@ -479,6 +470,8 @@ class SungrowInverter:
 
 
 def slave_master_standalone_str(initial_data, active_groups=None):
+    # TODO: this can actually change at runtime, it's not a static property!
+
     if initial_data.get("master_slave_mode") == "Disabled":
         return "Standalone"
     elif initial_data.get("master_slave_mode") == "Enabled":

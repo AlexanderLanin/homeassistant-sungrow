@@ -8,11 +8,11 @@ This script will query an inverter via:
 and compare the results.
 """
 
+import argparse
 import asyncio
 import json
 import logging
 import pickle
-import sys
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
 
@@ -171,6 +171,8 @@ def merge_by_inverter(results: list[TaskResult]):
             dpc.mapped_data = modbus_base.map_raw_to_signals(
                 d.raw_data, d.signal_definitions.enabled_modbus_signals()
             )
+            print(d.signal_definitions.get_signal_definition_by_name("serial_number"))
+            print(dpc.mapped_data["serial_number"])
             dpc.decoded = deserialize.decode_signals(
                 d.signal_definitions.enabled_modbus_signals(), dpc.mapped_data
             )
@@ -362,29 +364,42 @@ def markdown_write_file(
         markdown_write_raw_data(f, data_by_inverter)
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Dump data from inverter.")
+    parser.add_argument(
+        "hosts",
+        metavar="host",
+        type=str,
+        nargs="+",
+        help="Hosts to query. Optionally with slave id, separated by a slash. "
+        + "Example for slave 2: 192.168.13.80/2",
+    )
+    parser.add_argument(
+        "--cached",
+        action="store_true",
+        help="Use cached data from previous run.",
+    )
+    parser.add_argument(
+        "--parallel",
+        action="store_true",
+        help="Query all hosts in parallel.",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Increase output verbosity.",
+    )
+    return parser.parse_args()
+
+
 def run():
-    """Entry point for console_scripts and command line execution."""
-    if len(sys.argv) == 1:
-        print("Parameters: <host> [<host> ...]")
-        print("Note: slave id can be appended to the host, separated by a slash.")
-        print("Example for slave 2: 192.168.13.80/2")
-        print("When no slave id is given, slave 1 is assumed.")
-        print(
-            "Example parameters: "
-            "192.168.13.79 192.168.13.58 192.168.13.80/2 192.168.13.74"
-        )
-        exit(1)
-    else:
-        hosts = sys.argv[1:]
-        if hosts[0] == "--cached":
-            cached = True
-            hosts = hosts[1:]
-        else:
-            cached = False
+    args = parse_arguments()
 
-        print("command line: ", hosts)
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
 
-        asyncio.run(main(hosts, cached=cached))
+    asyncio.run(main(hosts=args.hosts, cached=args.cached))
 
 
 if __name__ == "__main__":

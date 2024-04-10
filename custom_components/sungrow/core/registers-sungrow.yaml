@@ -45,12 +45,12 @@ read:
     data_type: U16
 
   - name: "serial_number"
-    level: 2
+    level: 0
     address: 4990
     data_type: "UTF-8[10]"
 
   - name: "device_type_code"
-    level: 2
+    level: 0
     address: 5000
     data_type: U16
     decoded:
@@ -150,7 +150,7 @@ read:
     unit_of_measurement: "kW"
 
   - name: "output_type"
-    level: 2
+    level: 0
     address: 5002
     data_type: U16
     decoded:
@@ -2776,7 +2776,7 @@ hold:
 
   - name: master_slave_mode
     address: 33500
-    level: 2
+    level: 0
     data_type: U16
     decoded:
       0xAA: "Enabled"
@@ -2784,7 +2784,7 @@ hold:
 
   - name: master_slave_role
     address: 33501
-    level: 2
+    level: 0
     data_type: U16
     decoded:
       0xA0: "Master"
@@ -2795,7 +2795,7 @@ hold:
 
   - name: slave_count
     address: 33502
-    level: 2
+    level: 0
     data_type: U16
 
   - name: weekly_discharging_start_time_1_hour
