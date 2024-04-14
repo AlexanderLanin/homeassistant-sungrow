@@ -38,7 +38,12 @@ async def pull_single_signal(
         "Inverter: pulled data in " f"{elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
-    return deserialize.decode_signal(signal, raw) if raw is not None else None
+    if raw is None:
+        logger.debug(f"Inverter: {signal.name} not supported")
+        signal.disabled.append("Inverter does not support this signal (None returned)")
+        return None
+    else:
+        return deserialize.decode_signal(signal, raw)
 
 
 async def pull_signals(
@@ -47,24 +52,35 @@ async def pull_signals(
 ) -> dict[str, DatapointValueType | None]:
     """Pull data from inverter"""
 
-    data: dict[str, DatapointValueType] = {}
-
     pull_start = datetime.now()
 
     # Downcast to base class to make mypy happy
     signal_definitions_base = cast(list[modbus_base.Signal], signal_definitions)
+    raw_signals = await client.read(signal_definitions_base)
+
+    elapsed = datetime.now() - pull_start
+
+    logger.debug(
+        f"Inverter: Pulled data in {elapsed.seconds}.{elapsed.microseconds} secs"
+    )
+
+    for name, value in raw_signals.items():
+        if value is None:
+            logger.debug(f"Inverter: {name} not supported")
+            signal = next(
+                (signal for signal in signal_definitions if signal.name == name), None
+            )
+            # as signal is in raw_signals, it must be in signal_definitions
+            assert signal
+            signal.disabled.append(
+                "Inverter does not support this signal "
+                f"(None returned, while quering {len(signal_definitions)} signals)"
+            )
 
     # Load all registers from inverer
     data = deserialize.decode_signals(
         signal_definitions,
-        await client.read(signal_definitions_base),
-    )
-
-    elapsed = datetime.now() - pull_start
-    # data["pull_time"] = f"{elapsed.seconds}.{elapsed.microseconds}"
-    logger.debug(
-        "Inverter: Successfully pulled data in "
-        f"{elapsed.seconds}.{elapsed.microseconds} secs"
+        raw_signals,
     )
 
     return data
@@ -76,10 +92,14 @@ def mark_unavailable_signals_as_disabled(
 ):
     """Mark signals not available within `data` as disabled in `all_signals`."""
 
-    # mark signals as disabled if they are not supported by the inverter
+    # mark signals as disabled if they are not supported by the inverter.
+    # This currently doesn't happen without a more elaborate check, as a clear
+    # not-supported value is only triggered when the signal is queried alone.
     for name, value in data.items():
         if value is None:
-            all_signals.get_signal_definition_by_name(name).disabled.append(
+            signal = all_signals.get_signal_definition_by_name(name)
+            assert signal  # as it's in data, it must be in all_signals
+            signal.disabled.append(
                 "Inverter does not support this signal (None returned)"
             )
             logger.debug(
