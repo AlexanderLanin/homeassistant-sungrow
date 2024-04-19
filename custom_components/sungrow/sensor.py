@@ -91,6 +91,7 @@ async def create_sensor_entities(
     """Register sensor entities based on the inverter data."""
 
     if not inverter.data:
+        # TODO: pull_data can fail and return False
         await inverter.pull_data()
 
     entities = []
@@ -293,8 +294,7 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
             if value:
                 assert isinstance(value, Datapoint)
                 # self._attr_available = True
-                value = value.value
-                return value
+                return value.value
             else:
                 # self._attr_available = False
                 return None

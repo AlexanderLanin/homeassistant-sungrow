@@ -23,7 +23,7 @@ async def test_e2e_master():
         # Dump was recorded with a SH8.0RT-20 (code 3602)
         assert inv.model in [3602, "SH8.0RT-20"]
 
-        await inv.pull_data()
+        assert await inv.pull_data()
 
         # Dump was recorded on a master inverter with battery
         assert inv.data["has_battery"].value
@@ -40,7 +40,7 @@ async def test_e2e_slave():
         # Dump was recorded with a SH8.0RT-20 (code 3602)
         assert inv.model in [3602, "SH8.0RT-20"]
 
-        await inv.pull_data()
+        assert await inv.pull_data()
 
         # Dump was recorded on a slave inverter without battery
         assert "has_battery" not in inv.data
@@ -60,7 +60,7 @@ async def test_e2e_slave_unknown_model():
         # but model is manually removed from the dump.
         assert inv.model == 1
 
-        await inv.pull_data()
+        assert await inv.pull_data()
 
         # Dump was recorded on a slave inverter without battery
         assert "has_battery" not in inv.data
@@ -99,7 +99,7 @@ async def test_e2e_timestamp_removes_raw_values():
     async with e2e_setup(
         "dump_master.yaml", {"use_local_time": False, "level": 3}
     ) as inv:
-        await inv.pull_data()
+        assert await inv.pull_data()
 
         assert inv.data["timestamp"].value
         for key in ["year", "month", "day", "hour", "minute", "second"]:
@@ -108,7 +108,7 @@ async def test_e2e_timestamp_removes_raw_values():
     async with e2e_setup(
         "dump_master.yaml", {"use_local_time": True, "level": 3}
     ) as inv:
-        await inv.pull_data()
+        assert await inv.pull_data()
 
         assert inv.data["timestamp"].value
         for key in ["year", "month", "day", "hour", "minute", "second"]:

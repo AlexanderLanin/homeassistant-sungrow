@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 class ModbusError(Exception):
     """Generic error for all modbus related errors."""
 
-    pass
 
 
 class InvalidSlaveError(ModbusError):
@@ -42,7 +41,6 @@ class UnsupportedRegisterQueriedError(ModbusError):
     unsupported registers.
     """
 
-    pass
 
 
 def map_raw_to_signal(r: RawData, signal: Signal):
@@ -128,10 +126,10 @@ class ModbusConnectionBase:
 
     async def connect(self):
         # Note: for proper stats, you need to increase self._stats.connections
-        raise NotImplementedError()
+        raise NotImplementedError
 
     async def disconnect(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     async def read(
         self, signal_list: list[Signal], max_combined_registers=100
@@ -265,4 +263,4 @@ class ModbusConnectionBase:
         Note: each register is 16 bits, so `address_count` is the number of registers,
         not bytes.
         """
-        raise NotImplementedError()
+        raise NotImplementedError

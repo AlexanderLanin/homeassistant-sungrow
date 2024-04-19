@@ -17,7 +17,7 @@ import pymodbus.exceptions
 import pymodbus.framer.base
 import pymodbus.pdu
 
-import custom_components.sungrow.core.modbus_base as modbus_base
+from custom_components.sungrow.core import modbus_base
 from custom_components.sungrow.core.modbus_base import (
     ModbusConnectionBase,
     RegisterType,

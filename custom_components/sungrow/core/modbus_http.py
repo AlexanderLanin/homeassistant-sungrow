@@ -7,8 +7,7 @@ from typing import Any, cast
 
 import aiohttp
 
-import custom_components.sungrow.core.const as const
-import custom_components.sungrow.core.modbus_base as modbus_base
+from custom_components.sungrow.core import const, modbus_base
 from custom_components.sungrow.core.modbus_base import (
     ModbusConnectionBase,
     RegisterType,
@@ -130,8 +129,7 @@ class HttpConnection(ModbusConnectionBase):
             async with await self._aio_client.get(url, params=params) as r:
                 logger.debug(f"Got r response: {r}")
                 if r.status == 200:
-                    v = cast(dict, await r.json())
-                    return v
+                    return cast(dict, await r.json())
                 else:
                     raise modbus_base.ModbusError(
                         f"Invalid response from inverter: {r.status} {r.text}"
@@ -243,11 +241,11 @@ class HttpConnection(ModbusConnectionBase):
         if response["result_code"] == 1:
             return cast(dict, response["result_data"])
         elif response["result_code"] == 106:
-            raise HttpConnection.TokenExpiredError()
+            raise HttpConnection.TokenExpiredError
         elif response["result_code"] == 301:
             # Wild guess what 301 means. It's not in the official documentation.
             # Seems to work out if we retry after a reasonable delay.
-            raise HttpConnection.BusyError()
+            raise HttpConnection.BusyError
         else:
             raise modbus_base.ModbusError(f"Unknown response from inverter: {response}")
 

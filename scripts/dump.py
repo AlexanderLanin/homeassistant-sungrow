@@ -15,6 +15,7 @@ import logging
 import pickle
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
+from pathlib import Path
 
 if __package__ is None:
     # Script was executed from the command line via ./scripts/dump.py
@@ -40,7 +41,7 @@ logger = logging.getLogger(__name__)
 file_handler = logging.FileHandler("dump.log", "w")
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(
-    logging.Formatter("%(asctime)s %(name)s [%(levelname)s] %(message)s")
+    logging.Formatter("%(asctime)s %(name)s [%(levelname)s] %(message)s"),
 )
 logging.getLogger().addHandler(file_handler)
 
@@ -207,7 +208,7 @@ pickle_filename = ".dump.pickle"
 
 
 def write_pickle(task_results: list[TaskResult]):
-    with open(pickle_filename, "wb") as file:
+    with Path(pickle_filename).open("wb") as file:
         pickle.dump(task_results, file)
 
 
@@ -224,7 +225,7 @@ def write_json(task_results: list[TaskResult]):
                 return o._definitions
             return super().default(o)
 
-    with open("dump.json", "w") as file:
+    with Path("dump.json").open("w") as file:
         json.dump(task_results, file, indent=4, cls=EnhancedJSONEncoder)
 
 
@@ -237,7 +238,7 @@ async def main(hosts: list[str], cached: bool):
     task_results: list[TaskResult] | None = None
     if cached:
         try:
-            with open(pickle_filename, "rb") as f:
+            with Path(pickle_filename).open("rb") as f:
                 logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 logger.warning(f"Loading data from {pickle_filename}")
                 logger.warning("Delete this file to re-run actual connections.")
@@ -358,7 +359,7 @@ def markdown_write_file(
     all_signals: signals.SignalDefinitions,
     data_by_inverter: dict[str, list[DataPerConnection]],
 ):
-    with open(outfile, "w") as f:
+    with Path(outfile).open("w") as f:
         markdown_write_summary(f, data_by_inverter)
         markdown_write_signals(f, all_signals, data_by_inverter)
         markdown_write_raw_data(f, data_by_inverter)
@@ -371,8 +372,9 @@ def parse_arguments():
         metavar="host",
         type=str,
         nargs="+",
-        help="Hosts to query. Optionally with slave id, separated by a slash. "
-        + "Example for slave 2: 192.168.13.80/2",
+        help="Hosts to query. "
+        "Optionally with slave id, separated by a slash. "
+        "Example for slave 2: 192.168.13.80/2",
     )
     parser.add_argument(
         "--cached",

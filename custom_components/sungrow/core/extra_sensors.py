@@ -55,6 +55,7 @@ class Timestamp(_ExtraSensor):
             v = _convert_signals_to_timestamp(new_data)
             _drop_timestamp_info(new_data)
             return [Datapoint("timestamp", v, None)]
+        return None
 
 
 class AlarmTimestamp(_ExtraSensor):
@@ -64,6 +65,7 @@ class AlarmTimestamp(_ExtraSensor):
             v = _convert_signals_to_timestamp(new_data, "alarm_time_")
             _drop_timestamp_info(new_data, "alarm_time_")
             return [Datapoint("alarm_timestamp", v, None)]
+        return None
 
 
 class Mppt(_ExtraSensor):

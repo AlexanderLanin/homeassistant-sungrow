@@ -9,6 +9,8 @@ from .signals import (
 
 logger = logging.getLogger(__name__)
 
+DecodedSignals = dict[str, DatapointValueType]
+
 
 def _decode_int_signal(
     signal: SungrowSignalDefinition,
@@ -50,9 +52,8 @@ def _decode_int_signal(
 
 
 def _decode_utf8_signal(signal: SungrowSignalDefinition, raw: list[int]) -> str:
-    value = "".join([chr(c >> 8) + chr(c & 0xFF) for c in raw]).strip("\x00")
+    return "".join([chr(c >> 8) + chr(c & 0xFF) for c in raw]).strip("\x00")
 
-    return value
 
 
 def _decode_base_signal(
@@ -100,8 +101,8 @@ def decode_signal(
 def decode_signals(
     signal_list: list[SungrowSignalDefinition],
     raw_signals: MappedData,
-) -> dict[str, DatapointValueType]:
-    decoded: dict[str, DatapointValueType] = {}
+) -> DecodedSignals:
+    decoded: DecodedSignals = {}
     for signal in signal_list:
         value = raw_signals[signal.name]
         decoded[signal.name] = decode_signal(signal, value) if value else None

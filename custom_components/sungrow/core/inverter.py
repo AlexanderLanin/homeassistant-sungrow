@@ -7,12 +7,11 @@ from datetime import datetime
 from fnmatch import fnmatch
 from typing import cast
 
-import custom_components.sungrow.core.const as const
-from custom_components.sungrow.core.inverter_types import Datapoint
+from custom_components.sungrow.core import const
+from custom_components.sungrow.core.inverter_types import Sensor
 
 from . import (
     deserialize,
-    extra_sensors,
     modbus_base,
     modbus_http,
     modbus_py,
@@ -49,7 +48,7 @@ async def pull_single_signal(
 async def pull_signals(
     client: modbus_py.ModbusConnectionBase,
     signal_definitions: list[signals.SungrowSignalDefinition],
-) -> dict[str, DatapointValueType | None]:
+) -> deserialize.DecodedSignals:
     """Pull data from inverter"""
 
     pull_start = datetime.now()
@@ -109,9 +108,8 @@ def mark_unavailable_signals_as_disabled(
     # mark_signals_disabled_based_on_groups must be called after unsupported signals
     # have been marked as disabled. It will check all remaining signals for 0 or not 0.
     # Therefore filtering by level must happen after this step.
-    extra_data = all_signals.mark_signals_disabled_based_on_groups(data)
+    return all_signals.mark_signals_disabled_based_on_groups(data)
 
-    return extra_data
 
 
 def mark_signals_not_in_this_model_as_disabled(
@@ -128,21 +126,6 @@ def mark_signals_not_in_this_model_as_disabled(
         # Some models explicitly excluded
         if signal.models_exclude and has_match(model, signal.models_exclude):
             signal.disabled.append("signal not available for this model (excluded)")
-
-
-def convert_raw_data_to_datapoints(
-    raw_data: dict[str, DatapointValueType],
-    signal_list: signals.SignalDefinitions,
-):
-    data: dict[str, Datapoint] = {}
-
-    for k, v in raw_data.items():
-        definition = signal_list.get_signal_definition_by_name(k)
-        assert definition, k
-
-        data[k] = Datapoint(k, v, definition.unit_of_measurement)
-
-    return data
 
 
 def _guess_connection_classes(
@@ -193,9 +176,8 @@ class SungrowInverter:
             logger.debug(f"Trying to connect to {connection_obj}...")
             if await connection_obj.connect():
                 return connection_obj
-        else:
-            logger.debug("Failed to connect to inverter")
-            return None
+        logger.debug("Failed to connect to inverter")
+        return None
 
     @staticmethod
     async def create(
@@ -239,7 +221,8 @@ class SungrowInverter:
         """Use create() factory method!!"""
 
         self._client = client
-        self.data: dict[str, Datapoint] = {}
+        self.data: deserialize.DecodedSignals = {}
+        self.sensors: dict[str, Sensor] = {}
         self._signal_definitions = signal_definitions or signals.load_yaml()
 
         # TODO config.get("level", 1)
@@ -306,7 +289,7 @@ class SungrowInverter:
         )
         print_enabled_signals("groups filtered")
 
-    async def pull_signals(self, signal_list: list[str]):
+    async def pull_signals(self, signal_list: list[str]) -> deserialize.DecodedSignals:
         return await pull_signals(
             self._client,
             self._signal_definitions.get_signal_definitions_by_name(signal_list),
@@ -413,10 +396,37 @@ class SungrowInverter:
     async def disconnect(self):
         await self._client.disconnect()
 
-    async def pull_data(self, on_error=None):
-        """Pull data from inverter and update self.data"""
-        # TODO: drop on_error
+    def update_sensors_from_raw_data(
+        self,
+        raw_data: dict[str, DatapointValueType],
+    ):
+        for k, v in raw_data.items():
+            definition = self._signal_definitions.get_signal_definition_by_name(k)
+            assert definition, k
 
+            if k in self.sensors:
+                self.sensors[k].value = v
+            else:
+                logger.debug(f"Creating new sensor for {k}")
+                self.sensors[k] = Sensor(k, v, definition.unit_of_measurement)
+
+            # TODO: set unchanged sensors to None?!
+
+    def update_sensors_with_active_groups(self):
+        for g in self._active_groups:
+            if g in self.sensors:
+                self.sensors[g].value = self._active_groups[g]
+            else:
+                logger.debug(
+                    f"Creating new sensor for group {g} ({self._active_groups[g]})"
+                )
+                self.sensors[g] = Sensor(
+                    name=g,
+                    value=self._active_groups[g],
+                    unit_of_measurement=None,
+                )
+
+    async def pull_data(self):
         assert self._active_groups is not None, "Must be set by factory method"
 
         logger.debug(
@@ -427,28 +437,16 @@ class SungrowInverter:
             self._client, self._signal_definitions.enabled_signals()
         )
         if new_data:
-            temp = convert_raw_data_to_datapoints(new_data, self._signal_definitions)
+            self.update_sensors_from_raw_data(new_data)
+            self.update_sensors_with_active_groups()  # one time activity?
 
-            for g in self._active_groups:
-                temp[g] = Datapoint(
-                    name=g,
-                    value=self._active_groups[g],
-                    unit_of_measurement=None,
-                )
+            # FIXME
+            # extra_signals = extra_sensors.calculate(new_data)
 
-            extra_signals = extra_sensors.calculate(new_data)
-            temp.update(extra_signals)
-
-            self.data = temp
-            return self.data
+            return True
         else:
-            self.data = {}
             self.disconnect()
-
-            if isinstance(on_error, Exception):
-                raise on_error
-            else:
-                return on_error
+            return False
 
     @property
     def serial_number(self):

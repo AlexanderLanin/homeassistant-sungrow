@@ -6,6 +6,6 @@
         "signal_definitions": null,
         "raw_data": null,
         "stats": null,
-        "error": "KeyError: 'device_type_code'"
+        "error": "RuntimeError: No signals to pull"
     }
 ]
