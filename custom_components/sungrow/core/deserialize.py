@@ -55,7 +55,6 @@ def _decode_utf8_signal(signal: SungrowSignalDefinition, raw: list[int]) -> str:
     return "".join([chr(c >> 8) + chr(c & 0xFF) for c in raw]).strip("\x00")
 
 
-
 def _decode_base_signal(
     signal: SungrowSignalDefinition, raw_value: list[int]
 ) -> DatapointValueTypeBase | None:

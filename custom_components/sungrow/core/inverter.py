@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from fnmatch import fnmatch
 from typing import cast
 
@@ -29,12 +29,12 @@ async def pull_single_signal(
 ) -> DatapointValueType | None:
     """pull_raw_signals is more efficient than pull_raw_signal for multiple signals!!"""
 
-    pull_start = datetime.now()
+    pull_start = datetime.now(UTC)
     raw = (await client.read([signal]))[signal.name]
-    elapsed = datetime.now() - pull_start
+    elapsed = datetime.now(UTC) - pull_start
 
     logger.debug(
-        "Inverter: pulled data in " f"{elapsed.seconds}.{elapsed.microseconds} secs"
+        f"Inverter: pulled data in {elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
     if raw is None:
@@ -51,7 +51,7 @@ async def pull_signals(
 ) -> deserialize.DecodedSignals:
     """Pull data from inverter"""
 
-    pull_start = datetime.now()
+    pull_start = datetime.now(UTC)
 
     # Downcast to base class to make mypy happy
     signal_definitions_base = cast(list[modbus_base.Signal], signal_definitions)
@@ -76,10 +76,19 @@ async def pull_signals(
                 f"(None returned, while quering {len(signal_definitions)} signals)"
             )
 
+    raw_data = await client.read(signal_definitions_base)
+
     # Load all registers from inverer
     data = deserialize.decode_signals(
         signal_definitions,
-        raw_signals,
+        raw_data,
+    )
+
+    elapsed = datetime.now(UTC) - pull_start
+    # data["pull_time"] = f"{elapsed.seconds}.{elapsed.microseconds}"
+    logger.debug(
+        "Inverter: Successfully pulled data in "
+        f"{elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
     return data
@@ -109,7 +118,6 @@ def mark_unavailable_signals_as_disabled(
     # have been marked as disabled. It will check all remaining signals for 0 or not 0.
     # Therefore filtering by level must happen after this step.
     return all_signals.mark_signals_disabled_based_on_groups(data)
-
 
 
 def mark_signals_not_in_this_model_as_disabled(
@@ -222,7 +230,21 @@ class SungrowInverter:
 
         self._client = client
         self.data: deserialize.DecodedSignals = {}
+        """
+        All data from the inverter.
+        This is decoded data, and the same as in sensors.
+        However, sensors does not contain data,
+        which cannot be visualized in the UI (lists).
+        """
+
         self.sensors: dict[str, Sensor] = {}
+        """
+        All data from the inverter.
+        This is decoded data, and the same as in data.
+        However, sensors does not contain data,
+        which cannot be visualized in the UI (lists).
+        """
+
         self._signal_definitions = signal_definitions or signals.load_yaml()
 
         # TODO config.get("level", 1)
@@ -312,10 +334,12 @@ class SungrowInverter:
             self.data = await self.pull_signals(
                 self._signal_definitions.get_signals_for_level(0)
             )
-            return True
         except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
+            self.data = {}
             logger.debug("Error connecting to inverter")
             return False
+        else:
+            return True
 
     @property
     def is_modbus_winet(self):
@@ -401,6 +425,11 @@ class SungrowInverter:
         raw_data: dict[str, DatapointValueType],
     ):
         for k, v in raw_data.items():
+            # Skip dicts, as we cannot visualize them in the UI anyway
+            if isinstance(v, dict):
+                assert k not in self.sensors, k
+                continue
+
             definition = self._signal_definitions.get_signal_definition_by_name(k)
             assert definition, k
 
@@ -411,8 +440,11 @@ class SungrowInverter:
                 self.sensors[k] = Sensor(k, v, definition.unit_of_measurement)
 
             # TODO: set unchanged sensors to None?!
+            # TODO: set timestamp of last change? Could be different per sensor!
 
     def update_sensors_with_active_groups(self):
+        assert self._active_groups is not None, "Must be set by factory method"
+
         for g in self._active_groups:
             if g in self.sensors:
                 self.sensors[g].value = self._active_groups[g]
@@ -445,7 +477,7 @@ class SungrowInverter:
 
             return True
         else:
-            self.disconnect()
+            await self.disconnect()
             return False
 
     @property
@@ -469,11 +501,45 @@ class SungrowInverter:
 
     @property
     def slave_master_standalone(self):
-        """
-        Simple heuristic to determine if this is a master or slave inverter.
-        """
+        assert self._active_groups is not None, "Must be set by factory method"
 
-        return slave_master_standalone_str(self.data, self._active_groups)
+        master_slave_mode = self.data.get("master_slave_mode")
+        master_slave_role = self.data.get("master_slave_role")
+        slave_count = self.data.get("slave_count")
+
+        if (
+            master_slave_mode in ["Disabled", "Enabled"]
+            # isinstance str = sucessfully decoded
+            and isinstance(master_slave_role, str)
+            and slave_count is not None
+        ):
+            # Rename standalone "Master" to "Standalone"
+            if master_slave_mode == "Disabled":
+                if slave_count != 0:
+                    raise RuntimeError(
+                        "master_slave_mode is Disabled, but slave_count is not 0"
+                    )
+                if master_slave_role != "Master":
+                    raise RuntimeError(
+                        "master_slave_mode is Disabled, "
+                        "but master_slave_role is not Master"
+                    )
+                master_slave_role = "Standalone"
+
+            # Simplify "Slave 1" to "Slave" if only one slave
+            if master_slave_role == "Slave 1" and slave_count == 1:
+                master_slave_role = "Slave"
+
+            return master_slave_role
+
+        # if master_slave_mode is not available, we can try to guess...
+        if self._active_groups.get("is_master"):
+            if self.data.get("output_type", "2P") == "2P":
+                return "Standalone"
+            else:
+                return "Master"
+        else:
+            return "Slave"
 
     @property
     def connection_mode(self):
@@ -484,29 +550,4 @@ class SungrowInverter:
         elif isinstance(self._client, modbus_py.PymodbusConnection):
             return "modbus" + suffix
         else:
-            raise RuntimeError("Unknown connection type")
-
-
-def slave_master_standalone_str(initial_data, active_groups=None):
-    # TODO: this can actually change at runtime, it's not a static property!
-
-    if initial_data.get("master_slave_mode") == "Disabled":
-        return "Standalone"
-    elif initial_data.get("master_slave_mode") == "Enabled":
-        if initial_data.get("master_slave_role") == "Master":
-            return "Master"
-        else:
-            # ToDo: mulitple slaves
-            return "Slave"
-    elif active_groups is not None:
-        # Data not available. Fall back to heuristic.
-        # TODO This should somehow be reported back with a registers dump...
-        if active_groups.get("is_master"):
-            if initial_data.get("output_type", "2P") == "2P":
-                return "Standalone"
-            else:
-                return "Master"
-        else:
-            return "Slave"
-    else:
-        return initial_data["serial_number"]
+            raise TypeError("Unknown connection type")

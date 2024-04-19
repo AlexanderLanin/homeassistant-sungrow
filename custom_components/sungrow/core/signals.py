@@ -134,10 +134,10 @@ class SignalDefinitions:
     def get_signal_definition_by_name(self, name: str):
         # Note: differentiating between read and hold registers is not needed here.
         # They do not overlap.
-        return self._definitions.get(name)
+        return self._definitions[name]
 
     def get_signal_definitions_by_name(self, names: list[str]):
-        return [self._definitions.get(name) for name in names]
+        return [self._definitions[name] for name in names]
 
     def disable_winet_signals(self):
         """

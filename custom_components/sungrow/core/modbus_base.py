@@ -23,7 +23,6 @@ class ModbusError(Exception):
     """Generic error for all modbus related errors."""
 
 
-
 class InvalidSlaveError(ModbusError):
     pass
 
@@ -40,7 +39,6 @@ class UnsupportedRegisterQueriedError(ModbusError):
     never forwared to the user. Instead, the implementation will return None for the
     unsupported registers.
     """
-
 
 
 def map_raw_to_signal(r: RawData, signal: Signal):
@@ -221,8 +219,6 @@ class ModbusConnectionBase:
             # Try reading the entire range at once.
             # Usually this will work, except at startup.
             data = await self._call_read_raw(reg_range)
-            self.stats.retrieved_signals_success += len(signal_list)
-            return data
         except UnsupportedRegisterQueriedError:
             for signal in signal_list:
                 self.stats.retrieved_signals_failed += 1
@@ -233,6 +229,9 @@ class ModbusConnectionBase:
                 self._problematic_registers[signal.register_type].append(signal.address)
 
             return {r: None for r in range(reg_range.start, reg_range.end)}
+        else:
+            self.stats.retrieved_signals_success += len(signal_list)
+            return data
 
     @staticmethod
     def _get_signals_in_a_register_range(
