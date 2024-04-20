@@ -17,11 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 class HttpConnection(ModbusConnectionBase):
-    def __init__(
-        self, host: str, slave: int, port: int = const.SUNGROW_DEFEAULT_HTTP_PORT
-    ):
-        _ = slave  # unused
-        super().__init__(host, port, 0)  # FIXME: slave is not used. Remove from Base?
+    def __init__(self, host: str, port: int = const.SUNGROW_DEFEAULT_HTTP_PORT):
+        super().__init__(host, port)
 
         self._aio_client = aiohttp.ClientSession()
         self._ws: aiohttp.client.ClientWebSocketResponse | None = None

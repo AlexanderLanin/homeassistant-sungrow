@@ -133,7 +133,7 @@ class SignalDefinitions:
 
     def get_signal_definition_by_name(self, name: str):
         # Note: differentiating between read and hold registers is not needed here.
-        # They do not overlap.
+        # Names do not overlap.
         return self._definitions[name]
 
     def get_signal_definitions_by_name(self, names: list[str]):

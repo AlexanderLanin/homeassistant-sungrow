@@ -128,14 +128,16 @@ class PymodbusConnection(ModbusConnectionBase):
 
         await self._throttle()
 
+        read_registers = {
+            RegisterType.READ: self._client.read_input_registers,
+            RegisterType.HOLD: self._client.read_holding_registers,
+        }[register_type]
         try:
-            func = {
-                RegisterType.READ: self._client.read_input_registers,
-                RegisterType.HOLD: self._client.read_holding_registers,
-            }[register_type]
             # Note: sending address = protocol address - 1.
             # This is the only line in the module that needs to know about this detail!
-            rr = await func(address_start - 1, count=address_count, slave=self._slave)  # type: ignore
+            rr: pymodbus.pdu.ModbusResponse = await read_registers(
+                address_start - 1, count=address_count, slave=self._slave
+            )  # type: ignore
         except pymodbus.exceptions.ModbusIOException as e:
             raise modbus_base.ModbusError("Unknown IO Error") from e
 
@@ -174,6 +176,8 @@ class PymodbusConnection(ModbusConnectionBase):
                     return x
             else:
                 raise modbus_base.ModbusError(f"Unknown error response: {rr}")
+
+        assert isinstance(rr.registers, list)  # for mypy
 
         if len(rr.registers) != address_count:
             raise modbus_base.ModbusError(
