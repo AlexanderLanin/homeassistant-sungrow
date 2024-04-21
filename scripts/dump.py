@@ -33,8 +33,8 @@ from custom_components.sungrow.core.modbus_types import (
     RegisterType,
 )
 
-logging.basicConfig(level=logging.INFO)
-# logging.getLogger("pymodbus").setLevel(logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("pymodbus").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Log DEBUG to file.
@@ -143,7 +143,9 @@ def get_sn_from_raw_data(
     signal_definitions: signals.SignalDefinitions,
 ) -> str:
     sn_signal = signal_definitions.get_signal_definition_by_name("serial_number")
-    raw_sn = modbus_base.map_raw_to_signal(raw_data[sn_signal.register_type], sn_signal)
+    raw_sn = modbus_base.map_raw_to_signal(
+        raw_data[sn_signal.registers.register_type], sn_signal
+    )
     assert raw_sn
     sn = deserialize.decode_signal(sn_signal, raw_sn)
     assert isinstance(sn, str)
@@ -175,7 +177,7 @@ def merge_by_inverter(results: list[TaskResult]):
             print(d.signal_definitions.get_signal_definition_by_name("serial_number"))
             print(dpc.mapped_data["serial_number"])
             dpc.decoded = deserialize.decode_signals(
-                d.signal_definitions.enabled_modbus_signals(), dpc.mapped_data
+                d.signal_definitions.enabled_signals(), dpc.mapped_data
             )
             print(dpc.decoded)
             sn = dpc.decoded["serial_number"]

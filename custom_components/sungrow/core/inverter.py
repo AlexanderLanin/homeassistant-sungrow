@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import UTC, datetime
+from datetime import datetime
 from fnmatch import fnmatch
 from typing import cast
 
@@ -29,12 +29,12 @@ async def pull_single_signal(
 ) -> DatapointValueType | None:
     """pull_raw_signals is more efficient than pull_raw_signal for multiple signals!!"""
 
-    pull_start = datetime.now(UTC)
+    pull_start = datetime.now()
     raw = (await client.read([signal]))[signal.name]
-    elapsed = datetime.now(UTC) - pull_start
+    elapsed = datetime.now() - pull_start
 
     logger.debug(
-        f"Inverter: pulled data in {elapsed.seconds}.{elapsed.microseconds} secs"
+        f"Inverter: pulled single signal in {elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
     if raw is None:
@@ -51,7 +51,7 @@ async def pull_signals(
 ) -> deserialize.DecodedSignals:
     """Pull data from inverter"""
 
-    pull_start = datetime.now(UTC)
+    pull_start = datetime.now()
 
     # Downcast to base class to make mypy happy
     signal_definitions_base = cast(list[modbus_base.Signal], signal_definitions)
@@ -60,7 +60,7 @@ async def pull_signals(
     elapsed = datetime.now() - pull_start
 
     logger.debug(
-        f"Inverter: Pulled data in {elapsed.seconds}.{elapsed.microseconds} secs"
+        f"Inverter: Pulled {len(signal_definitions)} signals in {elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
     for name, value in raw_signals.items():
@@ -78,20 +78,10 @@ async def pull_signals(
 
     raw_data = await client.read(signal_definitions_base)
 
-    # Load all registers from inverer
-    data = deserialize.decode_signals(
+    return deserialize.decode_signals(
         signal_definitions,
         raw_data,
     )
-
-    elapsed = datetime.now(UTC) - pull_start
-    # data["pull_time"] = f"{elapsed.seconds}.{elapsed.microseconds}"
-    logger.debug(
-        "Inverter: Successfully pulled data in "
-        f"{elapsed.seconds}.{elapsed.microseconds} secs"
-    )
-
-    return data
 
 
 def mark_unavailable_signals_as_disabled(
@@ -211,6 +201,8 @@ class SungrowInverter:
             await inv.disconnect()
             return None
 
+        assert inv.data, "Data should be available after initial query"
+
         logger.debug(f"Initial data: {inv.data}")
         logger.debug(
             "Connected to inverter "
@@ -298,7 +290,7 @@ class SungrowInverter:
         # We now need to pull all data which belongs to a group,
         # so we can detect groups which do not apply, like "has_battery".
         query = [
-            signal.name
+            signal
             for signal in self._signal_definitions._definitions.values()
             if signal.group and not signal.disabled and signal.name not in self.data
         ]
@@ -311,10 +303,19 @@ class SungrowInverter:
         )
         print_enabled_signals("groups filtered")
 
-    async def pull_signals(self, signal_list: list[str]) -> deserialize.DecodedSignals:
+    async def pull_signals_by_name(
+        self, signal_list: list[str]
+    ) -> deserialize.DecodedSignals:
+        return await self.pull_signals(
+            self._signal_definitions.get_signal_definitions_by_name(signal_list),
+        )
+
+    async def pull_signals(
+        self, signal_list: list[signals.SungrowSignalDefinition]
+    ) -> deserialize.DecodedSignals:
         return await pull_signals(
             self._client,
-            self._signal_definitions.get_signal_definitions_by_name(signal_list),
+            signal_list,
         )
 
     async def pull_single_signal(self, signal_name: str):
@@ -331,9 +332,9 @@ class SungrowInverter:
         self._client.slave = slave
 
         try:
-            self.data = await self.pull_signals(
-                self._signal_definitions.get_signals_for_level(0)
-            )
+            signal_list = self._signal_definitions.get_active_signals_for_level(0)
+            logger.debug(f"Querying initial signals: {[s.name for s in signal_list]}")
+            self.data = await self.pull_signals(signal_list)
         except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
             self.data = {}
             logger.debug("Error connecting to inverter")

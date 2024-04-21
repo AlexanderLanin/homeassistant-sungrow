@@ -17,8 +17,8 @@ def sorted_and_filtered(
     signals: list[Signal], register_type: RegisterType
 ) -> list[Signal]:
     return sorted(
-        filter(lambda s: s.register_type == register_type, signals),
-        key=lambda s: s.address,
+        filter(lambda s: s.registers.register_type == register_type, signals),
+        key=lambda s: s.registers.start,
     )
 
 
@@ -32,12 +32,16 @@ def can_add(
     if not current_range:
         return True
 
-    if signal.end - current_range[0].address > max_registers_per_range:
+    if (
+        signal.registers.end - current_range[0].registers.start
+        > max_registers_per_range
+    ):
         return False
 
+    # TODO: idea: add "ever_received" to each signal, only merge if ever received.
     anything_blocked = any(
         addr in blocked_registers
-        for addr in range(current_range[-1].end, signal.address)
+        for addr in range(current_range[-1].registers.end, signal.registers.start)
     )
 
     if anything_blocked:

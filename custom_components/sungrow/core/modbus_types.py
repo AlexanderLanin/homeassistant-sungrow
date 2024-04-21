@@ -27,24 +27,27 @@ class RegisterRange:
     def __str__(self):
         return f"Range({self.register_type}, {self.start}-{self.end-1})"
 
+    def contains(self, other: "RegisterRange") -> bool:
+        return (
+            self.register_type == other.register_type
+            and other.start >= self.start
+            and other.end <= self.end
+        )
+
 
 @dataclass
 class Signal:
     name: str
-    # TODO: use RegisterRange? However we don't know the length at construction time.
-    register_type: RegisterType
-    address: int
-    element_length: int
-    array_length: int
+    registers: RegisterRange
 
-    @property
-    def length(self):
-        return self.element_length * self.array_length
+    # length_of_array: int | None
+    # """None if not an array"""
 
-    @property
-    def end(self):
-        """The address after the last address of the signal."""
-        return self.address + self.length
+    def contains(self, registers: RegisterRange) -> bool:
+        return self.registers.contains(registers)
+
+    def contained_in(self, registers: RegisterRange) -> bool:
+        return registers.contains(self.registers)
 
 
 # In case the register is not supported, the value is None

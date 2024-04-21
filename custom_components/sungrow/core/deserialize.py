@@ -51,7 +51,7 @@ def _decode_int_signal(
             return int_value
 
 
-def _decode_utf8_signal(signal: SungrowSignalDefinition, raw: list[int]) -> str:
+def _decode_utf8_signal(raw: list[int]) -> str:
     return "".join([chr(c >> 8) + chr(c & 0xFF) for c in raw]).strip("\x00")
 
 
@@ -70,18 +70,26 @@ def _decode_base_signal(
 def _decode_array_signal(
     signal: SungrowSignalDefinition, raw_value: list[int]
 ) -> dict[int, DatapointValueTypeBase] | str:
-    assert signal.array_length > 1
+    assert signal.array_length
+
+    element_length = signal.registers.length / signal.array_length
+    if element_length != int(element_length):
+        raise RuntimeError(
+            f"Invalid yaml for {signal.name}: "
+            "array length must be a multiple of the register length"
+        )
+    element_length = int(element_length)
 
     if signal.base_datatype == "UTF-8":
         # raw_value is a list of registers (ints)
-        return _decode_utf8_signal(signal, raw_value)
+        return _decode_utf8_signal(raw_value)
     else:
         data: dict[int, DatapointValueTypeBase] = {}
         for i in range(signal.array_length):
-            start = i * signal.element_length
+            start = i * element_length
             data[i] = _decode_base_signal(
                 signal,
-                raw_value[start : start + signal.element_length],
+                raw_value[start : start + element_length],
             )
 
         return data

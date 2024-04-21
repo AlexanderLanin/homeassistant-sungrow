@@ -6,6 +6,6 @@
         "signal_definitions": null,
         "raw_data": null,
         "stats": null,
-        "error": "RuntimeError: No signals to pull"
+        "error": "ValueError: Signal array_insulation_resistance is not fully supported"
     }
 ]

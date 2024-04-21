@@ -22,6 +22,7 @@ from custom_components.sungrow.core.modbus_base import (
     ModbusConnectionBase,
     RegisterType,
 )
+from custom_components.sungrow.core.modbus_types import RegisterRange
 
 logger = logging.getLogger(__name__)
 
@@ -107,9 +108,7 @@ class PymodbusConnection(ModbusConnectionBase):
 
     async def _read_range(  # noqa: C901 (Error handling here is complex, nothing we can do about it)
         self,
-        register_type: RegisterType,
-        address_start: int,
-        address_count: int,
+        register_range: RegisterRange,
         recursion=False,
     ) -> list[int]:
         """
@@ -120,7 +119,7 @@ class PymodbusConnection(ModbusConnectionBase):
         """
         assert self._slave is not None, "Slave ID not set"
 
-        logger.debug(f"_read_range({register_type}, {address_start}, {address_count})")
+        logger.debug(f"_read_range({register_range=}, {recursion=})")
         if not await self.connect():
             raise modbus_base.CannotConnectError(
                 "Cannot connect to inverter for reading"
@@ -131,12 +130,12 @@ class PymodbusConnection(ModbusConnectionBase):
         read_registers = {
             RegisterType.READ: self._client.read_input_registers,
             RegisterType.HOLD: self._client.read_holding_registers,
-        }[register_type]
+        }[register_range.register_type]
         try:
             # Note: sending address = protocol address - 1.
             # This is the only line in the module that needs to know about this detail!
             rr: pymodbus.pdu.ModbusResponse = await read_registers(
-                address_start - 1, count=address_count, slave=self._slave
+                register_range.start - 1, count=register_range.length, slave=self._slave
             )  # type: ignore
         except pymodbus.exceptions.ModbusIOException as e:
             raise modbus_base.ModbusError("Unknown IO Error") from e
@@ -148,28 +147,22 @@ class PymodbusConnection(ModbusConnectionBase):
                 )
             elif rr.exception_code == pymodbus.pdu.ModbusExceptions.IllegalAddress:
                 raise modbus_base.UnsupportedRegisterQueriedError(
-                    f"Inverter does not support {address_start}-"
-                    f"{address_start+address_count}: {rr}"
+                    f"Inverter does not support {register_range}: {rr}"
                 )
             elif rr.exception_code == pymodbus.pdu.ModbusExceptions.SlaveFailure:
                 # Deprecated? Do we need this?
                 if recursion:
                     logger.warning(
-                        "Slave failure on %s %s-%s: %s. Please inform the developer.",
-                        register_type,
-                        address_start,
-                        address_start + address_count,
+                        "Slave failure on %s: %s. Please inform the developer.",
+                        register_range,
                         rr,
                     )
                     raise modbus_base.ModbusError(
-                        f"Slave failure on {register_type} "
-                        f"{address_start}-{address_start+address_count}: {rr}"
+                        f"Slave failure on {register_range}: {rr}"
                     )
                 else:
                     x = await self._read_range(
-                        register_type=register_type,
-                        address_start=address_start,
-                        address_count=address_count,
+                        register_range,
                         recursion=True,
                     )
                     assert isinstance(x, list)  # for mypy
@@ -179,10 +172,10 @@ class PymodbusConnection(ModbusConnectionBase):
 
         assert isinstance(rr.registers, list)  # for mypy
 
-        if len(rr.registers) != address_count:
+        if len(rr.registers) != register_range.length:
             raise modbus_base.ModbusError(
                 f"Mismatched number of registers "
-                f"(requested {address_count}) and responded {len(rr.registers)})"
+                f"(requested {register_range}) and responded {len(rr.registers)})"
             )
 
         self._ever_succeeded = True

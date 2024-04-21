@@ -43,12 +43,13 @@ class UnsupportedRegisterQueriedError(ModbusError):
 
 def map_raw_to_signal(r: RawData, signal: Signal):
     # We'll use the first register to check if signal is supported.
-    if r[signal.address] is None:
-        return None
+    if r[signal.registers.start] is None:
+        # return None
+        raise ValueError(f"Signal {signal.name} is not fully supported")
     else:
         result: list[int] = []
-        for i in range(signal.length):
-            v = r[signal.address + i]
+        for i in range(signal.registers.length):
+            v = r[signal.registers.start + i]
             if v is None:
                 raise ValueError(f"Signal {signal.name} is not fully supported")
             result.append(v)
@@ -64,24 +65,9 @@ def map_raw_to_signals(
     But for some less common use cases it might be useful to call this directly
     """
     return {
-        signal.name: map_raw_to_signal(raw_data[signal.register_type], signal)
+        signal.name: map_raw_to_signal(raw_data[signal.registers.register_type], signal)
         for signal in signal_list
     }
-
-
-def signals_overlapping_range(
-    signals: list[Signal], range: RegisterRange
-) -> list[Signal]:
-    """
-    Returns a list of signals that partially overlap with the given range.
-    """
-    return [
-        signal
-        for signal in signals
-        if signal.register_type == range.register_type
-        and signal.address < range.end
-        and signal.end > range.start
-    ]
 
 
 class ModbusConnectionBase:
@@ -153,19 +139,18 @@ class ModbusConnectionBase:
                 f"read_raw({len(signal_list)} signals) in {len(ranges)} ranges"
             )
             for r in ranges:
-                logger.debug(f"* {r[0].register_type} {r[0].address} - {r[-1].end}")
+                logger.debug(
+                    f"* {r[0].registers.register_type} "
+                    f"{r[0].registers.start} - {r[-1].registers.end}"
+                )
         else:
             logger.debug(f"read_raw({[s.name for s in signal_list]})")
 
         # Read each range
         raw_data: dict[RegisterType, RawData] = {r: {} for r in RegisterType}
-        for range in ranges:
-            # Sometimes a single signal will not fit within max_combined_registers.
-            # In such cases max_combined_registers will be ignored.
-            # assert range[-1].end - range[0].address <= max_combined_registers
-
-            values = await self._read_range_base(range)
-            raw_data[range[0].register_type].update(values)
+        for signal_list in ranges:
+            values = await self._read_range_base(signal_list)
+            raw_data[signal_list[0].registers.register_type].update(values)
 
         return raw_data
 
@@ -181,24 +166,20 @@ class ModbusConnectionBase:
         logger.debug(f"__aexit__({self._host}, {self._port}, {self._slave})")
         await self.disconnect()
 
-    async def _call_read_raw(self, range: RegisterRange) -> RawData:
+    async def _call_read_raw(self, r: RegisterRange) -> RawData:
         """Wrapper for _read_range() that returns RawData."""
-        # logger.debug(f"_call_read_raw({range})")
+        # logger.debug(f"_call_read_raw({r})")
 
         # _read_range() is implemented by the subclass.
         # It's returning a list of registers, so we need to map it.
         try:
-            raw_list = await self._read_range(
-                register_type=range.register_type,
-                address_start=range.start,
-                address_count=range.length,
-            )
+            raw_list = await self._read_range(r)
             self._stats.read_calls_success += 1
         except Exception:
             self._stats.read_calls_failed += 1
             raise
 
-        raw_dict: RawData = {range.start + i: value for i, value in enumerate(raw_list)}
+        raw_dict: RawData = {r.start + i: value for i, value in enumerate(raw_list)}
         return raw_dict
 
     async def _read_range_base(self, signal_list: list[Signal]) -> RawData:
@@ -209,9 +190,9 @@ class ModbusConnectionBase:
         assert signal_list
 
         reg_range = RegisterRange(
-            signal_list[0].register_type,
-            signal_list[0].address,
-            signal_list[-1].end - signal_list[0].address,
+            signal_list[0].registers.register_type,
+            signal_list[0].registers.start,
+            signal_list[-1].registers.end - signal_list[0].registers.start,
         )
         # logger.debug(f"_read_range_base({reg_range})")
 
@@ -223,39 +204,18 @@ class ModbusConnectionBase:
             for signal in signal_list:
                 self.stats.retrieved_signals_failed += 1
                 logger.debug(
-                    "Unuspported Register: "
-                    f"{signal.name} ({signal.address} - {signal.end})"
+                    f"Unuspported Register: {signal.name} ({signal.registers})"
                 )
-                self._problematic_registers[signal.register_type].append(signal.address)
+                self._problematic_registers[signal.registers.register_type].append(
+                    signal.registers.start
+                )
 
             return {r: None for r in range(reg_range.start, reg_range.end)}
         else:
             self.stats.retrieved_signals_success += len(signal_list)
             return data
 
-    @staticmethod
-    def _get_signals_in_a_register_range(
-        signals: list[Signal], register_range: RegisterRange
-    ) -> list[Signal]:
-        """
-        Returns a list of signals that are fully contained in the given register range.
-        """
-        # TODO: would it be simpler to store the signals within RegisterRange?
-        return [
-            signal
-            for signal in signals
-            # TODO: is_index_in_range(). See other TODO.
-            if signal.register_type == register_range.register_type
-            and signal.address >= register_range.start
-            and signal.end <= register_range.end
-        ]
-
-    async def _read_range(
-        self,
-        register_type: RegisterType,
-        address_start: int,
-        address_count: int,
-    ) -> list[int]:
+    async def _read_range(self, register_range: RegisterRange) -> list[int]:
         """
         Reads `address_count` registers of type `register_type` starting at
         `address_start`.

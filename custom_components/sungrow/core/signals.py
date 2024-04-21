@@ -11,6 +11,8 @@ from typing import cast
 
 import yaml
 
+from custom_components.sungrow.core.modbus_types import RegisterRange
+
 from .modbus_base import Signal  # ToDo: signal imports Signal sounds wrong :D
 from .modbus_py import RegisterType
 
@@ -46,16 +48,8 @@ class SungrowSignalDefinition(Signal):
     level: int | None
     base_datatype: str | None = None
 
-    def __post_init__(self):
-        if self.base_datatype in ["U16", "S16", "UTF-8"]:
-            self.element_length = 1
-        elif self.base_datatype in ["U32", "S32"]:
-            self.element_length = 2
-        else:
-            raise RuntimeError(
-                "Unknown datatype (expected U16, S16, U32, S32 or UTF-8, "
-                f"not {self.base_datatype})"
-            )
+    array_length: int | None = None
+    """ Length of the array. None if not an array. """
 
     @property
     def na_value(self):
@@ -90,46 +84,21 @@ class SignalDefinitions:
     def all_modbus_signals(self):
         return cast(list[Signal], list(self._definitions.values()))
 
-    def get_signal_definitions_by_address_included(
-        self,
-        register_type: RegisterType,
-        address: int,
-        count: int = 1,
-    ):
-        match: list[SungrowSignalDefinition] = []
-        for signal in self._definitions.values():
-            if (
-                signal.register_type == register_type
-                and signal.address >= address
-                and signal.address + signal.length <= address + count
-            ):
-                match.append(signal)
-        return match
+    def get_all_signals_contained_in_registers(self, registers: RegisterRange):
+        return [
+            signal
+            for signal in self._definitions.values()
+            if signal.contained_in(registers)
+        ]
 
-    def get_signal_definitions_by_address_overlaps(
-        self,
-        register_type: RegisterType,
-        address: int,
-        count: int = 1,
-    ):
-        match: list[SungrowSignalDefinition] = []
-        for signal in self._definitions.values():
-            if (
-                signal.register_type == register_type
-                and signal.address < address + count
-                and signal.address + signal.length > address
-            ):
-                match.append(signal)
-        return match
-
-    def get_signals_for_level(self, level: int):
-        """Return all signals that are enabled on the given level."""
-
-        match: list[str] = []
-        for signal in self._definitions.values():
-            if signal.level and signal.level <= level and not signal.disabled:
-                match.append(signal.name)
-        return match
+    def get_active_signals_for_level(self, level: int):
+        return [
+            signal
+            for signal in self._definitions.values()
+            if signal.level is not None
+            and signal.level <= level
+            and not signal.disabled
+        ]
 
     def get_signal_definition_by_name(self, name: str):
         # Note: differentiating between read and hold registers is not needed here.
@@ -209,21 +178,6 @@ class SignalDefinitions:
                 )
 
 
-def type_or_none(t: type, v):
-    if v is None:
-        return None
-    else:
-        return t(v)
-
-
-def get(d: dict, t: type, v):
-    val = d.get(v)
-    if val is None:
-        return None
-    else:
-        return t(val)
-
-
 def _parse_base_datatype(data_type: str):
     """Return the datatype without length"""
 
@@ -235,18 +189,19 @@ def _parse_array_length(data_type: str):
     """Return the length of the array"""
 
     parts = data_type.split("[")
-    if len(parts) > 1:
-        length = int(parts[1][:-1])
-        if length <= 0 or length >= 255:
-            raise RuntimeError(
-                "Invalid yaml: "
-                "expected DATATYPE[<length>] with length being a number between "
-                f"1 and 255, e.g. UTF-8[10], instead of {data_type}"
-            )
-        else:
-            return length
-    else:
-        return 1
+    if len(parts) == 1:
+        # Not an array
+        return None
+
+    length = int(parts[1][:-1])
+    if length <= 0 or length >= 255:
+        raise RuntimeError(
+            "Invalid yaml: "
+            "expected DATATYPE[<length>] with length being a number between "
+            f"1 and 255, e.g. UTF-8[10], instead of {data_type}"
+        )
+
+    return length
 
 
 def load_yaml() -> SignalDefinitions:
@@ -255,25 +210,47 @@ def load_yaml() -> SignalDefinitions:
     For parsing other formats, see script_sync_yaml.py
     """
     pwd = Path(__file__).parent.absolute()
-    with open(pwd / "registers-sungrow.yaml", encoding="utf-8") as f:
+    with Path(pwd / "registers-sungrow.yaml").open(encoding="utf-8") as f:
         data = yaml.safe_load(f)
+
+    if not isinstance(data, dict):
+        raise TypeError("Invalid yaml: expected a dictionary as root element")
 
     all_signals: dict[str, SungrowSignalDefinition] = {}
 
-    for register_type in ["read", "hold"]:
-        for entry in data[register_type]:
+    for register_type in [RegisterType.READ, RegisterType.HOLD]:
+        for entry in data[str(register_type)]:
             assert isinstance(entry, dict)
+
+            def get(type_, key: str):
+                if key in entry:
+                    return type_(entry[key])
+                return None
 
             group = entry.get("group", None)
             if group is not None and isinstance(group, str):
                 group = [group]
 
+            array_length: None | int = _parse_array_length(entry["data_type"])
+            base_datatype = _parse_base_datatype(entry["data_type"])
+
+            if base_datatype in ["U16", "S16", "UTF-8"]:
+                base_datatype_length = 1
+            elif base_datatype in ["U32", "S32"]:
+                base_datatype_length = 2
+            else:
+                raise RuntimeError(
+                    "Unknown datatype (expected U16, S16, U32, S32 or UTF-8, "
+                    f"not {base_datatype})"
+                )
+
+            if array_length is None:
+                array_length = 1
+
             signal = SungrowSignalDefinition(
                 name=entry["name"],
-                register_type=RegisterType(register_type),
-                address=entry["address"],
-                unit_of_measurement=entry.get("unit_of_measurement", None),
-                accuracy=type_or_none(float, entry.get("accuracy")),
+                unit_of_measurement=entry.get("unit_of_measurement"),
+                accuracy=get(float, "accuracy"),
                 mask=entry.get("mask"),
                 decoded=entry.get("decoded"),
                 models=entry.get("models"),
@@ -281,9 +258,13 @@ def load_yaml() -> SignalDefinitions:
                 group=group,
                 disabled=[],
                 level=entry.get("level"),
-                array_length=_parse_array_length(entry["data_type"]),
-                base_datatype=_parse_base_datatype(entry["data_type"]),
-                element_length=0,  # will be set later
+                array_length=array_length,
+                base_datatype=base_datatype,
+                registers=RegisterRange(
+                    register_type=RegisterType(register_type),
+                    start=entry["address"],
+                    length=array_length * base_datatype_length,
+                ),
             )
 
             if signal.decoded:

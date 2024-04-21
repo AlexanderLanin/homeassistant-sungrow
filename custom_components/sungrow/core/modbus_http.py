@@ -12,6 +12,7 @@ from custom_components.sungrow.core.modbus_base import (
     ModbusConnectionBase,
     RegisterType,
 )
+from custom_components.sungrow.core.modbus_types import RegisterRange
 
 logger = logging.getLogger(__name__)
 
@@ -136,10 +137,7 @@ class HttpConnection(ModbusConnectionBase):
             raise modbus_base.ModbusError(f"Connection Failed: {e}") from e
 
     def _build_address_for_register_query(
-        self,
-        address_start: int,
-        address_count: int,
-        register_type: modbus_base.RegisterType,
+        self, rr: RegisterRange
     ) -> tuple[str, dict[str, str | int]]:
         assert self._inverter
         assert self._token
@@ -163,9 +161,9 @@ class HttpConnection(ModbusConnectionBase):
             "dev_type": self._inverter["dev_type"],
             "dev_code": self._inverter["dev_code"],
             "type": "3",  # todo: Why 3?
-            "param_addr": address_start,
-            "param_num": address_count,
-            "param_type": param_types[register_type],
+            "param_addr": rr.start,
+            "param_num": rr.length,
+            "param_type": param_types[rr.register_type],
             "token": self._token,
             "lang": "en_us",
             "time123456": int(time.time()),
@@ -191,18 +189,11 @@ class HttpConnection(ModbusConnectionBase):
         else:
             raise modbus_base.ModbusError(f"Unknown response from inverter: {response}")
 
-    async def _query_http_json_old(
-        self,
-        address_start: int,
-        address_count: int,
-        register_type: modbus_base.RegisterType,
-    ):
+    async def _query_http_json_old(self, rr: RegisterRange):
         if not await self.connect():
             raise modbus_base.CannotConnectError("Connection failed")
 
-        url, params = self._build_address_for_register_query(
-            address_start, address_count, register_type
-        )
+        url, params = self._build_address_for_register_query(rr)
         parsed = self._parse_sungrow_response_old(await self._get_json(url, params))
 
         if isinstance(parsed, HttpConnection.ErrorResponse):
@@ -246,21 +237,14 @@ class HttpConnection(ModbusConnectionBase):
         else:
             raise modbus_base.ModbusError(f"Unknown response from inverter: {response}")
 
-    async def _query_http_json(
-        self,
-        address_start: int,
-        address_count: int,
-        register_type: modbus_base.RegisterType,
-    ):
+    async def _query_http_json(self, rr: RegisterRange):
         # Note: refactor into for _attempt in range(3).
         # But this is not done yet to make this lool exactly like the old code.
 
         if not await self.connect():
             raise modbus_base.CannotConnectError("Connection failed")
 
-        url, params = self._build_address_for_register_query(
-            address_start, address_count, register_type
-        )
+        url, params = self._build_address_for_register_query(rr)
         try:
             parsed = self._parse_sungrow_response(await self._get_json(url, params))
         except HttpConnection.TokenExpiredError:
@@ -271,9 +255,7 @@ class HttpConnection(ModbusConnectionBase):
                     "Cannot reconnect for new token"
                 ) from None
             # Rebuild query with new token
-            url, params = self._build_address_for_register_query(
-                address_start, address_count, register_type
-            )
+            url, params = self._build_address_for_register_query(rr)
             parsed = self._parse_sungrow_response(await self._get_json(url, params))
         except HttpConnection.BusyError:
             # retry after a delay
@@ -282,25 +264,18 @@ class HttpConnection(ModbusConnectionBase):
 
         return parsed
 
-    async def _read_range(
-        self,
-        register_type: RegisterType,
-        address_start: int,
-        address_count: int,
-    ) -> list[int]:
+    async def _read_range(self, r: RegisterRange) -> list[int]:
         """Raises modbus.CannotConnectError on WiNet misbehavior."""
 
         # Note: websocket does not allow access to all possible registers.
         # Not quite clear whether it's worth the effort to query some via websocket and
         # only the rest via http.
 
-        response_json = await self._query_http_json(
-            address_start, address_count, register_type
-        )
+        response_json = await self._query_http_json(r)
 
         logger.debug(f"Got data: {response_json}")
 
-        return _parse_modbus_data(response_json, address_count)
+        return _parse_modbus_data(response_json, r.length)
 
     def __str__(self):
         return f"http({self._host}:{self._port}, slave: {self._slave or 'unknown'})"
