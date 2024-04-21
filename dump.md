@@ -2,7 +2,7 @@
 
 | SN | Host | Mode | Read Calls | Errors |
 | --- | --- | --- | --- | --- |
-| A2350415770 | 192.168.13.58/1 | modbus WiNet | ModbusConnectionBase.Stats(connections=1, read_calls_success=10, read_calls_failed=1, retrieved_signals_success=57, retrieved_signals_failed=1) | None |
+| A2350415770 | 192.168.13.58/1 | modbus WiNet | ModbusConnectionBase.Stats(connections=1, read_calls_success=12, read_calls_failed=1, retrieved_signals_success=95, retrieved_signals_failed=1) | None |
 
 
 # A2350415770
@@ -16,7 +16,7 @@
 | device_type_code | SH8.0RT-20 | 
 | nominal_output_power | Not supported | 
 | output_type | 3P4L | 
-| daily_output_energy_pv_and_battery | 31.8 | 
+| daily_output_energy_pv_and_battery | 32.0 | 
 | total_output_energy_pv_and_battery | Not supported | 
 | total_running_time | Not supported | 
 | internal_temperature | Not supported | 
@@ -89,10 +89,10 @@
 | pid_work_state | Not supported | 
 | pid_alarm_code | Not supported | 
 | export_power | Not supported | 
-| meter_active_power | 5 | 
-| meter_active_power_phase_a | 225 | 
-| meter_active_power_phase_b | -59 | 
-| meter_active_power_phase_c | -160 | 
+| meter_active_power | -8 | 
+| meter_active_power_phase_a | 81 | 
+| meter_active_power_phase_b | 0 | 
+| meter_active_power_phase_c | -89 | 
 | power_meter | Not supported | 
 | export_limit_min | Not supported | 
 | export_limit_max | Not supported | 
@@ -156,8 +156,8 @@
 | total_pv_generation | 1119.0 | 
 | daily_pv_export | 24.8 | 
 | total_pv_export | Not supported | 
-| load_power_hybrid | 1638 | 
-| export_power_hybrid | -7 | 
+| load_power_hybrid | 325 | 
+| export_power_hybrid | -3 | 
 | daily_battery_charge_from_pv | 2.5 | 
 | total_battery_charge_from_pv | 426.7 | 
 | co2_reduction | Not supported | 
@@ -165,12 +165,12 @@
 | total_direct_energy_consumption_ | Not supported | 
 | battery_voltage | Not supported | 
 | battery_current | Not supported | 
-| battery_power | 1631 | 
-| battery_level | 71.5 | 
+| battery_power | 322 | 
+| battery_level | 69.4 | 
 | battery_state_of_health | Not supported | 
 | battery_temperature | Not supported | 
-| daily_battery_discharge_energy | 4.4 | 
-| total_battery_discharge_energy | 800.2 | 
+| daily_battery_discharge_energy | 4.6 | 
+| total_battery_discharge_energy | 800.4 | 
 | self_consumption_of_day | 10.1 | 
 | grid_state | Not supported | 
 | phase_a_current_ | Not supported | 
@@ -265,7 +265,7 @@
 | battery_charge_stop_power | Not supported | 
 | master_slave_mode | Enabled | 
 | master_slave_role | Master | 
-| slave_count | 2 | 
+| inverter_count | 2 | 
 | weekly_discharging_start_time_1_hour | Not supported | 
 | weekly_discharging_start_time_1_minute | Not supported | 
 | weekly_discharging_end_time_1_hour | Not supported | 
@@ -311,12 +311,12 @@
 | read 5000 | 0xe12 | 
 | read 5001 | 0x50 | 
 | read 5002 | 0x1 | 
-| read 5003 | 0x13e | 
-| read 5004 | 0x38c2 | 
+| read 5003 | 0x140 | 
+| read 5004 | 0x38c4 | 
 | read 5005 | N/A | 
 | read 5006 | N/A | 
 | read 5007 | N/A | 
-| read 5008 | 0x19f | 
+| read 5008 | 0x19d | 
 | read 5009 | N/A | 
 | read 5010 | N/A | 
 | read 5011 | N/A | 
@@ -327,13 +327,13 @@
 | read 5016 | N/A | 
 | read 5017 | N/A | 
 | read 5018 | N/A | 
-| read 5601 | 0x5 | 
-| read 5602 | N/A | 
-| read 5603 | 0xe1 | 
+| read 5601 | 0xfff8 | 
+| read 5602 | 0xffff | 
+| read 5603 | 0x51 | 
 | read 5604 | N/A | 
-| read 5605 | 0xffc5 | 
-| read 5606 | 0xffff | 
-| read 5607 | 0xff60 | 
+| read 5605 | N/A | 
+| read 5606 | N/A | 
+| read 5607 | 0xffa7 | 
 | read 5608 | 0xffff | 
 | read 13002 | 0x12d | 
 | read 13003 | 0x2bb6 | 
@@ -341,9 +341,9 @@
 | read 13005 | 0xf8 | 
 | read 13006 | 0x1036 | 
 | read 13007 | N/A | 
-| read 13008 | 0x666 | 
+| read 13008 | 0x145 | 
 | read 13009 | N/A | 
-| read 13010 | 0xfff9 | 
+| read 13010 | 0xfffd | 
 | read 13011 | 0xffff | 
 | read 13012 | 0x19 | 
 | read 13013 | 0x10ab | 
@@ -353,21 +353,21 @@
 | read 13017 | 0x1c | 
 | read 13018 | 0xad5 | 
 | read 13019 | N/A | 
-| read 13020 | 0x7a3 | 
-| read 13021 | 0x5a | 
-| read 13022 | 0x65f | 
-| read 13023 | 0x2cb | 
+| read 13020 | 0x7b7 | 
+| read 13021 | 0x15 | 
+| read 13022 | 0x142 | 
+| read 13023 | 0x2b6 | 
 | read 13024 | 0x3de | 
 | read 13025 | 0xdc | 
-| read 13026 | 0x2c | 
-| read 13027 | 0x1f42 | 
+| read 13026 | 0x2e | 
+| read 13027 | 0x1f44 | 
 | read 13028 | N/A | 
 | read 13029 | 0x65 | 
 | read 13030 | N/A | 
-| read 13031 | 0x17 | 
-| read 13032 | 0x17 | 
-| read 13033 | 0x17 | 
-| read 13034 | 0x65f | 
+| read 13031 | 0x6 | 
+| read 13032 | 0x6 | 
+| read 13033 | 0x6 | 
+| read 13034 | 0x142 | 
 | read 13035 | N/A | 
 | read 13036 | 0x5a | 
 | read 13037 | 0x4b2b | 

@@ -17,10 +17,6 @@ from asyncio import run
 from tqdm import tqdm
 
 from custom_components.sungrow.core import inverter
-from custom_components.sungrow.core.inverter import (
-    connect_and_get_basic_data,
-    pull_single_signal,
-)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -28,7 +24,9 @@ logging.basicConfig(level=logging.INFO)
 
 async def check(host: str):
     logger.info(f"Checking {host}...")
-    ic = await connect_and_get_basic_data(host, None, None, "pymodbus")
+    ic = await inverter.SungrowInverter.create(
+        host, None, None, "pymodbus", level_of_detail=999
+    )
     if not ic:
         sys.exit("Failed to connect to the inverter.")
 
@@ -37,18 +35,24 @@ async def check(host: str):
     await check_signals(ic)
 
 
-async def check_signals(ic: inverter.InverterConnection):
-    for signal in tqdm(ic.signal_definitions.all_signals()):
-        value = await pull_single_signal(ic.connection, signal)
+async def check_signals(ic: inverter.SungrowInverter):
+    for signal in tqdm(ic._signal_definitions.all_signals()):
+        value = await inverter.pull_single_signal(ic._client, signal)
 
         if value is None and not signal.disabled:
             logging.warning(f"{signal.name} is not readable, but marked as supported")
 
         if signal.disabled and value is not None:
             if value != 0:
-                logging.warning(f"{signal.name} is disabled and supported ({value})")
+                logging.warning(
+                    f"{signal.name} is disabled ({signal.disabled}), "
+                    f"but it looks to be supported ({value})"
+                )
             else:
-                logging.info(f"{signal.name} is disabled and supported ({value})")
+                logging.info(
+                    f"{signal.name} is disabled ({signal.disabled}), "
+                    f"but it might be supported ({value})"
+                )
 
 
 async def main(args):

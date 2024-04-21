@@ -1,79 +1,77 @@
-2024-04-21 20:55:05,784 asyncio [DEBUG] Using selector: EpollSelector
-2024-04-21 20:55:06,057 __main__ [INFO] 192.168.13.58 (slave: unknown, mode: any): Connecting...
-2024-04-21 20:55:06,058 custom_components.sungrow.core.inverter [DEBUG] Trying to connect to modbus(192.168.13.58:502, slave: unknown)...
-2024-04-21 20:55:06,059 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.58:502
-2024-04-21 20:55:06,332 custom_components.sungrow.core.modbus_base [DEBUG] Setting slave to 1
-2024-04-21 20:55:06,332 custom_components.sungrow.core.inverter [DEBUG] Querying initial signals: ['serial_number', 'device_type_code', 'output_type', 'total_imported_energy', 'total_exported_energy', 'master_slave_mode', 'master_slave_role', 'slave_count']
-2024-04-21 20:55:06,333 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(8 signals) in 3 ranges
-2024-04-21 20:55:06,333 custom_components.sungrow.core.modbus_base [DEBUG] * read 4990 - 5003
-2024-04-21 20:55:06,333 custom_components.sungrow.core.modbus_base [DEBUG] * read 13037 - 13048
-2024-04-21 20:55:06,334 custom_components.sungrow.core.modbus_base [DEBUG] * hold 33500 - 33503
-2024-04-21 20:55:06,334 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 4990-5002), recursion=False)
-2024-04-21 20:55:08,066 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13037-13047), recursion=False)
-2024-04-21 20:55:10,069 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33500-33502), recursion=False)
-2024-04-21 20:55:12,287 custom_components.sungrow.core.inverter [DEBUG] Inverter: Pulled 8 signals in 5.954991 secs
-2024-04-21 20:55:12,288 custom_components.sungrow.core.inverter [DEBUG] Initial data queried: {'serial_number': 'A2350415770', 'device_type_code': 'SH8.0RT-20', 'output_type': '3P4L', 'total_imported_energy': 1924.3, 'total_exported_energy': 620.4, 'master_slave_mode': 'Enabled', 'master_slave_role': 'Master', 'slave_count': 2}
-2024-04-21 20:55:12,288 custom_components.sungrow.core.inverter [DEBUG] Initial data: {'serial_number': 'A2350415770', 'device_type_code': 'SH8.0RT-20', 'output_type': '3P4L', 'total_imported_energy': 1924.3, 'total_exported_energy': 620.4, 'master_slave_mode': 'Enabled', 'master_slave_role': 'Master', 'slave_count': 2}
-2024-04-21 20:55:12,289 custom_components.sungrow.core.inverter [DEBUG] Connected to inverter SH8.0RT-20 / A2350415770
-2024-04-21 20:55:12,289 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (initial): serial_number,device_type_code,output_type,daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,mppt_3_voltage,mppt_3_current,total_dc_power,total_active_power,work_state_1,daily_export_energy,total_export_energy,daily_import_energy,total_import_energy,daily_direct_energy_consumption,total_direct_energy_consumption,mppt_4_voltage,mppt_4_current,mppt_5_voltage,mppt_5_current,monthly_power_yields,total_power_yields,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,battery_capacity_high_precision,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,grid_state,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy,battery_capacity_2,master_slave_mode,master_slave_role,slave_count
-2024-04-21 20:55:12,295 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (filtered for SH8.0RT-20): serial_number,device_type_code,output_type,daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,total_dc_power,total_active_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,battery_capacity_high_precision,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy,master_slave_mode,master_slave_role,slave_count
-2024-04-21 20:55:12,296 custom_components.sungrow.core.inverter [DEBUG] Checking if meter is connected...
-2024-04-21 20:55:12,296 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['meter_active_power'])
-2024-04-21 20:55:12,296 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5601-5602), recursion=False)
-2024-04-21 20:55:14,073 custom_components.sungrow.core.inverter [DEBUG] Inverter: pulled single signal in 1.777587 secs
-2024-04-21 20:55:14,074 custom_components.sungrow.core.inverter [DEBUG] Meter is connected
-2024-04-21 20:55:14,074 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (meter filtered): serial_number,device_type_code,output_type,daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,total_dc_power,total_active_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,battery_capacity_high_precision,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy,master_slave_mode,master_slave_role,slave_count
-2024-04-21 20:55:14,074 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['array_insulation_resistance'])
-2024-04-21 20:55:14,074 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5071-5071), recursion=False)
-2024-04-21 20:55:16,074 custom_components.sungrow.core.modbus_base [DEBUG] Unuspported Register: array_insulation_resistance (Range(READ, 5071-5071))
-2024-04-21 20:55:16,075 custom_components.sungrow.core.inverter [DEBUG] Inverter: pulled single signal in 2.688 secs
-2024-04-21 20:55:16,075 custom_components.sungrow.core.inverter [DEBUG] Inverter: array_insulation_resistance not supported
-2024-04-21 20:55:16,075 custom_components.sungrow.core.inverter [DEBUG] array_insulation_resistance is NOT supported -> WiNet dongle
-2024-04-21 20:55:16,075 custom_components.sungrow.core.inverter [DEBUG] WiNet dongle detected; Disabling all unsupported signals
-2024-04-21 20:55:16,075 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (WiNet filtered): serial_number,device_type_code,output_type,daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,total_dc_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy,master_slave_mode,master_slave_role,slave_count
-2024-04-21 20:55:16,076 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(14 signals) in 2 ranges
-2024-04-21 20:55:16,076 custom_components.sungrow.core.modbus_base [DEBUG] * read 5013 - 5015
-2024-04-21 20:55:16,076 custom_components.sungrow.core.modbus_base [DEBUG] * read 13005 - 13046
-2024-04-21 20:55:16,076 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5013-5014), recursion=False)
-2024-04-21 20:55:18,078 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13005-13045), recursion=False)
-2024-04-21 20:55:20,083 custom_components.sungrow.core.inverter [DEBUG] Inverter: Pulled 14 signals in 4.7577 secs
-2024-04-21 20:55:20,084 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_pv_export is not zero: 24.8
-2024-04-21 20:55:20,084 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_imported_energy is not zero: 9.0
-2024-04-21 20:55:20,084 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_exported_energy is not zero: 36.5
-2024-04-21 20:55:20,084 custom_components.sungrow.core.signals [DEBUG] Group mppt2: all signals are zero
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt3: not supported by inverter
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt4: not supported by inverter
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt5: not supported by inverter
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt6: not supported by inverter
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt7: not supported by inverter
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt8: not supported by inverter
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt9: not supported by inverter
-2024-04-21 20:55:20,085 custom_components.sungrow.core.signals [DEBUG] Group mppt10: not supported by inverter
-2024-04-21 20:55:20,086 custom_components.sungrow.core.signals [DEBUG] Group mppt11: not supported by inverter
-2024-04-21 20:55:20,086 custom_components.sungrow.core.signals [DEBUG] Group mppt12: not supported by inverter
-2024-04-21 20:55:20,086 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_charge_from_pv is not zero: 2.5
-2024-04-21 20:55:20,086 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_from_pv is not zero: 426.7
-2024-04-21 20:55:20,086 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_power is not zero: 1643
-2024-04-21 20:55:20,086 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_level is not zero: 71.5
-2024-04-21 20:55:20,086 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_discharge_energy is not zero: 4.4
-2024-04-21 20:55:20,087 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_discharge_energy is not zero: 800.2
-2024-04-21 20:55:20,087 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_capacity is not zero: 96.0
-2024-04-21 20:55:20,087 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_charge_energy is not zero: 11.1
-2024-04-21 20:55:20,087 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_energy is not zero: 881.8
-2024-04-21 20:55:20,087 custom_components.sungrow.core.inverter [DEBUG] Enabled signals (groups filtered): serial_number,device_type_code,output_type,daily_output_energy_pv_and_battery,mppt_1_voltage,mppt_1_current,total_dc_power,meter_active_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,daily_pv_generation,total_pv_generation,daily_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,daily_direct_energy_consumption_,battery_power,battery_level,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,daily_imported_energy,total_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,daily_exported_energy,total_exported_energy,master_slave_mode,master_slave_role,slave_count
-2024-04-21 20:55:20,087 custom_components.sungrow.core.modbus_base [DEBUG] __aenter__(192.168.13.58, 502, 1)
-2024-04-21 20:55:20,088 __main__ [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): Connected via modbus WiNet
-2024-04-21 20:55:20,088 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(34 signals) in 4 ranges
-2024-04-21 20:55:20,088 custom_components.sungrow.core.modbus_base [DEBUG] * read 4990 - 5019
-2024-04-21 20:55:20,088 custom_components.sungrow.core.modbus_base [DEBUG] * read 5601 - 5609
-2024-04-21 20:55:20,089 custom_components.sungrow.core.modbus_base [DEBUG] * read 13002 - 13048
-2024-04-21 20:55:20,089 custom_components.sungrow.core.modbus_base [DEBUG] * hold 33500 - 33503
-2024-04-21 20:55:20,089 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 4990-5018), recursion=False)
-2024-04-21 20:55:22,084 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5601-5608), recursion=False)
-2024-04-21 20:55:24,086 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13002-13047), recursion=False)
-2024-04-21 20:55:26,091 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33500-33502), recursion=False)
-2024-04-21 20:55:28,236 __main__ [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): retrieved registers: 83 READ + 3 HOLD
-2024-04-21 20:55:28,237 __main__ [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): stats: ModbusConnectionBase.Stats(connections=1, read_calls_success=10, read_calls_failed=1, retrieved_signals_success=57, retrieved_signals_failed=1)
-2024-04-21 20:55:28,237 custom_components.sungrow.core.modbus_base [DEBUG] __aexit__(192.168.13.58, 502, 1)
-2024-04-21 20:55:28,237 custom_components.sungrow.core.modbus_py [DEBUG] Disconnecting from 192.168.13.58:502
-2024-04-21 20:55:30,087 custom_components.sungrow.core.modbus_py [DEBUG] Disconnected from 192.168.13.58:502
+2024-04-21 21:17:49,890 asyncio [DEBUG] Using selector: EpollSelector
+2024-04-21 21:17:50,162 __main__ [INFO] 192.168.13.58 (slave: unknown, mode: any): Connecting...
+2024-04-21 21:17:50,163 custom_components.sungrow.core.inverter [DEBUG] Trying to connect to modbus(192.168.13.58:502, slave: unknown)...
+2024-04-21 21:17:50,163 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.58:502
+2024-04-21 21:17:50,434 custom_components.sungrow.core.modbus_base [DEBUG] Setting slave to 1
+2024-04-21 21:17:50,435 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(8 signals) in 3 ranges
+2024-04-21 21:17:50,435 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 4990-5002), recursion=False)
+2024-04-21 21:17:52,172 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13037-13047), recursion=False)
+2024-04-21 21:17:54,176 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33500-33502), recursion=False)
+2024-04-21 21:17:56,346 custom_components.sungrow.core.inverter [DEBUG] Inverter: Pulled 8 signals in 5.912009 secs
+2024-04-21 21:17:56,347 custom_components.sungrow.core.inverter [DEBUG] Initial data: {'serial_number': 'A2350415770', 'device_type_code': 'SH8.0RT-20', 'output_type': '3P4L', 'total_imported_energy': 1924.3, 'total_exported_energy': 620.4, 'master_slave_mode': 'Enabled', 'master_slave_role': 'Master', 'inverter_count': 2}
+2024-04-21 21:17:56,347 custom_components.sungrow.core.inverter [DEBUG] Connected to inverter SH8.0RT-20 / A2350415770
+2024-04-21 21:17:56,354 custom_components.sungrow.core.inverter [DEBUG] Checking if meter is connected...
+2024-04-21 21:17:56,354 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['meter_active_power'])
+2024-04-21 21:17:56,354 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5601-5602), recursion=False)
+2024-04-21 21:17:58,180 custom_components.sungrow.core.inverter [DEBUG] Inverter: pulled single signal in 1.825816 secs
+2024-04-21 21:17:58,180 custom_components.sungrow.core.inverter [DEBUG] Meter is connected
+2024-04-21 21:17:58,180 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['array_insulation_resistance'])
+2024-04-21 21:17:58,180 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5071-5071), recursion=False)
+2024-04-21 21:18:00,182 custom_components.sungrow.core.modbus_base [DEBUG] Unuspported Register: array_insulation_resistance (Range(READ, 5071-5071))
+2024-04-21 21:18:00,182 custom_components.sungrow.core.inverter [DEBUG] Inverter: pulled single signal in 2.1829 secs
+2024-04-21 21:18:00,182 custom_components.sungrow.core.inverter [DEBUG] Inverter: array_insulation_resistance not supported
+2024-04-21 21:18:00,182 custom_components.sungrow.core.inverter [DEBUG] array_insulation_resistance is NOT supported -> WiNet dongle
+2024-04-21 21:18:00,182 custom_components.sungrow.core.inverter [DEBUG] WiNet dongle detected; Disabling all unsupported signals
+2024-04-21 21:18:00,183 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(52 signals) in 4 ranges
+2024-04-21 21:18:00,183 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5013-5014), recursion=False)
+2024-04-21 21:18:02,185 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13001-13045), recursion=False)
+2024-04-21 21:18:04,190 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 13084-13085), recursion=False)
+2024-04-21 21:18:06,389 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33151-33219), recursion=False)
+2024-04-21 21:18:08,505 custom_components.sungrow.core.inverter [DEBUG] Inverter: Pulled 52 signals in 8.322440 secs
+2024-04-21 21:18:08,506 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_pv_export is not zero: 24.8
+2024-04-21 21:18:08,506 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_pv_export is not zero: 415.0
+2024-04-21 21:18:08,507 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_imported_energy is not zero: 9.0
+2024-04-21 21:18:08,507 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_exported_energy is not zero: 36.5
+2024-04-21 21:18:08,507 custom_components.sungrow.core.signals [DEBUG] Group mppt2: all signals are zero
+2024-04-21 21:18:08,507 custom_components.sungrow.core.signals [DEBUG] Group mppt3: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,507 custom_components.sungrow.core.signals [DEBUG] Group mppt4: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,507 custom_components.sungrow.core.signals [DEBUG] Group mppt5: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,507 custom_components.sungrow.core.signals [DEBUG] Group mppt6: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group mppt7: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group mppt8: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group mppt9: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group mppt10: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group mppt11: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group mppt12: not supported by inverter (all signals in group are already disabled)
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal state_battery_discharging is not zero: True
+2024-04-21 21:18:08,508 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_charge_from_pv is not zero: 2.5
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_from_pv is not zero: 426.7
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_voltage is not zero: 197.6
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_current is not zero: 2.1
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_power is not zero: 321
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_level is not zero: 69.4
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_state_of_health is not zero: 99.0
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_temperature is not zero: 22.0
+2024-04-21 21:18:08,509 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_discharge_energy is not zero: 4.6
+2024-04-21 21:18:08,510 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_discharge_energy is not zero: 800.4
+2024-04-21 21:18:08,510 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_capacity is not zero: 96.0
+2024-04-21 21:18:08,510 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_charge_energy is not zero: 11.1
+2024-04-21 21:18:08,510 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_energy is not zero: 881.8
+2024-04-21 21:18:08,510 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_1_hour is not zero: 24
+2024-04-21 21:18:08,510 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_2_hour is not zero: 24
+2024-04-21 21:18:08,510 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_enable is not zero: Enabled
+2024-04-21 21:18:08,511 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_end_time_1_hour is not zero: 24
+2024-04-21 21:18:08,511 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_enable is not zero: Disabled
+2024-04-21 21:18:08,511 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_valid_time is not zero: Every Day
+2024-04-21 21:18:08,511 custom_components.sungrow.core.modbus_base [DEBUG] __aenter__(192.168.13.58, 502, 1)
+2024-04-21 21:18:08,511 __main__ [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): Connected via modbus WiNet
+2024-04-21 21:18:08,512 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(34 signals) in 4 ranges
+2024-04-21 21:18:08,512 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 4990-5018), recursion=False)
+2024-04-21 21:18:10,194 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5601-5608), recursion=False)
+2024-04-21 21:18:12,197 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13002-13047), recursion=False)
+2024-04-21 21:18:14,200 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33500-33502), recursion=False)
+2024-04-21 21:18:16,351 __main__ [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): retrieved registers: 83 READ + 3 HOLD
+2024-04-21 21:18:16,352 __main__ [INFO] 192.168.13.58 (slave: 1, mode: modbus WiNet): stats: ModbusConnectionBase.Stats(connections=1, read_calls_success=12, read_calls_failed=1, retrieved_signals_success=95, retrieved_signals_failed=1)
+2024-04-21 21:18:16,352 custom_components.sungrow.core.modbus_base [DEBUG] __aexit__(192.168.13.58, 502, 1)
+2024-04-21 21:18:16,352 custom_components.sungrow.core.modbus_py [DEBUG] Disconnecting from 192.168.13.58:502
+2024-04-21 21:18:18,197 custom_components.sungrow.core.modbus_py [DEBUG] Disconnected from 192.168.13.58:502

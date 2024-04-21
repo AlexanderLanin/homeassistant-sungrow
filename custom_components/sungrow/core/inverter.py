@@ -177,7 +177,11 @@ class SungrowInverter:
 
     @staticmethod
     async def create(
-        host: str, port: int | None, slave: int | None, connection: str | None
+        host: str,
+        port: int | None,
+        slave: int | None,
+        connection: str | None,
+        level_of_detail: int = Level.ADVANCED.value,
     ) -> SungrowInverter | None:
         """Create a connection, with heuristics for port, slave and connection type."""
 
@@ -185,7 +189,7 @@ class SungrowInverter:
         if connection_obj is None:
             return None
 
-        inv = SungrowInverter(connection_obj)
+        inv = SungrowInverter(connection_obj, direct_initialization=False)
 
         slaves_to_attempt = [1, 2] if slave is None else [slave]
         for slave in slaves_to_attempt:
@@ -207,7 +211,7 @@ class SungrowInverter:
             f"{inv.data['device_type_code']} / {inv.data['serial_number']}"
         )
 
-        await inv._disable_all_unsupported_signals()
+        await inv._disable_all_unsupported_signals(level_of_detail)
 
         return inv
 
@@ -215,8 +219,11 @@ class SungrowInverter:
         self,
         client: modbus_base.ModbusConnectionBase,
         signal_definitions: signals.SignalDefinitions | None = None,
+        direct_initialization: bool = True,
     ):
         """Use create() factory method!!"""
+        if direct_initialization:
+            raise RuntimeError("Use create() factory method")
 
         self._client = client
         self.data: deserialize.DecodedSignals = {}
@@ -235,12 +242,9 @@ class SungrowInverter:
         which cannot be visualized in the UI (lists).
         """
 
+        # TODO: why do we need this or? It's not used in production code!!!
+        assert signal_definitions is None
         self._signal_definitions = signal_definitions or signals.load_yaml()
-
-        # TODO config.get("level", 1)
-        self._signal_definitions.mark_signals_below_level_as_disabled(
-            Level.ADVANCED.value
-        )
 
         # Remove disabled signals from data
         for signal in self._signal_definitions._definitions.values():
@@ -254,7 +258,7 @@ class SungrowInverter:
         self._is_modbus_winet: bool | None = None
         self._active_groups: dict[str, bool] | None = None
 
-    async def _disable_all_unsupported_signals(self):
+    async def _disable_all_unsupported_signals(self, level_of_detail: int):
         # Move to separate file, as it's quite a lot?!
 
         assert (
@@ -284,6 +288,8 @@ class SungrowInverter:
         self._active_groups = mark_unavailable_signals_as_disabled(
             self._signal_definitions, data
         )
+
+        self._signal_definitions.mark_signals_below_level_as_disabled(level_of_detail)
 
     async def pull_signals_by_name(
         self, signal_list: list[str]
