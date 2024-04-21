@@ -55,7 +55,7 @@ async def pull_signals(
 
     # Downcast to base class to make mypy happy
     signal_definitions_base = cast(list[modbus_base.Signal], signal_definitions)
-    raw_signals = await client.read(signal_definitions_base)
+    raw_data = await client.read(signal_definitions_base)
 
     elapsed = datetime.now() - pull_start
 
@@ -63,20 +63,18 @@ async def pull_signals(
         f"Inverter: Pulled {len(signal_definitions)} signals in {elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
-    for name, value in raw_signals.items():
+    for name, value in raw_data.items():
         if value is None:
             logger.debug(f"Inverter: {name} not supported")
             signal = next(
                 (signal for signal in signal_definitions if signal.name == name), None
             )
-            # as signal is in raw_signals, it must be in signal_definitions
+            # as signal is in raw_data, it must be in signal_definitions
             assert signal
             signal.disabled.append(
                 "Inverter does not support this signal "
                 f"(None returned, while quering {len(signal_definitions)} signals)"
             )
-
-    raw_data = await client.read(signal_definitions_base)
 
     return deserialize.decode_signals(
         signal_definitions,
@@ -335,6 +333,7 @@ class SungrowInverter:
             signal_list = self._signal_definitions.get_active_signals_for_level(0)
             logger.debug(f"Querying initial signals: {[s.name for s in signal_list]}")
             self.data = await self.pull_signals(signal_list)
+            logger.debug(f"Initial data queried: {self.data}")
         except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
             self.data = {}
             logger.debug("Error connecting to inverter")
@@ -398,6 +397,7 @@ class SungrowInverter:
         # This is be a better distinction than simply disabling meter via a grooup,
         # because all signals are 0.
         # TODO: Introduce is_disabled / is_available flag?
+        logger.debug("Checking if meter is connected...")
         if await self.pull_single_signal("meter_active_power") is None:
             for signal in self._signal_definitions.get_signal_definitions_by_name(
                 [

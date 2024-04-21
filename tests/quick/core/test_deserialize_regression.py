@@ -43,7 +43,7 @@ def reencode_registers(
 
     signal_list = signals.load_yaml()
 
-    mapped_data = modbus_base.map_raw_to_signals(
+    mapped_data = modbus_base._map_raw_to_signals(
         raw_data, signal_list.enabled_modbus_signals()
     )
 

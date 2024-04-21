@@ -1,7 +1,7 @@
 """
-The abstraction level is chosen at the lowest point which does not need to know how
-signals are queried. This is where all signals are read() at once, so this class
-can perform a clever optimization to reduce the number of queries.
+The abstraction level is chosen so signals are read() at once, and all modbus
+optimizations/limitations are handled within this class.
+Basically it's pure modbus, with a (hopefully) better interface.
 """
 
 import logging
@@ -41,22 +41,24 @@ class UnsupportedRegisterQueriedError(ModbusError):
     """
 
 
-def map_raw_to_signal(r: RawData, signal: Signal):
+def _map_raw_to_signal(r: RawData, signal: Signal):
     # We'll use the first register to check if signal is supported.
     if r[signal.registers.start] is None:
-        # return None
-        raise ValueError(f"Signal {signal.name} is not fully supported")
+        return None
     else:
         result: list[int] = []
         for i in range(signal.registers.length):
             v = r[signal.registers.start + i]
-            if v is None:
-                raise ValueError(f"Signal {signal.name} is not fully supported")
+            # This can never happen, as there is just no way for a None to appear
+            # in the middle of a range.
+            # Ranges are cut at signal borders.
+            # Each signal is either fully supported or not at all.
+            assert v is not None
             result.append(v)
         return result
 
 
-def map_raw_to_signals(
+def _map_raw_to_signals(
     raw_data: dict[RegisterType, RawData], signal_list: list[Signal]
 ) -> MappedData:
     """
@@ -65,7 +67,9 @@ def map_raw_to_signals(
     But for some less common use cases it might be useful to call this directly
     """
     return {
-        signal.name: map_raw_to_signal(raw_data[signal.registers.register_type], signal)
+        signal.name: _map_raw_to_signal(
+            raw_data[signal.registers.register_type], signal
+        )
         for signal in signal_list
     }
 
@@ -119,7 +123,7 @@ class ModbusConnectionBase:
         self, signal_list: list[Signal], max_combined_registers=100
     ) -> MappedData:
         raw_data = await self.read_raw(signal_list, max_combined_registers)
-        return map_raw_to_signals(raw_data, signal_list)
+        return _map_raw_to_signals(raw_data, signal_list)
 
     ## -- DETAILED IMPLEMENTATION --
 

@@ -143,7 +143,7 @@ def get_sn_from_raw_data(
     signal_definitions: signals.SignalDefinitions,
 ) -> str:
     sn_signal = signal_definitions.get_signal_definition_by_name("serial_number")
-    raw_sn = modbus_base.map_raw_to_signal(
+    raw_sn = modbus_base._map_raw_to_signal(
         raw_data[sn_signal.registers.register_type], sn_signal
     )
     assert raw_sn
@@ -171,7 +171,7 @@ def merge_by_inverter(results: list[TaskResult]):
         )
         if d.raw_data:
             assert d.signal_definitions
-            dpc.mapped_data = modbus_base.map_raw_to_signals(
+            dpc.mapped_data = modbus_base._map_raw_to_signals(
                 d.raw_data, d.signal_definitions.enabled_modbus_signals()
             )
             print(d.signal_definitions.get_signal_definition_by_name("serial_number"))

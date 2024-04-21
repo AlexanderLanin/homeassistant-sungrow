@@ -24,8 +24,8 @@ class RegisterRange:
         """The address after the last address of the range."""
         return self.start + self.length
 
-    def __str__(self):
-        return f"Range({self.register_type}, {self.start}-{self.end-1})"
+    def __repr__(self):
+        return f"Range({str(self.register_type).upper()}, {self.start}-{self.end-1})"
 
     def contains(self, other: "RegisterRange") -> bool:
         return (
