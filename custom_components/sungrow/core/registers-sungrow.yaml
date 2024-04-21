@@ -5,52 +5,53 @@
 # * Communication Protocol of PV Grid-Connected String Inverters_V1.1.37_EN.pdf
 
 # Levels:
-# 0: builtin energy dashboard
-# 1: custom advanced dashboards
-# 2: more data, probably not so interesting
-# 3: include data no sane person would ever want ;-)
-# Note: distinction between 2 and 3 is not always clear.
-# Note: At startup everything is queried regardless of level, so this is really just the level for the UI.
+# 1: purely for establishing a connection
+# 2: builtin energy dashboard
+# 3: advanced dashboards
+# 4: even more data, probably not so interesting
+# 5: include data no sane person would ever want ;-)
+# Note: distinction between 3 and 4 is not always clear.
 
 # Groups:
 # Most detection works via "signal supported" and "signal not supported".
 # However e.g. battery may be supported, and yet none is connected.
-# So we need to be able to distinguish between "supported" and "connected".
+# So we need to be able to distinguish between "supported" and "actually available".
 # This is done via groups.
-# Signals which should be hidden and signals which are indicators for "not connected" are grouped.
-# Usually "total" signals are indicators, while e.g. "daily" signals are to be hidden.
-# has_battery: only include if battery is present (e.g. battery_capacity is not 0)
-# is_master: only include if inverter is master/standalone (e.g. total_imported_energy is not 0)
+# Signals which should be hidden and signals which are indicators for "not available" are grouped.
+# Usually "total" signals are indicators, while e.g. "daily" signals are to be hidden if the "total" is not available.
+# Examples:
+# has_battery: only include if battery is present (indicator: battery_capacity is not 0)
+# is_master: only include if inverter is master/standalone (indicator: total_imported_energy & total_exported_energy is not 0)
 # TODO: split between indicators and to be hidden signals
 
 read:
   - name: "protocol_number"
-    level: 2
+    level: 4
     address: 4950
     data_type: U32
 
   - name: "protocol_version"
-    level: 2
+    level: 4
     address: 4952
     data_type: U32
 
   - name: "arm_software_version"
-    level: 2
+    level: 4
     address: 4954
     data_type: U16
 
   - name: "dsp_software_version"
-    level: 2
+    level: 4
     address: 4969
     data_type: U16
 
   - name: "serial_number"
-    level: 0
+    level: 1
     address: 4990
     data_type: "UTF-8[10]"
 
   - name: "device_type_code"
-    level: 0
+    level: 1
     address: 5000
     data_type: U16
     decoded:
@@ -143,14 +144,14 @@ read:
       0x2606: "SG5.0RS"
 
   - name: "nominal_output_power"
-    level: 2
+    level: 4
     address: 5001
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "kW"
 
   - name: "output_type"
-    level: 0
+    level: 1
     address: 5002
     data_type: U16
     decoded:
@@ -159,14 +160,14 @@ read:
       2: "3PSL"
 
   - name: "daily_output_energy_pv_and_battery"
-    level: 1
+    level: 3
     address: 5003
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "total_output_energy_pv_and_battery"
-    level: 2
+    level: 4
     address: 5004
     data_type: U32
     accuracy: 0.1
@@ -174,35 +175,35 @@ read:
 
   - name: "total_running_time"
     group: is_master
-    level: 2
+    level: 4
     address: 5006
     data_type: U32
     unit_of_measurement: "h"
     models_exclude: ["SH8.0RT-20"]
 
   - name: "internal_temperature"
-    level: 2
+    level: 4
     address: 5008
     data_type: S16
     accuracy: 0.1
     unit_of_measurement: "°C"
 
   - name: "total_apparent_power"
-    level: 2
+    level: 4
     address: 5009
     data_type: U32
     unit_of_measurement: "VA"
     models_exclude: ["WiNet"]
 
   - name: "mppt_1_voltage"
-    level: 1
+    level: 3
     address: 5011
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
 
   - name: "mppt_1_current"
-    level: 1
+    level: 3
     address: 5012
     data_type: U16
     accuracy: 0.1
@@ -210,7 +211,7 @@ read:
 
   - name: "mppt_2_voltage"
     group: mppt2
-    level: 1
+    level: 3
     address: 5013
     data_type: U16
     accuracy: 0.1
@@ -218,7 +219,7 @@ read:
 
   - name: "mppt_2_current"
     group: mppt2
-    level: 1
+    level: 3
     address: 5014
     data_type: U16
     accuracy: 0.1
@@ -226,7 +227,7 @@ read:
 
   - name: "mppt_3_voltage"
     group: mppt3
-    level: 1
+    level: 3
     address: 5015
     data_type: U16
     accuracy: 0.1
@@ -235,7 +236,7 @@ read:
 
   - name: "mppt_3_current"
     group: mppt3
-    level: 1
+    level: 3
     address: 5016
     data_type: U16
     accuracy: 0.1
@@ -243,35 +244,35 @@ read:
     models_exclude: ["SH8.0RT-20"]
 
   - name: "total_dc_power" # pv power
-    level: 1
+    level: 3
     address: 5017
     data_type: U32
     unit_of_measurement: "W"
     # Note: this is per inverter. To get total PV power, sum all inverters.
 
   - name: "phase_a_voltage"
-    level: 2
+    level: 4
     address: 5019
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
 
   - name: "phase_b_voltage"
-    level: 2
+    level: 4
     address: 5020
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
 
   - name: "phase_c_voltage"
-    level: 2
+    level: 4
     address: 5021
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
 
   - name: "phase_a_current"
-    level: 2
+    level: 4
     address: 5022
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
@@ -279,7 +280,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "phase_b_current"
-    level: 2
+    level: 4
     address: 5023
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
@@ -287,7 +288,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "phase_c_current"
-    level: 2
+    level: 4
     address: 5024
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
@@ -295,34 +296,34 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "total_active_power"
-    level: 1
+    level: 3
     address: 5031
     data_type: S32
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: "total_reactive_power"
-    level: 2
+    level: 4
     address: 5033
     data_type: S32
     unit_of_measurement: "var"
 
   - name: "power_factor" # >0 means leading, <0 means lagging
-    level: 2
+    level: 4
     address: 5035
     data_type: S16
     accuracy: 0.001
     unit_of_measurement: "%" # Note: documentation says "None", but it is a percentage
 
   - name: "grid_frequency"
-    level: 2
+    level: 4
     address: 5036
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "Hz"
 
   - name: "work_state_1" # See Appendix 1
-    level: 1
+    level: 3
     address: 5038
     data_type: U16
     decoded:
@@ -343,49 +344,49 @@ read:
     models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_year"
-    level: 3
+    level: 5
     address: 5039
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_month"
-    level: 3
+    level: 5
     address: 5040
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_day"
-    level: 3
+    level: 5
     address: 5041
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_hour"
-    level: 3
+    level: 5
     address: 5042
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_minute"
-    level: 3
+    level: 5
     address: 5043
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_time_second"
-    level: 3
+    level: 5
     address: 5045
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
 
   - name: "alarm_code_1" # See Appendix 3
-    level: 3
+    level: 5
     address: 5045
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
 
   - name: "nominal_reactive_power"
-    level: 2
+    level: 4
     address: 5049
     data_type: U16
     accuracy: 100
@@ -393,28 +394,28 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "array_insulation_resistance"
-    level: 2
+    level: 4
     address: 5071
     data_type: U16
     unit_of_measurement: "k-ohm"
     models_exclude: ["WiNet"]
 
   - name: "active_power_regulation_setpoint"
-    level: 3
+    level: 5
     address: 5077
     data_type: U32
     unit_of_measurement: "W"
     models_exclude: ["SH8.0RT-20"]
 
   - name: "reactive_power_regulation_setpoint"
-    level: 2
+    level: 4
     address: 5079
     data_type: S32
     unit_of_measurement: "var"
     models_exclude: ["WiNet"]
 
   - name: "work_state_2" # See Appendix 2
-    level: 2
+    level: 4
     address: 5081
     data_type: U32
     decoded:
@@ -435,7 +436,7 @@ read:
     models_exclude: ["SH8.0RT-20"]
 
   - name: "meter_power"
-    level: 2
+    level: 4
     address: 5083
     data_type: S32
     smart_meter: True
@@ -445,7 +446,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "meter_a_phase_power"
-    level: 2
+    level: 4
     address: 5085
     data_type: S32
     unit_of_measurement: "W"
@@ -454,7 +455,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "meter_b_phase_power"
-    level: 2
+    level: 4
     address: 5087
     data_type: S32
     unit_of_measurement: "W"
@@ -462,7 +463,7 @@ read:
     models: ["SG*KTL-M*"]
 
   - name: "meter_c_phase_power"
-    level: 2
+    level: 4
     address: 5089
     data_type: S32
     unit_of_measurement: "W"
@@ -470,7 +471,7 @@ read:
     models: ["SG*KTL-M*"]
 
   - name: "meter_load_power"
-    level: 2
+    level: 4
     address: 5091
     data_type: S32
     smart_meter: True
@@ -479,7 +480,7 @@ read:
     models: ["SG*KTL-M*"]
 
   - name: "daily_export_energy"
-    level: 1
+    level: 3
     address: 5093
     data_type: U32
     accuracy: 0.1
@@ -487,7 +488,7 @@ read:
     models: ["SG*KTL-M*"]
 
   - name: "total_export_energy"
-    level: 1
+    level: 3
     address: 5095
     data_type: U32
     accuracy: 0.1
@@ -495,7 +496,7 @@ read:
     models: ["SG*KTL-M*"]
 
   - name: "daily_import_energy"
-    level: 1
+    level: 3
     address: 5097
     data_type: U32
     accuracy: 0.1
@@ -503,7 +504,7 @@ read:
     models: ["SG*KTL-M*"]
 
   - name: "total_import_energy"
-    level: 1
+    level: 3
     address: 5099
     data_type: U32
     accuracy: 0.1
@@ -511,7 +512,7 @@ read:
     models_exclude: ["SH8.0RT-20"]
 
   - name: "daily_direct_energy_consumption"
-    level: 1
+    level: 3
     address: 5101
     data_type: U32
     accuracy: 0.1
@@ -520,7 +521,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "total_direct_energy_consumption"
-    level: 1
+    level: 3
     address: 5103
     data_type: U32
     accuracy: 0.1
@@ -529,7 +530,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "daily_running_time"
-    level: 2
+    level: 4
     address: 5113
     data_type: U16
     unit_of_measurement: "min"
@@ -556,7 +557,7 @@ read:
         "SG75CX",
       ]
     group: mppt4
-    level: 1
+    level: 3
     address: 5115
     data_type: U16
     accuracy: 0.1
@@ -584,7 +585,7 @@ read:
         "SG75CX",
       ]
     group: mppt4
-    level: 1
+    level: 3
     address: 5116
     data_type: U16
     accuracy: 0.1
@@ -594,7 +595,7 @@ read:
   - name: "mppt_5_voltage"
     models: ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     group: mppt5
-    level: 1
+    level: 3
     address: 5117
     data_type: U16
     accuracy: 0.1
@@ -604,7 +605,7 @@ read:
   - name: "mppt_5_current"
     models: ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
     group: mppt5
-    level: 1
+    level: 3
     address: 5118
     data_type: U16
     accuracy: 0.1
@@ -614,7 +615,7 @@ read:
   - name: "mppt_6_voltage"
     group: mppt6
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5119
     data_type: U16
     accuracy: 0.1
@@ -624,7 +625,7 @@ read:
   - name: "mppt_6_current"
     group: mppt6
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5120
     data_type: U16
     accuracy: 0.1
@@ -634,7 +635,7 @@ read:
   - name: "mppt_7_voltage"
     group: mppt7
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5121
     data_type: U16
     accuracy: 0.1
@@ -644,7 +645,7 @@ read:
   - name: "mppt_7_current"
     group: mppt7
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5122
     data_type: U16
     accuracy: 0.1
@@ -654,7 +655,7 @@ read:
   - name: "mppt_8_voltage"
     group: mppt8
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5123
     data_type: U16
     accuracy: 0.1
@@ -664,7 +665,7 @@ read:
   - name: "mppt_8_current"
     group: mppt8
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5124
     data_type: U16
     accuracy: 0.1
@@ -673,7 +674,7 @@ read:
 
   - name: "monthly_power_yields"
     group: is_master
-    level: 1
+    level: 3
     address: 5128
     data_type: U32
     accuracy: 0.1
@@ -683,7 +684,7 @@ read:
   - name: "mppt_9_voltage"
     group: mppt9
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5130
     data_type: U16
     accuracy: 0.1
@@ -693,7 +694,7 @@ read:
   - name: "mppt_9_current"
     group: mppt9
     models: ["SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
-    level: 2
+    level: 4
     address: 5131
     data_type: U16
     accuracy: 0.1
@@ -703,7 +704,7 @@ read:
   - name: "mppt_10_voltage"
     group: mppt10
     models: ["SG250HX*"]
-    level: 2
+    level: 4
     address: 5132
     data_type: U16
     accuracy: 0.1
@@ -713,7 +714,7 @@ read:
   - name: "mppt_10_current"
     group: mppt10
     models: ["SG250HX*"]
-    level: 2
+    level: 4
     address: 5133
     data_type: U16
     accuracy: 0.1
@@ -723,7 +724,7 @@ read:
   - name: "mppt_11_voltage"
     group: mppt11
     models: ["SG250HX*"]
-    level: 2
+    level: 4
     address: 5134
     data_type: U16
     accuracy: 0.1
@@ -733,7 +734,7 @@ read:
   - name: "mppt_11_current"
     group: mppt11
     models: ["SG250HX*"]
-    level: 2
+    level: 4
     address: 5135
     data_type: U16
     accuracy: 0.1
@@ -743,7 +744,7 @@ read:
   - name: "mppt_12_voltage"
     group: mppt12
     models: ["SG250HX*"]
-    level: 2
+    level: 4
     address: 5136
     data_type: U16
     accuracy: 0.1
@@ -753,7 +754,7 @@ read:
   - name: "mppt_12_current"
     group: mppt12
     models: ["SG250HX*"]
-    level: 2
+    level: 4
     address: 5137
     data_type: U16
     accuracy: 0.1
@@ -762,7 +763,7 @@ read:
 
   - name: "total_power_yields"
     group: is_master
-    level: 1
+    level: 3
     address: 5144
     data_type: U32
     accuracy: 0.1
@@ -770,7 +771,7 @@ read:
     models_exclude: ["SH8.0RT-20"]
 
   - name: "negative_voltage_to_the_ground"
-    level: 3
+    level: 5
     address: 5146
     data_type: S16
     accuracy: 0.1
@@ -778,7 +779,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "bus_voltage"
-    level: 2
+    level: 4
     address: 5147
     data_type: U16
     accuracy: 0.1
@@ -786,7 +787,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "grid_frequency"
-    level: 2
+    level: 4
     address: 5148
     data_type: U16
     accuracy: 0.01
@@ -794,7 +795,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "pid_work_state"
-    level: 3
+    level: 5
     address: 5150
     data_type: U16
     decoded:
@@ -804,7 +805,7 @@ read:
     models_exclude: ["SH8.0RT-20"]
 
   - name: "pid_alarm_code"
-    level: 2
+    level: 4
     address: 5151
     data_type: U16
     decoded:
@@ -814,45 +815,45 @@ read:
     models_exclude: ["SH8.0RT-20"]
 
   - name: "export_power"
-    level: 2
+    level: 4
     address: 5216
     data_type: S32
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: "meter_active_power"
-    level: 1
+    level: 3
     address: 5601
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_a"
-    level: 1
+    level: 3
     address: 5603
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_b"
-    level: 1
+    level: 3
     address: 5605
     data_type: S32
     unit_of_measurement: W
 
   - name: "meter_active_power_phase_c"
-    level: 1
+    level: 3
     address: 5607
     data_type: S32
     unit_of_measurement: W
 
   - name: "power_meter"
-    level: 2
+    level: 4
     address: 5218
     data_type: S32
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: "export_limit_min"
-    level: 2
+    level: 4
     address: 5622
     data_type: U16
     accuracy: 10
@@ -871,27 +872,27 @@ read:
       ]
 
   - name: "export_limit_max"
-    level: 2
+    level: 4
     address: 5623
     data_type: U16
     accuracy: 10
     unit_of_measurement: "W"
 
   - name: "bdc_rated_power"
-    level: 2
+    level: 4
     address: 5628
     data_type: U16
     accuracy: 100
     unit_of_measurement: "W"
 
   - name: "bms_max_charging_current"
-    level: 2
+    level: 4
     address: 5635
     data_type: U16
     unit_of_measurement: "A"
 
   - name: "bms_max_discharging_current"
-    level: 2
+    level: 4
     address: 5636
     data_type: U16
     unit_of_measurement: "A"
@@ -899,7 +900,7 @@ read:
   - name: "battery_capacity_high_precision"
     # ToDo: this should overwrite battery_capacity instead of being a separate signal
     group: has_battery
-    level: 1
+    level: 3
     address: 5639
     data_type: U16
     accuracy: 0.01
@@ -907,42 +908,42 @@ read:
     models_exclude: ["WiNet"]
 
   - name: backup_power_phase_a
-    level: 2
+    level: 4
     address: 5723
     data_type: S16
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: backup_power_phase_b
-    level: 2
+    level: 4
     address: 5724
     data_type: S16
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: backup_power_phase_c
-    level: 2
+    level: 4
     address: 5725
     data_type: S16
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: backup_power_total
-    level: 2
+    level: 4
     address: 5726
     data_type: S16
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: "pv_power_of_today"
-    level: 3
+    level: 5
     address: 6100
     data_type: "U16[96]"
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: "pv_energy_yields_daily"
-    level: 3
+    level: 5
     address: 6196
     data_type: "U16[30]"
     accuracy: 0.1
@@ -950,7 +951,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "pv_energy_yields_monthly"
-    level: 3
+    level: 5
     address: 6227
     data_type: "U16[12]"
     unit_of_measurement: "kWh"
@@ -958,7 +959,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "pv_energy_yields_yearly_starting_2019"
-    level: 3
+    level: 5
     address: 6250
     data_type: "U32[20]"
     accuracy: 0.1
@@ -966,14 +967,14 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "direct_power_consumption_from_pv_today"
-    level: 3
+    level: 5
     address: 6290
     data_type: "U16[96]"
     unit_of_measurement: "W"
     models_exclude: ["WiNet"]
 
   - name: "direct_power_consumption_from_pv_daily"
-    level: 3
+    level: 5
     address: 6386
     data_type: "U16[31]"
     accuracy: 0.1
@@ -981,7 +982,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "direct_energy_consumption_from_pv_monthly"
-    level: 3
+    level: 5
     address: 6417
     data_type: "U16[12]"
     accuracy: 0.1
@@ -989,7 +990,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "direct_energy_consumption_from_pv_yearly_starting_2019"
-    level: 3
+    level: 5
     address: 6429
     data_type: "U32[20]"
     accuracy: 0.1
@@ -998,7 +999,7 @@ read:
 
   - name: "export_power_from_pv_today"
     group: is_master
-    level: 3
+    level: 5
     address: 6469
     data_type: "U16[96]"
     unit_of_measurement: "W"
@@ -1006,7 +1007,7 @@ read:
 
   - name: "export_energy_from_pv_daily"
     group: is_master
-    level: 2
+    level: 4
     address: 6565
     data_type: "U16[31]"
     accuracy: 0.1
@@ -1015,7 +1016,7 @@ read:
 
   - name: "export_energy_from_pv_monthly"
     group: is_master
-    level: 2
+    level: 4
     address: 6596
     data_type: "U16[12]"
     accuracy: 0.1
@@ -1024,7 +1025,7 @@ read:
 
   - name: "export_energy_from_pv_yearly_starting_2019"
     group: is_master
-    level: 2
+    level: 4
     address: 6608
     data_type: "U32[20]"
     accuracy: 0.1
@@ -1033,7 +1034,7 @@ read:
 
   - name: "battery_charge_energy_from_pv_today"
     group: has_battery
-    level: 2
+    level: 4
     address: 6648
     data_type: "U16[96]"
     accuracy: 0.1
@@ -1042,7 +1043,7 @@ read:
 
   - name: "battery_charge_energy_from_pv"
     group: has_battery
-    level: 2
+    level: 4
     address: 6744
     data_type: "U16[31]"
     accuracy: 0.1
@@ -1051,7 +1052,7 @@ read:
 
   - name: "battery_charge_energy_from_pv_monthly"
     group: has_battery
-    level: 2
+    level: 4
     address: 6775
     data_type: "U16[12]"
     accuracy: 0.1
@@ -1060,7 +1061,7 @@ read:
 
   - name: "battery_charge_energy_from_pv_yearly_starting_2019"
     group: has_battery
-    level: 2
+    level: 4
     address: 6787
     data_type: "U32[20]"
     accuracy: 0.1
@@ -1068,7 +1069,7 @@ read:
     models_exclude: ["WiNet"]
 
   - name: "string_1_current"
-    level: 2
+    level: 4
     address: 7013
     data_type: U16
     accuracy: 0.01
@@ -1076,7 +1077,7 @@ read:
     models: ["SG*", "LP_P34KSG"]
 
   - name: "string_2_current"
-    level: 2
+    level: 4
     address: 7014
     data_type: U16
     accuracy: 0.01
@@ -1084,7 +1085,7 @@ read:
     models: ["SG*", "LP_P34KSG"]
 
   - name: "string_3_current"
-    level: 2
+    level: 4
     address: 7015
     data_type: U16
     accuracy: 0.01
@@ -1092,7 +1093,7 @@ read:
     models: ["SG*", "LP_P34KSG"]
 
   - name: "string_4_current"
-    level: 2
+    level: 4
     address: 7016
     data_type: U16
     accuracy: 0.01
@@ -1100,7 +1101,7 @@ read:
     models: ["SG*", "LP_P34KSG"]
 
   - name: "string_5_current"
-    level: 2
+    level: 4
     address: 7017
     data_type: U16
     accuracy: 0.01
@@ -1108,7 +1109,7 @@ read:
     models: ["SG*", "LP_P34KSG"]
 
   - name: "string_6_current"
-    level: 2
+    level: 4
     address: 7018
     data_type: U16
     accuracy: 0.01
@@ -1116,7 +1117,7 @@ read:
     models: ["SG*", "LP_P34KSG"]
 
   - name: "string_7_current"
-    level: 2
+    level: 4
     address: 7019
     data_type: U16
     accuracy: 0.01
@@ -1161,7 +1162,7 @@ read:
       ]
 
   - name: "string_8_current"
-    level: 2
+    level: 4
     address: 7020
     data_type: U16
     accuracy: 0.01
@@ -1205,7 +1206,7 @@ read:
       ]
 
   - name: "string_9_current"
-    level: 2
+    level: 4
     address: 7021
     data_type: U16
     accuracy: 0.01
@@ -1241,7 +1242,7 @@ read:
       ]
 
   - name: "string_10_current"
-    level: 2
+    level: 4
     address: 7022
     data_type: U16
     accuracy: 0.01
@@ -1275,7 +1276,7 @@ read:
       ]
 
   - name: "string_11_current"
-    level: 2
+    level: 4
     address: 7023
     data_type: U16
     accuracy: 0.01
@@ -1304,7 +1305,7 @@ read:
       ]
 
   - name: "string_12_current"
-    level: 2
+    level: 4
     address: 7024
     data_type: U16
     accuracy: 0.01
@@ -1333,7 +1334,7 @@ read:
       ]
 
   - name: "string_13_current"
-    level: 2
+    level: 4
     address: 7025
     data_type: U16
     accuracy: 0.01
@@ -1359,7 +1360,7 @@ read:
       ]
 
   - name: "string_14_current"
-    level: 2
+    level: 4
     address: 7026
     data_type: U16
     accuracy: 0.01
@@ -1390,7 +1391,7 @@ read:
       ]
 
   - name: "string_15_current"
-    level: 2
+    level: 4
     address: 7027
     data_type: U16
     accuracy: 0.01
@@ -1412,7 +1413,7 @@ read:
       ]
 
   - name: "string_16_current"
-    level: 2
+    level: 4
     address: 7028
     data_type: U16
     accuracy: 0.01
@@ -1434,7 +1435,7 @@ read:
       ]
 
   - name: "string_17_current"
-    level: 2
+    level: 4
     address: 7029
     data_type: U16
     accuracy: 0.01
@@ -1453,7 +1454,7 @@ read:
       ]
 
   - name: "string_18_current"
-    level: 2
+    level: 4
     address: 7030
     data_type: U16
     accuracy: 0.01
@@ -1472,7 +1473,7 @@ read:
       ]
 
   - name: "string_19_current"
-    level: 2
+    level: 4
     address: 7031
     data_type: U16
     accuracy: 0.01
@@ -1480,7 +1481,7 @@ read:
     models: ["Not supported by any model"]
 
   - name: "string_20_current"
-    level: 2
+    level: 4
     address: 7032
     data_type: U16
     accuracy: 0.01
@@ -1488,7 +1489,7 @@ read:
     models: ["Not supported by any model"]
 
   - name: "string_21_current"
-    level: 2
+    level: 4
     address: 7033
     data_type: U16
     accuracy: 0.01
@@ -1496,7 +1497,7 @@ read:
     models: ["Not supported by any model"]
 
   - name: "string_22_current"
-    level: 2
+    level: 4
     address: 7034
     data_type: U16
     accuracy: 0.01
@@ -1504,7 +1505,7 @@ read:
     models: ["Not supported by any model"]
 
   - name: "string_23_current"
-    level: 2
+    level: 4
     address: 7035
     data_type: U16
     accuracy: 0.01
@@ -1512,7 +1513,7 @@ read:
     models: ["Not supported by any model"]
 
   - name: "string_24_current"
-    level: 2
+    level: 4
     address: 7036
     data_type: U16
     accuracy: 0.01
@@ -1520,7 +1521,7 @@ read:
     models: ["Not supported by any model"]
 
   - name: "running_state"
-    level: 2
+    level: 4
     address: 13000
     data_type: U16
     decoded:
@@ -1535,60 +1536,60 @@ read:
       # rest todo
 
   - name: "state_power_generated_from_pv"
-    level: 2
+    level: 4
     address: 13001
     data_type: U16
     mask: 1
 
   - name: "state_battery_charging"
     group: has_battery
-    level: 2
+    level: 4
     address: 13001
     data_type: U16
     mask: 2
 
   - name: "state_battery_discharging"
     group: has_battery
-    level: 2
+    level: 4
     address: 13001
     data_type: U16
     mask: 4
 
   - name: "state_load_active"
-    level: 2
+    level: 4
     address: 13001
     data_type: U16
     mask: 8
 
   - name: "state_feed_into_grid"
     group: is_master
-    level: 2
+    level: 4
     address: 13001
     data_type: U16
     mask: 16
 
   - name: "state_import_from_grid"
     group: is_master
-    level: 2
+    level: 4
     address: 13001
     data_type: U16
     mask: 32
 
   - name: "state_power_generated_from_load"
-    level: 2
+    level: 4
     address: 13001
     data_type: U16
     mask: 128
 
   - name: "daily_pv_generation"
-    level: 1
+    level: 3
     address: 13002
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "total_pv_generation"
-    level: 0
+    level: 2
     address: 13003
     data_type: U32
     accuracy: 0.1
@@ -1597,7 +1598,7 @@ read:
 
   - name: "daily_pv_export"
     group: is_master
-    level: 1
+    level: 3
     address: 13005
     data_type: U16
     accuracy: 0.1
@@ -1606,27 +1607,27 @@ read:
 
   - name: "total_pv_export"
     group: is_master
-    level: 2
+    level: 4
     address: 13006
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "load_power_hybrid"
-    level: 1
+    level: 3
     address: 13008
     data_type: S32
     unit_of_measurement: "W"
 
   - name: "export_power_hybrid"
-    level: 1
+    level: 3
     address: 13010
     data_type: S32
     unit_of_measurement: "W"
 
   - name: "daily_battery_charge_from_pv"
     group: has_battery
-    level: 1
+    level: 3
     address: 13012
     data_type: U16
     accuracy: 0.1
@@ -1634,28 +1635,28 @@ read:
 
   - name: "total_battery_charge_from_pv"
     group: has_battery
-    level: 1
+    level: 3
     address: 13013
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "co2_reduction"
-    level: 2
+    level: 4
     address: 13015
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kg"
 
   - name: "daily_direct_energy_consumption"
-    level: 1
+    level: 3
     address: 13017
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "total_direct_energy_consumption"
-    level: 2
+    level: 4
     address: 13018
     data_type: U32
     accuracy: 0.1
@@ -1663,7 +1664,7 @@ read:
 
   - name: "battery_voltage"
     group: has_battery
-    level: 2
+    level: 4
     address: 13020
     data_type: U16
     accuracy: 0.1
@@ -1671,7 +1672,7 @@ read:
 
   - name: "battery_current"
     group: has_battery
-    level: 2
+    level: 4
     address: 13021
     data_type: U16
     accuracy: 0.1
@@ -1679,14 +1680,14 @@ read:
 
   - name: "battery_power"
     group: has_battery
-    level: 1
+    level: 3
     address: 13022
     data_type: U16
     unit_of_measurement: "W"
 
   - name: "battery_level"
     group: has_battery
-    level: 1
+    level: 3
     address: 13023
     data_type: U16
     accuracy: 0.1
@@ -1694,7 +1695,7 @@ read:
 
   - name: "battery_state_of_health"
     group: has_battery
-    level: 2
+    level: 4
     address: 13024
     data_type: U16
     accuracy: 0.1
@@ -1702,7 +1703,7 @@ read:
 
   - name: "battery_temperature"
     group: has_battery
-    level: 2
+    level: 4
     address: 13025
     data_type: S16
     accuracy: 0.1
@@ -1710,7 +1711,7 @@ read:
 
   - name: "daily_battery_discharge_energy"
     group: has_battery
-    level: 1
+    level: 3
     address: 13026
     data_type: U16
     accuracy: 0.1
@@ -1718,21 +1719,21 @@ read:
 
   - name: "total_battery_discharge_energy"
     group: has_battery
-    level: 0
+    level: 2
     address: 13027
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "self_consumption_of_day"
-    level: 1
+    level: 3
     address: 13029
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "%"
 
   - name: "grid_state"
-    level: 1
+    level: 3
     address: 13030
     data_type: U16
     decoded:
@@ -1741,28 +1742,28 @@ read:
     models_exclude: ["SH8.0RT-20"] # Only via WiNet ?!!
 
   - name: "phase_a_current"
-    level: 2
+    level: 4
     address: 13031
     data_type: S16
     accuracy: 0.1
     unit_of_measurement: "A"
 
   - name: "phase_b_current"
-    level: 2
+    level: 4
     address: 13032
     data_type: S16
     accuracy: 0.1
     unit_of_measurement: "A"
 
   - name: "phase_c_current"
-    level: 2
+    level: 4
     address: 13033
     data_type: S16
     accuracy: 0.1
     unit_of_measurement: "A"
 
   - name: "total_active_power_2"
-    level: 3
+    level: 5
     address: 13034
     data_type: S32
     unit_of_measurement: "W"
@@ -1770,7 +1771,7 @@ read:
 
   - name: "daily_imported_energy"
     group: is_master
-    level: 1
+    level: 3
     address: 13036
     data_type: U16
     accuracy: 0.1
@@ -1778,7 +1779,7 @@ read:
 
   - name: "total_imported_energy"
     group: is_master
-    level: 0
+    level: 1
     address: 13037
     data_type: U32
     accuracy: 0.1
@@ -1786,7 +1787,7 @@ read:
 
   - name: "battery_capacity"
     group: has_battery
-    level: 1
+    level: 3
     address: 13039
     data_type: U16
     accuracy: 0.1
@@ -1794,7 +1795,7 @@ read:
 
   - name: "daily_battery_charge_energy"
     group: has_battery
-    level: 1
+    level: 3
     address: 13040
     data_type: U16
     accuracy: 0.1
@@ -1802,20 +1803,20 @@ read:
 
   - name: "total_battery_charge_energy"
     group: has_battery
-    level: 0
+    level: 2
     address: 13041
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "drm_state"
-    level: 2
+    level: 4
     address: 13043
     data_type: U16
 
   - name: "daily_exported_energy"
     group: is_master
-    level: 1
+    level: 3
     address: 13045
     data_type: U16
     accuracy: 0.1
@@ -1823,63 +1824,63 @@ read:
 
   - name: "total_exported_energy"
     group: is_master
-    level: 0
+    level: 1
     address: 13046
     data_type: U32
     accuracy: 0.1
     unit_of_measurement: "kWh"
 
   - name: "inverter_alarm"
-    level: 3
+    level: 5
     address: 13050
     data_type: U32
     accuracy: 0.1
 
   - name: "grid-side_fault"
-    level: 3
+    level: 5
     address: 13052
     data_type: U32
     accuracy: 0.1
 
   - name: "system_fault1"
-    level: 3
+    level: 5
     address: 13054
     data_type: U32
     accuracy: 0.1
 
   - name: "system_fault2"
-    level: 3
+    level: 5
     address: 13056
     data_type: U32
     accuracy: 0.1
 
   - name: "dc-side_fault"
-    level: 3
+    level: 5
     address: 13058
     data_type: U32
     accuracy: 0.1
 
   - name: "permanent_fault"
-    level: 3
+    level: 5
     address: 13060
     data_type: U32
     accuracy: 0.1
 
   - name: "bdc-side_fault"
-    level: 3
+    level: 5
     address: 13062
     data_type: U32
     accuracy: 0.1
 
   - name: "bdc-side_permanent_fault"
-    level: 3
+    level: 5
     address: 13064
     data_type: U32
     accuracy: 0.1
 
   - name: "battery_fault"
     group: has_battery
-    level: 3
+    level: 5
     address: 13066
     data_type: U32
     accuracy: 0.1
@@ -1887,39 +1888,39 @@ read:
 
   - name: "battery_alarm"
     group: has_battery
-    level: 3
+    level: 5
     address: 13068
     data_type: U32
     accuracy: 0.1
     models_exclude: ["WiNet"]
 
   - name: "bms_alarm"
-    level: 3
+    level: 5
     address: 13070
     data_type: U32
 
   - name: "bms_protection"
-    level: 3
+    level: 5
     address: 13072
     data_type: U32
 
   - name: "bms_fault1"
-    level: 3
+    level: 5
     address: 13074
     data_type: U32
 
   - name: "bms_fault2"
-    level: 3
+    level: 5
     address: 13076
     data_type: U32
 
   - name: "bms_alarm2"
-    level: 3
+    level: 5
     address: 13078
     data_type: U32
 
   - name: "bms_status"
-    level: 3
+    level: 5
     address: 13100
     data_type: U16
     models:
@@ -1936,7 +1937,7 @@ read:
 
   - name: "max_charging_current"
     group: has_battery
-    level: 3
+    level: 5
     address: 13101
     data_type: U16
     unit_of_measurement: "A"
@@ -1953,7 +1954,7 @@ read:
 
   - name: "max_discharging_current"
     group: has_battery
-    level: 3
+    level: 5
     address: 13102
     data_type: U16
     unit_of_measurement: "A"
@@ -1969,7 +1970,7 @@ read:
       ]
 
   - name: "warning"
-    level: 3
+    level: 5
     address: 13103
     data_type: U16
     models:
@@ -1984,7 +1985,7 @@ read:
       ]
 
   - name: "protection"
-    level: 3
+    level: 5
     address: 13104
     data_type: U16
     models:
@@ -1999,7 +2000,7 @@ read:
       ]
 
   - name: "fault1"
-    level: 3
+    level: 5
     address: 13105
     data_type: U16
     models:
@@ -2014,7 +2015,7 @@ read:
       ]
 
   - name: "fault2"
-    level: 3
+    level: 5
     address: 13106
     data_type: U16
     models:
@@ -2029,7 +2030,7 @@ read:
       ]
 
   - name: "soc"
-    level: 2
+    level: 4
     address: 13107
     data_type: U16
     unit_of_measurement: "%"
@@ -2045,7 +2046,7 @@ read:
       ]
 
   - name: "soh"
-    level: 2
+    level: 4
     address: 13108
     data_type: U16
     models:
@@ -2061,7 +2062,7 @@ read:
 
   - name: "battery_current"
     group: has_battery
-    level: 3
+    level: 5
     address: 13109
     data_type: U16
     unit_of_measurement: "A"
@@ -2078,7 +2079,7 @@ read:
 
   - name: "battery_voltage"
     group: has_battery
-    level: 3
+    level: 5
     address: 13110
     data_type: U16
     accuracy: 0.01
@@ -2094,7 +2095,7 @@ read:
         "SH4K6-30",
       ]
   - name: "cycle_count"
-    level: 3
+    level: 5
     address: 13111
     data_type: U16
     accuracy: 0.01
@@ -2110,7 +2111,7 @@ read:
       ]
 
   - name: "average_cell_voltage"
-    level: 3
+    level: 5
     address: 13112
     data_type: U16
     unit_of_measurement: "V"
@@ -2126,7 +2127,7 @@ read:
       ]
 
   - name: "max_cell_voltage"
-    level: 3
+    level: 5
     address: 13113
     data_type: U16
     unit_of_measurement: "V"
@@ -2142,7 +2143,7 @@ read:
       ]
 
   - name: "min_cell_voltage"
-    level: 3
+    level: 5
     address: 13114
     data_type: U16
     unit_of_measurement: "V"
@@ -2159,7 +2160,7 @@ read:
 
   - name: "battery_pack_voltage"
     group: has_battery
-    level: 3
+    level: 5
     address: 13115
     data_type: U16
     unit_of_measurement: "V"
@@ -2175,7 +2176,7 @@ read:
       ]
 
   - name: "average_cell_temp"
-    level: 3
+    level: 5
     address: 13116
     data_type: S16
     unit_of_measurement: "°C"
@@ -2191,7 +2192,7 @@ read:
       ]
 
   - name: "max_cell_temp"
-    level: 3
+    level: 5
     address: 13117
     data_type: S16
     unit_of_measurement: "°C"
@@ -2207,7 +2208,7 @@ read:
       ]
 
   - name: "min_cell_temp"
-    level: 3
+    level: 5
     address: 13118
     data_type: S16
     unit_of_measurement: "°C"
@@ -2224,37 +2225,37 @@ read:
 
 hold:
   - name: "year"
-    level: 3
+    level: 5
     address: 5000
     data_type: U16
 
   - name: "month"
-    level: 3
+    level: 5
     address: 5001
     data_type: U16
 
   - name: "day"
-    level: 3
+    level: 5
     address: 5002
     data_type: U16
 
   - name: "hour"
-    level: 3
+    level: 5
     address: 5003
     data_type: U16
 
   - name: "minute"
-    level: 3
+    level: 5
     address: 5004
     data_type: U16
 
   - name: "second"
-    level: 3
+    level: 5
     address: 5005
     data_type: U16
 
   - name: "start_stop"
-    level: 3
+    level: 5
     address: 5006
     data_type: U16
     decoded:
@@ -2262,7 +2263,7 @@ hold:
       0xCE: "Stop"
 
   - name: "power_limitation_switch"
-    level: 3
+    level: 5
     address: 5007
     data_type: U16
     decoded:
@@ -2270,14 +2271,14 @@ hold:
       0x55: "Disable"
 
   - name: "power_limitation_setting"
-    level: 3
+    level: 5
     address: 5008
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "%"
 
   - name: "export_power_limitation"
-    level: 3
+    level: 5
     address: 5010
     data_type: U16
     models:
@@ -2298,7 +2299,7 @@ hold:
     models_exclude: ["WiNet"]
 
   - name: "export_power_limitation_value"
-    level: 3
+    level: 5
     address: 5011
     data_type: U16
     models:
@@ -2316,7 +2317,7 @@ hold:
     models_exclude: ["WiNet"]
 
   - name: "current_transformer_output_current"
-    level: 3
+    level: 5
     address: 5012
     data_type: U16
     unit_of_measurement: "A"
@@ -2335,7 +2336,7 @@ hold:
     models_exclude: ["WiNet"]
 
   - name: "current_transformer_range"
-    level: 3
+    level: 5
     address: 5013
     data_type: U16
     unit_of_measurement: "A"
@@ -2354,7 +2355,7 @@ hold:
     models_exclude: ["WiNet"]
 
   - name: "current_transformer"
-    level: 3
+    level: 5
     address: 5014
     data_type: U16
     models:
@@ -2376,7 +2377,7 @@ hold:
 
   - name: "export_power_limitation_percentage"
     group: has_battery
-    level: 3
+    level: 5
     address: 5015
     data_type: U16
     accuracy: 0.1
@@ -2396,7 +2397,7 @@ hold:
     models_exclude: ["WiNet"]
 
   - name: "installed_pv_power"
-    level: 2
+    level: 4
     address: 5016
     data_type: U16
     accuracy: 0.01
@@ -2415,14 +2416,14 @@ hold:
       ]
 
   - name: "power_factor_setting"
-    level: 3
+    level: 5
     address: 5019
     data_type: U16
     accuracy: 0.001
     models_exclude: ["SH*"]
 
   - name: "scheduling_achieve_active_overload"
-    level: 3
+    level: 5
     address: 5020
     data_type: U16
     models:
@@ -2461,7 +2462,7 @@ hold:
       0x55: "Disable"
 
   - name: "night_svg_switch"
-    level: 3
+    level: 5
     address: 5035
     data_type: U16
     models:
@@ -2502,7 +2503,7 @@ hold:
       0x55: "Disable"
 
   - name: "reactive_power_adjustment_mode"
-    level: 3
+    level: 5
     address: 5036
     data_type: U16
     decoded:
@@ -2513,14 +2514,14 @@ hold:
       0xA4: "Enable Q(U)"
 
   - name: "reactive_power_percentage_setting"
-    level: 3
+    level: 5
     address: 5037
     data_type: S16
     accuracy: 0.1
     unit_of_measurement: "%"
 
   - name: "power_limitation_adjustment"
-    level: 3
+    level: 5
     address: 5039
     data_type: U16
     accuracy: 0.1
@@ -2528,14 +2529,14 @@ hold:
     models_exclude: ["SH*"]
 
   - name: "reactive_power_adjustment"
-    level: 3
+    level: 5
     address: 5040
     data_type: S16
     accuracy: 100
     unit_of_measurement: "var"
 
   - name: "pid_recovery"
-    level: 3
+    level: 5
     address: 5041
     data_type: U16
     models:
@@ -2585,7 +2586,7 @@ hold:
       0x55: "Disable"
 
   - name: "anti_pid"
-    level: 3
+    level: 5
     address: 5042
     data_type: U16
     models:
@@ -2604,7 +2605,7 @@ hold:
       0x55: "Disable"
 
   - name: "fullday_pid_suppression"
-    level: 3
+    level: 5
     address: 5043
     data_type: U16
     models: ["SG250HX", "SG250HX-US", "SG250HX-IN", "SG225HX"]
@@ -2613,7 +2614,7 @@ hold:
       0x55: "Disable"
 
   - name: "start_stop_2"
-    level: 3
+    level: 5
     address: 13000
     data_type: U16
     decoded:
@@ -2621,7 +2622,7 @@ hold:
       0xCE: "Stop"
 
   - name: ems_mode_selection
-    level: 3
+    level: 5
     address: 13050
     data_type: U16
     decoded:
@@ -2634,7 +2635,7 @@ hold:
     # We want to disable this via has_battery, but if we but it in the group,
     # it will prevent the entire group from being disabled.
     # Note: Doesn't seem urgent as this is level 3.
-    level: 3
+    level: 5
     address: 13051
     data_type: U16
     decoded:
@@ -2644,7 +2645,7 @@ hold:
 
   - name: battery_forced_charge_discharge_power
     group: has_battery
-    level: 2
+    level: 4
     address: 13052
     data_type: U16
     unit_of_measurement: W
@@ -2653,7 +2654,7 @@ hold:
 
   - name: battery_forced_charge_discharge_power
     group: has_battery
-    level: 2
+    level: 4
     address: 13052
     data_type: U16
     unit_of_measurement: "%"
@@ -2661,21 +2662,21 @@ hold:
     models_exclude: ["WiNet"]
 
   - name: Max_SoC
-    level: 3
+    level: 5
     address: 13058
     data_type: U16
     unit_of_measurement: "%"
     accuracy: 0.1
 
   - name: Min_SoC
-    level: 3
+    level: 5
     address: 13059
     data_type: U16
     unit_of_measurement: "%"
     accuracy: 0.1
 
   - name: export_power_limit
-    level: 3
+    level: 5
     address: 13074
     data_type: U16
     unit_of_measurement: "W"
@@ -2683,7 +2684,7 @@ hold:
   - name: "start_charging_power"
     group: has_battery
     address: 13084
-    level: 3
+    level: 5
     accuracy: 10
     data_type: U16
     unit_of_measurement: "W"
@@ -2692,7 +2693,7 @@ hold:
   - name: "start_discharging_power"
     group: has_battery
     address: 13085
-    level: 3
+    level: 5
     accuracy: 10
     data_type: U16
     unit_of_measurement: "W"
@@ -2700,7 +2701,7 @@ hold:
 
   - name: "energy_meter_comm"
     address: 13086
-    level: 3
+    level: 5
     data_type: U16
     decoded:
       0xAA: "Enabled"
@@ -2709,7 +2710,7 @@ hold:
 
   - name: "export_power_limitation"
     address: 13087
-    level: 3
+    level: 5
     data_type: U16
     decoded:
       0xAA: "Enabled"
@@ -2718,7 +2719,7 @@ hold:
 
   - name: "soc_reserve"
     address: 13100
-    level: 3
+    level: 5
     data_type: U16
     unit_of_measurement: "%"
     models: ["SH10RT", "SH8.0RT", "SH8.0RT-20", "SH6.0RT", "SH5.0RT"]
@@ -2730,7 +2731,7 @@ hold:
     # it will prevent the entire group from being disabled.
     # Note: Doesn't seem urgent as this is level 3.
     address: 33047
-    level: 3
+    level: 5
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
@@ -2742,7 +2743,7 @@ hold:
     # it will prevent the entire group from being disabled.
     # Note: Doesn't seem urgent as this is level 3.
     address: 33048
-    level: 3
+    level: 5
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
@@ -2750,7 +2751,7 @@ hold:
   - name: battery_capacity_2
     group: has_battery
     address: 33049
-    level: 1
+    level: 3
     data_type: U16
     unit_of_measurement: "kWh"
     accuracy: 0.01
@@ -2759,7 +2760,7 @@ hold:
   - name: battery_charge_start_power
     group: has_battery
     address: 33149
-    level: 3
+    level: 5
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
@@ -2768,7 +2769,7 @@ hold:
   - name: battery_charge_stop_power
     group: has_battery
     address: 33150
-    level: 3
+    level: 5
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
@@ -2776,7 +2777,7 @@ hold:
 
   - name: master_slave_mode
     address: 33500
-    level: 0
+    level: 1
     data_type: U16
     decoded:
       0xAA: "Enabled"
@@ -2784,7 +2785,7 @@ hold:
 
   - name: master_slave_role
     address: 33501
-    level: 0
+    level: 1
     data_type: U16
     decoded:
       0xA0: "Master"
@@ -2793,9 +2794,9 @@ hold:
       0xA3: "Slave 3"
       0xA4: "Slave 4"
 
-  - name: slave_count
+  - name: inverter_count
     address: 33502
-    level: 0
+    level: 1
     data_type: U16
 
   - name: weekly_discharging_start_time_1_hour
@@ -2803,63 +2804,63 @@ hold:
     # Note: very different addresses at https://github.com/tjhowse/modbus4mqtt/blob/master/modbus4mqtt/Sungrow_SH5k_20.yaml
     group: has_battery
     address: 33151
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekly_discharging_start_time_1_minute
     group: has_battery
     address: 33152
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekly_discharging_end_time_1_hour
     group: has_battery
     address: 33153
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekly_discharging_end_time_1_minute
     group: has_battery
     address: 33154
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekly_discharging_start_time_2_hour
     group: has_battery
     address: 33155
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekly_discharging_start_time_2_minute
     group: has_battery
     address: 33156
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekly_discharging_end_time_2_hour
     group: has_battery
     address: 33157
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekly_discharging_end_time_2_minute
     group: has_battery
     address: 33158
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekend_discharging_enable
     group: has_battery
     address: 33179
-    level: 3
+    level: 5
     data_type: U16
     decoded:
       0xAA: "Enabled"
@@ -2869,49 +2870,49 @@ hold:
   - name: weekend_discharging_start_time_1_hour
     group: has_battery
     address: 33180
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekend_discharging_start_time_1_minute
     group: has_battery
     address: 33181
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekend_discharging_end_time_1_hour
     group: has_battery
     address: 33182
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekend_discharging_end_time_1_minute
     group: has_battery
     address: 33183
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekend_discharging_start_time_2_hour
     group: has_battery
     address: 33184
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: weekend_discharging_start_time_2_minute
     group: has_battery
     address: 33185
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_enable
     group: has_battery
     address: 33208
-    level: 3
+    level: 5
     data_type: U16
     decoded:
       0xAA: "Enabled"
@@ -2921,7 +2922,7 @@ hold:
   - name: forced_charging_valid_time
     group: has_battery
     address: 33209
-    level: 3
+    level: 5
     data_type: U16
     decoded:
       0x01: "Every Day"
@@ -2930,35 +2931,35 @@ hold:
   - name: forced_charging_start_time_1_hour
     group: has_battery
     address: 33210
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_start_time_1_minute
     group: has_battery
     address: 33211
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_end_time_1_hour
     group: has_battery
     address: 33212
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_end_time_1_minute
     group: has_battery
     address: 33213
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_target_soc_1
     group: has_battery
     address: 33214
-    level: 3
+    level: 5
     data_type: U16
     unit_of_measurement: "%"
     accuracy: 0.1
@@ -2967,35 +2968,35 @@ hold:
   - name: forced_charging_start_time_2_hour
     group: has_battery
     address: 33215
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_start_time_2_minute
     group: has_battery
     address: 33216
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_end_time_2_hour
     group: has_battery
     address: 33217
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_end_time_2_minute
     group: has_battery
     address: 33218
-    level: 3
+    level: 5
     data_type: U16
     models: ["SH*RT*"]
 
   - name: forced_charging_target_soc_2
     group: has_battery
     address: 33219
-    level: 3
+    level: 5
     data_type: U16
     unit_of_measurement: "%"
     accuracy: 0.1

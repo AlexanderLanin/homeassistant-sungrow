@@ -8,7 +8,7 @@ from fnmatch import fnmatch
 from typing import cast
 
 from custom_components.sungrow.core import const
-from custom_components.sungrow.core.inverter_types import Sensor
+from custom_components.sungrow.core.inverter_types import Level, Sensor
 
 from . import (
     deserialize,
@@ -238,7 +238,9 @@ class SungrowInverter:
         self._signal_definitions = signal_definitions or signals.load_yaml()
 
         # TODO config.get("level", 1)
-        self._signal_definitions.mark_signals_below_level_as_disabled(1)
+        self._signal_definitions.mark_signals_below_level_as_disabled(
+            Level.ADVANCED.value
+        )
 
         # Remove disabled signals from data
         for signal in self._signal_definitions._definitions.values():
@@ -259,31 +261,14 @@ class SungrowInverter:
             self._signal_definitions
         ), "Must be loaded before this function is called."
 
-        def print_enabled_signals(prefix):
-            logger.debug(
-                f"Enabled signals ({prefix}): "
-                + ",".join(
-                    [
-                        signal.name
-                        for signal in self._signal_definitions.all_signals()
-                        if not signal.disabled
-                    ]
-                )
-            )
-
-        print_enabled_signals("initial")
-
         self._disable_signals_not_supported_by_model()
-        print_enabled_signals(f"filtered for {self.model}")
 
         await self._disable_all_meter_signals_if_no_meter_available()
-        print_enabled_signals("meter filtered")
 
         # TODO: are the same registers unsupported via pymodbus and http?
         if await self._determine_is_modbus_winet():
             logger.debug("WiNet dongle detected; Disabling all unsupported signals")
             self._signal_definitions.disable_winet_signals()
-            print_enabled_signals("WiNet filtered")
 
         # We now need to pull all data which belongs to a group,
         # so we can detect groups which do not apply, like "has_battery".
@@ -299,7 +284,6 @@ class SungrowInverter:
         self._active_groups = mark_unavailable_signals_as_disabled(
             self._signal_definitions, data
         )
-        print_enabled_signals("groups filtered")
 
     async def pull_signals_by_name(
         self, signal_list: list[str]
@@ -330,10 +314,10 @@ class SungrowInverter:
         self._client.slave = slave
 
         try:
-            signal_list = self._signal_definitions.get_active_signals_for_level(0)
-            logger.debug(f"Querying initial signals: {[s.name for s in signal_list]}")
+            signal_list = self._signal_definitions.get_active_signals_for_level(
+                Level.CONNECTION.value
+            )
             self.data = await self.pull_signals(signal_list)
-            logger.debug(f"Initial data queried: {self.data}")
         except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
             self.data = {}
             logger.debug("Error connecting to inverter")
@@ -506,19 +490,19 @@ class SungrowInverter:
 
         master_slave_mode = self.data.get("master_slave_mode")
         master_slave_role = self.data.get("master_slave_role")
-        slave_count = self.data.get("slave_count")
+        inverter_count = self.data.get("inverter_count")
 
         if (
             master_slave_mode in ["Disabled", "Enabled"]
             # isinstance str = sucessfully decoded
             and isinstance(master_slave_role, str)
-            and slave_count is not None
+            and inverter_count is not None
         ):
             # Rename standalone "Master" to "Standalone"
             if master_slave_mode == "Disabled":
-                if slave_count != 0:
+                if inverter_count != 1:
                     raise RuntimeError(
-                        "master_slave_mode is Disabled, but slave_count is not 0"
+                        "master_slave_mode is Disabled, but inverter_count is not 1"
                     )
                 if master_slave_role != "Master":
                     raise RuntimeError(
@@ -528,7 +512,7 @@ class SungrowInverter:
                 master_slave_role = "Standalone"
 
             # Simplify "Slave 1" to "Slave" if only one slave
-            if master_slave_role == "Slave 1" and slave_count == 1:
+            if master_slave_role == "Slave 1" and inverter_count == 1:
                 master_slave_role = "Slave"
 
             return master_slave_role

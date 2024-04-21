@@ -157,7 +157,10 @@ class SignalDefinitions:
                         all_zero = False
 
             if not has_enabled_signal:
-                logger.debug(f"Group {group}: not supported by inverter")
+                logger.debug(
+                    f"Group {group}: not supported by inverter "
+                    "(all signals in group are already disabled)"
+                )
                 # extra_data[group] = False
             elif all_zero:
                 logger.debug(f"Group {group}: all signals are zero")

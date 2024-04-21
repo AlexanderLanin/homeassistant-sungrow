@@ -142,11 +142,6 @@ class ModbusConnectionBase:
             logger.debug(
                 f"read_raw({len(signal_list)} signals) in {len(ranges)} ranges"
             )
-            for r in ranges:
-                logger.debug(
-                    f"* {r[0].registers.register_type} "
-                    f"{r[0].registers.start} - {r[-1].registers.end}"
-                )
         else:
             logger.debug(f"read_raw({[s.name for s in signal_list]})")
 
