@@ -48,6 +48,12 @@ class SungrowSignalDefinition(Signal):
     level: int | None
     base_datatype: str | None = None
 
+    unsupported_value: DatapointValueTypeBase = None
+    """
+    In some cases (especially WiNet), not supported is not reported correctly.
+    This is the value that is being returned, although the signal is not supported.
+    """
+
     array_length: int | None = None
     """ Length of the array. None if not an array. """
 
@@ -268,6 +274,7 @@ def load_yaml() -> SignalDefinitions:
                     start=entry["address"],
                     length=array_length * base_datatype_length,
                 ),
+                unsupported_value=entry.get("unsupported_value"),
             )
 
             if signal.decoded:

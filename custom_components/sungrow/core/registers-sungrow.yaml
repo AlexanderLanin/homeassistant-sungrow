@@ -181,6 +181,10 @@ read:
     unit_of_measurement: "h"
     models_exclude: ["SH8.0RT-20"]
 
+    # It's not reported as unsupported, but zero runtime is not possible.
+    # Happens on SH8.0RT-20 via WiNet.
+    unsupported_value: 0
+
   - name: "internal_temperature"
     level: 4
     address: 5008
@@ -217,6 +221,9 @@ read:
     accuracy: 0.1
     unit_of_measurement: "V"
 
+    # 0 Voltage does not imply unsupported, as it is zero when it's dark.
+    unsupported_value: None
+
   - name: "mppt_2_current"
     group: mppt2
     level: 3
@@ -224,6 +231,9 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
+
+    # 0 Voltage does not imply unsupported, as it is zero when it's dark.
+    unsupported_value: None
 
   - name: "mppt_3_voltage"
     group: mppt3
@@ -233,6 +243,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "V"
     models_exclude: ["SH8.0RT-20"]
+    unsupported_value: None
 
   - name: "mppt_3_current"
     group: mppt3
@@ -242,6 +253,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "A"
     models_exclude: ["SH8.0RT-20"]
+    unsupported_value: None
 
   - name: "total_dc_power" # pv power
     level: 3
@@ -905,35 +917,30 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
 
   - name: backup_power_phase_a
     level: 4
     address: 5723
     data_type: S16
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
 
   - name: backup_power_phase_b
     level: 4
     address: 5724
     data_type: S16
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
 
   - name: backup_power_phase_c
     level: 4
     address: 5725
     data_type: S16
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
 
   - name: backup_power_total
     level: 4
     address: 5726
     data_type: S16
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
 
   - name: "pv_power_of_today"
     level: 5
@@ -1739,7 +1746,8 @@ read:
     decoded:
       0xAA: "Off-grid"
       0x55: "On-grid"
-    models_exclude: ["SH8.0RT-20"] # Only via WiNet ?!!
+    models_exclude: ["SH8.0RT-20"]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "phase_a_current"
     level: 4
@@ -1883,16 +1891,12 @@ read:
     level: 5
     address: 13066
     data_type: U32
-    accuracy: 0.1
-    models_exclude: ["WiNet"]
 
   - name: "battery_alarm"
     group: has_battery
     level: 5
     address: 13068
     data_type: U32
-    accuracy: 0.1
-    models_exclude: ["WiNet"]
 
   - name: "bms_alarm"
     level: 5
@@ -1951,6 +1955,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 30 # SH8.0RT-20 via WiNet reports 30, but 30A doesn't make much sense for a 8kW inverter.
 
   - name: "max_discharging_current"
     group: has_battery
@@ -1968,6 +1973,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 30 # SH8.0RT-20 via WiNet reports 30, but 30A doesn't make much sense for a 8kW inverter.
 
   - name: "warning"
     level: 5
@@ -1983,6 +1989,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "protection"
     level: 5
@@ -1998,6 +2005,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "fault1"
     level: 5
@@ -2013,6 +2021,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "fault2"
     level: 5
@@ -2028,6 +2037,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "soc"
     level: 4
@@ -2044,6 +2054,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "soh"
     level: 4
@@ -2059,6 +2070,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "battery_current"
     group: has_battery
@@ -2076,6 +2088,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "battery_voltage"
     group: has_battery
@@ -2094,6 +2107,8 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
+
   - name: "cycle_count"
     level: 5
     address: 13111
@@ -2109,6 +2124,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "average_cell_voltage"
     level: 5
@@ -2125,6 +2141,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "max_cell_voltage"
     level: 5
@@ -2141,6 +2158,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "min_cell_voltage"
     level: 5
@@ -2157,6 +2175,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: "battery_pack_voltage"
     group: has_battery
@@ -2756,6 +2775,7 @@ hold:
     unit_of_measurement: "kWh"
     accuracy: 0.01
     models_exclude: ["SH8.0RT-20", "WiNet"]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: battery_charge_start_power
     group: has_battery
@@ -2765,6 +2785,7 @@ hold:
     unit_of_measurement: "W"
     accuracy: 10
     models_exclude: ["WiNet"]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: battery_charge_stop_power
     group: has_battery
@@ -2774,6 +2795,7 @@ hold:
     unit_of_measurement: "W"
     accuracy: 10
     models_exclude: ["WiNet"]
+    unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: master_slave_mode
     address: 33500

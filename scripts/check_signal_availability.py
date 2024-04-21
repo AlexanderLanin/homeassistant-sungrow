@@ -36,20 +36,27 @@ async def check(host: str):
 
 
 async def check_signals(ic: inverter.SungrowInverter):
+    # FIXME: query everything and mark all non zero values as supported.
+    # Then query only the remaining values one by one!
+
     for signal in tqdm(ic._signal_definitions.all_signals()):
         value = await inverter.pull_single_signal(ic._client, signal)
 
+        # FIXME: move this logic to pull_signal, so it's always checked!
         if value is None and not signal.disabled:
             logging.warning(f"{signal.name} is not readable, but marked as supported")
 
         if signal.disabled and value is not None:
+            if value == signal.unsupported_value:
+                continue
+
             if value != 0:
                 logging.warning(
                     f"{signal.name} is disabled ({signal.disabled}), "
                     f"but it looks to be supported ({value})"
                 )
             else:
-                logging.info(
+                logging.debug(
                     f"{signal.name} is disabled ({signal.disabled}), "
                     f"but it might be supported ({value})"
                 )
