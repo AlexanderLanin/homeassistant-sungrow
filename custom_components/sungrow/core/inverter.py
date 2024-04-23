@@ -37,12 +37,9 @@ async def pull_single_signal(
         f"Inverter: pulled single signal in {elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
-    if raw is None:
-        logger.debug(f"Inverter: {signal.name} not supported")
-        signal.disabled.append("Inverter does not support this signal (None returned)")
-        return None
-    else:
-        return deserialize.decode_signal(signal, raw)
+    decoded = deserialize.decode_signal(signal, raw) if raw else None
+    signal.determine_and_mark_supported(decoded)
+    return decoded
 
 
 async def pull_signals(
@@ -63,23 +60,17 @@ async def pull_signals(
         f"Inverter: Pulled {len(signal_definitions)} signals in {elapsed.seconds}.{elapsed.microseconds} secs"
     )
 
-    for name, value in raw_data.items():
-        if value is None:
-            logger.debug(f"Inverter: {name} not supported")
-            signal = next(
-                (signal for signal in signal_definitions if signal.name == name), None
-            )
-            # as signal is in raw_data, it must be in signal_definitions
-            assert signal
-            signal.disabled.append(
-                "Inverter does not support this signal "
-                f"(None returned, while quering {len(signal_definitions)} signals)"
-            )
-
-    return deserialize.decode_signals(
+    decoded = deserialize.decode_signals(
         signal_definitions,
         raw_data,
     )
+    for name, value in decoded.items():
+        signal = next(
+            (signal for signal in signal_definitions if signal.name == name), None
+        )
+        assert signal
+        signal.determine_and_mark_supported(value)
+    return decoded
 
 
 def mark_unavailable_signals_as_disabled(

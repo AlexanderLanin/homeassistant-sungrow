@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import cast
 
 import yaml
+from aiohttp import DefaultResolver
 
 from custom_components.sungrow.core.modbus_types import RegisterRange
 
@@ -48,7 +49,7 @@ class SungrowSignalDefinition(Signal):
     level: int | None
     base_datatype: str | None = None
 
-    unsupported_value: DatapointValueTypeBase = None
+    potentially_unsupported_value: DatapointValueTypeBase = None
     """
     In some cases (especially WiNet), not supported is not reported correctly.
     This is the value that is being returned, although the signal is not supported.
@@ -56,6 +57,53 @@ class SungrowSignalDefinition(Signal):
 
     array_length: int | None = None
     """ Length of the array. None if not an array. """
+
+    _is_supported: bool | None = None
+    """
+    Yes, No, Unknown. Careful how you compare this!
+    Note: this is unrelated to 'disabled'. This is what the inverter actually supports,
+    while 'disabled' is what we want to disable (what we think the inverter supports).
+    TODO: rename disabled to is_supported_guess + disabled_reasons?
+    """
+
+    def __post_init__(self):
+        # If yaml does not define a specific value, we assume 0.
+        # When we query multiple registers, the inverter/WiNet will respond with 0,
+        # if the signal is not supported.
+        if self.potentially_unsupported_value is None:
+            self.potentially_unsupported_value = 0
+
+    @property
+    def is_supported(self):
+        return self._is_supported
+
+    @is_supported.setter
+    def is_supported(self, correct_is_supported: bool):
+        if self._is_supported is None:
+            if correct_is_supported and self.disabled:
+                logger.warning(
+                    f"Signal {self.name} was disabled ({self.disabled}), "
+                    f"but has been received"
+                )
+            if not correct_is_supported and not self.disabled:
+                logger.warning(
+                    f"Signal {self.name} was received, but is disabled ({self.disabled})"
+                )
+            self._is_supported = correct_is_supported
+        else:
+            assert self._is_supported == correct_is_supported
+
+    def is_value_supported(self, value) -> bool:
+        return value is not None and value != self.potentially_unsupported_value
+
+    def is_value_unsupported(self, value) -> bool:
+        return value is None
+
+    def determine_and_mark_supported(self, value):
+        if self.is_value_supported(value):
+            self.is_supported = True
+        elif self.is_value_unsupported(value):
+            self.is_supported = False
 
     @property
     def na_value(self):
@@ -274,7 +322,7 @@ def load_yaml() -> SignalDefinitions:
                     start=entry["address"],
                     length=array_length * base_datatype_length,
                 ),
-                unsupported_value=entry.get("unsupported_value"),
+                potentially_unsupported_value=entry.get("unsupported_value"),
             )
 
             if signal.decoded:
