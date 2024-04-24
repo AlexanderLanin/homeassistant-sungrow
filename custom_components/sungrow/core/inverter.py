@@ -9,6 +9,7 @@ from typing import cast
 
 from custom_components.sungrow.core import const
 from custom_components.sungrow.core.inverter_types import Level, Sensor
+from enum import Enum
 
 from . import (
     deserialize,
@@ -481,48 +482,57 @@ class SungrowInverter:
                 data[signal] = self.data[signal]
         return data
 
+    class ConnectionMode(Enum):
+        STANDALONE = "Standalone"
+        MASTER = "Master"
+        SLAVE = "Slave"
+        SLAVE_1 = "Slave 1"
+        SLAVE_2 = "Slave 2"
+        SLAVE_3 = "Slave 3"
+        SLAVE_4 = "Slave 4"
+        ERROR = "Error"
+
+        def __str__(self):
+            return self.value
+
+        def __repr__(self):
+            return self.value
+    
     @property
-    def slave_master_standalone(self):
-        assert self._active_groups is not None, "Must be set by factory method"
-
-        master_slave_mode = self.data.get("master_slave_mode")
-        master_slave_role = self.data.get("master_slave_role")
-        inverter_count = self.data.get("inverter_count")
-
-        if (
-            master_slave_mode in ["Disabled", "Enabled"]
-            # isinstance str = sucessfully decoded
-            and isinstance(master_slave_role, str)
-            and inverter_count is not None
-        ):
-            # Rename standalone "Master" to "Standalone"
-            if master_slave_mode == "Disabled":
-                if inverter_count != 1:
-                    raise RuntimeError(
-                        "master_slave_mode is Disabled, but inverter_count is not 1"
-                    )
-                if master_slave_role != "Master":
-                    raise RuntimeError(
-                        "master_slave_mode is Disabled, "
-                        "but master_slave_role is not Master"
-                    )
-                master_slave_role = "Standalone"
-
-            # Simplify "Slave 1" to "Slave" if only one slave
-            if master_slave_role == "Slave 1" and inverter_count == 1:
-                master_slave_role = "Slave"
-
-            return master_slave_role
-
-        # if master_slave_mode is not available, we can try to guess...
-        if self._active_groups.get("is_master"):
-            if self.data.get("output_type", "2P") == "2P":
-                return "Standalone"
-            else:
-                return "Master"
+    def is_standalone(self):
+        if master_slave_mode := self.data.get("master_slave_mode"):
+            return master_slave_mode == "Disabled"
         else:
-            return "Slave"
+            return self.data["output_type"] == "2P"
 
+    @property
+    def slaves(self):
+        if self.is_standalone:
+            return 0
+        else:
+            return self.data.get("inverter_count") # -1?
+    
+    @property
+    def type(self):
+        if self.is_standalone:
+            return self.ConnectionMode.STANDALONE
+
+        if master_slave_role := self.data.get("master_slave_role"):
+            # Simplify "Slave 1" to "Slave" if only one slave
+            if master_slave_role == "Slave 1" and self.slaves == 1:
+                return self.ConnectionMode.SLAVE
+
+            return self.ConnectionMode(master_slave_role)
+        else:
+            assert self._active_groups is not None, "Must be set by factory method"
+            return self.ConnectionMode.MASTER if self._active_groups.get("is_master") else self.ConnectionMode.SLAVE
+    
+    
+    def type_str(self):
+        return str(self.type)
+
+    
+            
     @property
     def connection_mode(self):
         suffix = " WiNet" if self.is_modbus_winet else ""

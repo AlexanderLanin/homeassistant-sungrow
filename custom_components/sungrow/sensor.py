@@ -243,17 +243,17 @@ class SungrowInverterSensorEntity(CoordinatorEntity, SensorEntity):
 
         self.coordinator = coordinator
         self.signal_name = signal_name
-        self.device_object_id = inverter.slave_master_standalone
+        self.device_object_id = inverter.type_str
 
         self._attr_native_unit_of_measurement = signal_unit
         self._attr_device_class = guess_device_class(signal_unit)
         self._attr_state_class = guess_state_class(self.device_class)
         # Note: name can be changed in the UI!
-        signal_pretty = signal_name.replace("_", " ").title()
-        if inverter.slave_master_standalone == "Standalone":
-            self._attr_name = signal_pretty
+        user_friendly_signal_name = signal_name.replace("_", " ").title()
+        if inverter.type_str == "Standalone":
+            self._attr_name = user_friendly_signal_name
         else:
-            self._attr_name = inverter.slave_master_standalone + " - " + signal_pretty
+            self._attr_name = inverter.type_str + " - " + user_friendly_signal_name
 
         # This will link the sensor to the matching device.
         self._attr_device_info = device_registry.DeviceInfo(
