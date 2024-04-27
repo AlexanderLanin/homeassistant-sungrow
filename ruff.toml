@@ -80,6 +80,7 @@ ignore = [
     "PLR2004", # magic values like 0x7FFF
     "B023",    # Function definition does not bind loop variable. Warns on well readable code.
     "DTZ005",  # `datetime.datetime.now()` called without a `tz` argument. datetime is used for deltas only.
+    "ASYNC101", # Checks that async functions do not contain calls to open, time.sleep, or subprocess methods. No easy fix for open()
 ]
 
 [lint.mccabe]

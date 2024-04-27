@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
-from fnmatch import fnmatch
-from typing import cast
-
-from custom_components.sungrow.core import const
-from custom_components.sungrow.core.inverter_types import Level, Sensor
+from dataclasses import dataclass
 from enum import Enum
+from fnmatch import fnmatch
+
+from custom_components.sungrow.core import connection, const
+from custom_components.sungrow.core.inverter_types import Level, Sensor
 
 from . import (
     deserialize,
@@ -22,56 +21,6 @@ from . import (
 logger = logging.getLogger(__name__)
 
 DatapointValueType = signals.DatapointValueType
-
-
-async def pull_single_signal(
-    client: modbus_py.ModbusConnectionBase,
-    signal: signals.SungrowSignalDefinition,
-) -> DatapointValueType | None:
-    """pull_raw_signals is more efficient than pull_raw_signal for multiple signals!!"""
-
-    pull_start = datetime.now()
-    raw = (await client.read([signal]))[signal.name]
-    elapsed = datetime.now() - pull_start
-
-    logger.debug(
-        f"Inverter: pulled single signal in {elapsed.seconds}.{elapsed.microseconds} secs"
-    )
-
-    decoded = deserialize.decode_signal(signal, raw) if raw else None
-    signal.determine_and_mark_supported(decoded)
-    return decoded
-
-
-async def pull_signals(
-    client: modbus_py.ModbusConnectionBase,
-    signal_definitions: list[signals.SungrowSignalDefinition],
-) -> deserialize.DecodedSignals:
-    """Pull data from inverter"""
-
-    pull_start = datetime.now()
-
-    # Downcast to base class to make mypy happy
-    signal_definitions_base = cast(list[modbus_base.Signal], signal_definitions)
-    raw_data = await client.read(signal_definitions_base)
-
-    elapsed = datetime.now() - pull_start
-
-    logger.debug(
-        f"Inverter: Pulled {len(signal_definitions)} signals in {elapsed.seconds}.{elapsed.microseconds} secs"
-    )
-
-    decoded = deserialize.decode_signals(
-        signal_definitions,
-        raw_data,
-    )
-    for name, value in decoded.items():
-        signal = next(
-            (signal for signal in signal_definitions if signal.name == name), None
-        )
-        assert signal
-        signal.determine_and_mark_supported(value)
-    return decoded
 
 
 def mark_unavailable_signals_as_disabled(
@@ -167,19 +116,30 @@ class SungrowInverter:
         logger.debug("Failed to connect to inverter")
         return None
 
+    @dataclass
+    class ConnectionInfo:
+        host: str
+        port: int | None
+        connection: str | None
+
     @staticmethod
     async def create(
-        host: str,
-        port: int | None,
-        slave: int | None,
-        connection: str | None,
+        connection_info: ConnectionInfo | connection.Connection,
+        slave: int | None = None,
         level_of_detail: int = Level.ADVANCED.value,
     ) -> SungrowInverter | None:
         """Create a connection, with heuristics for port, slave and connection type."""
 
-        connection_obj = await SungrowInverter._attempt_connect(connection, host, port)
-        if connection_obj is None:
-            return None
+        if isinstance(connection_info, connection.Connection):
+            connection_obj = connection_info
+        else:
+            connection_base = await SungrowInverter._attempt_connect(
+                connection_info.connection, connection_info.host, connection_info.port
+            )
+            if connection_base is None:
+                return None
+
+            connection_obj = connection.Connection(connection_base)
 
         inv = SungrowInverter(connection_obj, direct_initialization=False)
 
@@ -209,7 +169,7 @@ class SungrowInverter:
 
     def __init__(
         self,
-        client: modbus_base.ModbusConnectionBase,
+        client: connection.Connection,
         signal_definitions: signals.SignalDefinitions | None = None,
         direct_initialization: bool = True,
     ):
@@ -273,7 +233,7 @@ class SungrowInverter:
             for signal in self._signal_definitions._definitions.values()
             if signal.group and not signal.disabled and signal.name not in self.data
         ]
-        data = await self.pull_signals(query)
+        data = await self._client.read(query)
         if not data:
             raise RuntimeError("Failed to pull data from inverter")
 
@@ -283,25 +243,18 @@ class SungrowInverter:
 
         self._signal_definitions.mark_signals_below_level_as_disabled(level_of_detail)
 
+    async def pull_single_signal_by_name(
+        self, signal_name: str
+    ) -> DatapointValueType | None:
+        return await self._client.read_single_signal(
+            self._signal_definitions.get_signal_definition_by_name(signal_name)
+        )
+
     async def pull_signals_by_name(
         self, signal_list: list[str]
     ) -> deserialize.DecodedSignals:
-        return await self.pull_signals(
+        return await self._client.read(
             self._signal_definitions.get_signal_definitions_by_name(signal_list),
-        )
-
-    async def pull_signals(
-        self, signal_list: list[signals.SungrowSignalDefinition]
-    ) -> deserialize.DecodedSignals:
-        return await pull_signals(
-            self._client,
-            signal_list,
-        )
-
-    async def pull_single_signal(self, signal_name: str):
-        return await pull_single_signal(
-            self._client,
-            self._signal_definitions.get_signal_definition_by_name(signal_name),
         )
 
     async def _set_slave_and_query_initial_data(self, slave: int):
@@ -315,7 +268,7 @@ class SungrowInverter:
             signal_list = self._signal_definitions.get_active_signals_for_level(
                 Level.CONNECTION.value
             )
-            self.data = await self.pull_signals(signal_list)
+            self.data = await self._client.read(signal_list)
         except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
             self.data = {}
             logger.debug("Error connecting to inverter")
@@ -333,11 +286,11 @@ class SungrowInverter:
     async def _determine_is_modbus_winet(self):
         assert self._is_modbus_winet is None, "This should be called only once"
 
-        if isinstance(self._client, modbus_http.HttpConnection):
+        if isinstance(self._client._modbus_connection, modbus_http.HttpConnection):
             self._is_modbus_winet = True
         else:
             # array_insulation_resistance is not supported by WiNet dongle
-            value = await self.pull_single_signal("array_insulation_resistance")
+            value = await self.pull_single_signal_by_name("array_insulation_resistance")
 
             if value is None:
                 logger.debug(
@@ -380,7 +333,7 @@ class SungrowInverter:
         # because all signals are 0.
         # TODO: Introduce is_disabled / is_available flag?
         logger.debug("Checking if meter is connected...")
-        if await self.pull_single_signal("meter_active_power") is None:
+        if await self.pull_single_signal_by_name("meter_active_power") is None:
             for signal in self._signal_definitions.get_signal_definitions_by_name(
                 [
                     "meter_active_power",
@@ -393,12 +346,6 @@ class SungrowInverter:
             logger.debug("Disabed all meter signals as meter is not connected")
         else:
             logger.debug("Meter is connected")
-
-    # @dataclass
-    # class Config:
-    #     initial_data: dict[str, DatapointValueType]
-    #     active_groups: dict[str, bool]
-    #     signals: signals.SignalDefinitions
 
     async def disconnect(self):
         await self._client.disconnect()
@@ -448,9 +395,7 @@ class SungrowInverter:
             "Pulling data from inverter: "
             + ",".join([s.name for s in self._signal_definitions.enabled_signals()])
         )
-        new_data = await pull_signals(
-            self._client, self._signal_definitions.enabled_signals()
-        )
+        new_data = await self._client.read(self._signal_definitions.enabled_signals())
         if new_data:
             self.update_sensors_from_raw_data(new_data)
             self.update_sensors_with_active_groups()  # one time activity?
@@ -497,7 +442,7 @@ class SungrowInverter:
 
         def __repr__(self):
             return self.value
-    
+
     @property
     def is_standalone(self):
         if master_slave_mode := self.data.get("master_slave_mode"):
@@ -510,8 +455,8 @@ class SungrowInverter:
         if self.is_standalone:
             return 0
         else:
-            return self.data.get("inverter_count") # -1?
-    
+            return self.data.get("inverter_count")  # -1?
+
     @property
     def type(self):
         if self.is_standalone:
@@ -525,21 +470,22 @@ class SungrowInverter:
             return self.ConnectionMode(master_slave_role)
         else:
             assert self._active_groups is not None, "Must be set by factory method"
-            return self.ConnectionMode.MASTER if self._active_groups.get("is_master") else self.ConnectionMode.SLAVE
-    
-    
+            return (
+                self.ConnectionMode.MASTER
+                if self._active_groups.get("is_master")
+                else self.ConnectionMode.SLAVE
+            )
+
     def type_str(self):
         return str(self.type)
 
-    
-            
     @property
     def connection_mode(self):
         suffix = " WiNet" if self.is_modbus_winet else ""
 
-        if isinstance(self._client, modbus_http.HttpConnection):
+        if isinstance(self._client._modbus_connection, modbus_http.HttpConnection):
             return "http" + suffix
-        elif isinstance(self._client, modbus_py.PymodbusConnection):
+        elif isinstance(self._client._modbus_connection, modbus_py.PymodbusConnection):
             return "modbus" + suffix
         else:
             raise TypeError("Unknown connection type")
