@@ -105,41 +105,49 @@ class SungrowInverter:
             raise RuntimeError("Unknown connection type")
 
     @staticmethod
-    async def _attempt_connect(connection: str | None, host: str, port: int | None):
-        connection_classes = _guess_connection_classes(connection, port)
+    async def _establish_connection(ci: ConnectionParams):
+        connection_classes = _guess_connection_classes(ci.connection, ci.port)
         for cc in connection_classes:
-            connection_obj = cc(host, port or SungrowInverter._get_default_port(cc))
+            port = ci.port or SungrowInverter._get_default_port(cc)
+            modbus_obj = cc(ci.host, port)
 
-            logger.debug(f"Trying to connect to {connection_obj}...")
-            if await connection_obj.connect():
-                return connection_obj
+            logger.debug(f"Trying to connect to {modbus_obj}...")
+            if await modbus_obj.connect():
+                connection_obj = connection.Connection(modbus_obj)
+                is_http = isinstance(modbus_obj, modbus_http.HttpConnection)
+                return SungrowInverter.ConnectionData(connection_obj, is_http)
         logger.debug("Failed to connect to inverter")
         return None
 
     @dataclass
-    class ConnectionInfo:
+    class ConnectionParams:
         host: str
         port: int | None
         connection: str | None
 
+    @dataclass
+    class ConnectionData:
+        """Mostly/only used for connection injection in tests."""
+
+        connection: connection.Connection
+        is_http: bool
+
     @staticmethod
     async def create(
-        connection_info: ConnectionInfo | connection.Connection,
+        connection_param: ConnectionParams | ConnectionData,
         slave: int | None = None,
         level_of_detail: int = Level.ADVANCED.value,
     ) -> SungrowInverter | None:
         """Create a connection, with heuristics for port, slave and connection type."""
 
-        if isinstance(connection_info, connection.Connection):
-            connection_obj = connection_info
+        if isinstance(connection_param, SungrowInverter.ConnectionData):
+            connection_obj = connection_param
         else:
-            connection_base = await SungrowInverter._attempt_connect(
-                connection_info.connection, connection_info.host, connection_info.port
+            connection_obj = await SungrowInverter._establish_connection(
+                connection_param
             )
-            if connection_base is None:
+            if connection_obj is None:
                 return None
-
-            connection_obj = connection.Connection(connection_base)
 
         inv = SungrowInverter(connection_obj, direct_initialization=False)
 
@@ -169,7 +177,7 @@ class SungrowInverter:
 
     def __init__(
         self,
-        client: connection.Connection,
+        connection_data: ConnectionData,
         signal_definitions: signals.SignalDefinitions | None = None,
         direct_initialization: bool = True,
     ):
@@ -177,7 +185,9 @@ class SungrowInverter:
         if direct_initialization:
             raise RuntimeError("Use create() factory method")
 
-        self._client = client
+        self._client = connection_data.connection
+        self._is_http = connection_data.is_http
+
         self.data: deserialize.DecodedSignals = {}
         """
         All data from the inverter.
@@ -286,7 +296,7 @@ class SungrowInverter:
     async def _determine_is_modbus_winet(self):
         assert self._is_modbus_winet is None, "This should be called only once"
 
-        if isinstance(self._client._modbus_connection, modbus_http.HttpConnection):
+        if self._is_http:
             self._is_modbus_winet = True
         else:
             # array_insulation_resistance is not supported by WiNet dongle
@@ -483,9 +493,7 @@ class SungrowInverter:
     def connection_mode(self):
         suffix = " WiNet" if self.is_modbus_winet else ""
 
-        if isinstance(self._client._modbus_connection, modbus_http.HttpConnection):
+        if self._is_http:
             return "http" + suffix
-        elif isinstance(self._client._modbus_connection, modbus_py.PymodbusConnection):
-            return "modbus" + suffix
         else:
-            raise TypeError("Unknown connection type")
+            return "modbus" + suffix

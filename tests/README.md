@@ -18,16 +18,24 @@ FIXME: data is still encoded here!! Fake modbus_base instead?!
 
 ```mermaid
 classDiagram
-    class modbus_base {
-        decodes data
+    namespace Product {
+        class inverter
+        class connection
+        class modbus_base
+        class modbus_py
+        class modbus_http
+        class aiohttp~external~
+        class pymodbus~external~
     }
 
-    inverter --> modbus_base : decoded data
-    modbus_base --> modbus_py : encoded data
-    modbus_base --> modbus_http : encoded data
-    modbus_base ..> modbus_stub : encoded data
-    
-    modbus_py ..> pymodbus_mock~test~
+    inverter --> connection : signals / decoded data
+
+    connection --> modbus_base : register / raw data
+    inverter --> fake_connection~test~ : signals / decoded data
+    fake_connection --|> connection : overrides methods
+
+    modbus_base --> modbus_py
+    modbus_base --> modbus_http
 
     modbus_http --> aiohttp
     aiohttp ..> http_server~test~

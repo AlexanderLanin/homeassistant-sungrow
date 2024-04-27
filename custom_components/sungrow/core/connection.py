@@ -15,26 +15,27 @@ logger = logging.getLogger(__name__)
 class Connection:
     """
     High level connection class.
-    Currently it can only wrap a modbus_connection.
-    It provides decoded data on the read() method!
+    Currently it can only wrap a modbus_connection...
+    but it should work with any raw connection class.
+    Contrary to the wrapped class, this class provides decoded data method!
     """
 
     def __init__(self, modbus_connection: ModbusConnectionBase):
-        self._modbus_connection = modbus_connection
+        self.__modbus_connection = modbus_connection
 
     async def connect(self):
-        return await self._modbus_connection.connect()
+        return await self.__modbus_connection.connect()
 
     async def disconnect(self):
-        return await self._modbus_connection.disconnect()
+        return await self.__modbus_connection.disconnect()
 
     @property
     def slave(self):
-        return self._modbus_connection.slave
+        return self.__modbus_connection.slave
 
     @slave.setter
     def slave(self, value):
-        self._modbus_connection.slave = value
+        self.__modbus_connection.slave = value
 
     async def read_single_signal(
         self,
@@ -43,7 +44,7 @@ class Connection:
         """Warning: Very inefficient! Use pull_signals for multiple signals!!"""
 
         pull_start = datetime.now()
-        raw = (await self._modbus_connection.read([signal]))[signal.name]
+        raw = (await self.__modbus_connection.read([signal]))[signal.name]
         elapsed = datetime.now() - pull_start
 
         logger.debug(
@@ -65,7 +66,7 @@ class Connection:
 
         # Downcast to base class to make mypy happy
         signal_definitions_base = cast(list[modbus_types.Signal], query)
-        raw_data = await self._modbus_connection.read(signal_definitions_base)
+        raw_data = await self.__modbus_connection.read(signal_definitions_base)
 
         elapsed = datetime.now() - pull_start
 
@@ -85,8 +86,8 @@ class Connection:
         return decoded
 
     async def __aenter__(self):
-        await self._modbus_connection.__aenter__()
+        await self.__modbus_connection.__aenter__()
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        await self._modbus_connection.__aexit__(exc_type, exc_value, traceback)
+        await self.__modbus_connection.__aexit__(exc_type, exc_value, traceback)
