@@ -1,9 +1,5 @@
 import logging
-from contextlib import asynccontextmanager, contextmanager
-from functools import wraps
-from multiprocessing import context
-from typing import cast
-from unittest.mock import patch
+from contextlib import asynccontextmanager
 
 import pytest
 
@@ -197,3 +193,68 @@ async def test_create_inverter_detect_meter():
         assert not power_a.disabled
         assert not power_b.disabled
         assert not power_c.disabled
+
+
+async def run_and_compare_type(
+    expected: inverter.SungrowInverter.ConnectionMode, **kwargs
+):
+    data = kwargs
+    data.update({"device_type_code": "x", "serial_number": "sn"})
+    con = FakeConnection(data)
+    async with create_inv(con) as inv:
+        if inv.type != expected:
+            raise AssertionError(f"Expected {expected}, got {inv.type} for {kwargs}")
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_main():
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
+        master_slave_mode="Disabled",
+        master_slave_role="Master",
+    )
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.MASTER,
+        master_slave_mode="Enabled",
+        master_slave_role="Master",
+    )
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
+        master_slave_mode="Disabled",
+        master_slave_role="Slave 1",
+    )
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.SLAVE,
+        master_slave_mode="Enabled",
+        master_slave_role="Slave 1",
+        inverter_count=1,
+    )
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.SLAVE_1,
+        master_slave_mode="Enabled",
+        master_slave_role="Slave 1",
+        inverter_count=2,
+    )
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_heuristic():
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
+        output_type="2P",
+    )
+
+    # Anything imported/exported -> Master
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.MASTER,
+        total_imported_energy="1",
+    )
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.MASTER,
+        total_exported_energy="1",
+    )
+
+    # No imported/exported -> Slave
+    await run_and_compare_type(
+        expected=inverter.SungrowInverter.ConnectionMode.SLAVE,
+    )

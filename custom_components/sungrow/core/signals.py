@@ -85,10 +85,8 @@ class SungrowSignalDefinition(Signal):
                     f"Signal {self.name} was disabled ({self.disabled}), "
                     f"but has been received"
                 )
-            if not value and not self.disabled:
-                logger.warning(
-                    f"Signal {self.name} was received, but is disabled ({self.disabled})"
-                )
+            if not value:
+                logger.info(f"Signal {self.name} is not supported by inverter")
             self._is_supported = value
         else:
             assert self._is_supported == value
