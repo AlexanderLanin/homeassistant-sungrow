@@ -105,11 +105,9 @@ class SungrowInverter:
 
             logger.debug(f"Trying to connect to {modbus_obj}...")
             if await modbus_obj.connect():
-                connection_obj = connection.Connection(modbus_obj)
+                connection_obj = connection.ModbusConnection(modbus_obj)
                 is_http = isinstance(modbus_obj, modbus_http.HttpConnection)
-                return SungrowInverter.ConnectionData(
-                    cast(connection.ConnectionProto, connection_obj), is_http
-                )
+                return SungrowInverter.ConnectionData(connection_obj, is_http)
         logger.debug("Failed to connect to inverter")
         return None
 
@@ -123,7 +121,7 @@ class SungrowInverter:
     class ConnectionData:
         """Mostly/only used for connection injection in tests."""
 
-        connection: connection.ConnectionProto
+        connection: connection.Connection
         is_http: bool
 
     @staticmethod
@@ -145,6 +143,7 @@ class SungrowInverter:
         inv = SungrowInverter(connection_obj, direct_initialization=False)
 
         slaves_to_attempt = [1, 2] if slave is None else [slave]
+        logger.debug(f"Attempting slaves: {slaves_to_attempt}")
         for slave in slaves_to_attempt:
             if await inv._set_slave_and_query_initial_data(slave):
                 break

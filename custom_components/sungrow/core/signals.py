@@ -78,20 +78,20 @@ class SungrowSignalDefinition(Signal):
         return self._is_supported
 
     @is_supported.setter
-    def is_supported(self, correct_is_supported: bool):
+    def is_supported(self, value: bool):
         if self._is_supported is None:
-            if correct_is_supported and self.disabled:
+            if value and self.disabled:
                 logger.warning(
                     f"Signal {self.name} was disabled ({self.disabled}), "
                     f"but has been received"
                 )
-            if not correct_is_supported and not self.disabled:
+            if not value and not self.disabled:
                 logger.warning(
                     f"Signal {self.name} was received, but is disabled ({self.disabled})"
                 )
-            self._is_supported = correct_is_supported
+            self._is_supported = value
         else:
-            assert self._is_supported == correct_is_supported
+            assert self._is_supported == value
 
     def is_value_supported(self, value) -> bool:
         return value is not None and value != self.potentially_unsupported_value
