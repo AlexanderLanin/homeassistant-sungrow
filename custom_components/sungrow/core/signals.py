@@ -87,6 +87,7 @@ class SungrowSignalDefinition(Signal):
                 )
             if not value:
                 logger.info(f"Signal {self.name} is not supported by inverter")
+                self.disabled.append("not supported by inverter")
             self._is_supported = value
         else:
             assert self._is_supported == value
@@ -189,8 +190,9 @@ class SignalDefinitions:
     # ToDo: move to inverter.py. This is clearly business logic.
     def mark_signals_disabled_based_on_groups(self, data):
         assert data, "data must have been pulled from the inverter first!"
-
         """Note: this returns extra_data to be included!"""
+
+        logger.debug(f"Data: {data}")
 
         extra_data = {}
 
@@ -200,6 +202,7 @@ class SignalDefinitions:
             all_zero = True
             for signal in group_signals.values():
                 v = data.get(signal.name)
+                logger.debug(f"Group {group}: Signal {signal.name} = {v}")
                 if not signal.disabled:
                     has_enabled_signal = True
                     if not is_zero(v):

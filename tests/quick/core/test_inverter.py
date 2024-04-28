@@ -238,22 +238,32 @@ async def test_create_inverter_detect_mode_main():
 
 
 @pytest.mark.asyncio()
-async def test_create_inverter_detect_mode_heuristic():
+async def test_create_inverter_detect_mode_heuristic_standalone():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
         output_type="2P",
     )
 
-    # Anything imported/exported -> Master
+
+# Anything imported/exported -> Master
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_heuristic_master_import():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.MASTER,
         total_imported_energy="1",
     )
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_heuristic_master_export():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.MASTER,
         total_exported_energy="1",
     )
 
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_heuristic_slave():
     # No imported/exported -> Slave
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.SLAVE,

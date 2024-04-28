@@ -6,7 +6,6 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from fnmatch import fnmatch
-from typing import cast
 
 from custom_components.sungrow.core import connection, const
 from custom_components.sungrow.core.inverter_types import Level, Sensor
@@ -22,32 +21,6 @@ from . import (
 logger = logging.getLogger(__name__)
 
 DatapointValueType = signals.DatapointValueType
-
-
-def mark_unavailable_signals_as_disabled(
-    all_signals: signals.SignalDefinitions,
-    data: dict[str, DatapointValueType],
-):
-    """Mark signals not available within `data` as disabled in `all_signals`."""
-
-    # mark signals as disabled if they are not supported by the inverter.
-    # This currently doesn't happen without a more elaborate check, as a clear
-    # not-supported value is only triggered when the signal is queried alone.
-    for name, value in data.items():
-        if value is None:
-            signal = all_signals.get_signal_definition_by_name(name)
-            assert signal  # as it's in data, it must be in all_signals
-            signal.disabled.append(
-                "Inverter does not support this signal (None returned)"
-            )
-            logger.debug(
-                f"Disabling {name} as it's not supported by inverter (None returned)"
-            )
-
-    # mark_signals_disabled_based_on_groups must be called after unsupported signals
-    # have been marked as disabled. It will check all remaining signals for 0 or not 0.
-    # Therefore filtering by level must happen after this step.
-    return all_signals.mark_signals_disabled_based_on_groups(data)
 
 
 def mark_signals_not_in_this_model_as_disabled(
@@ -240,12 +213,10 @@ class SungrowInverter:
             for signal in self._signal_definitions._definitions.values()
             if signal.group and not signal.disabled and signal.name not in self.data
         ]
-        data = await self._client.read(query)
-        if not data:
-            raise RuntimeError("Failed to pull data from inverter")
+        self.data.update(await self._client.read(query))
 
-        self._active_groups = mark_unavailable_signals_as_disabled(
-            self._signal_definitions, data
+        self._active_groups = (
+            self._signal_definitions.mark_signals_disabled_based_on_groups(self.data)
         )
 
         self._signal_definitions.mark_signals_below_level_as_disabled(level_of_detail)
@@ -466,10 +437,15 @@ class SungrowInverter:
 
     @property
     def type(self):
+        logger.debug(f"Data: {self.data}")
+        logger.debug(f"Active Groups: {self._active_groups}")
+
         if self.is_standalone:
             return self.ConnectionMode.STANDALONE
 
         if master_slave_role := self.data.get("master_slave_role"):
+            logger.debug(f"Master Slave Role: {master_slave_role}")
+
             # Simplify "Slave 1" to "Slave" if only one slave
             if master_slave_role == "Slave 1" and self.slaves == 1:
                 return self.ConnectionMode.SLAVE
@@ -477,11 +453,11 @@ class SungrowInverter:
             return self.ConnectionMode(master_slave_role)
         else:
             assert self._active_groups is not None, "Must be set by factory method"
-            return (
-                self.ConnectionMode.MASTER
-                if self._active_groups.get("is_master")
-                else self.ConnectionMode.SLAVE
-            )
+
+            if self._active_groups.get("is_master"):
+                return self.ConnectionMode.MASTER
+            else:
+                return self.ConnectionMode.SLAVE
 
     def type_str(self):
         return str(self.type)
