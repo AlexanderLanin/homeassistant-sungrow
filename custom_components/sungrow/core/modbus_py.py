@@ -13,7 +13,7 @@ import pymodbus.exceptions
 import pymodbus.framer.base
 import pymodbus.pdu
 
-from custom_components.sungrow.core import modbus_base
+from custom_components.sungrow.core import const, modbus_base
 from custom_components.sungrow.core.modbus_base import (
     ModbusConnectionBase,
     RegisterType,
@@ -65,6 +65,10 @@ class PymodbusConnection(ModbusConnectionBase):
         self._ever_succeeded = False
 
         self._next_allowed_call = datetime.min
+
+    @staticmethod
+    def default_port() -> int:
+        return const.SUNGROW_DEFEAULT_MODBUS_PORT
 
     async def _throttle(self):
         now = datetime.now()

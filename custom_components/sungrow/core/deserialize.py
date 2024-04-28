@@ -1,3 +1,5 @@
+# TODO: move all of this to connection class??
+
 import logging
 
 from .modbus_base import MappedData

@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import cast
+from typing import Protocol, cast, runtime_checkable
 
 from custom_components.sungrow.core import (
     deserialize,
@@ -10,6 +10,29 @@ from custom_components.sungrow.core import (
 from custom_components.sungrow.core.modbus_base import ModbusConnectionBase
 
 logger = logging.getLogger(__name__)
+
+
+@runtime_checkable
+class ConnectionProto(Protocol):
+    async def connect(self): ...
+
+    async def disconnect(self): ...
+
+    @property
+    def slave(self) -> int: ...
+
+    @slave.setter
+    def slave(self, value: int): ...
+
+    async def read_single_signal(
+        self,
+        signal: signals.SungrowSignalDefinition,
+    ) -> signals.DatapointValueType | None: ...
+
+    async def read(
+        self,
+        query: list[signals.SungrowSignalDefinition],
+    ) -> deserialize.DecodedSignals: ...
 
 
 class Connection:

@@ -28,6 +28,10 @@ class HttpConnection(ModbusConnectionBase):
         self._inverter: dict[str, str] | None = None
 
     @staticmethod
+    def default_port() -> int:
+        return const.SUNGROW_DEFEAULT_HTTP_PORT
+
+    @staticmethod
     def _parse_ws_response(response: dict[str, Any]) -> dict[str, Any]:
         if (
             response.get("result_code") == 1

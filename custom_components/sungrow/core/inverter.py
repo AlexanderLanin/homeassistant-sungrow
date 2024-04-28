@@ -6,6 +6,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from fnmatch import fnmatch
+from typing import cast
 
 from custom_components.sungrow.core import connection, const
 from custom_components.sungrow.core.inverter_types import Level, Sensor
@@ -88,34 +89,27 @@ def _guess_connection_classes(
 class SungrowInverter:
     async def __aenter__(self):
         """Ensures the connection is established."""
-        await self._client.__aenter__()
+        await self._client.connect()
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         """Ensures the connection is closed."""
-        await self._client.__aexit__(exc_type, exc_value, traceback)
-
-    @staticmethod
-    def _get_default_port(connection: type[modbus_base.ModbusConnectionBase]):
-        if connection == modbus_http.HttpConnection:
-            return const.SUNGROW_DEFEAULT_HTTP_PORT
-        elif connection == modbus_py.PymodbusConnection:
-            return const.SUNGROW_DEFEAULT_MODBUS_PORT
-        else:
-            raise RuntimeError("Unknown connection type")
+        await self._client.disconnect()
 
     @staticmethod
     async def _establish_connection(ci: ConnectionParams):
         connection_classes = _guess_connection_classes(ci.connection, ci.port)
         for cc in connection_classes:
-            port = ci.port or SungrowInverter._get_default_port(cc)
+            port = ci.port or cc.default_port()
             modbus_obj = cc(ci.host, port)
 
             logger.debug(f"Trying to connect to {modbus_obj}...")
             if await modbus_obj.connect():
                 connection_obj = connection.Connection(modbus_obj)
                 is_http = isinstance(modbus_obj, modbus_http.HttpConnection)
-                return SungrowInverter.ConnectionData(connection_obj, is_http)
+                return SungrowInverter.ConnectionData(
+                    cast(connection.ConnectionProto, connection_obj), is_http
+                )
         logger.debug("Failed to connect to inverter")
         return None
 
@@ -129,7 +123,7 @@ class SungrowInverter:
     class ConnectionData:
         """Mostly/only used for connection injection in tests."""
 
-        connection: connection.Connection
+        connection: connection.ConnectionProto
         is_http: bool
 
     @staticmethod
@@ -143,11 +137,10 @@ class SungrowInverter:
         if isinstance(connection_param, SungrowInverter.ConnectionData):
             connection_obj = connection_param
         else:
-            connection_obj = await SungrowInverter._establish_connection(
-                connection_param
-            )
-            if connection_obj is None:
+            temp = await SungrowInverter._establish_connection(connection_param)
+            if temp is None:
                 return None
+            connection_obj = temp
 
         inv = SungrowInverter(connection_obj, direct_initialization=False)
 
@@ -164,6 +157,11 @@ class SungrowInverter:
             return None
 
         assert inv.data, "Data should be available after initial query"
+
+        if not inv.data["serial_number"] or not inv.data["device_type_code"]:
+            logger.warning("Failed to connect to inverter. No serial number or model")
+            await inv.disconnect()
+            return None
 
         logger.debug(f"Initial data: {inv.data}")
         logger.debug(

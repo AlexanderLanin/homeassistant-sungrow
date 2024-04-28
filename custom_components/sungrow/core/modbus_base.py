@@ -99,6 +99,10 @@ class ModbusConnectionBase:
             RegisterType.HOLD: [],
         }
 
+    @staticmethod
+    def default_port() -> int:
+        raise NotImplementedError
+
     @property
     def slave(self):
         return self._slave
