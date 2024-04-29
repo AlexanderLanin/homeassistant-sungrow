@@ -49,7 +49,7 @@ class SungrowSignalDefinition(Signal):
     level: int | None
     base_datatype: str | None = None
 
-    potentially_unsupported_value: DatapointValueTypeBase = None
+    value_with_no_meaning: DatapointValueTypeBase = None
     """
     In some cases (especially WiNet), not supported is not reported correctly.
     This is the value that is being returned, although the signal is not supported.
@@ -58,51 +58,44 @@ class SungrowSignalDefinition(Signal):
     array_length: int | None = None
     """ Length of the array. None if not an array. """
 
-    _is_supported: bool | None = None
-    """
-    Yes, No, Unknown. Careful how you compare this!
-    Note: this is unrelated to 'disabled'. This is what the inverter actually supports,
-    while 'disabled' is what we want to disable (what we think the inverter supports).
-    TODO: rename disabled to is_supported_guess + disabled_reasons?
-    """
-
     def __post_init__(self):
         # If yaml does not define a specific value, we assume 0.
         # When we query multiple registers, the inverter/WiNet will respond with 0,
         # if the signal is not supported.
-        if self.potentially_unsupported_value is None:
-            self.potentially_unsupported_value = 0
+        if self.value_with_no_meaning is None:
+            self.value_with_no_meaning = 0
 
     @property
     def is_supported(self):
-        return self._is_supported
+        return super().is_supported
 
-    @is_supported.setter
-    def is_supported(self, value: bool):
-        if self._is_supported is None:
-            if value and self.disabled:
-                logger.warning(
-                    f"Signal {self.name} was disabled ({self.disabled}), "
-                    f"but has been received"
-                )
-            if not value:
-                logger.info(f"Signal {self.name} is not supported by inverter")
-                self.disabled.append("not supported by inverter")
-            self._is_supported = value
-        else:
-            assert self._is_supported == value
+    def set_supported(self, value: Signal.Supported):
+        if value == Signal.Supported.YES and self.disabled:
+            logger.warning(
+                f"Signal {self.name} was disabled ({self.disabled}), "
+                f"but has been received"
+            )
+
+        # temp workaround, as we commonly only check for disabled, not for unsupported.
+        if value == Signal.Supported.NO:
+            self.disabled.append("not supported by inverter")
+
+        super().set_supported(value)
 
     def is_value_supported(self, value) -> bool:
-        return value is not None and value != self.potentially_unsupported_value
+        return value is not None and value != self.value_with_no_meaning
 
-    def is_value_unsupported(self, value) -> bool:
-        return value is None
+    # def is_value_unsupported(self, value) -> bool:
+    #     return value is None
 
     def determine_and_mark_supported(self, value):
-        if self.is_value_supported(value):
-            self.is_supported = True
-        elif self.is_value_unsupported(value):
-            self.is_supported = False
+        if value is None:
+            # This was already done in the super class, but anyway...
+            self.set_supported(Signal.Supported.NO)
+        elif self.is_value_supported(value):
+            self.set_supported(Signal.Supported.YES)
+        else:
+            self.set_supported(Signal.Supported.UNKNOWN)
 
     @property
     def na_value(self):
@@ -323,7 +316,7 @@ def load_yaml() -> SignalDefinitions:
                     start=entry["address"],
                     length=array_length * base_datatype_length,
                 ),
-                potentially_unsupported_value=entry.get("unsupported_value"),
+                value_with_no_meaning=entry.get("unsupported_value"),
             )
 
             if signal.decoded:

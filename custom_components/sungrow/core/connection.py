@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 from typing import cast
 
+from result import Ok, Result
+
 from custom_components.sungrow.core import (
     deserialize,
     modbus_types,
@@ -36,35 +38,36 @@ class Connection:
     async def read_single_signal(
         self,
         signal: signals.SungrowSignalDefinition,
-    ) -> signals.DatapointValueType | None:
-        decoded = await self._read_single_signal(signal)
-        signal.determine_and_mark_supported(decoded)
-        return decoded
-
-    async def _read_single_signal(
-        self,
-        signal: signals.SungrowSignalDefinition,
-    ) -> signals.DatapointValueType | None:
-        raise NotImplementedError
+    ) -> Result[signals.DatapointValueType | None, Exception]:
+        decoded_result = await self.read([signal])
+        if isinstance(decoded_result, Ok):
+            # unwrap array
+            return Ok(decoded_result.ok_value[signal.name])
+        else:
+            return decoded_result
 
     async def read(
         self,
         query: list[signals.SungrowSignalDefinition],
-    ) -> deserialize.DecodedSignals:
-        decoded = await self._read(query)
-        for name, value in decoded.items():
-            signal = next((signal for signal in query if signal.name == name), None)
-            assert signal
-            signal.determine_and_mark_supported(value)
-        return decoded
+    ) -> Result[deserialize.DecodedSignals, Exception]:
+        decoded_result = await self._read(query)
+        if isinstance(decoded_result, Ok):
+            decoded = decoded_result.ok_value
+            for name, value in decoded.items():
+                signal = next((signal for signal in query if signal.name == name), None)
+                assert signal
+                signal.determine_and_mark_supported(value)
+
+        return decoded_result
 
     async def _read(
         self,
         query: list[signals.SungrowSignalDefinition],
-    ) -> deserialize.DecodedSignals:
+    ) -> Result[deserialize.DecodedSignals, Exception]:
         raise NotImplementedError
 
 
+# TODO: move to own file or somewhere. Maybe even merge into modbus_base.py
 class DecodedModbusConnection(Connection):
     """
     High level connection class.
@@ -95,46 +98,32 @@ class DecodedModbusConnection(Connection):
     def slave(self, value):
         self.__modbus_connection.slave = value
 
-    async def _read_single_signal(
-        self,
-        signal: signals.SungrowSignalDefinition,
-    ) -> signals.DatapointValueType | None:
-        """Warning: Very inefficient! Use pull_signals for multiple signals!!"""
-
-        pull_start = datetime.now()
-        raw = (await self.__modbus_connection.read([signal]))[signal.name]
-        elapsed = datetime.now() - pull_start
-
-        logger.debug(
-            "Inverter: pulled single signal in "
-            f"{elapsed.seconds}.{elapsed.microseconds} secs"
-        )
-
-        return deserialize.decode_signal(signal, raw) if raw else None
-
     async def _read(
         self,
         query: list[signals.SungrowSignalDefinition],
-    ) -> deserialize.DecodedSignals:
+    ) -> Result[deserialize.DecodedSignals, Exception]:
         """Pull data from inverter"""
-
-        pull_start = datetime.now()
 
         # Downcast to base class to make mypy happy
         signal_definitions_base = cast(list[modbus_types.Signal], query)
-        raw_data = await self.__modbus_connection.read(signal_definitions_base)
 
+        pull_start = datetime.now()
+        raw_data_result = await self.__modbus_connection.read(signal_definitions_base)
         elapsed = datetime.now() - pull_start
-
         logger.debug(
             f"Inverter: Pulled {len(query)} signals in "
             f"{elapsed.seconds}.{elapsed.microseconds} secs"
         )
 
-        return deserialize.decode_signals(
-            query,
-            raw_data,
-        )
+        if isinstance(raw_data_result, Ok):
+            raw_data = raw_data_result.ok_value
+            decoded = deserialize.decode_signals(
+                query,
+                raw_data,
+            )
+            return Ok(decoded)
+        else:
+            return raw_data_result
 
     async def __aenter__(self):
         await self.__modbus_connection.__aenter__()

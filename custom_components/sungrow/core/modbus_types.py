@@ -4,8 +4,11 @@ signals are queried. This is where all signals are read() at once, so this class
 can perform a clever optimization to reduce the number of queries.
 """
 
+import logging
 from dataclasses import dataclass
 from enum import StrEnum
+
+logger = logging.getLogger(__name__)
 
 
 class RegisterType(StrEnum):
@@ -40,6 +43,15 @@ class Signal:
     name: str
     registers: RegisterRange
 
+    class Supported(StrEnum):
+        NEVER_ATTEMPTED = "never_attempted"
+        UNKNOWN = "returns_zero"
+        YES = "yes"
+        NO = "no"
+
+    _is_supported = Supported.NEVER_ATTEMPTED
+    """FIXME! New! Move from SungrowSignalDefinition"""
+
     # length_of_array: int | None
     # """None if not an array"""
 
@@ -48,6 +60,50 @@ class Signal:
 
     def contained_in(self, registers: RegisterRange) -> bool:
         return registers.contains(self.registers)
+
+    @property
+    def is_supported(self) -> Supported:
+        return self._is_supported
+
+    def set_supported(self, value: Supported):
+        assert value != self.Supported.NEVER_ATTEMPTED
+
+        # is_supported is a state machine with 4 states.
+        # On some of the transitions, we log a message.
+        # debug:
+        # - NEVER_ATTEMPTED/UNKNOWN -> YES/NO
+        # warning:
+        # - YES/NO -> NO/YES
+
+        # Quick exit, if there is no change.
+        # Simplifies the state machine.
+        if value == self._is_supported:
+            return
+
+        if value in (self.Supported.YES, self.Supported.NO):
+            if self._is_supported in (
+                self.Supported.NEVER_ATTEMPTED,
+                self.Supported.UNKNOWN,
+            ):
+                # - NEVER_ATTEMPTED/UNKNOWN -> YES/NO
+                if value == self.Supported.YES:
+                    logger.debug(f"Signal {self.name} is supported.")
+                elif value == self.Supported.NO:
+                    logger.debug(f"Signal {self.name} is not supported.")
+            else:
+                # - YES/NO -> NO/YES
+                logger.warning(
+                    f"Signal {self.name} changed support status "
+                    f"from {self._is_supported} to {value}."
+                )
+
+        # NEVER_ATTEMPTED -> *
+        # UNKNOWN/YES/NO -> NO/YES
+        if self._is_supported == self.Supported.NEVER_ATTEMPTED or value in (
+            self.Supported.YES,
+            self.Supported.NO,
+        ):
+            self._is_supported = value
 
 
 # In case the register is not supported, the value is None

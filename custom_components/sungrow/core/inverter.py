@@ -312,6 +312,8 @@ class SungrowInverter:
             )
 
     async def _disable_all_meter_signals_if_no_meter_available(self):
+        # FIXME: yaml already has "group_indicator" and "only_if" marking for this case.
+
         # This is be a better distinction than simply disabling meter via a grooup,
         # because all signals are 0.
         # TODO: Introduce is_disabled / is_available flag?

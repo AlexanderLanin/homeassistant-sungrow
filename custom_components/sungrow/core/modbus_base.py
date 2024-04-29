@@ -7,6 +7,8 @@ Basically it's pure modbus, with a (hopefully) better interface.
 import logging
 from dataclasses import dataclass
 
+from result import Err, Ok, Result
+
 from custom_components.sungrow.core.modbus_range_builder import split_list
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
@@ -129,15 +131,18 @@ class ModbusConnectionBase:
 
     async def read(
         self, signal_list: list[Signal], max_combined_registers=100
-    ) -> MappedData:
-        raw_data = await self.read_raw(signal_list, max_combined_registers)
-        return _map_raw_to_signals(raw_data, signal_list)
+    ) -> Result[MappedData, Exception]:
+        res = await self.read_raw(signal_list, max_combined_registers)
+        if isinstance(res, Ok):
+            return Ok(_map_raw_to_signals(res.ok_value, signal_list))
+        else:
+            return res
 
     ## -- DETAILED IMPLEMENTATION --
 
     async def read_raw(
         self, signal_list: list[Signal], max_combined_registers=100
-    ) -> dict[RegisterType, RawData]:
+    ) -> Result[dict[RegisterType, RawData], Exception]:
         if not await self.connect():
             raise CannotConnectError("Not connected to inverter, but read() was called")
 
@@ -156,10 +161,13 @@ class ModbusConnectionBase:
         # Read each range
         raw_data: dict[RegisterType, RawData] = {r: {} for r in RegisterType}
         for signal_list in ranges:
-            values = await self._read_range_base(signal_list)
-            raw_data[signal_list[0].registers.register_type].update(values)
+            res = await self._read_range_base(signal_list)
+            if isinstance(res, Ok):
+                raw_data[signal_list[0].registers.register_type].update(res.ok_value)
+            else:
+                return Err(res.err_value)
 
-        return raw_data
+        return Ok(raw_data)
 
     async def __aenter__(self):
         """Called on 'async with' enter."""
@@ -173,23 +181,26 @@ class ModbusConnectionBase:
         logger.debug(f"__aexit__({self._host}, {self._port}, {self._slave})")
         await self.disconnect()
 
-    async def _call_read_raw(self, r: RegisterRange) -> RawData:
+    async def _call_read_raw(self, r: RegisterRange) -> Result[RawData, Exception]:
         """Wrapper for _read_range() that returns RawData."""
         # logger.debug(f"_call_read_raw({r})")
 
         # _read_range() is implemented by the subclass.
         # It's returning a list of registers, so we need to map it.
-        try:
-            raw_list = await self._read_range(r)
+        res = await self._read_range(r)
+        if isinstance(res, Ok):
             self._stats.read_calls_success += 1
-        except Exception:
+            raw_dict: RawData = {
+                r.start + i: value for i, value in enumerate(res.ok_value)
+            }
+            return Ok(raw_dict)
+        else:
             self._stats.read_calls_failed += 1
-            raise
+            return Err(res.err_value)
 
-        raw_dict: RawData = {r.start + i: value for i, value in enumerate(raw_list)}
-        return raw_dict
-
-    async def _read_range_base(self, signal_list: list[Signal]) -> RawData:
+    async def _read_range_base(
+        self, signal_list: list[Signal]
+    ) -> Result[RawData, Exception]:
         """
         Wrapper for _read_range() that handles unsupported registers.
         Returns None for unsupported registers.
@@ -201,28 +212,38 @@ class ModbusConnectionBase:
             signal_list[0].registers.start,
             signal_list[-1].registers.end - signal_list[0].registers.start,
         )
-        # logger.debug(f"_read_range_base({reg_range})")
 
-        try:
-            # Try reading the entire range at once.
-            # Usually this will work, except at startup.
-            data = await self._call_read_raw(reg_range)
-        except UnsupportedRegisterQueriedError:
+        # Query entire range
+        res = await self._call_read_raw(reg_range)
+        if isinstance(res, Ok):
+            self.stats.retrieved_signals_success += len(signal_list)
+
+            # On this level, we cannot determine if a signal is truly supported,
+            # or if it contains a default value with no meaning.
             for signal in signal_list:
-                self.stats.retrieved_signals_failed += 1
-                logger.debug(
-                    f"Unuspported Register: {signal.name} ({signal.registers})"
-                )
+                if signal.is_supported == Signal.Supported.NEVER_ATTEMPTED:
+                    signal.set_supported(Signal.Supported.UNKNOWN)
+
+            return Ok(res.ok_value)
+        elif isinstance(res.err_value, UnsupportedRegisterQueriedError):
+            # All registers in this range are unsupported.
+            self.stats.retrieved_signals_success += len(signal_list)
+            for signal in signal_list:
+                signal.set_supported(Signal.Supported.NO)
                 self._problematic_registers[signal.registers.register_type].append(
                     signal.registers.start
                 )
 
-            return {r: None for r in range(reg_range.start, reg_range.end)}
+            # All signals have failed, but we indicate this by success, since we have
+            # successfully read the range and determined this information.
+            return Ok({r: None for r in range(reg_range.start, reg_range.end)})
         else:
-            self.stats.retrieved_signals_success += len(signal_list)
-            return data
+            self.stats.retrieved_signals_failed += len(signal_list)
+            return Err(res.err_value)
 
-    async def _read_range(self, register_range: RegisterRange) -> list[int]:
+    async def _read_range(
+        self, register_range: RegisterRange
+    ) -> Result[list[int], Exception]:
         """
         Reads `address_count` registers of type `register_type` starting at
         `address_start`.

@@ -6,11 +6,11 @@ from enum import StrEnum
 from typing import Any, cast
 
 import aiohttp
+from result import Err, Ok, Result
 
 from custom_components.sungrow.core import const, modbus_base
 from custom_components.sungrow.core.modbus_base import (
     ModbusConnectionBase,
-    RegisterType,
 )
 from custom_components.sungrow.core.modbus_types import RegisterRange
 
@@ -272,18 +272,20 @@ class HttpConnection(ModbusConnectionBase):
 
         return parsed
 
-    async def _read_range(self, r: RegisterRange) -> list[int]:
-        """Raises modbus.CannotConnectError on WiNet misbehavior."""
-
+    async def _read_range(self, r: RegisterRange) -> Result[list[int], Exception]:
         # Note: websocket does not allow access to all possible registers.
         # Not quite clear whether it's worth the effort to query some via websocket and
         # only the rest via http.
 
-        response_json = await self._query_http_json(r)
+        try:
+            response_json = await self._query_http_json(r)
 
-        logger.debug(f"Got data: {response_json}")
+            logger.debug(f"Got data: {response_json}")
 
-        return _parse_modbus_data(response_json, r.length)
+            data = _parse_modbus_data(response_json, r.length)
+            return Ok(data)
+        except Exception as e:
+            return Err(e)
 
     def __str__(self):
         return f"http({self._host}:{self._port}, slave: {self._slave or 'unknown'})"

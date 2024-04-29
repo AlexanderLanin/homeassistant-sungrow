@@ -1,11 +1,11 @@
 [
     {
         "mode": null,
-        "host": "192.168.13.80",
+        "host": "192.168.13.79",
         "slave": null,
         "signal_definitions": null,
         "data": null,
         "stats": null,
-        "error": "ConnectionException: Modbus Error: [Connection] Not connected[AsyncModbusTcpClient 192.168.13.80:502]"
+        "error": "CannotConnectError: ConnectionException: Modbus Error: [Connection] Not connected[AsyncModbusTcpClient 192.168.13.79:502]"
     }
 ]

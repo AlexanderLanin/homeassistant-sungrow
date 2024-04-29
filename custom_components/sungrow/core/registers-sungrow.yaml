@@ -838,24 +838,28 @@ read:
     address: 5601
     data_type: S32
     unit_of_measurement: W
+    group_indicator: has_meter
 
   - name: "meter_active_power_phase_a"
     level: 3
     address: 5603
     data_type: S32
     unit_of_measurement: W
+    only_if: has_meter
 
   - name: "meter_active_power_phase_b"
     level: 3
     address: 5605
     data_type: S32
     unit_of_measurement: W
+    only_if: has_meter
 
   - name: "meter_active_power_phase_c"
     level: 3
     address: 5607
     data_type: S32
     unit_of_measurement: W
+    only_if: has_meter
 
   - name: "power_meter"
     level: 4

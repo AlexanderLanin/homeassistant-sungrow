@@ -12,6 +12,7 @@ import pymodbus.client
 import pymodbus.exceptions
 import pymodbus.framer.base
 import pymodbus.pdu
+from result import Err, Ok, Result
 
 from custom_components.sungrow.core import const, modbus_base
 from custom_components.sungrow.core.modbus_base import (
@@ -110,25 +111,13 @@ class PymodbusConnection(ModbusConnectionBase):
     def connected(self) -> bool:
         return self._client.connected
 
-    async def _read_range(  # noqa: C901 (Error handling here is complex, nothing we can do about it)
+    async def __call_pymodbus_read(
         self,
         register_range: RegisterRange,
-        recursion=False,
-    ) -> list[int]:
-        """
-        Reads `address_count` registers of type `register_type` starting at
-        `address_start`.
-        Note: each register is 16 bits, so `address_count` is the number of registers,
-        not bytes.
-        """
+    ) -> Result[pymodbus.pdu.ModbusResponse, Exception]:
+        """Note: this function does not check isError() on the response."""
+
         assert self._slave is not None, "Slave ID not set"
-
-        logger.debug(f"_read_range({register_range=}, {recursion=})")
-        if not await self.connect():
-            raise modbus_base.CannotConnectError(
-                "Cannot connect to inverter for reading"
-            )
-
         await self._throttle()
 
         read_registers = {
@@ -141,17 +130,51 @@ class PymodbusConnection(ModbusConnectionBase):
             rr: pymodbus.pdu.ModbusResponse = await read_registers(
                 register_range.start - 1, count=register_range.length, slave=self._slave
             )  # type: ignore
+        except pymodbus.exceptions.ConnectionException as e:
+            return Err(modbus_base.CannotConnectError(f"{type(e).__name__}: {e}"))
         except pymodbus.exceptions.ModbusIOException as e:
-            raise modbus_base.ModbusError("Unknown IO Error") from e
+            return Err(
+                modbus_base.ModbusError(
+                    f"Unknown IO Error in pymodbus: {type(e).__name__}: {e}"
+                )
+            )
+        except Exception as e:
+            return Err(modbus_base.ModbusError(f"Unknown error in pymodbus: {e}"))
 
+        return Ok(rr)
+
+    async def _read_range(
+        self,
+        register_range: RegisterRange,
+        recursion=False,
+    ) -> Result[list[int], Exception]:
+        """
+        Reads `address_count` registers of type `register_type` starting at
+        `address_start`.
+        Note: each register is 16 bits, so `address_count` is the number of registers,
+        not bytes.
+        """
+        logger.debug(f"_read_range({register_range=}, {recursion=})")
+        if not await self.connect():
+            raise modbus_base.CannotConnectError(
+                "Cannot connect to inverter for reading"
+            )
+
+        rr_res = await self.__call_pymodbus_read(register_range)
+        if isinstance(rr_res, Err):
+            return rr_res
+
+        rr = rr_res.ok_value
         if rr.isError() and isinstance(rr, pymodbus.pdu.ExceptionResponse):
             if rr.exception_code == pymodbus.pdu.ModbusExceptions.GatewayNoResponse:
-                raise modbus_base.InvalidSlaveError(
-                    f"Slave ID {self._slave} is invalid"
+                return Err(
+                    modbus_base.InvalidSlaveError(f"Slave ID {self._slave} is invalid")
                 )
             elif rr.exception_code == pymodbus.pdu.ModbusExceptions.IllegalAddress:
-                raise modbus_base.UnsupportedRegisterQueriedError(
-                    f"Inverter does not support {register_range}: {rr}"
+                return Err(
+                    modbus_base.UnsupportedRegisterQueriedError(
+                        f"Inverter does not support {register_range}: {rr}"
+                    )
                 )
             elif rr.exception_code == pymodbus.pdu.ModbusExceptions.SlaveFailure:
                 # Deprecated? Do we need this?
@@ -161,29 +184,31 @@ class PymodbusConnection(ModbusConnectionBase):
                         register_range,
                         rr,
                     )
-                    raise modbus_base.ModbusError(
-                        f"Slave failure on {register_range}: {rr}"
+                    return Err(
+                        modbus_base.ModbusError(
+                            f"Slave failure on {register_range}: {rr}"
+                        )
                     )
                 else:
-                    x = await self._read_range(
+                    return await self._read_range(
                         register_range,
                         recursion=True,
                     )
-                    assert isinstance(x, list)  # for mypy
-                    return x
             else:
-                raise modbus_base.ModbusError(f"Unknown error response: {rr}")
+                return Err(modbus_base.ModbusError(f"Unknown error response: {rr}"))
 
         assert isinstance(rr.registers, list)  # for mypy
 
         if len(rr.registers) != register_range.length:
-            raise modbus_base.ModbusError(
-                f"Mismatched number of registers "
-                f"(requested {register_range}) and responded {len(rr.registers)})"
+            return Err(
+                modbus_base.ModbusError(
+                    f"Mismatched number of registers "
+                    f"(requested {register_range}) and responded {len(rr.registers)})"
+                )
             )
 
         self._ever_succeeded = True
-        return rr.registers
+        return Ok(rr.registers)
 
     def __str__(self):
         return f"modbus({self._host}:{self._port}, slave: {self._slave or 'unknown'})"
