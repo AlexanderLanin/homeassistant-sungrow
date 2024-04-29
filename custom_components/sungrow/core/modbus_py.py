@@ -106,6 +106,10 @@ class PymodbusConnection(ModbusConnectionBase):
                 await reconnect_task
         logger.debug("Disconnected from %s:%s", self._host, self._port)
 
+    @property
+    def connected(self) -> bool:
+        return self._client.connected
+
     async def _read_range(  # noqa: C901 (Error handling here is complex, nothing we can do about it)
         self,
         register_range: RegisterRange,

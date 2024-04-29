@@ -20,19 +20,25 @@ FIXME: data is still encoded here!! Fake modbus_base instead?!
 classDiagram
     namespace Product {
         class inverter
-        class connection
+        class Connection {
+            read_single_signal(signal)
+            read(signals)
+        }
+        class DecodedModbusConnection
         class modbus_base
         class modbus_py
         class modbus_http
         class aiohttp~external~
         class pymodbus~external~
     }
+    class FakeConnection~test~
 
-    inverter --> connection : signals / decoded data
+    inverter --> Connection : signals / decoded values
 
-    connection --> modbus_base : register / raw data
-    inverter --> fake_connection~test~ : signals / decoded data
-    fake_connection --|> connection : overrides methods
+    Connection --> DecodedModbusConnection : signals / decoded values
+    Connection --> FakeConnection : signals / decoded values
+
+    DecodedModbusConnection --> modbus_base : registers / encoded data
 
     modbus_base --> modbus_py
     modbus_base --> modbus_http

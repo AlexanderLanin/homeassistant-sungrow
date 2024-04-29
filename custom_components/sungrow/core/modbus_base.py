@@ -123,6 +123,10 @@ class ModbusConnectionBase:
     async def disconnect(self):
         raise NotImplementedError
 
+    @property
+    def connected(self) -> bool:
+        raise NotImplementedError
+
     async def read(
         self, signal_list: list[Signal], max_combined_registers=100
     ) -> MappedData:

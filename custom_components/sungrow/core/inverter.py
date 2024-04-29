@@ -78,7 +78,8 @@ class SungrowInverter:
 
             logger.debug(f"Trying to connect to {modbus_obj}...")
             if await modbus_obj.connect():
-                connection_obj = connection.ModbusConnection(modbus_obj)
+                connection_obj = connection.DecodedModbusConnection(modbus_obj)
+                assert connection_obj.connected
                 is_http = isinstance(modbus_obj, modbus_http.HttpConnection)
                 return SungrowInverter.ConnectionData(connection_obj, is_http)
         logger.debug("Failed to connect to inverter")
@@ -106,14 +107,16 @@ class SungrowInverter:
         """Create a connection, with heuristics for port, slave and connection type."""
 
         if isinstance(connection_param, SungrowInverter.ConnectionData):
-            connection_obj = connection_param
+            connection_data = connection_param
         else:
             temp = await SungrowInverter._establish_connection(connection_param)
             if temp is None:
                 return None
-            connection_obj = temp
+            connection_data = temp
 
-        inv = SungrowInverter(connection_obj, direct_initialization=False)
+        assert connection_data.connection.connected
+        inv = SungrowInverter(connection_data, direct_initialization=False)
+        assert inv._client.connected
 
         slaves_to_attempt = [1, 2] if slave is None else [slave]
         logger.debug(f"Attempting slaves: {slaves_to_attempt}")
@@ -154,6 +157,8 @@ class SungrowInverter:
         """Use create() factory method!!"""
         if direct_initialization:
             raise RuntimeError("Use create() factory method")
+
+        assert connection_data.connection.connected
 
         self._client = connection_data.connection
         self._is_http = connection_data.is_http
@@ -381,6 +386,7 @@ class SungrowInverter:
             # FIXME
             # extra_signals = extra_sensors.calculate(new_data)
 
+            self.data.update(new_data)
             return True
         else:
             await self.disconnect()
@@ -433,7 +439,10 @@ class SungrowInverter:
         if self.is_standalone:
             return 0
         else:
-            return self.data.get("inverter_count")  # -1?
+            x = self.data.get("inverter_count", 0)
+            assert isinstance(x, int)
+            # inverter_count includes master
+            return int(x) - 1
 
     @property
     def type(self):

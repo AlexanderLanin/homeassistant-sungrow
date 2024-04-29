@@ -83,7 +83,7 @@ class HttpConnection(ModbusConnectionBase):
         Raises modbus.CannotConnectError on WiNet misbehavior.
         """
 
-        if self._token:
+        if self.connected:
             return True
 
         logger.debug("Connecting to %s:%s", self._host, self._port)
@@ -125,6 +125,10 @@ class HttpConnection(ModbusConnectionBase):
 
         # Force completely new connections on next connect()
         await self._aio_client.close()
+
+    @property
+    def connected(self) -> bool:
+        return self._token is not None
 
     async def _get_json(self, url: str, params: dict[str, str | int]) -> dict[str, Any]:
         try:

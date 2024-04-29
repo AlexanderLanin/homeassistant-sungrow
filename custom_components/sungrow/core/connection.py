@@ -20,6 +20,10 @@ class Connection:
         raise NotImplementedError
 
     @property
+    def connected(self) -> bool:
+        raise NotImplementedError
+
+    @property
     def slave(self) -> int:
         raise NotImplementedError
 
@@ -27,6 +31,8 @@ class Connection:
     def slave(self, value: int):
         raise NotImplementedError
 
+    # TODO: merge with read. Differentiate between single and multiple reads,
+    # within the function.
     async def read_single_signal(
         self,
         signal: signals.SungrowSignalDefinition,
@@ -59,7 +65,7 @@ class Connection:
         raise NotImplementedError
 
 
-class ModbusConnection(Connection):
+class DecodedModbusConnection(Connection):
     """
     High level connection class.
     Currently it can only wrap a modbus_connection...
@@ -76,6 +82,10 @@ class ModbusConnection(Connection):
 
     async def disconnect(self):
         return await self.__modbus_connection.disconnect()
+
+    @property
+    def connected(self) -> bool:
+        return self.__modbus_connection.connected
 
     @property
     def slave(self):

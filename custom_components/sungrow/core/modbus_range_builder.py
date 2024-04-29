@@ -78,6 +78,8 @@ def split_list(
     max_registers_per_range: int,
     blocked_registers: dict[RegisterType, list[int]] | None = None,
 ) -> list[list[Signal]]:
+    # FIXME: only combine signals that are supported.
+    # Or maybe those that are not unsupported?
     """
     Split the list of signals into ranges.
     Each range is guaranteed to:
