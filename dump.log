@@ -1,62 +1,489 @@
-2024-04-29 20:52:58,594 asyncio [DEBUG] Using selector: EpollSelector
-2024-04-29 20:52:58,870 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: any): Connecting...
-2024-04-29 20:52:58,871 custom_components.sungrow.core.inverter [DEBUG] Trying to connect to modbus(192.168.13.79:502, slave: unknown)...
-2024-04-29 20:52:58,871 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.79:502
-2024-04-29 20:52:59,151 custom_components.sungrow.core.inverter [DEBUG] Attempting slaves: [1, 2]
-2024-04-29 20:52:59,151 custom_components.sungrow.core.modbus_base [DEBUG] Setting slave to 1
-2024-04-29 20:52:59,152 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(8 signals) in 3 ranges
-2024-04-29 20:52:59,152 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 4990-5002), recursion=False)
-2024-04-29 20:53:00,877 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13037-13047), recursion=False)
-2024-04-29 20:53:02,878 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33500-33502), recursion=False)
-2024-04-29 20:53:04,879 custom_components.sungrow.core.connection [DEBUG] Inverter: Pulled 8 signals in 5.727971 secs
-2024-04-29 20:53:04,880 custom_components.sungrow.core.modbus_types [DEBUG] Signal serial_number is supported.
-2024-04-29 20:53:04,880 custom_components.sungrow.core.modbus_types [DEBUG] Signal device_type_code is supported.
-2024-04-29 20:53:04,880 custom_components.sungrow.core.modbus_types [DEBUG] Signal output_type is supported.
-2024-04-29 20:53:04,881 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_imported_energy is supported.
-2024-04-29 20:53:04,881 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_exported_energy is supported.
-2024-04-29 20:53:04,881 custom_components.sungrow.core.modbus_types [DEBUG] Signal master_slave_mode is supported.
-2024-04-29 20:53:04,881 custom_components.sungrow.core.modbus_types [DEBUG] Signal master_slave_role is supported.
-2024-04-29 20:53:04,881 custom_components.sungrow.core.modbus_types [DEBUG] Signal inverter_count is supported.
-2024-04-29 20:53:04,881 custom_components.sungrow.core.inverter [DEBUG] Initial data: {'serial_number': 'A2350415770', 'device_type_code': 'SH8.0RT-20', 'output_type': '3P4L', 'total_imported_energy': 1973.3, 'total_exported_energy': 810.9, 'master_slave_mode': 'Enabled', 'master_slave_role': 'Master', 'inverter_count': 2}
-2024-04-29 20:53:04,881 custom_components.sungrow.core.inverter [DEBUG] Connected to inverter SH8.0RT-20 / A2350415770
-2024-04-29 20:53:04,888 custom_components.sungrow.core.inverter [DEBUG] Checking if meter is connected...
-2024-04-29 20:53:04,889 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['meter_active_power'])
-2024-04-29 20:53:04,889 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5601-5602), recursion=False)
-2024-04-29 20:53:06,880 custom_components.sungrow.core.connection [DEBUG] Inverter: pulled single signal in 1.991601 secs
-2024-04-29 20:53:06,880 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_active_power is supported.
-2024-04-29 20:53:06,881 custom_components.sungrow.core.inverter [DEBUG] Meter is connected
-2024-04-29 20:53:06,881 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['array_insulation_resistance'])
-2024-04-29 20:53:06,881 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5071-5071), recursion=False)
-2024-04-29 20:53:08,882 custom_components.sungrow.core.connection [DEBUG] Inverter: pulled single signal in 2.1476 secs
-2024-04-29 20:53:08,882 custom_components.sungrow.core.modbus_types [DEBUG] Signal array_insulation_resistance is supported.
-2024-04-29 20:53:08,883 custom_components.sungrow.core.inverter [DEBUG] array_insulation_resistance is supported -> NOT WiNet dongle
-2024-04-29 20:53:08,883 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(66 signals) in 9 ranges
-2024-04-29 20:53:08,883 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5013-5014), recursion=False)
-2024-04-29 20:53:10,884 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5639-5639), recursion=False)
-2024-04-29 20:53:12,887 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6469-6564), recursion=False)
-2024-04-29 20:53:14,890 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6565-6647), recursion=False)
-2024-04-29 20:53:16,889 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: any): Failed to connect (ConnectionException: Modbus Error: [Connection] Not connected[AsyncModbusTcpClient 192.168.13.79:502], CannotConnectError)
-2024-04-29 20:53:16,889 __main__ [DEBUG] Details:
-Traceback (most recent call last):
-  File "/workspaces/homeassistant-sungrow/scripts/dump.py", line 72, in collect_data_from
-    inv = await SungrowInverter.create(params, slave)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter.create) at 0x7f67fbaf19e0>", line 78, in create
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 147, in create
-    await inv._disable_all_unsupported_signals(level_of_detail)
-  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter._disable_all_unsupported_signals) at 0x7f67fbaf1bc0>", line 31, in _disable_all_unsupported_signals
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 221, in _disable_all_unsupported_signals
-    self.data.update(await self._client.read(query))
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(custom_components.sungrow.core.connection.Connection.read) at 0x7f67fbad9800>", line 44, in read
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/connection.py", line 54, in read
-    decoded = await self._read(query)
-              ^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(custom_components.sungrow.core.connection.DecodedModbusConnection._read) at 0x7f67fbada3e0>", line 44, in _read
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/connection.py", line 125, in _read
-    raw_data = await self.__modbus_connection.read(signal_definitions_base)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(custom_components.sungrow.core.modbus_base.ModbusConnectionBase.read) at 0x7f67fba662a0>", line 44, in read
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/modbus_base.py", line 139, in read
-    raise res.err_value
-custom_components.sungrow.core.modbus_base.CannotConnectError: ConnectionException: Modbus Error: [Connection] Not connected[AsyncModbusTcpClient 192.168.13.79:502]
+2024-04-30 22:01:03,377 asyncio [DEBUG] Using selector: EpollSelector
+2024-04-30 22:01:03,663 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: any): Connecting...
+2024-04-30 22:01:03,665 custom_components.sungrow.core.inverter [DEBUG] Trying to connect to modbus(192.168.13.79:502, slave: unknown)...
+2024-04-30 22:01:03,665 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.79:502
+2024-04-30 22:01:03,957 custom_components.sungrow.core.inverter [DEBUG] Attempting slaves: [1, 2]
+2024-04-30 22:01:03,958 custom_components.sungrow.core.modbus_base [DEBUG] Setting slave to 1
+2024-04-30 22:01:03,959 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(8 signals) in 3 ranges
+2024-04-30 22:01:03,959 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 4990-5002), recursion=False)
+2024-04-30 22:01:05,669 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13037-13047), recursion=False)
+2024-04-30 22:01:07,671 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33500-33502), recursion=False)
+2024-04-30 22:01:09,674 custom_components.sungrow.core.connection [DEBUG] Inverter: Pulled 8 signals in 5.715642 secs
+2024-04-30 22:01:09,675 custom_components.sungrow.core.modbus_types [DEBUG] Signal serial_number is supported.
+2024-04-30 22:01:09,675 custom_components.sungrow.core.modbus_types [DEBUG] Signal device_type_code is supported.
+2024-04-30 22:01:09,675 custom_components.sungrow.core.modbus_types [DEBUG] Signal output_type is supported.
+2024-04-30 22:01:09,675 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_imported_energy is supported.
+2024-04-30 22:01:09,675 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_exported_energy is supported.
+2024-04-30 22:01:09,675 custom_components.sungrow.core.modbus_types [DEBUG] Signal master_slave_mode is supported.
+2024-04-30 22:01:09,676 custom_components.sungrow.core.modbus_types [DEBUG] Signal master_slave_role is supported.
+2024-04-30 22:01:09,676 custom_components.sungrow.core.modbus_types [DEBUG] Signal inverter_count is supported.
+2024-04-30 22:01:09,676 custom_components.sungrow.core.inverter [DEBUG] Initial data: {'serial_number': 'A2350415770', 'device_type_code': 'SH8.0RT-20', 'output_type': '3P4L', 'total_imported_energy': 1975.2, 'total_exported_energy': 863.4, 'master_slave_mode': 'Enabled', 'master_slave_role': 'Master', 'inverter_count': 2}
+2024-04-30 22:01:09,676 custom_components.sungrow.core.inverter [DEBUG] Connected to inverter SH8.0RT-20 / A2350415770
+2024-04-30 22:01:09,684 custom_components.sungrow.core.inverter [DEBUG] Checking if meter is connected...
+2024-04-30 22:01:09,685 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['meter_active_power'])
+2024-04-30 22:01:09,685 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5601-5602), recursion=False)
+2024-04-30 22:01:11,674 custom_components.sungrow.core.connection [DEBUG] Inverter: Pulled 1 signals in 1.989196 secs
+2024-04-30 22:01:11,674 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_active_power is supported.
+2024-04-30 22:01:11,674 custom_components.sungrow.core.inverter [DEBUG] Meter is connected
+2024-04-30 22:01:11,674 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['array_insulation_resistance'])
+2024-04-30 22:01:11,675 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5071-5071), recursion=False)
+2024-04-30 22:01:13,673 custom_components.sungrow.core.modbus_py [DEBUG] Connecting to 192.168.13.79:502
+2024-04-30 22:01:15,676 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(['array_insulation_resistance'])
+2024-04-30 22:01:15,676 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5071-5071), recursion=False)
+2024-04-30 22:01:17,678 custom_components.sungrow.core.connection [DEBUG] Inverter: Pulled 1 signals in 6.3430 secs
+2024-04-30 22:01:17,678 custom_components.sungrow.core.modbus_types [DEBUG] Signal array_insulation_resistance is supported.
+2024-04-30 22:01:17,678 custom_components.sungrow.core.inverter [DEBUG] array_insulation_resistance is supported -> NOT WiNet dongle
+2024-04-30 22:01:17,679 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(66 signals) in 9 ranges
+2024-04-30 22:01:17,679 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5013-5014), recursion=False)
+2024-04-30 22:01:19,680 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5639-5639), recursion=False)
+2024-04-30 22:01:21,682 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6469-6564), recursion=False)
+2024-04-30 22:01:23,683 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6565-6647), recursion=False)
+2024-04-30 22:01:25,685 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6648-6743), recursion=False)
+2024-04-30 22:01:27,686 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6744-6826), recursion=False)
+2024-04-30 22:01:29,688 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13001-13069), recursion=False)
+2024-04-30 22:01:31,689 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 13052-13085), recursion=False)
+2024-04-30 22:01:33,691 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33149-33219), recursion=False)
+2024-04-30 22:01:35,696 custom_components.sungrow.core.connection [DEBUG] Inverter: Pulled 66 signals in 18.17176 secs
+2024-04-30 22:01:35,698 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_2_voltage is supported.
+2024-04-30 22:01:35,698 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_2_current is supported.
+2024-04-30 22:01:35,698 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_capacity_high_precision is supported.
+2024-04-30 22:01:35,699 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_power_from_pv_today is supported.
+2024-04-30 22:01:35,699 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_energy_from_pv_daily is supported.
+2024-04-30 22:01:35,699 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_energy_from_pv_monthly is supported.
+2024-04-30 22:01:35,699 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_energy_from_pv_yearly_starting_2019 is supported.
+2024-04-30 22:01:35,699 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_charge_energy_from_pv_today is supported.
+2024-04-30 22:01:35,699 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_charge_energy_from_pv is supported.
+2024-04-30 22:01:35,700 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_charge_energy_from_pv_monthly is supported.
+2024-04-30 22:01:35,700 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_charge_energy_from_pv_yearly_starting_2019 is supported.
+2024-04-30 22:01:35,700 custom_components.sungrow.core.modbus_types [DEBUG] Signal state_battery_discharging is supported.
+2024-04-30 22:01:35,700 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_pv_export is supported.
+2024-04-30 22:01:35,700 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_battery_charge_from_pv is supported.
+2024-04-30 22:01:35,700 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_voltage is supported.
+2024-04-30 22:01:35,701 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_current is supported.
+2024-04-30 22:01:35,701 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_power is supported.
+2024-04-30 22:01:35,701 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_level is supported.
+2024-04-30 22:01:35,701 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_state_of_health is supported.
+2024-04-30 22:01:35,701 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_temperature is supported.
+2024-04-30 22:01:35,701 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_battery_discharge_energy is supported.
+2024-04-30 22:01:35,702 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_capacity is supported.
+2024-04-30 22:01:35,702 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_battery_charge_energy is supported.
+2024-04-30 22:01:35,702 custom_components.sungrow.core.modbus_types [DEBUG] Signal weekly_discharging_end_time_1_hour is supported.
+2024-04-30 22:01:35,702 custom_components.sungrow.core.modbus_types [DEBUG] Signal weekly_discharging_end_time_2_hour is supported.
+2024-04-30 22:01:35,702 custom_components.sungrow.core.modbus_types [DEBUG] Signal weekend_discharging_enable is supported.
+2024-04-30 22:01:35,702 custom_components.sungrow.core.modbus_types [DEBUG] Signal weekend_discharging_end_time_1_hour is supported.
+2024-04-30 22:01:35,703 custom_components.sungrow.core.modbus_types [DEBUG] Signal forced_charging_enable is supported.
+2024-04-30 22:01:35,703 custom_components.sungrow.core.modbus_types [DEBUG] Signal forced_charging_valid_time is supported.
+2024-04-30 22:01:35,703 custom_components.sungrow.core.signals [DEBUG] Data: {'serial_number': 'A2350415770', 'device_type_code': 'SH8.0RT-20', 'output_type': '3P4L', 'total_imported_energy': 1975.2, 'total_exported_energy': 863.4, 'master_slave_mode': 'Enabled', 'master_slave_role': 'Master', 'inverter_count': 2, 'mppt_2_voltage': 0.0, 'mppt_2_current': 0.0, 'battery_capacity_high_precision': 9.6, 'export_power_from_pv_today': {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0}, 'export_energy_from_pv_daily': {0: 0.0, 1: 5.3, 2: 0.1, 3: 1.9, 4: 0.1, 5: 19.8, 6: 13.3, 7: 18.7, 8: 0.1, 9: 8.2, 10: 1.0, 11: 8.9, 12: 22.4, 13: 33.0, 14: 7.6, 15: 7.9, 16: 14.5, 17: 21.0, 18: 2.5, 19: 14.7, 20: 24.8, 21: 21.5, 22: 9.9, 23: 5.1, 24: 13.2, 25: 0.9, 26: 25.0, 27: 11.3, 28: 32.5, 29: 35.4, 30: 0.0}, 'export_energy_from_pv_monthly': {0: 0.3, 1: 23.1, 2: 165.8, 3: 380.6, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}, 'export_energy_from_pv_yearly_starting_2019': {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 569.8, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None}, 'battery_charge_energy_from_pv_today': {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0}, 'battery_charge_energy_from_pv': {0: 1.8, 1: 4.6, 2: 7.0, 3: 8.6, 4: 9.7, 5: 1.7, 6: 7.4, 7: 3.7, 8: 5.7, 9: 9.3, 10: 7.9, 11: 7.3, 12: 2.3, 13: 1.9, 14: 7.9, 15: 7.2, 16: 3.9, 17: 3.1, 18: 10.1, 19: 1.8, 20: 2.5, 21: 3.9, 22: 2.3, 23: 9.6, 24: 6.4, 25: 7.9, 26: 1.9, 27: 5.8, 28: 2.1, 29: 2.2, 30: 0.0}, 'battery_charge_energy_from_pv_monthly': {0: 43.3, 1: 96.8, 2: 159.1, 3: 157.5, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}, 'battery_charge_energy_from_pv_yearly_starting_2019': {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 456.7, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None}, 'state_battery_charging': False, 'state_battery_discharging': True, 'state_feed_into_grid': False, 'state_import_from_grid': False, 'daily_pv_export': 0.0, 'total_pv_export': 569.8, 'daily_battery_charge_from_pv': 0.0, 'total_battery_charge_from_pv': 468.8, 'battery_voltage': 197.6, 'battery_current': 2.1, 'battery_power': 320, 'battery_level': 73.6, 'battery_state_of_health': 99.0, 'battery_temperature': 21.0, 'daily_battery_discharge_energy': 0.0, 'total_battery_discharge_energy': 895.9, 'daily_imported_energy': 0.0, 'battery_capacity': 9.6, 'daily_battery_charge_energy': 0.0, 'total_battery_charge_energy': 984.8, 'daily_exported_energy': 0.0, 'battery_fault': 0, 'battery_alarm': 0, 'battery_forced_charge_discharge_power_': 0, 'start_charging_power': 0.0, 'start_discharging_power': 0.0, 'battery_charge_start_power': 0.0, 'battery_charge_stop_power': 0.0, 'weekly_discharging_start_time_1_hour': 0, 'weekly_discharging_start_time_1_minute': 0, 'weekly_discharging_end_time_1_hour': 24, 'weekly_discharging_end_time_1_minute': 0, 'weekly_discharging_start_time_2_hour': 0, 'weekly_discharging_start_time_2_minute': 0, 'weekly_discharging_end_time_2_hour': 24, 'weekly_discharging_end_time_2_minute': 0, 'weekend_discharging_enable': 'Enabled', 'weekend_discharging_start_time_1_hour': 0, 'weekend_discharging_start_time_1_minute': 0, 'weekend_discharging_end_time_1_hour': 24, 'weekend_discharging_end_time_1_minute': 0, 'weekend_discharging_start_time_2_hour': 0, 'weekend_discharging_start_time_2_minute': 0, 'forced_charging_enable': 'Disabled', 'forced_charging_valid_time': 'Every Day', 'forced_charging_start_time_1_hour': 0, 'forced_charging_start_time_1_minute': 0, 'forced_charging_end_time_1_hour': 0, 'forced_charging_end_time_1_minute': 0, 'forced_charging_target_soc_1': 0.0, 'forced_charging_start_time_2_hour': 0, 'forced_charging_start_time_2_minute': 0, 'forced_charging_end_time_2_hour': 0, 'forced_charging_end_time_2_minute': 0, 'forced_charging_target_soc_2': 0.0}
+2024-04-30 22:01:35,705 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_running_time = None
+2024-04-30 22:01:35,705 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal monthly_power_yields = None
+2024-04-30 22:01:35,705 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_power_yields = None
+2024-04-30 22:01:35,706 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal export_power_from_pv_today = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0, 40: 0, 41: 0, 42: 0, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0, 60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: 0, 67: 0, 68: 0, 69: 0, 70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0, 80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: 0, 86: 0, 87: 0, 88: 0, 89: 0, 90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0}
+2024-04-30 22:01:35,706 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal export_energy_from_pv_daily = {0: 0.0, 1: 5.3, 2: 0.1, 3: 1.9, 4: 0.1, 5: 19.8, 6: 13.3, 7: 18.7, 8: 0.1, 9: 8.2, 10: 1.0, 11: 8.9, 12: 22.4, 13: 33.0, 14: 7.6, 15: 7.9, 16: 14.5, 17: 21.0, 18: 2.5, 19: 14.7, 20: 24.8, 21: 21.5, 22: 9.9, 23: 5.1, 24: 13.2, 25: 0.9, 26: 25.0, 27: 11.3, 28: 32.5, 29: 35.4, 30: 0.0}
+2024-04-30 22:01:35,706 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal export_energy_from_pv_daily is not zero: {0: 0.0, 1: 5.3, 2: 0.1, 3: 1.9, 4: 0.1, 5: 19.8, 6: 13.3, 7: 18.7, 8: 0.1, 9: 8.2, 10: 1.0, 11: 8.9, 12: 22.4, 13: 33.0, 14: 7.6, 15: 7.9, 16: 14.5, 17: 21.0, 18: 2.5, 19: 14.7, 20: 24.8, 21: 21.5, 22: 9.9, 23: 5.1, 24: 13.2, 25: 0.9, 26: 25.0, 27: 11.3, 28: 32.5, 29: 35.4, 30: 0.0}
+2024-04-30 22:01:35,706 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal export_energy_from_pv_monthly = {0: 0.3, 1: 23.1, 2: 165.8, 3: 380.6, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}
+2024-04-30 22:01:35,706 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal export_energy_from_pv_monthly is not zero: {0: 0.3, 1: 23.1, 2: 165.8, 3: 380.6, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}
+2024-04-30 22:01:35,707 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal export_energy_from_pv_yearly_starting_2019 = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 569.8, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None}
+2024-04-30 22:01:35,707 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal export_energy_from_pv_yearly_starting_2019 is not zero: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 569.8, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None}
+2024-04-30 22:01:35,707 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal state_feed_into_grid = False
+2024-04-30 22:01:35,707 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal state_import_from_grid = False
+2024-04-30 22:01:35,707 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_pv_export = 0.0
+2024-04-30 22:01:35,708 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_pv_export = 569.8
+2024-04-30 22:01:35,708 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_pv_export is not zero: 569.8
+2024-04-30 22:01:35,708 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_imported_energy = 0.0
+2024-04-30 22:01:35,708 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_imported_energy = 1975.2
+2024-04-30 22:01:35,708 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_imported_energy is not zero: 1975.2
+2024-04-30 22:01:35,708 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal daily_exported_energy = 0.0
+2024-04-30 22:01:35,709 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_exported_energy = 863.4
+2024-04-30 22:01:35,709 custom_components.sungrow.core.signals [DEBUG] Group is_master: Signal total_exported_energy is not zero: 863.4
+2024-04-30 22:01:35,709 custom_components.sungrow.core.signals [DEBUG] Group mppt2: Signal mppt_2_voltage = 0.0
+2024-04-30 22:01:35,709 custom_components.sungrow.core.signals [DEBUG] Group mppt2: Signal mppt_2_current = 0.0
+2024-04-30 22:01:35,709 custom_components.sungrow.core.signals [DEBUG] Group mppt2: all signals are zero
+2024-04-30 22:01:35,709 custom_components.sungrow.core.signals [DEBUG] Group mppt3: Signal mppt_3_voltage = None
+2024-04-30 22:01:35,710 custom_components.sungrow.core.signals [DEBUG] Group mppt3: Signal mppt_3_current = None
+2024-04-30 22:01:35,710 custom_components.sungrow.core.signals [DEBUG] Group mppt3: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,710 custom_components.sungrow.core.signals [DEBUG] Group mppt4: Signal mppt_4_voltage = None
+2024-04-30 22:01:35,710 custom_components.sungrow.core.signals [DEBUG] Group mppt4: Signal mppt_4_current = None
+2024-04-30 22:01:35,710 custom_components.sungrow.core.signals [DEBUG] Group mppt4: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,710 custom_components.sungrow.core.signals [DEBUG] Group mppt5: Signal mppt_5_voltage = None
+2024-04-30 22:01:35,711 custom_components.sungrow.core.signals [DEBUG] Group mppt5: Signal mppt_5_current = None
+2024-04-30 22:01:35,711 custom_components.sungrow.core.signals [DEBUG] Group mppt5: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,711 custom_components.sungrow.core.signals [DEBUG] Group mppt6: Signal mppt_6_voltage = None
+2024-04-30 22:01:35,711 custom_components.sungrow.core.signals [DEBUG] Group mppt6: Signal mppt_6_current = None
+2024-04-30 22:01:35,711 custom_components.sungrow.core.signals [DEBUG] Group mppt6: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,712 custom_components.sungrow.core.signals [DEBUG] Group mppt7: Signal mppt_7_voltage = None
+2024-04-30 22:01:35,712 custom_components.sungrow.core.signals [DEBUG] Group mppt7: Signal mppt_7_current = None
+2024-04-30 22:01:35,712 custom_components.sungrow.core.signals [DEBUG] Group mppt7: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,712 custom_components.sungrow.core.signals [DEBUG] Group mppt8: Signal mppt_8_voltage = None
+2024-04-30 22:01:35,712 custom_components.sungrow.core.signals [DEBUG] Group mppt8: Signal mppt_8_current = None
+2024-04-30 22:01:35,712 custom_components.sungrow.core.signals [DEBUG] Group mppt8: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,712 custom_components.sungrow.core.signals [DEBUG] Group mppt9: Signal mppt_9_voltage = None
+2024-04-30 22:01:35,713 custom_components.sungrow.core.signals [DEBUG] Group mppt9: Signal mppt_9_current = None
+2024-04-30 22:01:35,713 custom_components.sungrow.core.signals [DEBUG] Group mppt9: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,713 custom_components.sungrow.core.signals [DEBUG] Group mppt10: Signal mppt_10_voltage = None
+2024-04-30 22:01:35,713 custom_components.sungrow.core.signals [DEBUG] Group mppt10: Signal mppt_10_current = None
+2024-04-30 22:01:35,713 custom_components.sungrow.core.signals [DEBUG] Group mppt10: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,713 custom_components.sungrow.core.signals [DEBUG] Group mppt11: Signal mppt_11_voltage = None
+2024-04-30 22:01:35,713 custom_components.sungrow.core.signals [DEBUG] Group mppt11: Signal mppt_11_current = None
+2024-04-30 22:01:35,714 custom_components.sungrow.core.signals [DEBUG] Group mppt11: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,714 custom_components.sungrow.core.signals [DEBUG] Group mppt12: Signal mppt_12_voltage = None
+2024-04-30 22:01:35,714 custom_components.sungrow.core.signals [DEBUG] Group mppt12: Signal mppt_12_current = None
+2024-04-30 22:01:35,714 custom_components.sungrow.core.signals [DEBUG] Group mppt12: not supported by inverter (all signals in group are already disabled)
+2024-04-30 22:01:35,714 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_capacity_high_precision = 9.6
+2024-04-30 22:01:35,714 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_capacity_high_precision is not zero: 9.6
+2024-04-30 22:01:35,715 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_energy_from_pv_today = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0, 70: 0.0, 71: 0.0, 72: 0.0, 73: 0.0, 74: 0.0, 75: 0.0, 76: 0.0, 77: 0.0, 78: 0.0, 79: 0.0, 80: 0.0, 81: 0.0, 82: 0.0, 83: 0.0, 84: 0.0, 85: 0.0, 86: 0.0, 87: 0.0, 88: 0.0, 89: 0.0, 90: 0.0, 91: 0.0, 92: 0.0, 93: 0.0, 94: 0.0, 95: 0.0}
+2024-04-30 22:01:35,715 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_energy_from_pv = {0: 1.8, 1: 4.6, 2: 7.0, 3: 8.6, 4: 9.7, 5: 1.7, 6: 7.4, 7: 3.7, 8: 5.7, 9: 9.3, 10: 7.9, 11: 7.3, 12: 2.3, 13: 1.9, 14: 7.9, 15: 7.2, 16: 3.9, 17: 3.1, 18: 10.1, 19: 1.8, 20: 2.5, 21: 3.9, 22: 2.3, 23: 9.6, 24: 6.4, 25: 7.9, 26: 1.9, 27: 5.8, 28: 2.1, 29: 2.2, 30: 0.0}
+2024-04-30 22:01:35,715 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_energy_from_pv is not zero: {0: 1.8, 1: 4.6, 2: 7.0, 3: 8.6, 4: 9.7, 5: 1.7, 6: 7.4, 7: 3.7, 8: 5.7, 9: 9.3, 10: 7.9, 11: 7.3, 12: 2.3, 13: 1.9, 14: 7.9, 15: 7.2, 16: 3.9, 17: 3.1, 18: 10.1, 19: 1.8, 20: 2.5, 21: 3.9, 22: 2.3, 23: 9.6, 24: 6.4, 25: 7.9, 26: 1.9, 27: 5.8, 28: 2.1, 29: 2.2, 30: 0.0}
+2024-04-30 22:01:35,715 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_energy_from_pv_monthly = {0: 43.3, 1: 96.8, 2: 159.1, 3: 157.5, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}
+2024-04-30 22:01:35,716 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_energy_from_pv_monthly is not zero: {0: 43.3, 1: 96.8, 2: 159.1, 3: 157.5, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}
+2024-04-30 22:01:35,716 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_energy_from_pv_yearly_starting_2019 = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 456.7, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None}
+2024-04-30 22:01:35,716 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_energy_from_pv_yearly_starting_2019 is not zero: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 12.1, 9: 456.7, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: None, 16: None, 17: None, 18: None, 19: None}
+2024-04-30 22:01:35,716 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal state_battery_charging = False
+2024-04-30 22:01:35,716 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal state_battery_discharging = True
+2024-04-30 22:01:35,716 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal state_battery_discharging is not zero: True
+2024-04-30 22:01:35,717 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_charge_from_pv = 0.0
+2024-04-30 22:01:35,717 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_from_pv = 468.8
+2024-04-30 22:01:35,717 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_from_pv is not zero: 468.8
+2024-04-30 22:01:35,717 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_voltage = 197.6
+2024-04-30 22:01:35,717 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_voltage is not zero: 197.6
+2024-04-30 22:01:35,717 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_current = 2.1
+2024-04-30 22:01:35,718 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_current is not zero: 2.1
+2024-04-30 22:01:35,718 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_power = 320
+2024-04-30 22:01:35,718 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_power is not zero: 320
+2024-04-30 22:01:35,718 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_level = 73.6
+2024-04-30 22:01:35,718 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_level is not zero: 73.6
+2024-04-30 22:01:35,719 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_state_of_health = 99.0
+2024-04-30 22:01:35,719 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_state_of_health is not zero: 99.0
+2024-04-30 22:01:35,719 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_temperature = 21.0
+2024-04-30 22:01:35,719 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_temperature is not zero: 21.0
+2024-04-30 22:01:35,719 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_discharge_energy = 0.0
+2024-04-30 22:01:35,719 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_discharge_energy = 895.9
+2024-04-30 22:01:35,720 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_discharge_energy is not zero: 895.9
+2024-04-30 22:01:35,720 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_capacity = 9.6
+2024-04-30 22:01:35,720 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_capacity is not zero: 9.6
+2024-04-30 22:01:35,720 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal daily_battery_charge_energy = 0.0
+2024-04-30 22:01:35,720 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_energy = 984.8
+2024-04-30 22:01:35,720 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal total_battery_charge_energy is not zero: 984.8
+2024-04-30 22:01:35,721 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_fault = 0
+2024-04-30 22:01:35,721 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_alarm = 0
+2024-04-30 22:01:35,721 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal max_charging_current = None
+2024-04-30 22:01:35,721 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal max_discharging_current = None
+2024-04-30 22:01:35,721 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_current_ = None
+2024-04-30 22:01:35,721 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_voltage_ = None
+2024-04-30 22:01:35,722 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_pack_voltage = None
+2024-04-30 22:01:35,722 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal export_power_limitation_percentage = None
+2024-04-30 22:01:35,722 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_forced_charge_discharge_power = None
+2024-04-30 22:01:35,722 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_forced_charge_discharge_power_ = 0
+2024-04-30 22:01:35,722 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal start_charging_power = 0.0
+2024-04-30 22:01:35,722 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal start_discharging_power = 0.0
+2024-04-30 22:01:35,723 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_capacity_2 = None
+2024-04-30 22:01:35,723 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_start_power = 0.0
+2024-04-30 22:01:35,723 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal battery_charge_stop_power = 0.0
+2024-04-30 22:01:35,723 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_start_time_1_hour = 0
+2024-04-30 22:01:35,723 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_start_time_1_minute = 0
+2024-04-30 22:01:35,723 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_1_hour = 24
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_1_hour is not zero: 24
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_1_minute = 0
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_start_time_2_hour = 0
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_start_time_2_minute = 0
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_2_hour = 24
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_2_hour is not zero: 24
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekly_discharging_end_time_2_minute = 0
+2024-04-30 22:01:35,724 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_enable = Enabled
+2024-04-30 22:01:35,725 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_enable is not zero: Enabled
+2024-04-30 22:01:35,725 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_start_time_1_hour = 0
+2024-04-30 22:01:35,725 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_start_time_1_minute = 0
+2024-04-30 22:01:35,725 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_end_time_1_hour = 24
+2024-04-30 22:01:35,725 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_end_time_1_hour is not zero: 24
+2024-04-30 22:01:35,725 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_end_time_1_minute = 0
+2024-04-30 22:01:35,725 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_start_time_2_hour = 0
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal weekend_discharging_start_time_2_minute = 0
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_enable = Disabled
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_enable is not zero: Disabled
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_valid_time = Every Day
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_valid_time is not zero: Every Day
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_start_time_1_hour = 0
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_start_time_1_minute = 0
+2024-04-30 22:01:35,726 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_end_time_1_hour = 0
+2024-04-30 22:01:35,727 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_end_time_1_minute = 0
+2024-04-30 22:01:35,727 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_target_soc_1 = 0.0
+2024-04-30 22:01:35,727 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_start_time_2_hour = 0
+2024-04-30 22:01:35,727 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_start_time_2_minute = 0
+2024-04-30 22:01:35,727 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_end_time_2_hour = 0
+2024-04-30 22:01:35,727 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_end_time_2_minute = 0
+2024-04-30 22:01:35,728 custom_components.sungrow.core.signals [DEBUG] Group has_battery: Signal forced_charging_target_soc_2 = 0.0
+2024-04-30 22:01:35,728 __main__ [INFO] 192.168.13.79 (slave: 1, mode: modbus): Connected via modbus
+2024-04-30 22:01:35,729 custom_components.sungrow.core.modbus_base [DEBUG] read_raw(209 signals) in 16 ranges
+2024-04-30 22:01:35,729 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 4950-5049), recursion=False)
+2024-04-30 22:01:37,693 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5077-5151), recursion=False)
+2024-04-30 22:01:39,695 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5216-5219), recursion=False)
+2024-04-30 22:01:41,697 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5603-5636), recursion=False)
+2024-04-30 22:01:43,698 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 5723-5726), recursion=False)
+2024-04-30 22:01:45,700 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6100-6195), recursion=False)
+2024-04-30 22:01:47,701 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6196-6289), recursion=False)
+2024-04-30 22:01:49,704 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6290-6385), recursion=False)
+2024-04-30 22:01:51,704 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 6386-6468), recursion=False)
+2024-04-30 22:01:53,706 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 7013-7036), recursion=False)
+2024-04-30 22:01:55,708 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13000-13079), recursion=False)
+2024-04-30 22:01:57,709 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(READ, 13100-13118), recursion=False)
+2024-04-30 22:01:59,710 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 5000-5043), recursion=False)
+2024-04-30 22:02:01,714 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 13000-13087), recursion=False)
+2024-04-30 22:02:03,715 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 13100-13100), recursion=False)
+2024-04-30 22:02:05,716 custom_components.sungrow.core.modbus_py [DEBUG] _read_range(register_range=Range(HOLD, 33047-33049), recursion=False)
+2024-04-30 22:02:07,717 custom_components.sungrow.core.connection [DEBUG] Inverter: Pulled 209 signals in 31.988244 secs
+2024-04-30 22:02:07,719 custom_components.sungrow.core.signals [WARNING] Signal protocol_number was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,719 custom_components.sungrow.core.modbus_types [DEBUG] Signal protocol_number is supported.
+2024-04-30 22:02:07,719 custom_components.sungrow.core.signals [WARNING] Signal protocol_version was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,719 custom_components.sungrow.core.modbus_types [DEBUG] Signal protocol_version is supported.
+2024-04-30 22:02:07,719 custom_components.sungrow.core.signals [WARNING] Signal arm_software_version was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,720 custom_components.sungrow.core.modbus_types [DEBUG] Signal arm_software_version is supported.
+2024-04-30 22:02:07,720 custom_components.sungrow.core.signals [WARNING] Signal dsp_software_version was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,720 custom_components.sungrow.core.modbus_types [DEBUG] Signal dsp_software_version is supported.
+2024-04-30 22:02:07,720 custom_components.sungrow.core.signals [WARNING] Signal nominal_output_power was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,720 custom_components.sungrow.core.modbus_types [DEBUG] Signal nominal_output_power is supported.
+2024-04-30 22:02:07,720 custom_components.sungrow.core.signals [WARNING] Signal total_output_energy_pv_and_battery was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,720 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_output_energy_pv_and_battery is supported.
+2024-04-30 22:02:07,721 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_running_time is not supported.
+2024-04-30 22:02:07,721 custom_components.sungrow.core.signals [WARNING] Signal internal_temperature was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,721 custom_components.sungrow.core.modbus_types [DEBUG] Signal internal_temperature is supported.
+2024-04-30 22:02:07,721 custom_components.sungrow.core.signals [WARNING] Signal total_apparent_power was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,721 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_apparent_power is supported.
+2024-04-30 22:02:07,721 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_3_voltage is not supported.
+2024-04-30 22:02:07,722 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_3_current is not supported.
+2024-04-30 22:02:07,722 custom_components.sungrow.core.signals [WARNING] Signal phase_a_voltage was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,722 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_a_voltage is supported.
+2024-04-30 22:02:07,722 custom_components.sungrow.core.signals [WARNING] Signal phase_b_voltage was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,722 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_b_voltage is supported.
+2024-04-30 22:02:07,722 custom_components.sungrow.core.signals [WARNING] Signal phase_c_voltage was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,722 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_c_voltage is supported.
+2024-04-30 22:02:07,722 custom_components.sungrow.core.signals [WARNING] Signal phase_a_current was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,723 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_a_current is supported.
+2024-04-30 22:02:07,723 custom_components.sungrow.core.signals [WARNING] Signal phase_b_current was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,723 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_b_current is supported.
+2024-04-30 22:02:07,723 custom_components.sungrow.core.signals [WARNING] Signal phase_c_current was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,723 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_c_current is supported.
+2024-04-30 22:02:07,723 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_active_power is supported.
+2024-04-30 22:02:07,723 custom_components.sungrow.core.signals [WARNING] Signal total_reactive_power was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,724 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_reactive_power is supported.
+2024-04-30 22:02:07,724 custom_components.sungrow.core.signals [WARNING] Signal power_factor was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,724 custom_components.sungrow.core.modbus_types [DEBUG] Signal power_factor is supported.
+2024-04-30 22:02:07,724 custom_components.sungrow.core.signals [WARNING] Signal grid_frequency was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,724 custom_components.sungrow.core.modbus_types [DEBUG] Signal grid_frequency is supported.
+2024-04-30 22:02:07,724 custom_components.sungrow.core.modbus_types [DEBUG] Signal work_state_1 is not supported.
+2024-04-30 22:02:07,725 custom_components.sungrow.core.modbus_types [DEBUG] Signal alarm_time_year is not supported.
+2024-04-30 22:02:07,725 custom_components.sungrow.core.modbus_types [DEBUG] Signal alarm_time_month is not supported.
+2024-04-30 22:02:07,725 custom_components.sungrow.core.modbus_types [DEBUG] Signal alarm_time_day is not supported.
+2024-04-30 22:02:07,725 custom_components.sungrow.core.modbus_types [DEBUG] Signal alarm_time_hour is not supported.
+2024-04-30 22:02:07,725 custom_components.sungrow.core.modbus_types [DEBUG] Signal alarm_time_minute is not supported.
+2024-04-30 22:02:07,725 custom_components.sungrow.core.modbus_types [DEBUG] Signal alarm_time_second is not supported.
+2024-04-30 22:02:07,726 custom_components.sungrow.core.modbus_types [DEBUG] Signal alarm_code_1 is not supported.
+2024-04-30 22:02:07,726 custom_components.sungrow.core.signals [WARNING] Signal nominal_reactive_power was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,726 custom_components.sungrow.core.modbus_types [DEBUG] Signal nominal_reactive_power is supported.
+2024-04-30 22:02:07,726 custom_components.sungrow.core.modbus_types [DEBUG] Signal active_power_regulation_setpoint is not supported.
+2024-04-30 22:02:07,727 custom_components.sungrow.core.signals [WARNING] Signal reactive_power_regulation_setpoint was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,727 custom_components.sungrow.core.modbus_types [DEBUG] Signal reactive_power_regulation_setpoint is supported.
+2024-04-30 22:02:07,727 custom_components.sungrow.core.modbus_types [DEBUG] Signal work_state_2 is not supported.
+2024-04-30 22:02:07,727 custom_components.sungrow.core.signals [WARNING] Signal meter_power was disabled (['signal not available for this model (not included)', 'signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,727 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_power is supported.
+2024-04-30 22:02:07,727 custom_components.sungrow.core.signals [WARNING] Signal meter_a_phase_power was disabled (['signal not available for this model (not included)', 'signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,728 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_a_phase_power is supported.
+2024-04-30 22:02:07,728 custom_components.sungrow.core.signals [WARNING] Signal meter_b_phase_power was disabled (['signal not available for this model (not included)', 'signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,728 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_b_phase_power is supported.
+2024-04-30 22:02:07,728 custom_components.sungrow.core.signals [WARNING] Signal meter_c_phase_power was disabled (['signal not available for this model (not included)', 'signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,728 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_c_phase_power is supported.
+2024-04-30 22:02:07,729 custom_components.sungrow.core.signals [WARNING] Signal meter_load_power was disabled (['signal not available for this model (not included)', 'signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,729 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_load_power is supported.
+2024-04-30 22:02:07,729 custom_components.sungrow.core.modbus_types [DEBUG] Signal daily_export_energy is not supported.
+2024-04-30 22:02:07,729 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_export_energy is not supported.
+2024-04-30 22:02:07,730 custom_components.sungrow.core.modbus_types [DEBUG] Signal daily_import_energy is not supported.
+2024-04-30 22:02:07,730 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_import_energy is not supported.
+2024-04-30 22:02:07,730 custom_components.sungrow.core.modbus_types [DEBUG] Signal daily_direct_energy_consumption is not supported.
+2024-04-30 22:02:07,730 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_direct_energy_consumption is not supported.
+2024-04-30 22:02:07,730 custom_components.sungrow.core.modbus_types [DEBUG] Signal daily_running_time is not supported.
+2024-04-30 22:02:07,730 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_4_voltage is not supported.
+2024-04-30 22:02:07,730 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_4_current is not supported.
+2024-04-30 22:02:07,731 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_5_voltage is not supported.
+2024-04-30 22:02:07,731 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_5_current is not supported.
+2024-04-30 22:02:07,731 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_6_voltage is not supported.
+2024-04-30 22:02:07,731 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_6_current is not supported.
+2024-04-30 22:02:07,731 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_7_voltage is not supported.
+2024-04-30 22:02:07,731 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_7_current is not supported.
+2024-04-30 22:02:07,731 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_8_voltage is not supported.
+2024-04-30 22:02:07,732 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_8_current is not supported.
+2024-04-30 22:02:07,732 custom_components.sungrow.core.modbus_types [DEBUG] Signal monthly_power_yields is not supported.
+2024-04-30 22:02:07,732 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_9_voltage is not supported.
+2024-04-30 22:02:07,732 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_9_current is not supported.
+2024-04-30 22:02:07,732 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_10_voltage is not supported.
+2024-04-30 22:02:07,732 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_10_current is not supported.
+2024-04-30 22:02:07,733 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_11_voltage is not supported.
+2024-04-30 22:02:07,733 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_11_current is not supported.
+2024-04-30 22:02:07,733 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_12_voltage is not supported.
+2024-04-30 22:02:07,733 custom_components.sungrow.core.modbus_types [DEBUG] Signal mppt_12_current is not supported.
+2024-04-30 22:02:07,733 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_power_yields is not supported.
+2024-04-30 22:02:07,733 custom_components.sungrow.core.signals [WARNING] Signal negative_voltage_to_the_ground was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,734 custom_components.sungrow.core.modbus_types [DEBUG] Signal negative_voltage_to_the_ground is supported.
+2024-04-30 22:02:07,734 custom_components.sungrow.core.signals [WARNING] Signal bus_voltage was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,734 custom_components.sungrow.core.modbus_types [DEBUG] Signal bus_voltage is supported.
+2024-04-30 22:02:07,734 custom_components.sungrow.core.signals [WARNING] Signal grid_frequency_ was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,734 custom_components.sungrow.core.modbus_types [DEBUG] Signal grid_frequency_ is supported.
+2024-04-30 22:02:07,734 custom_components.sungrow.core.modbus_types [DEBUG] Signal pid_work_state is not supported.
+2024-04-30 22:02:07,735 custom_components.sungrow.core.modbus_types [DEBUG] Signal pid_alarm_code is not supported.
+2024-04-30 22:02:07,735 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_active_power_phase_a is supported.
+2024-04-30 22:02:07,735 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_active_power_phase_b is supported.
+2024-04-30 22:02:07,735 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_active_power_phase_c is supported.
+2024-04-30 22:02:07,735 custom_components.sungrow.core.signals [WARNING] Signal power_meter was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,736 custom_components.sungrow.core.modbus_types [DEBUG] Signal power_meter is supported.
+2024-04-30 22:02:07,736 custom_components.sungrow.core.signals [WARNING] Signal export_limit_max was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,736 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_limit_max is supported.
+2024-04-30 22:02:07,736 custom_components.sungrow.core.signals [WARNING] Signal bdc_rated_power was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,736 custom_components.sungrow.core.modbus_types [DEBUG] Signal bdc_rated_power is supported.
+2024-04-30 22:02:07,736 custom_components.sungrow.core.signals [WARNING] Signal bms_max_charging_current was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,736 custom_components.sungrow.core.modbus_types [DEBUG] Signal bms_max_charging_current is supported.
+2024-04-30 22:02:07,737 custom_components.sungrow.core.signals [WARNING] Signal bms_max_discharging_current was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,737 custom_components.sungrow.core.modbus_types [DEBUG] Signal bms_max_discharging_current is supported.
+2024-04-30 22:02:07,737 custom_components.sungrow.core.signals [WARNING] Signal backup_power_phase_a was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,737 custom_components.sungrow.core.modbus_types [DEBUG] Signal backup_power_phase_a is supported.
+2024-04-30 22:02:07,737 custom_components.sungrow.core.signals [WARNING] Signal backup_power_phase_b was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,737 custom_components.sungrow.core.modbus_types [DEBUG] Signal backup_power_phase_b is supported.
+2024-04-30 22:02:07,738 custom_components.sungrow.core.signals [WARNING] Signal backup_power_phase_c was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,738 custom_components.sungrow.core.modbus_types [DEBUG] Signal backup_power_phase_c is supported.
+2024-04-30 22:02:07,738 custom_components.sungrow.core.signals [WARNING] Signal backup_power_total was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,738 custom_components.sungrow.core.modbus_types [DEBUG] Signal backup_power_total is supported.
+2024-04-30 22:02:07,738 custom_components.sungrow.core.signals [WARNING] Signal pv_power_of_today was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,739 custom_components.sungrow.core.modbus_types [DEBUG] Signal pv_power_of_today is supported.
+2024-04-30 22:02:07,739 custom_components.sungrow.core.signals [WARNING] Signal pv_energy_yields_daily was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,739 custom_components.sungrow.core.modbus_types [DEBUG] Signal pv_energy_yields_daily is supported.
+2024-04-30 22:02:07,739 custom_components.sungrow.core.signals [WARNING] Signal pv_energy_yields_monthly was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,739 custom_components.sungrow.core.modbus_types [DEBUG] Signal pv_energy_yields_monthly is supported.
+2024-04-30 22:02:07,739 custom_components.sungrow.core.signals [WARNING] Signal pv_energy_yields_yearly_starting_2019 was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,740 custom_components.sungrow.core.modbus_types [DEBUG] Signal pv_energy_yields_yearly_starting_2019 is supported.
+2024-04-30 22:02:07,740 custom_components.sungrow.core.signals [WARNING] Signal direct_power_consumption_from_pv_today was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,740 custom_components.sungrow.core.modbus_types [DEBUG] Signal direct_power_consumption_from_pv_today is supported.
+2024-04-30 22:02:07,740 custom_components.sungrow.core.signals [WARNING] Signal direct_power_consumption_from_pv_daily was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,740 custom_components.sungrow.core.modbus_types [DEBUG] Signal direct_power_consumption_from_pv_daily is supported.
+2024-04-30 22:02:07,740 custom_components.sungrow.core.signals [WARNING] Signal direct_energy_consumption_from_pv_monthly was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,741 custom_components.sungrow.core.modbus_types [DEBUG] Signal direct_energy_consumption_from_pv_monthly is supported.
+2024-04-30 22:02:07,741 custom_components.sungrow.core.signals [WARNING] Signal direct_energy_consumption_from_pv_yearly_starting_2019 was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,741 custom_components.sungrow.core.modbus_types [DEBUG] Signal direct_energy_consumption_from_pv_yearly_starting_2019 is supported.
+2024-04-30 22:02:07,741 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_1_current is not supported.
+2024-04-30 22:02:07,741 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_2_current is not supported.
+2024-04-30 22:02:07,742 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_3_current is not supported.
+2024-04-30 22:02:07,742 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_4_current is not supported.
+2024-04-30 22:02:07,742 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_5_current is not supported.
+2024-04-30 22:02:07,742 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_6_current is not supported.
+2024-04-30 22:02:07,742 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_7_current is not supported.
+2024-04-30 22:02:07,743 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_8_current is not supported.
+2024-04-30 22:02:07,743 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_9_current is not supported.
+2024-04-30 22:02:07,743 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_10_current is not supported.
+2024-04-30 22:02:07,743 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_11_current is not supported.
+2024-04-30 22:02:07,744 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_12_current is not supported.
+2024-04-30 22:02:07,744 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_13_current is not supported.
+2024-04-30 22:02:07,744 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_14_current is not supported.
+2024-04-30 22:02:07,744 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_15_current is not supported.
+2024-04-30 22:02:07,744 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_16_current is not supported.
+2024-04-30 22:02:07,744 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_17_current is not supported.
+2024-04-30 22:02:07,745 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_18_current is not supported.
+2024-04-30 22:02:07,745 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_19_current is not supported.
+2024-04-30 22:02:07,745 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_20_current is not supported.
+2024-04-30 22:02:07,745 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_21_current is not supported.
+2024-04-30 22:02:07,746 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_22_current is not supported.
+2024-04-30 22:02:07,746 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_23_current is not supported.
+2024-04-30 22:02:07,746 custom_components.sungrow.core.modbus_types [DEBUG] Signal string_24_current is not supported.
+2024-04-30 22:02:07,747 custom_components.sungrow.core.signals [WARNING] Signal running_state was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,747 custom_components.sungrow.core.modbus_types [DEBUG] Signal running_state is supported.
+2024-04-30 22:02:07,747 custom_components.sungrow.core.signals [WARNING] Signal state_load_active was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,747 custom_components.sungrow.core.modbus_types [DEBUG] Signal state_load_active is supported.
+2024-04-30 22:02:07,747 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_pv_generation is supported.
+2024-04-30 22:02:07,748 custom_components.sungrow.core.modbus_types [DEBUG] Signal load_power_hybrid is supported.
+2024-04-30 22:02:07,748 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_power_hybrid is supported.
+2024-04-30 22:02:07,748 custom_components.sungrow.core.signals [WARNING] Signal co2_reduction was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,748 custom_components.sungrow.core.modbus_types [DEBUG] Signal co2_reduction is supported.
+2024-04-30 22:02:07,748 custom_components.sungrow.core.signals [WARNING] Signal total_direct_energy_consumption_ was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,749 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_direct_energy_consumption_ is supported.
+2024-04-30 22:02:07,749 custom_components.sungrow.core.modbus_types [DEBUG] Signal self_consumption_of_day is supported.
+2024-04-30 22:02:07,749 custom_components.sungrow.core.modbus_types [DEBUG] Signal grid_state is not supported.
+2024-04-30 22:02:07,749 custom_components.sungrow.core.signals [WARNING] Signal phase_a_current_ was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,749 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_a_current_ is supported.
+2024-04-30 22:02:07,750 custom_components.sungrow.core.signals [WARNING] Signal phase_b_current_ was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,750 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_b_current_ is supported.
+2024-04-30 22:02:07,750 custom_components.sungrow.core.signals [WARNING] Signal phase_c_current_ was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,750 custom_components.sungrow.core.modbus_types [DEBUG] Signal phase_c_current_ is supported.
+2024-04-30 22:02:07,750 custom_components.sungrow.core.signals [WARNING] Signal total_active_power_2 was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,750 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_active_power_2 is supported.
+2024-04-30 22:02:07,751 custom_components.sungrow.core.signals [WARNING] Signal drm_state was disabled (['signal 4 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,751 custom_components.sungrow.core.modbus_types [DEBUG] Signal drm_state is supported.
+2024-04-30 22:02:07,751 custom_components.sungrow.core.modbus_types [DEBUG] Signal bms_status is not supported.
+2024-04-30 22:02:07,751 custom_components.sungrow.core.modbus_types [DEBUG] Signal max_charging_current is not supported.
+2024-04-30 22:02:07,751 custom_components.sungrow.core.modbus_types [DEBUG] Signal max_discharging_current is not supported.
+2024-04-30 22:02:07,752 custom_components.sungrow.core.modbus_types [DEBUG] Signal warning is not supported.
+2024-04-30 22:02:07,752 custom_components.sungrow.core.modbus_types [DEBUG] Signal protection is not supported.
+2024-04-30 22:02:07,752 custom_components.sungrow.core.modbus_types [DEBUG] Signal fault1 is not supported.
+2024-04-30 22:02:07,752 custom_components.sungrow.core.modbus_types [DEBUG] Signal fault2 is not supported.
+2024-04-30 22:02:07,752 custom_components.sungrow.core.modbus_types [DEBUG] Signal soc is not supported.
+2024-04-30 22:02:07,753 custom_components.sungrow.core.modbus_types [DEBUG] Signal soh is not supported.
+2024-04-30 22:02:07,753 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_current_ is not supported.
+2024-04-30 22:02:07,753 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_voltage_ is not supported.
+2024-04-30 22:02:07,753 custom_components.sungrow.core.modbus_types [DEBUG] Signal cycle_count is not supported.
+2024-04-30 22:02:07,753 custom_components.sungrow.core.modbus_types [DEBUG] Signal average_cell_voltage is not supported.
+2024-04-30 22:02:07,753 custom_components.sungrow.core.modbus_types [DEBUG] Signal max_cell_voltage is not supported.
+2024-04-30 22:02:07,754 custom_components.sungrow.core.modbus_types [DEBUG] Signal min_cell_voltage is not supported.
+2024-04-30 22:02:07,754 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_pack_voltage is not supported.
+2024-04-30 22:02:07,754 custom_components.sungrow.core.signals [WARNING] Signal average_cell_temp was disabled (['signal not available for this model (not included)', 'signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,754 custom_components.sungrow.core.modbus_types [DEBUG] Signal average_cell_temp is supported.
+2024-04-30 22:02:07,754 custom_components.sungrow.core.signals [WARNING] Signal max_cell_temp was disabled (['signal not available for this model (not included)', 'signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,755 custom_components.sungrow.core.modbus_types [DEBUG] Signal max_cell_temp is supported.
+2024-04-30 22:02:07,755 custom_components.sungrow.core.signals [WARNING] Signal min_cell_temp was disabled (['signal not available for this model (not included)', 'signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,755 custom_components.sungrow.core.modbus_types [DEBUG] Signal min_cell_temp is supported.
+2024-04-30 22:02:07,755 custom_components.sungrow.core.signals [WARNING] Signal year was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,755 custom_components.sungrow.core.modbus_types [DEBUG] Signal year is supported.
+2024-04-30 22:02:07,755 custom_components.sungrow.core.signals [WARNING] Signal month was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,756 custom_components.sungrow.core.modbus_types [DEBUG] Signal month is supported.
+2024-04-30 22:02:07,756 custom_components.sungrow.core.signals [WARNING] Signal day was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,756 custom_components.sungrow.core.modbus_types [DEBUG] Signal day is supported.
+2024-04-30 22:02:07,756 custom_components.sungrow.core.signals [WARNING] Signal minute was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,756 custom_components.sungrow.core.modbus_types [DEBUG] Signal minute is supported.
+2024-04-30 22:02:07,756 custom_components.sungrow.core.signals [WARNING] Signal start_stop was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,757 custom_components.sungrow.core.modbus_types [DEBUG] Signal start_stop is supported.
+2024-04-30 22:02:07,757 custom_components.sungrow.core.signals [WARNING] Signal power_limitation_switch was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,757 custom_components.sungrow.core.modbus_types [DEBUG] Signal power_limitation_switch is supported.
+2024-04-30 22:02:07,757 custom_components.sungrow.core.signals [WARNING] Signal power_limitation_setting was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,757 custom_components.sungrow.core.modbus_types [DEBUG] Signal power_limitation_setting is supported.
+2024-04-30 22:02:07,758 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_power_limitation is not supported.
+2024-04-30 22:02:07,758 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_power_limitation_value is not supported.
+2024-04-30 22:02:07,758 custom_components.sungrow.core.modbus_types [DEBUG] Signal current_transformer_output_current is not supported.
+2024-04-30 22:02:07,758 custom_components.sungrow.core.modbus_types [DEBUG] Signal current_transformer_range is not supported.
+2024-04-30 22:02:07,758 custom_components.sungrow.core.modbus_types [DEBUG] Signal current_transformer is not supported.
+2024-04-30 22:02:07,759 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_power_limitation_percentage is not supported.
+2024-04-30 22:02:07,759 custom_components.sungrow.core.modbus_types [DEBUG] Signal installed_pv_power is not supported.
+2024-04-30 22:02:07,759 custom_components.sungrow.core.modbus_types [DEBUG] Signal power_factor_setting is not supported.
+2024-04-30 22:02:07,759 custom_components.sungrow.core.modbus_types [DEBUG] Signal scheduling_achieve_active_overload is not supported.
+2024-04-30 22:02:07,759 custom_components.sungrow.core.modbus_types [DEBUG] Signal night_svg_switch is not supported.
+2024-04-30 22:02:07,759 custom_components.sungrow.core.signals [WARNING] Signal reactive_power_adjustment_mode was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,760 custom_components.sungrow.core.modbus_types [DEBUG] Signal reactive_power_adjustment_mode is supported.
+2024-04-30 22:02:07,760 custom_components.sungrow.core.signals [WARNING] Signal reactive_power_percentage_setting was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,760 custom_components.sungrow.core.modbus_types [DEBUG] Signal reactive_power_percentage_setting is supported.
+2024-04-30 22:02:07,760 custom_components.sungrow.core.modbus_types [DEBUG] Signal power_limitation_adjustment is not supported.
+2024-04-30 22:02:07,760 custom_components.sungrow.core.signals [WARNING] Signal reactive_power_adjustment was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,760 custom_components.sungrow.core.modbus_types [DEBUG] Signal reactive_power_adjustment is supported.
+2024-04-30 22:02:07,760 custom_components.sungrow.core.modbus_types [DEBUG] Signal pid_recovery is not supported.
+2024-04-30 22:02:07,761 custom_components.sungrow.core.modbus_types [DEBUG] Signal anti_pid is not supported.
+2024-04-30 22:02:07,761 custom_components.sungrow.core.modbus_types [DEBUG] Signal fullday_pid_suppression is not supported.
+2024-04-30 22:02:07,761 custom_components.sungrow.core.signals [WARNING] Signal start_stop_2 was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,761 custom_components.sungrow.core.modbus_types [DEBUG] Signal start_stop_2 is supported.
+2024-04-30 22:02:07,761 custom_components.sungrow.core.signals [WARNING] Signal battery_forced_charge_discharge_cmd was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,761 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_forced_charge_discharge_cmd is supported.
+2024-04-30 22:02:07,762 custom_components.sungrow.core.signals [WARNING] Signal Max_SoC was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,762 custom_components.sungrow.core.modbus_types [DEBUG] Signal Max_SoC is supported.
+2024-04-30 22:02:07,762 custom_components.sungrow.core.signals [WARNING] Signal Min_SoC was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,763 custom_components.sungrow.core.modbus_types [DEBUG] Signal Min_SoC is supported.
+2024-04-30 22:02:07,763 custom_components.sungrow.core.signals [WARNING] Signal export_power_limit was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,763 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_power_limit is supported.
+2024-04-30 22:02:07,763 custom_components.sungrow.core.signals [WARNING] Signal energy_meter_comm was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,763 custom_components.sungrow.core.modbus_types [DEBUG] Signal energy_meter_comm is supported.
+2024-04-30 22:02:07,763 custom_components.sungrow.core.signals [WARNING] Signal export_power_limitation_ was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,764 custom_components.sungrow.core.modbus_types [DEBUG] Signal export_power_limitation_ is supported.
+2024-04-30 22:02:07,764 custom_components.sungrow.core.signals [WARNING] Signal battery_max_charge_power was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,764 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_max_charge_power is supported.
+2024-04-30 22:02:07,764 custom_components.sungrow.core.signals [WARNING] Signal battery_max_discharge_power was disabled (['signal 5 not enabled on level 3']), but has been received
+2024-04-30 22:02:07,764 custom_components.sungrow.core.modbus_types [DEBUG] Signal battery_max_discharge_power is supported.
+2024-04-30 22:02:07,764 custom_components.sungrow.core.modbus_py [DEBUG] Disconnecting from 192.168.13.79:502
+2024-04-30 22:02:09,716 custom_components.sungrow.core.modbus_py [DEBUG] Disconnected from 192.168.13.79:502

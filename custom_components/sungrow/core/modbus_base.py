@@ -118,11 +118,11 @@ class ModbusConnectionBase:
     def stats(self):
         return self._stats
 
-    async def connect(self):
+    async def connect(self) -> bool:
         # Note: for proper stats, you need to increase self._stats.connections
         raise NotImplementedError
 
-    async def disconnect(self):
+    async def disconnect(self) -> bool:
         raise NotImplementedError
 
     @property
@@ -130,11 +130,17 @@ class ModbusConnectionBase:
         raise NotImplementedError
 
     async def read(
-        self, signal_list: list[Signal], max_combined_registers=100
+        self, signal_list: list[Signal], max_combined_registers=100, attempts=2
     ) -> Result[MappedData, Exception]:
         res = await self.read_raw(signal_list, max_combined_registers)
         if isinstance(res, Ok):
             return Ok(_map_raw_to_signals(res.ok_value, signal_list))
+        elif (
+            isinstance(res.err_value, CannotConnectError)
+            and attempts > 1
+            and await self.connect()
+        ):
+            return await self.read(signal_list, max_combined_registers, attempts - 1)
         else:
             return res
 

@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from enum import Enum
 from fnmatch import fnmatch
 
+from result import Err, Ok
+
 from custom_components.sungrow.core import connection, const
 from custom_components.sungrow.core.inverter_types import Level, Sensor
 
@@ -144,7 +146,15 @@ class SungrowInverter:
             f"{inv.data['device_type_code']} / {inv.data['serial_number']}"
         )
 
-        await inv._disable_all_unsupported_signals(level_of_detail)
+        if not await inv._disable_all_unsupported_signals(level_of_detail):
+            logger.warning(
+                "Connection lost while reading first few values from inverter"
+            )
+            logger.warning(
+                "Do you have some other device that is querying the inverter?"
+            )
+            await inv.disconnect()
+            return None
 
         return inv
 
@@ -218,27 +228,38 @@ class SungrowInverter:
             for signal in self._signal_definitions._definitions.values()
             if signal.group and not signal.disabled and signal.name not in self.data
         ]
-        self.data.update(await self._client.read(query))
+        res = await self._client.read(query)
+        if isinstance(res, Ok):
+            self.data.update(res.ok_value)
 
-        self._active_groups = (
-            self._signal_definitions.mark_signals_disabled_based_on_groups(self.data)
-        )
+            self._active_groups = (
+                self._signal_definitions.mark_signals_disabled_based_on_groups(
+                    self.data
+                )
+            )
 
-        self._signal_definitions.mark_signals_below_level_as_disabled(level_of_detail)
+            self._signal_definitions.mark_signals_below_level_as_disabled(
+                level_of_detail
+            )
+            return True  # success
+        else:
+            return False  # error
 
     async def pull_single_signal_by_name(
         self, signal_name: str
     ) -> DatapointValueType | None:
-        return await self._client.read_single_signal(
+        res = await self._client.read_single_signal(
             self._signal_definitions.get_signal_definition_by_name(signal_name)
         )
+        return res.unwrap_or(None)
 
     async def pull_signals_by_name(
         self, signal_list: list[str]
     ) -> deserialize.DecodedSignals:
-        return await self._client.read(
+        res = await self._client.read(
             self._signal_definitions.get_signal_definitions_by_name(signal_list),
         )
+        return res.unwrap_or({})
 
     async def _set_slave_and_query_initial_data(self, slave: int):
         """
@@ -247,17 +268,16 @@ class SungrowInverter:
 
         self._client.slave = slave
 
-        try:
-            signal_list = self._signal_definitions.get_active_signals_for_level(
-                Level.CONNECTION.value
-            )
-            self.data = await self._client.read(signal_list)
-        except (modbus_base.InvalidSlaveError, modbus_base.ModbusError):
-            self.data = {}
-            logger.debug("Error connecting to inverter")
-            return False
-        else:
+        signal_list = self._signal_definitions.get_active_signals_for_level(
+            Level.CONNECTION.value
+        )
+        res = await self._client.read(signal_list)
+        if isinstance(res, Ok):
+            self.data = res.ok_value
             return True
+        else:
+            # TODO: when res is ConnectionLost, there is no point in trying another slave
+            return False
 
     @property
     def is_modbus_winet(self):
@@ -380,15 +400,17 @@ class SungrowInverter:
             "Pulling data from inverter: "
             + ",".join([s.name for s in self._signal_definitions.enabled_signals()])
         )
-        new_data = await self._client.read(self._signal_definitions.enabled_signals())
-        if new_data:
-            self.update_sensors_from_raw_data(new_data)
+        new_data_result = await self._client.read(
+            self._signal_definitions.enabled_signals()
+        )
+        if isinstance(new_data_result, Ok):
+            self.update_sensors_from_raw_data(new_data_result.ok_value)
             self.update_sensors_with_active_groups()  # one time activity?
 
             # FIXME
             # extra_signals = extra_sensors.calculate(new_data)
 
-            self.data.update(new_data)
+            self.data.update(new_data_result.ok_value)
             return True
         else:
             await self.disconnect()

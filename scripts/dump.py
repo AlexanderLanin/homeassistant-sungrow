@@ -17,7 +17,7 @@ from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
 from pathlib import Path
 
-import pymodbus
+from result import Err, Ok
 
 if __package__ is None:
     # Script was executed from the command line via ./scripts/dump.py
@@ -45,8 +45,7 @@ logging.getLogger().addHandler(file_handler)
 
 @dataclass
 class TaskResult:
-    mode: str | None
-    host: str
+    connection: SungrowInverter.ConnectionParams
     slave: int | None = None
     signal_definitions: signals.SignalDefinitions | None = None
     data: deserialize.DecodedSignals | None = None
@@ -72,40 +71,49 @@ async def collect_data_from(
         inv = await SungrowInverter.create(params, slave)
         if not inv:
             info_msg("Failed to connect")
-            return TaskResult(
-                params.connection, params.host, slave, error="Failed to connect"
-            )
+            return TaskResult(params, slave, error="Failed to connect")
+
+        con = SungrowInverter.ConnectionParams(
+            host=params.host, port=None, connection=inv.connection_mode
+        )
 
         async with inv:
             # mode = inv.get_connection_mode() TODO: implement this in SungrowInverter
             info_msg(f"Connected via {inv.connection_mode}")
 
             # We need to read all, inclusive disabled signals, to establish if
-            # they are correctly disabled.
+            # they are correctly disabled. That's why we cannot use inv.pull_data()
+            # here.
             # However, there is no need to requery known data.
-            query = inv._signal_definitions.all_signals()
-            for signal_name in inv.data:
-                signal = inv._signal_definitions.get_signal_definition_by_name(
-                    signal_name
-                )
-                query.remove(signal)
-            inv.data.update(await inv._client.read(query))
+            query = [
+                s
+                for s in inv._signal_definitions.all_signals()
+                if s.is_supported == signals.Signal.Supported.NEVER_ATTEMPTED
+            ]
+            res = await inv._client.read(query)
+
+            if isinstance(res, Ok):
+                inv.data.update(res.ok_value)
+                err_value = None
+            else:
+                err_value = res.err_value
 
             return TaskResult(
-                inv.connection_mode,
-                params.host,
-                inv._client.slave,
+                connection=con,
+                slave=inv._client.slave,
                 signal_definitions=inv._signal_definitions,
                 data=inv.data,
+                error=err_value,
             )
+
     except modbus_base.CannotConnectError as e:
         info_msg(f"Failed to connect ({e}, {type(e).__name__})")
         logger.debug("Details:", exc_info=True)
-        return TaskResult(params.connection, params.host, slave, error=e)
+        return TaskResult(params, slave=slave, error=e)
     except Exception as e:
         info_msg(f"Unexpected error during query ({e}, {type(e).__name__})")
         logger.debug("Details:", exc_info=True)
-        return TaskResult(params.connection, params.host, slave, error=e)
+        return TaskResult(params, slave=slave, error=e)
 
 
 async def collect_data(
@@ -133,7 +141,7 @@ async def collect_data(
 
 def merge_by_inverter(results: list[TaskResult]):
     r: dict[str, list[TaskResult]] = {}
-    for d in sorted(results, key=lambda d: d.host):
+    for d in sorted(results, key=lambda d: d.connection.host):
         if d.data:
             sn = d.data["serial_number"]
             assert isinstance(sn, str)
@@ -212,6 +220,8 @@ def markdown_write_summary(f, data_by_inverter: dict[str, list[TaskResult]]):
     f.write("| --- | --- | --- | --- | --- |\n")
     for sn, connections in data_by_inverter.items():
         for per_connection in connections:
+            assert per_connection.data
+
             if per_connection.error:
                 e = per_connection.error
                 if isinstance(e, Exception):
@@ -222,8 +232,8 @@ def markdown_write_summary(f, data_by_inverter: dict[str, list[TaskResult]]):
                 error = None
 
             f.write(
-                f"| {sn} | {per_connection.host}/{per_connection.slave} | "
-                f"{per_connection.mode} | "
+                f"| {sn} | {per_connection.connection.host}/{per_connection.slave} | "
+                f"{per_connection.connection.connection} | "
                 f"{per_connection.stats} | {error} |\n"
             )
 
@@ -235,26 +245,28 @@ def markdown_write_signals(
     all_signals: signals.SignalDefinitions,
     data_by_inverter: dict[str, list[TaskResult]],
 ):
-    for inverter_sn, inverter_data in data_by_inverter.items():
-        if not inverter_data[0].data:
+    for inverter_sn, results_for_same_sn in data_by_inverter.items():
+        if not results_for_same_sn[0].data:
             continue
 
         f.write(f"# {inverter_sn}\n")
 
         f.write(
             "| host/slave/mode | "
-            + " | ".join(f"{c.host}/{c.slave}/{c.mode}" for c in inverter_data)
+            + " | ".join(
+                f"{c.connection.host}/{c.slave}/{c.connection.connection}"
+                for c in results_for_same_sn
+            )
             + " |\n"
         )
-        f.write("| --- " * (len(inverter_data) + 1) + "|\n")
+        f.write("| --- " * (len(results_for_same_sn) + 1) + "|\n")
 
         for signal in all_signals.all_signals():
             line = f"| {signal.name} | "
-            for c in inverter_data:
-                value = (
-                    c.data.get(signal.name, "Not supported") if c.data else "No data"
-                )
-                line += str(value) + " | "
+            for result in results_for_same_sn:
+                assert result.data
+                value = result.data.get(signal.name, "-")
+                line += f"{signal.is_supported} {value} | "
             f.write(line + "\n")
 
         f.write("\n\n")
