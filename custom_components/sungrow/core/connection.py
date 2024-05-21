@@ -33,23 +33,12 @@ class Connection:
     def slave(self, value: int):
         raise NotImplementedError
 
-    # TODO: merge with read. Differentiate between single and multiple reads,
-    # within the function.
-    async def read_single_signal(
-        self,
-        signal: signals.SungrowSignalDefinition,
-    ) -> Result[signals.DatapointValueType | None, Exception]:
-        decoded_result = await self.read([signal])
-        if isinstance(decoded_result, Ok):
-            # unwrap array
-            return Ok(decoded_result.ok_value[signal.name])
-        else:
-            return decoded_result
-
     async def read(
         self,
-        query: list[signals.SungrowSignalDefinition],
+        query: list[signals.SungrowSignalDefinition] | signals.SungrowSignalDefinition,
     ) -> Result[deserialize.DecodedSignals, Exception]:
+        if isinstance(query, signals.SungrowSignalDefinition):
+            query = [query]
         decoded_result = await self._read(query)
         if isinstance(decoded_result, Ok):
             decoded = decoded_result.ok_value

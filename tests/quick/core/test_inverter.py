@@ -2,12 +2,14 @@ import logging
 from contextlib import asynccontextmanager
 
 import pytest
+from result import Err, Ok, Result
 
 from custom_components.sungrow.core import (
     connection,
     deserialize,
     inverter,
     modbus_base,
+    modbus_types,
     signals,
 )
 
@@ -25,7 +27,7 @@ class FakeConnection(connection.Connection):
         self.active_slave: int | None = None
         self.allow_connect = False
         self.allow_disconnect = False
-        self.connected = True  #
+        self._connected = True  #
         self.is_http = False
 
         self.logger = logging.getLogger(__name__ + " :: " + self.__class__.__name__)
@@ -37,26 +39,20 @@ class FakeConnection(connection.Connection):
     async def disconnect(self):
         if not self.allow_disconnect:
             raise AssertionError("Should not be called")
-        self.connected = False
+        self._connected = False
 
-    async def _read_single_signal(
-        self,
-        signal: signals.SungrowSignalDefinition,
-    ) -> signals.DatapointValueType | None:
-        if self.active_slave != self.data_on_slave:
-            raise modbus_base.InvalidSlaveError
-
-        self.logger.debug(f"Reading {signal.name} = {self.data.get(signal.name)}")
-        return self.data.get(signal.name)
+    @property
+    def connected(self) -> bool:
+        return self._connected
 
     async def _read(
         self,
         query: list[signals.SungrowSignalDefinition],
-    ) -> deserialize.DecodedSignals:
+    ) -> Result[deserialize.DecodedSignals, Exception]:
         if self.active_slave != self.data_on_slave:
-            raise modbus_base.InvalidSlaveError
+            return Err(modbus_base.InvalidSlaveError())
 
-        return {s.name: await self.read_single_signal(s) for s in query}
+        return Ok({s.name: self.data.get(s.name) for s in query})
 
     @property
     def slave(self) -> int:
@@ -81,7 +77,7 @@ async def create_inv(con: FakeConnection):
     yield inv
 
     if con.allow_disconnect:
-        assert not con.connected
+        assert not con._connected
 
 
 @pytest.mark.asyncio()
@@ -92,7 +88,7 @@ async def test_create_inverter_with_no_signals_will_not_connect():
     inv = await inverter.SungrowInverter.create(con.connection_data)
 
     assert not inv
-    assert not con.connected
+    assert not con._connected
 
 
 @pytest.mark.asyncio()
@@ -128,10 +124,11 @@ async def test_create_inverter_detect_no_meter_supported():
         power_b = sig(inv, "meter_active_power_phase_b")
         power_c = sig(inv, "meter_active_power_phase_c")
 
-        assert power.is_supported is False  # not supported
-        assert power_a.is_supported is None  # never queried
-        assert power_b.is_supported is None  # never queried
-        assert power_c.is_supported is None  # never queried
+        s = modbus_types.Signal.Supported
+        assert power.is_supported is s.NO
+        assert power_a.is_supported is s.NEVER_ATTEMPTED
+        assert power_b.is_supported is s.NEVER_ATTEMPTED
+        assert power_c.is_supported is s.NEVER_ATTEMPTED
 
         # Automatic detection should disable all signals
         assert power.disabled
@@ -156,10 +153,11 @@ async def test_create_inverter_detect_no_meter_connected():
         power_b = sig(inv, "meter_active_power_phase_b")
         power_c = sig(inv, "meter_active_power_phase_c")
 
-        assert power.is_supported is None  # We don't know from 0 value!
-        # assert power_a.is_supported is None
-        # assert power_b.is_supported is None
-        # assert power_c.is_supported is None
+        s = modbus_types.Signal.Supported
+        assert power.is_supported is s.UNKNOWN  # We don't know from 0 value
+        assert power_a.is_supported is s.NEVER_ATTEMPTED
+        assert power_b.is_supported is s.NEVER_ATTEMPTED
+        assert power_c.is_supported is s.NEVER_ATTEMPTED
 
         assert not power.disabled
         assert not power_a.disabled
@@ -183,10 +181,11 @@ async def test_create_inverter_detect_meter():
         power_b = sig(inv, "meter_active_power_phase_b")
         power_c = sig(inv, "meter_active_power_phase_c")
 
-        assert power.is_supported is True  # supported and non zero
-        assert power_a.is_supported is None  # never queried
-        assert power_b.is_supported is None  # never queried
-        assert power_c.is_supported is None  # never queried
+        s = modbus_types.Signal.Supported
+        assert power.is_supported is s.YES
+        assert power_a.is_supported is s.NEVER_ATTEMPTED
+        assert power_b.is_supported is s.NEVER_ATTEMPTED
+        assert power_c.is_supported is s.NEVER_ATTEMPTED
 
         # Automatic detection should not disable all signals
         assert not power.disabled
@@ -207,33 +206,49 @@ async def run_and_compare_type(
 
 
 @pytest.mark.asyncio()
-async def test_create_inverter_detect_mode_main():
+async def test_create_inverter_detect_mode_main_standalone():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
         master_slave_mode="Disabled",
         master_slave_role="Master",
     )
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_main_master():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.MASTER,
         master_slave_mode="Enabled",
         master_slave_role="Master",
     )
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_main_slave1():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
         master_slave_mode="Disabled",
         master_slave_role="Slave 1",
     )
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_main_slave_pure():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.SLAVE,
         master_slave_mode="Enabled",
         master_slave_role="Slave 1",
-        inverter_count=1,
+        inverter_count=2,
     )
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_detect_mode_main_slave_1():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.SLAVE_1,
         master_slave_mode="Enabled",
         master_slave_role="Slave 1",
-        inverter_count=2,
+        inverter_count=3,
     )
 
 

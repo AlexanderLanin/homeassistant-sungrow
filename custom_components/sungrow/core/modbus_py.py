@@ -24,31 +24,34 @@ from custom_components.sungrow.core.modbus_types import RegisterRange
 logger = logging.getLogger(__name__)
 
 
-# WiNet-S responds with slightly incorrect message headers in case of errors.
-# Version: M_WiNet-S_V01_V01_A
-# Pymodbus will trigger a needless TCP reconnect, and it will report "no message
-# received". While we can deal with the latter, the former is a bit more annoying.
-# The root cause is WiNet transmits 3 bytes of data, but reports to transmit 2.
-# As we know what exactly is wrong with the message, we simply need to fix the header
-# length before pymodbus tries to decode it.
-# pymodbus 3.6.6 has a function named _validate_slave_id which is called just at the
-# right time to fix the message header. We don't particularly care about what it
-# actually does, as we can simply inject our fix right before it is called:
-def inject_message_header_fix():
-    if pymodbus.__version__ != "3.6.6":
-        raise RuntimeError("This fix needs to be adjusted")
+if pymodbus.__version__ != "3.6.8":
+    raise RuntimeError("This fix needs to be adjusted")
 
-    real_validate_slave_id = pymodbus.framer.base.ModbusFramer._validate_slave_id
+# # WiNet-S responds with slightly incorrect message headers in case of errors.
+# # Version: M_WiNet-S_V01_V01_A
+# # Pymodbus will trigger a needless TCP reconnect, and it will report "no message
+# # received". While we can deal with the latter, the former is a bit more annoying.
+# # The root cause is WiNet transmits 3 bytes of data, but reports to transmit 2.
+# # As we know what exactly is wrong with the message, we simply need to fix the header
+# # length before pymodbus tries to decode it.
+# # pymodbus 3.6.6 has a function named _validate_slave_id which is called just at the
+# # right time to fix the message header. We don't particularly care about what it
+# # actually does, as we can simply inject our fix right before it is called:
+# def inject_message_header_fix():
+#     if pymodbus.__version__ != "3.6.6":
+#         raise RuntimeError("This fix needs to be adjusted")
 
-    def injected(self, a, b):
-        if self._buffer[self._hsize] & 0x80 and self._header["len"] == 2:
-            self._header["len"] = 3
-        return real_validate_slave_id(self, a, b)
+#     real_validate_slave_id = pymodbus.framer.base.ModbusFramer._validate_slave_id
 
-    pymodbus.framer.base.ModbusFramer._validate_slave_id = injected  # type: ignore
+#     def injected(self, a, b):
+#         if self._buffer[self._hsize] & 0x80 and self._header["len"] == 2:
+#             self._header["len"] = 3
+#         return real_validate_slave_id(self, a, b)
+
+#     pymodbus.framer.base.ModbusFramer._validate_slave_id = injected  # type: ignore
 
 
-inject_message_header_fix()
+# inject_message_header_fix()
 
 
 class PymodbusConnection(ModbusConnectionBase):

@@ -248,10 +248,14 @@ class SungrowInverter:
     async def pull_single_signal_by_name(
         self, signal_name: str
     ) -> DatapointValueType | None:
-        res = await self._client.read_single_signal(
+        res = await self._client.read(
             self._signal_definitions.get_signal_definition_by_name(signal_name)
         )
-        return res.unwrap_or(None)
+        if isinstance(res, Ok):
+            return res.ok_value.get(signal_name)
+        else:
+            # ToDo: what about the error?
+            return None
 
     async def pull_signals_by_name(
         self, signal_list: list[str]
@@ -259,6 +263,7 @@ class SungrowInverter:
         res = await self._client.read(
             self._signal_definitions.get_signal_definitions_by_name(signal_list),
         )
+        # ToDo: what about the error?
         return res.unwrap_or({})
 
     async def _set_slave_and_query_initial_data(self, slave: int):
@@ -461,12 +466,15 @@ class SungrowInverter:
     @property
     def slaves(self):
         if self.is_standalone:
+            logger.debug("Standalone inverter -> 0 slaves")
             return 0
         else:
             x = self.data.get("inverter_count", 0)
             assert isinstance(x, int)
             # inverter_count includes master
-            return int(x) - 1
+            slaves = int(x) - 1
+            logger.debug(f"Detected {slaves} slaves")
+            return slaves
 
     @property
     def type(self):
