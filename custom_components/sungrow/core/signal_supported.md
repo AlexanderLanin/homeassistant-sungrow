@@ -14,11 +14,6 @@ graph
     UNKNOWN --returns 0--> CONFIRMED_UNKNOWN
     UNKNOWN --valid value--> YES
     UNKNOWN --unsupported error--> NO
-
-    YES -.error detected.-> NO
-    NO -.error detected.-> YES
-    CONFIRMED_UNKNOWN -.error detected.-> YES
-    CONFIRMED_UNKNOWN -.error detected.-> NO    
 ```
 
 
@@ -38,11 +33,4 @@ stateDiagram
     UNKNOWN --> CONFIRMED_UNKNOWN: returns 0
     UNKNOWN --> YES: valid value
     UNKNOWN --> NO: unsupported error
-
-
-    YES --> NO: error detected
-    NO --> YES: error detected
-
-    CONFIRMED_UNKNOWN --> YES: error detected
-    CONFIRMED_UNKNOWN --> NO: error detected
 ```
