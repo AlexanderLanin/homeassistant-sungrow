@@ -3,6 +3,7 @@ from custom_components.sungrow.core.modbus_range_builder import (
     split_list,
 )
 from custom_components.sungrow.core.modbus_types import (
+    RegisterRange,
     RegisterType,
     Signal,
 )
@@ -28,14 +29,16 @@ def call_split_list(
     )
 
 
-def simple_signal(name, address, register_type=RegisterType.READ, element_length=1):
-    return Signal(
+def simple_signal(
+    name, address, register_type=RegisterType.READ, element_length=1, supported=None
+):
+    s = Signal(
         name=name,
-        address=address,
-        element_length=element_length,
-        array_length=1,
-        register_type=register_type,
+        registers=RegisterRange(register_type, address, element_length),
     )
+    if supported is not None:
+        s.set_supported(supported)
+    return s
 
 
 def test_trivial():
@@ -81,3 +84,12 @@ def test_blocked_registers():
         [signals[0]],
         [signals[1]],
     ]
+
+
+def test_combine_supported():
+    signals = [
+        simple_signal("A", 5000, supported=Signal.Supported.YES),
+        simple_signal("B", 5020, supported=Signal.Supported.YES),
+    ]
+
+    assert call_split_list(signals, 100) == [signals]

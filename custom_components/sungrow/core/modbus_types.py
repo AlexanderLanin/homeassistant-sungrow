@@ -40,20 +40,16 @@ class RegisterRange:
 
 @dataclass
 class Signal:
-    name: str
-    registers: RegisterRange
-
     class Supported(StrEnum):
         NEVER_ATTEMPTED = "never_attempted"
         UNKNOWN = "returns_zero"
+        CONFIRMED_UNKNOWN = "confirmed_unknown"
         YES = "yes"
         NO = "no"
 
+    name: str
+    registers: RegisterRange
     _is_supported = Supported.NEVER_ATTEMPTED
-    """FIXME! New! Move from SungrowSignalDefinition"""
-
-    # length_of_array: int | None
-    # """None if not an array"""
 
     def contains(self, registers: RegisterRange) -> bool:
         return self.registers.contains(registers)
@@ -68,12 +64,13 @@ class Signal:
     def set_supported(self, value: Supported):
         assert value != self.Supported.NEVER_ATTEMPTED
 
-        # is_supported is a state machine with 4 states.
-        # On some of the transitions, we log a message.
-        # debug:
-        # - NEVER_ATTEMPTED/UNKNOWN -> YES/NO
-        # warning:
-        # - YES/NO -> NO/YES
+        # is_supported is a state machine with 5 states, where the transitions are:
+        # - start: NEVER_ATTEMPTED
+        # - NEVER_ATTEMPTED/UNKNOWN/CONFIRMED_UNKNOWN -> YES/NO
+        # - NEVER_ATTEMPTED -> UNKNOWN
+        # - UNKNOWN -> CONFIRMED_UNKNOWN
+        # - YES/NO -> NO/YES (warning log message)
+        # - CONFIRMED -> NO (warning log message)
 
         # Quick exit, if there is no change.
         # Simplifies the state machine.

@@ -1,14 +1,12 @@
-from custom_components.sungrow.core import deserialize, modbus_py, signals
+from custom_components.sungrow.core import deserialize, signals
+from custom_components.sungrow.core.modbus_types import RegisterRange, RegisterType
 
 
 def simple_signal(base_datatype, mask=None, accuracy=None, decoded=None):
     return signals.SungrowSignalDefinition(
-        register_type=modbus_py.RegisterType.READ,
-        address=0,
         array_length=1,
         name="test",
         base_datatype=base_datatype,
-        element_length=1,  # do we need to adapt this for tests?
         unit_of_measurement=None,
         disabled=[],
         group=None,
@@ -18,6 +16,7 @@ def simple_signal(base_datatype, mask=None, accuracy=None, decoded=None):
         models=None,
         models_exclude=None,
         level=None,
+        registers=RegisterRange(RegisterType.READ, 0, 1),
     )
 
 
