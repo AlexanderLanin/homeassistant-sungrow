@@ -41,9 +41,15 @@ class RegisterRange:
 @dataclass
 class Signal:
     class Supported(StrEnum):
-        NEVER_ATTEMPTED = "never_attempted"
-        UNKNOWN = "returns_zero"
+        NEVER_ATTEMPTED = "never_attempted"  # Initial state
+
+        # Needs to be queried individually for a potentially better classification
+        UNKNOWN_FROM_MULTI_SIGNAL_QUERY = "returns_zero"
+
+        # Was queried individually, still no better classification. It will remain unknown.
+        # No need to query individually again.
         CONFIRMED_UNKNOWN = "confirmed_unknown"
+
         YES = "yes"
         NO = "no"
 
@@ -61,45 +67,38 @@ class Signal:
     def is_supported(self) -> Supported:
         return self._is_supported
 
-    def set_supported(self, value: Supported):
+    def query_individually(self):
+        return self._is_supported == self.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY
+
+    def update_supported(self, value: Supported):
         assert value != self.Supported.NEVER_ATTEMPTED
 
-        # is_supported is a state machine with 5 states, where the transitions are:
-        # - start: NEVER_ATTEMPTED
-        # - NEVER_ATTEMPTED/UNKNOWN/CONFIRMED_UNKNOWN -> YES/NO
-        # - NEVER_ATTEMPTED -> UNKNOWN
-        # - UNKNOWN -> CONFIRMED_UNKNOWN
-        # - YES/NO -> NO/YES (warning log message)
-        # - CONFIRMED -> NO (warning log message)
-
         # Quick exit, if there is no change.
-        # Simplifies the state machine.
         if value == self._is_supported:
             return
 
-        if value in (self.Supported.YES, self.Supported.NO):
-            if self._is_supported in (
-                self.Supported.NEVER_ATTEMPTED,
-                self.Supported.UNKNOWN,
-            ):
-                # - NEVER_ATTEMPTED/UNKNOWN -> YES/NO
-                if value == self.Supported.YES:
-                    logger.debug(f"Signal {self.name} is supported.")
-                elif value == self.Supported.NO:
-                    logger.debug(f"Signal {self.name} is not supported.")
-            else:
-                # - YES/NO -> NO/YES
-                logger.warning(
-                    f"Signal {self.name} changed support status "
-                    f"from {self._is_supported} to {value}."
-                )
+        # Is it an "update"?
+        # E.g. when the signal was set to YES, but is now UNKNOWN, we want to keep the YES
+        ranks = {
+            self.Supported.NEVER_ATTEMPTED: 0,
+            self.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY: 1,
+            self.Supported.CONFIRMED_UNKNOWN: 2,
+            self.Supported.YES: 3,
+            self.Supported.NO: 3,
+        }
+        old_rank = ranks[self._is_supported]
+        new_rank = ranks[value]
 
-        # NEVER_ATTEMPTED -> *
-        # UNKNOWN/YES/NO -> NO/YES
-        if self._is_supported == self.Supported.NEVER_ATTEMPTED or value in (
-            self.Supported.YES,
-            self.Supported.NO,
-        ):
+        if new_rank >= old_rank:
+            if value in (self.Supported.YES, self.Supported.NO):
+                if self._is_supported in (self.Supported.YES, self.Supported.NO):
+                    logger.warning(
+                        f"Signal {self.name} changed support status "
+                        f"from {self._is_supported} to {value}."
+                    )
+                else:
+                    s = "supported" if value == self.Supported.YES else "not supported"
+                    logger.debug(f"Signal {self.name} is {s}.")
             self._is_supported = value
 
 

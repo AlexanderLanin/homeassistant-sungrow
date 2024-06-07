@@ -37,7 +37,7 @@ def simple_signal(
         registers=RegisterRange(register_type, address, element_length),
     )
     if supported is not None:
-        s.set_supported(supported)
+        s.update_supported(supported)
     return s
 
 

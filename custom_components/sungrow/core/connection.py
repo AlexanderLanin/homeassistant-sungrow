@@ -37,17 +37,24 @@ class Connection:
         self,
         query: list[signals.SungrowSignalDefinition] | signals.SungrowSignalDefinition,
     ) -> Result[deserialize.DecodedSignals, Exception]:
+        # Always convert to a list to avoid different code paths
         if isinstance(query, signals.SungrowSignalDefinition):
             query = [query]
-        decoded_result = await self._read(query)
-        if isinstance(decoded_result, Ok):
-            decoded = decoded_result.ok_value
+
+        def get_signal_by_name(name):
+            return next(
+                (signal for signal in query if signal.name == name), None
+            )
+
+        result = await self._read(query)
+        if isinstance(result, Ok):
+            decoded = result.ok_value
             for name, value in decoded.items():
-                signal = next((signal for signal in query if signal.name == name), None)
+                signal = get_signal_by_name(name)
                 assert signal
                 signal.determine_and_mark_supported(value)
 
-        return decoded_result
+        return result
 
     async def _read(
         self,

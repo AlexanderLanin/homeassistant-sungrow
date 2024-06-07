@@ -69,7 +69,7 @@ class SungrowSignalDefinition(Signal):
     def is_supported(self):
         return super().is_supported
 
-    def set_supported(self, value: Signal.Supported):
+    def update_supported(self, value: Signal.Supported):
         if value == Signal.Supported.YES and self.disabled:
             logger.warning(
                 f"Signal {self.name} was disabled ({self.disabled}), "
@@ -80,22 +80,26 @@ class SungrowSignalDefinition(Signal):
         if value == Signal.Supported.NO:
             self.disabled.append("not supported by inverter")
 
-        super().set_supported(value)
+        super().update_supported(value)
 
-    def is_value_supported(self, value) -> bool:
+    def does_value_indicate_supported(self, value) -> bool:
+        # ToDo: What about na_value?
         return value is not None and value != self.value_with_no_meaning
 
     # def is_value_unsupported(self, value) -> bool:
     #     return value is None
 
-    def determine_and_mark_supported(self, value):
+    def determine_and_mark_supported(self, value, was_queried_individually):
         if value is None:
             # This was already done in the super class, but anyway...
-            self.set_supported(Signal.Supported.NO)
-        elif self.is_value_supported(value):
-            self.set_supported(Signal.Supported.YES)
+            self.update_supported(Signal.Supported.NO)
+        elif self.does_value_indicate_supported(value):
+            self.update_supported(Signal.Supported.YES)
         else:
-            self.set_supported(Signal.Supported.UNKNOWN)
+            if was_queried_individually:
+                self.update_supported(Signal.Supported.CONFIRMED_UNKNOWN)
+            else:
+                self.update_supported(Signal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY)
 
     @property
     def na_value(self):

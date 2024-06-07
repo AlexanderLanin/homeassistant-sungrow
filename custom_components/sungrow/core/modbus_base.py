@@ -224,18 +224,18 @@ class ModbusConnectionBase:
         if isinstance(res, Ok):
             self.stats.retrieved_signals_success += len(signal_list)
 
-            # On this level, we cannot determine if a signal is truly supported,
-            # or if it contains a default value with no meaning.
-            for signal in signal_list:
-                if signal.is_supported == Signal.Supported.NEVER_ATTEMPTED:
-                    signal.set_supported(Signal.Supported.UNKNOWN)
+            # # On this level, we cannot determine if a signal is truly supported,
+            # # or if it contains a default value with no meaning.
+            # for signal in signal_list:
+            #     if signal.is_supported == Signal.Supported.NEVER_ATTEMPTED:
+            #         signal.set_supported(Signal.Supported.UNKNOWN)
 
             return Ok(res.ok_value)
         elif isinstance(res.err_value, UnsupportedRegisterQueriedError):
             # All registers in this range are unsupported.
             self.stats.retrieved_signals_success += len(signal_list)
             for signal in signal_list:
-                signal.set_supported(Signal.Supported.NO)
+                # signal.set_supported(Signal.Supported.NO)
                 self._problematic_registers[signal.registers.register_type].append(
                     signal.registers.start
                 )

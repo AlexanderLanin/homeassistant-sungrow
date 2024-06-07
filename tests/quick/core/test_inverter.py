@@ -154,7 +154,9 @@ async def test_create_inverter_detect_no_meter_connected():
         power_c = sig(inv, "meter_active_power_phase_c")
 
         s = modbus_types.Signal.Supported
-        assert power.is_supported is s.UNKNOWN  # We don't know from 0 value
+        assert (
+            power.is_supported is s.UNKNOWN_FROM_MULTI_SIGNAL_QUERY
+        )  # We don't know from 0 value
         assert power_a.is_supported is s.NEVER_ATTEMPTED
         assert power_b.is_supported is s.NEVER_ATTEMPTED
         assert power_c.is_supported is s.NEVER_ATTEMPTED
