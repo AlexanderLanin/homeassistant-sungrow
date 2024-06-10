@@ -15,7 +15,7 @@ from homeassistant.core import HomeAssistant
 
 from custom_components.sungrow.const import DOMAIN
 from custom_components.sungrow.core import inverter
-from custom_components.sungrow.core.inverter import InverterConnection
+from custom_components.sungrow.core.inverter import SungrowInverter
 
 TEST_DATA = pathlib.Path(__file__).parent / "test_data"
 
@@ -248,13 +248,12 @@ async def e2e_setup(yaml_file, inverter_params):
 async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
     if DOMAIN in hass.data:
         for ic in hass.data[DOMAIN]["inverters"].values():
-            assert isinstance(ic, InverterConnection)
-            if ic.connection:
-                await ic.connection.disconnect()
+            assert isinstance(ic, SungrowInverter)
+            await ic.disconnect()
 
 
 @pytest.fixture(autouse=True)
-async def cleanup_lingering_inverter_connections_fixture(hass: HomeAssistant):
+async def cleanup_lingering_inverter_connections_fixture(hass: HomeAssistant):  # noqa: PT004
     yield
     # Unfortunately tests here are not even aware of any connection, as it's internal
     # to the config_flow.

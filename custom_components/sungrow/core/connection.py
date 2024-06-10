@@ -40,11 +40,10 @@ class Connection:
         # Always convert to a list to avoid different code paths
         if isinstance(query, signals.SungrowSignalDefinition):
             query = [query]
+        single_item_query = len(query) == 1
 
         def get_signal_by_name(name):
-            return next(
-                (signal for signal in query if signal.name == name), None
-            )
+            return next((signal for signal in query if signal.name == name), None)
 
         result = await self._read(query)
         if isinstance(result, Ok):
@@ -52,7 +51,9 @@ class Connection:
             for name, value in decoded.items():
                 signal = get_signal_by_name(name)
                 assert signal
-                signal.determine_and_mark_supported(value)
+                signal.update_supported_state_based_on_value(
+                    value, was_queried_individually=single_item_query
+                )
 
         return result
 

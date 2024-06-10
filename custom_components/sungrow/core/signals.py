@@ -89,7 +89,7 @@ class SungrowSignalDefinition(Signal):
     # def is_value_unsupported(self, value) -> bool:
     #     return value is None
 
-    def determine_and_mark_supported(self, value, was_queried_individually):
+    def update_supported_state_based_on_value(self, value, was_queried_individually):
         if value is None:
             # This was already done in the super class, but anyway...
             self.update_supported(Signal.Supported.NO)

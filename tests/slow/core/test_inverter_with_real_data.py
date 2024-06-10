@@ -74,10 +74,12 @@ async def test_e2e_fail_no_server():
     # should this really raise an exception?
     # or should it just return None? FIXME TODO
     with pytest.raises(modbus_base.CannotConnectError):
-        await inverter.connect_and_get_basic_data(
-            host="localhost", port=500 * 1000, slave=1, connection="pymodbus"
+        await inverter.SungrowInverter.create(
+            inverter.SungrowInverter.ConnectionParams(
+                host="localhost", port=500 * 1000, connection="pymodbus"
+            ),
+            slave=1,
         )
-        raise AssertionError()
 
 
 @pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
@@ -85,13 +87,12 @@ async def test_e2e_fail_wrong_slave():
     async with simulate_modbus_inverter(None) as port:
         with pytest.raises((modbus_base.InvalidSlaveError, modbus_base.ModbusError)):
             # Note: simulation runs with slave 1
-            await inverter.connect_and_get_basic_data(
-                host="localhost",
-                port=port,
+            await inverter.SungrowInverter.create(
+                inverter.SungrowInverter.ConnectionParams(
+                    host="localhost", port=port, connection="pymodbus"
+                ),
                 slave=2,
-                connection="pymodbus",
             )
-            raise AssertionError()
 
 
 @pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")

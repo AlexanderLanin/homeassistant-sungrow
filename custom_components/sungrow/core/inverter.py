@@ -104,7 +104,7 @@ class SungrowInverter:
     async def create(
         connection_param: ConnectionParams | ConnectionData,
         slave: int | None = None,
-        level_of_detail: int = Level.ADVANCED.value,
+        level_of_detail: Level = Level.ADVANCED,
     ) -> SungrowInverter | None:
         """Create a connection, with heuristics for port, slave and connection type."""
 
@@ -146,7 +146,7 @@ class SungrowInverter:
             f"{inv.data['device_type_code']} / {inv.data['serial_number']}"
         )
 
-        if not await inv._disable_all_unsupported_signals(level_of_detail):
+        if not await inv._disable_all_unsupported_signals(level_of_detail.value):
             logger.warning(
                 "Connection lost while reading first few values from inverter"
             )
@@ -274,7 +274,7 @@ class SungrowInverter:
         self._client.slave = slave
 
         signal_list = self._signal_definitions.get_active_signals_for_level(
-            Level.CONNECTION.value
+            Level.MINIMAL.value
         )
         res = await self._client.read(signal_list)
         if isinstance(res, Ok):

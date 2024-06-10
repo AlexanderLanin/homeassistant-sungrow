@@ -132,7 +132,7 @@ class PymodbusConnection(ModbusConnectionBase):
             # This is the only line in the module that needs to know about this detail!
             rr: pymodbus.pdu.ModbusResponse = await read_registers(
                 register_range.start - 1, count=register_range.length, slave=self._slave
-            )  # type: ignore
+            )
         except pymodbus.exceptions.ConnectionException as e:
             return Err(modbus_base.CannotConnectError(f"{type(e).__name__}: {e}"))
         except pymodbus.exceptions.ModbusIOException as e:

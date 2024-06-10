@@ -14,7 +14,7 @@ class Sensor:
 
 
 class Level(Enum):
-    CONNECTION = 1
+    MINIMAL = 1
     BASIC = 2
     ADVANCED = 3
     LOTS_AND_LOTS = 4
