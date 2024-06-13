@@ -6,9 +6,16 @@ Basically it's pure modbus, with a (hopefully) better interface.
 
 import logging
 from dataclasses import dataclass
+from datetime import datetime
+from typing import cast
 
 from result import Err, Ok, Result
 
+from custom_components.sungrow.core import (
+    deserialize,
+    modbus_types,
+    signals,
+)
 from custom_components.sungrow.core.modbus_range_builder import split_list
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
@@ -129,7 +136,34 @@ class ModbusConnectionBase:
     def connected(self) -> bool:
         raise NotImplementedError
 
-    async def read(
+    async def read1(
+        self,
+        query: list[signals.SungrowSignalDefinition],
+    ) -> Result[deserialize.DecodedSignals, Exception]:
+        """Pull data from inverter"""
+
+        # Downcast to base class to make mypy happy
+        signal_definitions_base = cast(list[modbus_types.Signal], query)
+
+        pull_start = datetime.now()
+        raw_data_result = await self.read2(signal_definitions_base)
+        elapsed = datetime.now() - pull_start
+        logger.debug(
+            f"Inverter: Pulled {len(query)} signals in "
+            f"{elapsed.seconds}.{elapsed.microseconds} secs"
+        )
+
+        if isinstance(raw_data_result, Ok):
+            raw_data = raw_data_result.ok_value
+            decoded = deserialize.decode_signals(
+                query,
+                raw_data,
+            )
+            return Ok(decoded)
+        else:
+            return raw_data_result
+
+    async def read2(
         self, signal_list: list[Signal], max_combined_registers=100, attempts=2
     ) -> Result[MappedData, Exception]:
         res = await self.read_raw(signal_list, max_combined_registers)
@@ -140,7 +174,7 @@ class ModbusConnectionBase:
             and attempts > 1
             and await self.connect()
         ):
-            return await self.read(signal_list, max_combined_registers, attempts - 1)
+            return await self.read2(signal_list, max_combined_registers, attempts - 1)
         else:
             return res
 

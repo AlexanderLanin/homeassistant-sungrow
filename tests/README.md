@@ -21,6 +21,7 @@ classDiagram
     namespace Product {
         class inverter
         class Connection {
+            Abstraction Layer
             Determines if signals are supported
         }
         class DecodedModbusConnection {
@@ -44,7 +45,7 @@ classDiagram
     Connection --> FakeConnection : signals / decoded values
 
     Connection --> WebsocketConnection
-    WebsocketConnection ..> aiohttp
+    WebsocketConnection --> aiohttp
 
     DecodedModbusConnection --> modbus_base : registers / encoded data
 

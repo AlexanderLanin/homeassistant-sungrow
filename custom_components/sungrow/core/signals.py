@@ -10,12 +10,11 @@ from pathlib import Path
 from typing import cast
 
 import yaml
-from aiohttp import DefaultResolver
 
 from custom_components.sungrow.core.modbus_types import RegisterRange
 
-from .modbus_base import Signal  # ToDo: signal imports Signal sounds wrong :D
 from .modbus_py import RegisterType
+from .modbus_types import Signal  # ToDo: signal imports Signal sounds wrong :D
 
 logger = logging.getLogger(__name__)
 
