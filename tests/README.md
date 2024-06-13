@@ -24,14 +24,14 @@ classDiagram
             Abstraction Layer
             Determines if signals are supported
         }
-        class DecodedModbusConnection {
-            cleverly combines signals into register ranges
+        class modbus_base {
+            translates between signals ans registers
+            cleverly combines registers into query ranges
             encodes and decodes data
         }
         class WebsocketConnection {
             Theoretical implementation of the websocket interface
         }
-        class modbus_base
         class modbus_py
         class modbus_http
         class aiohttp~external~
@@ -39,15 +39,13 @@ classDiagram
     }
     class FakeConnection~test~
 
-    inverter --> Connection : signals / decoded values
+    inverter --> Connection
 
-    Connection --> DecodedModbusConnection : signals / decoded values
-    Connection --> FakeConnection : signals / decoded values
+    Connection --> modbus_base
+    Connection --> FakeConnection
 
     Connection --> WebsocketConnection
     WebsocketConnection --> aiohttp
-
-    DecodedModbusConnection --> modbus_base : registers / encoded data
 
     modbus_base --> modbus_py
     modbus_base --> modbus_http
