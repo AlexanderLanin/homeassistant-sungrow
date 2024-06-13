@@ -3,7 +3,7 @@ from custom_components.sungrow.core.modbus_types import RegisterRange, RegisterT
 
 
 def simple_signal(base_datatype, mask=None, accuracy=None, decoded=None):
-    return signals.SungrowSignalDefinition(
+    return signals.SignalDefinition(
         array_length=1,
         name="test",
         base_datatype=base_datatype,

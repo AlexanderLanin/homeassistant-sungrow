@@ -1,9 +1,3 @@
-"""
-The abstraction level is chosen at the lowest point which does not need to know how
-signals are queried. This is where all signals are read() at once, so this class
-can perform a clever optimization to reduce the number of queries.
-"""
-
 import logging
 from dataclasses import dataclass
 from enum import StrEnum
@@ -39,7 +33,7 @@ class RegisterRange:
 
 
 @dataclass
-class Signal:
+class ModbusSignal:
     class Supported(StrEnum):
         NEVER_ATTEMPTED = "never_attempted"  # Initial state
 

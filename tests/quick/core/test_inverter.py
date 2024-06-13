@@ -47,7 +47,7 @@ class FakeConnection(connection.Connection):
 
     async def _read(
         self,
-        query: list[signals.SungrowSignalDefinition],
+        query: list[signals.SignalDefinition],
     ) -> Result[deserialize.DecodedSignals, Exception]:
         if self.active_slave != self.data_on_slave:
             return Err(modbus_base.InvalidSlaveError())
@@ -124,7 +124,7 @@ async def test_create_inverter_detect_no_meter_supported():
         power_b = sig(inv, "meter_active_power_phase_b")
         power_c = sig(inv, "meter_active_power_phase_c")
 
-        s = modbus_types.Signal.Supported
+        s = modbus_types.ModbusSignal.Supported
         assert power.is_supported is s.NO
         assert power_a.is_supported is s.NEVER_ATTEMPTED
         assert power_b.is_supported is s.NEVER_ATTEMPTED
@@ -153,7 +153,7 @@ async def test_create_inverter_detect_no_meter_connected():
         power_b = sig(inv, "meter_active_power_phase_b")
         power_c = sig(inv, "meter_active_power_phase_c")
 
-        s = modbus_types.Signal.Supported
+        s = modbus_types.ModbusSignal.Supported
         assert (
             power.is_supported is s.UNKNOWN_FROM_MULTI_SIGNAL_QUERY
         )  # We don't know from 0 value
@@ -183,7 +183,7 @@ async def test_create_inverter_detect_meter():
         power_b = sig(inv, "meter_active_power_phase_b")
         power_c = sig(inv, "meter_active_power_phase_c")
 
-        s = modbus_types.Signal.Supported
+        s = modbus_types.ModbusSignal.Supported
         assert power.is_supported is s.YES
         assert power_a.is_supported is s.NEVER_ATTEMPTED
         assert power_b.is_supported is s.NEVER_ATTEMPTED

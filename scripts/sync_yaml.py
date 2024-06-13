@@ -14,8 +14,8 @@ if __package__ is None:
 
 from custom_components.sungrow.core.modbus_py import RegisterType
 from custom_components.sungrow.core.signals import (
+    SignalDefinition,
     SignalDefinitions,
-    SungrowSignalDefinition,
     get,
     load_yaml,
     type_or_none,
@@ -65,7 +65,7 @@ def load_mkaiser() -> SignalDefinitions:
         if scale and float(scale) == 1.0:
             scale = None
 
-        signals[entry["unique_id"]] = SungrowSignalDefinition(
+        signals[entry["unique_id"]] = SignalDefinition(
             name=f"{entry['name']} ({entry['unique_id']})",
             address=int(entry["address"]) + 1,
             register_type=register_type,
@@ -97,7 +97,7 @@ def load_bohdans() -> SignalDefinitions:
     signals = {}
 
     for entry in parsed["registers"][0]["read"]:
-        signals[entry["name"]] = SungrowSignalDefinition(
+        signals[entry["name"]] = SignalDefinition(
             name=entry["name"],
             address=int(entry["address"]),
             base_datatype=entry["datatype"],
@@ -120,10 +120,10 @@ def load_bohdans() -> SignalDefinitions:
     return SignalDefinitions(signals)
 
 
-def compare_signal(other: SungrowSignalDefinition, ours: SungrowSignalDefinition):
+def compare_signal(other: SignalDefinition, ours: SignalDefinition):
     diff = []
 
-    def attr(signal: SungrowSignalDefinition, attribute: str):
+    def attr(signal: SignalDefinition, attribute: str):
         value = getattr(signal, attribute)
         return value if value is not None else "(None)"
 
@@ -149,7 +149,7 @@ def compare_signal(other: SungrowSignalDefinition, ours: SungrowSignalDefinition
     return diff
 
 
-def remove_signals_with_a_mask(signals: list[SungrowSignalDefinition]):
+def remove_signals_with_a_mask(signals: list[SignalDefinition]):
     for signal in list(signals):
         if signal.mask:
             signals.remove(signal)

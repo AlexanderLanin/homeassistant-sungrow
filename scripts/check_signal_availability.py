@@ -17,6 +17,7 @@ from asyncio import run
 from tqdm import tqdm
 
 from custom_components.sungrow.core import inverter
+from custom_components.sungrow.core.inverter_types import Level
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -25,7 +26,9 @@ logging.basicConfig(level=logging.INFO)
 async def check(host: str):
     logger.info(f"Checking {host}...")
     ic = await inverter.SungrowInverter.create(
-        host, None, None, "pymodbus", level_of_detail=999
+        inverter.SungrowInverter.ConnectionParams(host, None, "pymodbus"),
+        None,
+        level_of_detail=Level.DEBUG,
     )
     if not ic:
         sys.exit("Failed to connect to the inverter.")

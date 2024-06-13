@@ -28,11 +28,7 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from custom_components.sungrow.const import DOMAIN
-from custom_components.sungrow.core.inverter import (
-    InverterConnection,
-    SungrowInverter,
-    connect_and_get_basic_data,
-)
+from custom_components.sungrow.core.inverter import SungrowInverter
 from custom_components.sungrow.core.inverter_types import Datapoint
 from custom_components.sungrow.core.modbus_base import CannotConnectError
 

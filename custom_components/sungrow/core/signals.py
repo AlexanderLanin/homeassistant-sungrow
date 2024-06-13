@@ -13,8 +13,7 @@ import yaml
 
 from custom_components.sungrow.core.modbus_types import RegisterRange
 
-from .modbus_py import RegisterType
-from .modbus_types import Signal  # ToDo: signal imports Signal sounds wrong :D
+from .modbus_types import ModbusSignal, RegisterType
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ DatapointValueType = DatapointValueTypeBase | dict[int, DatapointValueTypeBase] 
 
 
 @dataclass
-class SungrowSignalDefinition(Signal):
+class SignalDefinition(ModbusSignal):
     unit_of_measurement: str | None
     disabled: list[str]  # str instead of bool to allow comments
     group: list[str] | None
@@ -68,15 +67,15 @@ class SungrowSignalDefinition(Signal):
     def is_supported(self):
         return super().is_supported
 
-    def update_supported(self, value: Signal.Supported):
-        if value == Signal.Supported.YES and self.disabled:
+    def update_supported(self, value: ModbusSignal.Supported):
+        if value == ModbusSignal.Supported.YES and self.disabled:
             logger.warning(
                 f"Signal {self.name} was disabled ({self.disabled}), "
                 f"but has been received"
             )
 
         # temp workaround, as we commonly only check for disabled, not for unsupported.
-        if value == Signal.Supported.NO:
+        if value == ModbusSignal.Supported.NO:
             self.disabled.append("not supported by inverter")
 
         super().update_supported(value)
@@ -91,14 +90,16 @@ class SungrowSignalDefinition(Signal):
     def update_supported_state_based_on_value(self, value, was_queried_individually):
         if value is None:
             # This was already done in the super class, but anyway...
-            self.update_supported(Signal.Supported.NO)
+            self.update_supported(ModbusSignal.Supported.NO)
         elif self.does_value_indicate_supported(value):
-            self.update_supported(Signal.Supported.YES)
+            self.update_supported(ModbusSignal.Supported.YES)
         else:
             if was_queried_individually:
-                self.update_supported(Signal.Supported.CONFIRMED_UNKNOWN)
+                self.update_supported(ModbusSignal.Supported.CONFIRMED_UNKNOWN)
             else:
-                self.update_supported(Signal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY)
+                self.update_supported(
+                    ModbusSignal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY
+                )
 
     @property
     def na_value(self):
@@ -114,24 +115,24 @@ class SungrowSignalDefinition(Signal):
 
 
 class SignalDefinitions:
-    def __init__(self, definitions: dict[str, SungrowSignalDefinition]):
+    def __init__(self, definitions: dict[str, SignalDefinition]):
         self._definitions = definitions
 
-    def all_signals(self) -> list[SungrowSignalDefinition]:
+    def all_signals(self) -> list[SignalDefinition]:
         return list(self._definitions.values())
 
     def enabled_signals(self):
-        filtered: list[SungrowSignalDefinition] = []
+        filtered: list[SignalDefinition] = []
         for signal in self._definitions.values():
             if not signal.disabled:
                 filtered.append(signal)
         return filtered
 
     def enabled_modbus_signals(self):
-        return cast(list[Signal], self.enabled_signals())
+        return cast(list[ModbusSignal], self.enabled_signals())
 
     def all_modbus_signals(self):
-        return cast(list[Signal], list(self._definitions.values()))
+        return cast(list[ModbusSignal], list(self._definitions.values()))
 
     def get_all_signals_contained_in_registers(self, registers: RegisterRange):
         return [
@@ -168,7 +169,7 @@ class SignalDefinitions:
                 signal.disabled.append("disabled for WiNet")
 
     def get_signals_for_group(self, group: str):
-        signals: dict[str, SungrowSignalDefinition] = {}
+        signals: dict[str, SignalDefinition] = {}
         for signal in self._definitions.values():
             if signal.group and group in signal.group:
                 signals[signal.name] = signal
@@ -176,7 +177,7 @@ class SignalDefinitions:
 
     def get_groups(self):
         """Return a list of all groups"""
-        groups: dict[str, dict[str, SungrowSignalDefinition]] = {}
+        groups: dict[str, dict[str, SignalDefinition]] = {}
         for signal in self._definitions.values():
             if signal.group:
                 for group in signal.group:
@@ -270,7 +271,7 @@ def load_yaml() -> SignalDefinitions:
     if not isinstance(data, dict):
         raise TypeError("Invalid yaml: expected a dictionary as root element")
 
-    all_signals: dict[str, SungrowSignalDefinition] = {}
+    all_signals: dict[str, SignalDefinition] = {}
 
     for register_type in [RegisterType.READ, RegisterType.HOLD]:
         for entry in data[str(register_type)]:
@@ -301,7 +302,7 @@ def load_yaml() -> SignalDefinitions:
             if array_length is None:
                 array_length = 1
 
-            signal = SungrowSignalDefinition(
+            signal = SignalDefinition(
                 name=entry["name"],
                 unit_of_measurement=entry.get("unit_of_measurement"),
                 accuracy=get(float, "accuracy"),

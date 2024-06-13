@@ -26,7 +26,7 @@ DatapointValueType = signals.DatapointValueType
 
 
 def mark_signals_not_in_this_model_as_disabled(
-    signal_definitions: list[signals.SungrowSignalDefinition], model: str
+    signal_definitions: list[signals.SignalDefinition], model: str
 ):
     def has_match(value: str, patterns: list[str]) -> bool:
         return any(fnmatch(value, pattern) for pattern in patterns)
@@ -41,9 +41,7 @@ def mark_signals_not_in_this_model_as_disabled(
             signal.disabled.append("signal not available for this model (excluded)")
 
 
-def _guess_connection_classes(
-    connection: str | None, port: int | None
-) -> list[type[modbus_base.ModbusConnectionBase]]:
+def _guess_connection_classes(connection: str | None, port: int | None):
     """Returns connection classes worth trying."""
 
     if connection == "http" or port == const.SUNGROW_DEFEAULT_HTTP_PORT:
@@ -76,13 +74,10 @@ class SungrowInverter:
         connection_classes = _guess_connection_classes(ci.connection, ci.port)
         for cc in connection_classes:
             port = ci.port or cc.default_port()
-            modbus_obj = cc(ci.host, port)
+            connection_obj = cc(ci.host, port)
 
-            logger.debug(f"Trying to connect to {modbus_obj}...")
-            if await modbus_obj.connect():
-                connection_obj = connection.DecodedModbusConnection(modbus_obj)
-                assert connection_obj.connected
-                is_http = isinstance(modbus_obj, modbus_http.HttpConnection)
+            if await connection_obj.connect():
+                is_http = isinstance(connection_obj, modbus_http.HttpConnection)
                 return SungrowInverter.ConnectionData(connection_obj, is_http)
         logger.debug("Failed to connect to inverter")
         return None

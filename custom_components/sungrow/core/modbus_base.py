@@ -16,13 +16,13 @@ from custom_components.sungrow.core import (
     modbus_types,
     signals,
 )
-from custom_components.sungrow.core.modbus_range_builder import split_list
+from custom_components.sungrow.core.connection import Connection
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
+    ModbusSignal,
     RawData,
     RegisterRange,
     RegisterType,
-    Signal,
 )
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,100 @@ class UnsupportedRegisterQueriedError(ModbusError):
     """
 
 
-def _map_raw_to_signal(r: RawData, signal: Signal):
+def sorted_and_filtered(
+    signals: list[ModbusSignal], register_type: RegisterType
+) -> list[ModbusSignal]:
+    return sorted(
+        filter(lambda s: s.registers.register_type == register_type, signals),
+        key=lambda s: s.registers.start,
+    )
+
+
+def can_add(
+    current_range: list[ModbusSignal],
+    signal: ModbusSignal,
+    max_registers_per_range: int,
+    blocked_registers: list[int],
+) -> bool:
+    """Check if the signal can be added to the current range."""
+    if not current_range:
+        return True
+
+    if (
+        signal.registers.end - current_range[0].registers.start
+        > max_registers_per_range
+    ):
+        return False
+
+    # TODO: idea: add "ever_received" to each signal, only merge if ever received.
+    anything_blocked = any(
+        addr in blocked_registers
+        for addr in range(current_range[-1].registers.end, signal.registers.start)
+    )
+
+    if anything_blocked:
+        return False
+
+    return True
+
+
+def _build_ranges(
+    register_type: RegisterType,
+    signals: list[ModbusSignal],
+    max_registers_per_range: int,
+    blocked_registers: list[int],
+) -> list[list[ModbusSignal]]:
+    ranges: list[list[ModbusSignal]] = []
+
+    current_range: list[ModbusSignal] = []
+
+    for signal in sorted_and_filtered(signals, register_type):
+        if can_add(current_range, signal, max_registers_per_range, blocked_registers):
+            current_range.append(signal)
+        else:
+            ranges.append(current_range)
+            current_range = [signal]
+
+    if current_range:
+        ranges.append(current_range)
+
+    return ranges
+
+
+def split_list(
+    signals: list[ModbusSignal],
+    max_registers_per_range: int,
+    blocked_registers: dict[RegisterType, list[int]] | None = None,
+) -> list[list[ModbusSignal]]:
+    # FIXME: only combine signals that are supported.
+    # Or maybe those that are not unsupported?
+    """
+    Split the list of signals into ranges.
+    Each range is guaranteed to:
+    - not contain any blocked registers
+    - not exceed the max_registers_per_range
+    - be sorted by address
+    - only contain signals of the same register type
+    """
+    # We need to build the ranges for read and hold separately, as they can't be
+    # mixed/combined.
+    return [
+        *_build_ranges(
+            RegisterType.READ,
+            signals,
+            max_registers_per_range,
+            blocked_registers[RegisterType.READ] if blocked_registers else [],
+        ),
+        *_build_ranges(
+            RegisterType.HOLD,
+            signals,
+            max_registers_per_range,
+            blocked_registers[RegisterType.HOLD] if blocked_registers else [],
+        ),
+    ]
+
+
+def _map_raw_to_signal(r: RawData, signal: ModbusSignal):
     # We'll use the first register to check if signal is supported.
     if r[signal.registers.start] is None:
         return None
@@ -68,7 +161,7 @@ def _map_raw_to_signal(r: RawData, signal: Signal):
 
 
 def _map_raw_to_signals(
-    raw_data: dict[RegisterType, RawData], signal_list: list[Signal]
+    raw_data: dict[RegisterType, RawData], signal_list: list[ModbusSignal]
 ) -> MappedData:
     """
     Note: While this doesn't sound like it belongs into this class,
@@ -83,7 +176,7 @@ def _map_raw_to_signals(
     }
 
 
-class ModbusConnectionBase:
+class ModbusConnectionBase(Connection):
     """A pymodbus connection to a single slave."""
 
     @dataclass
@@ -138,12 +231,12 @@ class ModbusConnectionBase:
 
     async def read1(
         self,
-        query: list[signals.SungrowSignalDefinition],
+        query: list[signals.SignalDefinition],
     ) -> Result[deserialize.DecodedSignals, Exception]:
         """Pull data from inverter"""
 
         # Downcast to base class to make mypy happy
-        signal_definitions_base = cast(list[modbus_types.Signal], query)
+        signal_definitions_base = cast(list[modbus_types.ModbusSignal], query)
 
         pull_start = datetime.now()
         raw_data_result = await self.read2(signal_definitions_base)
@@ -164,7 +257,7 @@ class ModbusConnectionBase:
             return raw_data_result
 
     async def read2(
-        self, signal_list: list[Signal], max_combined_registers=100, attempts=2
+        self, signal_list: list[ModbusSignal], max_combined_registers=100, attempts=2
     ) -> Result[MappedData, Exception]:
         res = await self.read_raw(signal_list, max_combined_registers)
         if isinstance(res, Ok):
@@ -181,7 +274,7 @@ class ModbusConnectionBase:
     ## -- DETAILED IMPLEMENTATION --
 
     async def read_raw(
-        self, signal_list: list[Signal], max_combined_registers=100
+        self, signal_list: list[ModbusSignal], max_combined_registers=100
     ) -> Result[dict[RegisterType, RawData], Exception]:
         if not await self.connect():
             raise CannotConnectError("Not connected to inverter, but read() was called")
@@ -239,7 +332,7 @@ class ModbusConnectionBase:
             return Err(res.err_value)
 
     async def _read_range_base(
-        self, signal_list: list[Signal]
+        self, signal_list: list[ModbusSignal]
     ) -> Result[RawData, Exception]:
         """
         Wrapper for _read_range() that handles unsupported registers.

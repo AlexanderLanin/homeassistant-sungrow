@@ -18,37 +18,44 @@ FIXME: data is still encoded here!! Fake modbus_base instead?!
 
 ```mermaid
 classDiagram
-    namespace Product {
-        class inverter
-        class Connection {
-            Abstraction Layer
-            Determines if signals are supported
-        }
+    class inverter
+    class Connection {
+        Abstraction Layer
+        Determines if signals are supported
+    }
+    class Signal
+    namespace Modbus {
+        class ModbusSignal
         class modbus_base {
             translates between signals ans registers
             cleverly combines registers into query ranges
             encodes and decodes data
         }
-        class WebsocketConnection {
-            Theoretical implementation of the websocket interface
-        }
         class modbus_py
         class modbus_http
-        class aiohttp~external~
         class pymodbus~external~
+        class modbus_server~test~
+    }
+    class aiohttp~external~
+    class WebsocketConnection {
+        Theoretical implementation of the websocket interface
     }
     class FakeConnection~test~
 
+    Signal --|> ModbusSignal : !!!
     inverter --> Connection
+    Connection --> Signal
 
-    Connection --> modbus_base
-    Connection --> FakeConnection
+    Connection <|-- modbus_base
+    Connection <|-- FakeConnection
 
-    Connection --> WebsocketConnection
+    Connection <|-- WebsocketConnection
     WebsocketConnection --> aiohttp
 
-    modbus_base --> modbus_py
-    modbus_base --> modbus_http
+    modbus_base <|-- modbus_py
+    modbus_base <|-- modbus_http
+
+    modbus_base --> ModbusSignal
 
     modbus_http --> aiohttp
     aiohttp ..> http_server~test~

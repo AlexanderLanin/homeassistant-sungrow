@@ -31,10 +31,10 @@ class Connection:
 
     async def read(
         self,
-        query: list[signals.SungrowSignalDefinition] | signals.SungrowSignalDefinition,
+        query: list[signals.SignalDefinition] | signals.SignalDefinition,
     ) -> Result[deserialize.DecodedSignals, Exception]:
         # Always convert to a list to avoid different code paths
-        if isinstance(query, signals.SungrowSignalDefinition):
+        if isinstance(query, signals.SignalDefinition):
             query = [query]
         result = await self._read(query)
 
@@ -45,7 +45,7 @@ class Connection:
 
     def _update_supported_state_based_on_values(
         self,
-        query: list[signals.SungrowSignalDefinition],
+        query: list[signals.SignalDefinition],
         decoded: deserialize.DecodedSignals,
     ):
         single_item_query = len(query) == 1
@@ -62,6 +62,6 @@ class Connection:
 
     async def _read(
         self,
-        query: list[signals.SungrowSignalDefinition],
+        query: list[signals.SignalDefinition],
     ) -> Result[deserialize.DecodedSignals, Exception]:
         raise NotImplementedError

@@ -88,7 +88,7 @@ async def collect_data_from(
             query = [
                 s
                 for s in inv._signal_definitions.all_signals()
-                if s.is_supported == signals.Signal.Supported.NEVER_ATTEMPTED
+                if s.is_supported == signals.ModbusSignal.Supported.NEVER_ATTEMPTED
             ]
             res = await inv._client.read(query)
 

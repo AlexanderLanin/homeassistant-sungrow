@@ -2,11 +2,11 @@
 
 import logging
 
-from .modbus_base import MappedData
+from .modbus_types import MappedData
 from .signals import (
     DatapointValueType,
     DatapointValueTypeBase,
-    SungrowSignalDefinition,
+    SignalDefinition,
 )
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ DecodedSignals = dict[str, DatapointValueType]
 
 
 def _decode_int_signal(
-    signal: SungrowSignalDefinition,
+    signal: SignalDefinition,
     registers: list[int],
 ) -> DatapointValueTypeBase | None:
     int_value = int(registers[0])
@@ -58,7 +58,7 @@ def _decode_utf8_signal(raw: list[int]) -> str:
 
 
 def _decode_base_signal(
-    signal: SungrowSignalDefinition, raw_value: list[int]
+    signal: SignalDefinition, raw_value: list[int]
 ) -> DatapointValueTypeBase | None:
     if signal.base_datatype in ["U16", "S16", "U32", "S32"]:
         return _decode_int_signal(signal, raw_value)
@@ -70,7 +70,7 @@ def _decode_base_signal(
 
 
 def _decode_array_signal(
-    signal: SungrowSignalDefinition, raw_value: list[int]
+    signal: SignalDefinition, raw_value: list[int]
 ) -> dict[int, DatapointValueTypeBase] | str:
     assert signal.array_length
 
@@ -98,7 +98,7 @@ def _decode_array_signal(
 
 
 def decode_signal(
-    signal: SungrowSignalDefinition,
+    signal: SignalDefinition,
     raw_value: list[int],
 ) -> DatapointValueType | None:
     if signal.array_length == 1:
@@ -108,7 +108,7 @@ def decode_signal(
 
 
 def decode_signals(
-    signal_list: list[SungrowSignalDefinition],
+    signal_list: list[SignalDefinition],
     raw_signals: MappedData,
 ) -> DecodedSignals:
     decoded: DecodedSignals = {}

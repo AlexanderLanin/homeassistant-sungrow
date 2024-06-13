@@ -1,0 +1,14 @@
+[
+    {
+        "connection": {
+            "host": "192.168.13.79",
+            "port": null,
+            "connection": null
+        },
+        "slave": null,
+        "signal_definitions": null,
+        "data": null,
+        "stats": null,
+        "error": "AttributeError: module 'custom_components.sungrow.core.connection' has no attribute 'DecodedModbusConnection'"
+    }
+]
