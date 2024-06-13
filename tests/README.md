@@ -21,10 +21,15 @@ classDiagram
     namespace Product {
         class inverter
         class Connection {
-            read_single_signal(signal)
-            read(signals)
+            Determines if signals are supported
         }
-        class DecodedModbusConnection
+        class DecodedModbusConnection {
+            cleverly combines signals into register ranges
+            encodes and decodes data
+        }
+        class WebsocketConnection {
+            Theoretical implementation of the websocket interface
+        }
         class modbus_base
         class modbus_py
         class modbus_http
@@ -37,6 +42,9 @@ classDiagram
 
     Connection --> DecodedModbusConnection : signals / decoded values
     Connection --> FakeConnection : signals / decoded values
+
+    Connection --> WebsocketConnection
+    WebsocketConnection ..> aiohttp
 
     DecodedModbusConnection --> modbus_base : registers / encoded data
 
