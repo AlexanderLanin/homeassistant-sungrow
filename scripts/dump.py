@@ -25,7 +25,7 @@ if __package__ is None:
 
 from custom_components.sungrow.core import (
     deserialize,
-    modbus_base,
+    modbus_connection_base,
     signals,
 )
 from custom_components.sungrow.core.inverter import SungrowInverter
@@ -49,7 +49,7 @@ class TaskResult:
     slave: int | None = None
     signal_definitions: signals.SignalDefinitions | None = None
     data: deserialize.DecodedSignals | None = None
-    stats: modbus_base.ModbusConnectionBase.Stats | None = None
+    stats: modbus_connection_base.ModbusConnection_Base.Stats | None = None
     error: Exception | str | None = None
 
 
@@ -106,7 +106,7 @@ async def collect_data_from(
                 error=err_value,
             )
 
-    except modbus_base.CannotConnectError as e:
+    except modbus_connection_base.CannotConnectError as e:
         info_msg(f"Failed to connect ({e}, {type(e).__name__})")
         logger.debug("Details:", exc_info=True)
         return TaskResult(params, slave=slave, error=e)

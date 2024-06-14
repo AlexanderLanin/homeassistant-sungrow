@@ -1,4 +1,4 @@
-from custom_components.sungrow.core.modbus_base import (
+from custom_components.sungrow.core.modbus_connection_base import (
     sorted_and_filtered,
     split_list,
 )

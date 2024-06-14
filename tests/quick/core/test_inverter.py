@@ -8,7 +8,7 @@ from custom_components.sungrow.core import (
     connection,
     deserialize,
     inverter,
-    modbus_base,
+    modbus_connection_base,
     modbus_types,
     signals,
 )
@@ -50,7 +50,7 @@ class FakeConnection(connection.Connection):
         query: list[signals.SignalDefinition],
     ) -> Result[deserialize.DecodedSignals, Exception]:
         if self.active_slave != self.data_on_slave:
-            return Err(modbus_base.InvalidSlaveError())
+            return Err(modbus_connection_base.InvalidSlaveError())
 
         return Ok({s.name: self.data.get(s.name) for s in query})
 

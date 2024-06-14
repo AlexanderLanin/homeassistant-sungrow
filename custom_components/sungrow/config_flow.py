@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigFlow
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SLAVE
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 
-from custom_components.sungrow.core import modbus_base
+from custom_components.sungrow.core import modbus_connection_base
 
 from .const import DOMAIN
 from .core.inverter import connect_and_get_basic_data, slave_master_standalone_str
@@ -86,7 +86,7 @@ class SungrowInverterConfigFlow(ConfigFlow, domain=DOMAIN):
                 return await self._async_show_user_form(
                     user_input, {"base": "cannot_connect"}
                 )
-        except modbus_base.ModbusError as e:
+        except modbus_connection_base.ModbusError as e:
             logger.debug(f"Cannot connect to inverter: {e}")
             return await self._async_show_user_form(
                 user_input, {"base": f"cannot_connect: {e}"}

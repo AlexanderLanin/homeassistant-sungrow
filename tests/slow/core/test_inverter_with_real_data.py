@@ -8,7 +8,7 @@ from pprint import pprint
 
 import pytest
 
-from custom_components.sungrow.core import inverter, modbus_base
+from custom_components.sungrow.core import inverter, modbus_connection_base
 from tests.slow.e2e_setup import e2e_setup, simulate_modbus_inverter
 
 logging.basicConfig(level=logging.DEBUG)
@@ -73,7 +73,7 @@ async def test_e2e_slave_unknown_model():
 async def test_e2e_fail_no_server():
     # should this really raise an exception?
     # or should it just return None? FIXME TODO
-    with pytest.raises(modbus_base.CannotConnectError):
+    with pytest.raises(modbus_connection_base.CannotConnectError):
         await inverter.SungrowInverter.create(
             inverter.SungrowInverter.ConnectionParams(
                 host="localhost", port=500 * 1000, connection="pymodbus"
@@ -85,7 +85,12 @@ async def test_e2e_fail_no_server():
 @pytest.mark.skip(reason="Test is disabled. Not sure yet what do do with it.")
 async def test_e2e_fail_wrong_slave():
     async with simulate_modbus_inverter(None) as port:
-        with pytest.raises((modbus_base.InvalidSlaveError, modbus_base.ModbusError)):
+        with pytest.raises(
+            (
+                modbus_connection_base.InvalidSlaveError,
+                modbus_connection_base.ModbusError,
+            )
+        ):
             # Note: simulation runs with slave 1
             await inverter.SungrowInverter.create(
                 inverter.SungrowInverter.ConnectionParams(

@@ -14,9 +14,9 @@ import pymodbus.framer.base
 import pymodbus.pdu
 from result import Err, Ok, Result
 
-from custom_components.sungrow.core import const, modbus_base
-from custom_components.sungrow.core.modbus_base import (
-    ModbusConnectionBase,
+from custom_components.sungrow.core import const, modbus_connection_base
+from custom_components.sungrow.core.modbus_connection_base import (
+    ModbusConnection_Base,
     RegisterType,
 )
 from custom_components.sungrow.core.modbus_types import RegisterRange
@@ -54,7 +54,7 @@ if pymodbus.__version__ != "3.6.8":
 # inject_message_header_fix()
 
 
-class PymodbusConnection(ModbusConnectionBase):
+class PymodbusConnection(ModbusConnection_Base):
     """A pymodbus connection to a single slave."""
 
     MIN_DELAY = timedelta(seconds=2)
@@ -134,15 +134,19 @@ class PymodbusConnection(ModbusConnectionBase):
                 register_range.start - 1, count=register_range.length, slave=self._slave
             )
         except pymodbus.exceptions.ConnectionException as e:
-            return Err(modbus_base.CannotConnectError(f"{type(e).__name__}: {e}"))
+            return Err(
+                ModbusConnection_Base.CannotConnectError(f"{type(e).__name__}: {e}")
+            )
         except pymodbus.exceptions.ModbusIOException as e:
             return Err(
-                modbus_base.ModbusError(
+                ModbusConnection_Base.ModbusError(
                     f"Unknown IO Error in pymodbus: {type(e).__name__}: {e}"
                 )
             )
         except Exception as e:
-            return Err(modbus_base.ModbusError(f"Unknown error in pymodbus: {e}"))
+            return Err(
+                ModbusConnection_Base.ModbusError(f"Unknown error in pymodbus: {e}")
+            )
 
         return Ok(rr)
 
@@ -159,7 +163,7 @@ class PymodbusConnection(ModbusConnectionBase):
         """
         logger.debug(f"_read_range({register_range=}, {recursion=})")
         if not await self.connect():
-            raise modbus_base.CannotConnectError(
+            raise ModbusConnection_Base.CannotConnectError(
                 "Cannot connect to inverter for reading"
             )
 
@@ -171,11 +175,13 @@ class PymodbusConnection(ModbusConnectionBase):
         if rr.isError() and isinstance(rr, pymodbus.pdu.ExceptionResponse):
             if rr.exception_code == pymodbus.pdu.ModbusExceptions.GatewayNoResponse:
                 return Err(
-                    modbus_base.InvalidSlaveError(f"Slave ID {self._slave} is invalid")
+                    ModbusConnection_Base.InvalidSlaveError(
+                        f"Slave ID {self._slave} is invalid"
+                    )
                 )
             elif rr.exception_code == pymodbus.pdu.ModbusExceptions.IllegalAddress:
                 return Err(
-                    modbus_base.UnsupportedRegisterQueriedError(
+                    ModbusConnection_Base.UnsupportedRegisterQueriedError(
                         f"Inverter does not support {register_range}: {rr}"
                     )
                 )
@@ -188,7 +194,7 @@ class PymodbusConnection(ModbusConnectionBase):
                         rr,
                     )
                     return Err(
-                        modbus_base.ModbusError(
+                        ModbusConnection_Base.ModbusError(
                             f"Slave failure on {register_range}: {rr}"
                         )
                     )
@@ -198,13 +204,15 @@ class PymodbusConnection(ModbusConnectionBase):
                         recursion=True,
                     )
             else:
-                return Err(modbus_base.ModbusError(f"Unknown error response: {rr}"))
+                return Err(
+                    ModbusConnection_Base.ModbusError(f"Unknown error response: {rr}")
+                )
 
         assert isinstance(rr.registers, list)  # for mypy
 
         if len(rr.registers) != register_range.length:
             return Err(
-                modbus_base.ModbusError(
+                ModbusConnection_Base.ModbusError(
                     f"Mismatched number of registers "
                     f"(requested {register_range}) and responded {len(rr.registers)})"
                 )

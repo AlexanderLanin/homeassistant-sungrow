@@ -14,8 +14,8 @@ from custom_components.sungrow.core.inverter_types import Level, Sensor
 
 from . import (
     deserialize,
-    modbus_base,
-    modbus_http,
+    modbus_connection_base,
+    modbus_connection_http,
     modbus_py,
     signals,
 )
@@ -45,14 +45,17 @@ def _guess_connection_classes(connection: str | None, port: int | None):
     """Returns connection classes worth trying."""
 
     if connection == "http" or port == const.SUNGROW_DEFEAULT_HTTP_PORT:
-        return [modbus_http.HttpConnection]
+        return [modbus_connection_http.ModbusHttpConnection]
 
     if connection == "modbus" or port == const.SUNGROW_DEFEAULT_MODBUS_PORT:
         return [modbus_py.PymodbusConnection]
 
     elif connection is None and port is None:
         # TODO: which one do we prefer?
-        return [modbus_py.PymodbusConnection, modbus_http.HttpConnection]
+        return [
+            modbus_py.PymodbusConnection,
+            modbus_connection_http.ModbusHttpConnection,
+        ]
 
     else:
         # Non standard port can only mean modbus proxy
@@ -77,7 +80,9 @@ class SungrowInverter:
             connection_obj = cc(ci.host, port)
 
             if await connection_obj.connect():
-                is_http = isinstance(connection_obj, modbus_http.HttpConnection)
+                is_http = isinstance(
+                    connection_obj, modbus_connection_http.ModbusHttpConnection
+                )
                 return SungrowInverter.ConnectionData(connection_obj, is_http)
         logger.debug("Failed to connect to inverter")
         return None

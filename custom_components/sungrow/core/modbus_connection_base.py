@@ -176,7 +176,7 @@ def _map_raw_to_signals(
     }
 
 
-class ModbusConnectionBase(Connection):
+class ModbusConnection_Base(Connection):
     """A pymodbus connection to a single slave."""
 
     @dataclass
@@ -190,7 +190,7 @@ class ModbusConnectionBase(Connection):
     def __init__(self, host: str, port: int):
         self._host = host
         self._port = port
-        self._stats = ModbusConnectionBase.Stats()
+        self._stats = ModbusConnection_Base.Stats()
         self._slave: int | None = None
 
         # These signals are not supported by the inverter.
@@ -229,7 +229,7 @@ class ModbusConnectionBase(Connection):
     def connected(self) -> bool:
         raise NotImplementedError
 
-    async def read1(
+    async def _read(
         self,
         query: list[signals.SignalDefinition],
     ) -> Result[deserialize.DecodedSignals, Exception]:
@@ -239,7 +239,9 @@ class ModbusConnectionBase(Connection):
         signal_definitions_base = cast(list[modbus_types.ModbusSignal], query)
 
         pull_start = datetime.now()
-        raw_data_result = await self.read2(signal_definitions_base)
+        raw_data_result = await self._read_raw_while_handling_disconnects(
+            signal_definitions_base
+        )
         elapsed = datetime.now() - pull_start
         logger.debug(
             f"Inverter: Pulled {len(query)} signals in "
@@ -256,10 +258,12 @@ class ModbusConnectionBase(Connection):
         else:
             return raw_data_result
 
-    async def read2(
+    ## -- DETAILED IMPLEMENTATION --
+
+    async def _read_raw_while_handling_disconnects(
         self, signal_list: list[ModbusSignal], max_combined_registers=100, attempts=2
     ) -> Result[MappedData, Exception]:
-        res = await self.read_raw(signal_list, max_combined_registers)
+        res = await self._read_raw(signal_list, max_combined_registers)
         if isinstance(res, Ok):
             return Ok(_map_raw_to_signals(res.ok_value, signal_list))
         elif (
@@ -267,13 +271,13 @@ class ModbusConnectionBase(Connection):
             and attempts > 1
             and await self.connect()
         ):
-            return await self.read2(signal_list, max_combined_registers, attempts - 1)
+            return await self._read_raw_while_handling_disconnects(
+                signal_list, max_combined_registers, attempts - 1
+            )
         else:
             return res
 
-    ## -- DETAILED IMPLEMENTATION --
-
-    async def read_raw(
+    async def _read_raw(
         self, signal_list: list[ModbusSignal], max_combined_registers=100
     ) -> Result[dict[RegisterType, RawData], Exception]:
         if not await self.connect():

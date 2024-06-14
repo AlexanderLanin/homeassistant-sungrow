@@ -30,7 +30,7 @@ from homeassistant.helpers.update_coordinator import (
 from custom_components.sungrow.const import DOMAIN
 from custom_components.sungrow.core.inverter import SungrowInverter
 from custom_components.sungrow.core.inverter_types import Datapoint
-from custom_components.sungrow.core.modbus_base import CannotConnectError
+from custom_components.sungrow.core.modbus_connection_base import CannotConnectError
 
 logger = logging.getLogger(__name__)
 
