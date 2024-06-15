@@ -1,6 +1,8 @@
 import re
 
-from custom_components.sungrow.core import inverter
+from result import Err, Ok, Result
+
+from custom_components.sungrow.core import connection_factory
 
 
 def add_host_param(parser):
@@ -16,7 +18,9 @@ def add_host_param(parser):
     )
 
 
-def parse_fully_qualified_host_param(param):
+def parse_fully_qualified_host_param(
+    param,
+) -> Result[tuple[connection_factory.ConnectionParams, int | None], str]:
     # Regex pattern to match the fully qualified host parameter
     pattern = r"^(?:(http|modbus)://)?([^:/]+)(?::(\d+))?(?:/(\d+))?$"
 
@@ -27,10 +31,10 @@ def parse_fully_qualified_host_param(param):
         slave_id = int(slave_id) if slave_id else None
 
         # Create a ConnectionParams object with the parsed values
-        connection_params = inverter.SungrowInverter.ConnectionParams(
+        connection_params = connection_factory.ConnectionParams(
             connection=protocol, host=host, port=port
         )
 
-        return connection_params, slave_id
+        return Ok((connection_params, slave_id))
     else:
-        raise ValueError("Invalid host parameter format")
+        return Err("Invalid host parameter format")

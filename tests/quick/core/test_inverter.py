@@ -5,7 +5,7 @@ import pytest
 from result import Err, Ok, Result
 
 from custom_components.sungrow.core import (
-    connection,
+    connection_factory,
     deserialize,
     inverter,
     modbus_connection_base,
@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.DEBUG)
 pytest_plugins = ("pytest_asyncio",)
 
 
-class FakeConnection(connection.Connection):
+class FakeConnection(connection_factory.Connection):
     def __init__(
         self,
         data: deserialize.DecodedSignals,

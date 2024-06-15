@@ -1,4 +1,8 @@
-from custom_components.sungrow.core import connection, modbus_connection_base, signals
+from custom_components.sungrow.core import (
+    connection_factory,
+    modbus_connection_base,
+    signals,
+)
 from custom_components.sungrow.core.modbus_types import RegisterRange, RegisterType
 
 

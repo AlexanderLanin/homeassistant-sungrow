@@ -26,7 +26,7 @@ logging.basicConfig(level=logging.INFO)
 async def check(host: str):
     logger.info(f"Checking {host}...")
     ic = await inverter.SungrowInverter.create(
-        inverter.SungrowInverter.ConnectionParams(host, None, "pymodbus"),
+        connection.ConnectionParams(host, None, "pymodbus"),
         None,
         level_of_detail=Level.DEBUG,
     )

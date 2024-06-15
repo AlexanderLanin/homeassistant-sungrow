@@ -8,18 +8,15 @@ from typing import Any, cast
 import aiohttp
 from result import Err, Ok, Result
 
-from custom_components.sungrow.core import const, modbus_connection_base
-from custom_components.sungrow.core.modbus_connection_base import (
-    ModbusConnection_Base,
-)
+from custom_components.sungrow.core import modbus_connection_base
 from custom_components.sungrow.core.modbus_types import RegisterRange
 
 logger = logging.getLogger(__name__)
 
 
-class ModbusConnection_Http(ModbusConnection_Base):  # noqa: N801
-    def __init__(self, host: str, port: int = const.SUNGROW_DEFEAULT_HTTP_PORT):
-        super().__init__(host, port)
+class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # noqa: N801
+    def __init__(self, host: str, port: int | None = None):
+        super().__init__(host, port or self.default_port())
 
         self._aio_client = aiohttp.ClientSession()
         self._ws: aiohttp.client.ClientWebSocketResponse | None = None
@@ -27,9 +24,13 @@ class ModbusConnection_Http(ModbusConnection_Base):  # noqa: N801
         self._token: str | None = None
         self._inverter: dict[str, str] | None = None
 
+    @property
+    def is_http(self) -> bool:
+        return True
+
     @staticmethod
     def default_port() -> int:
-        return const.SUNGROW_DEFEAULT_HTTP_PORT
+        return 8082
 
     @staticmethod
     def _parse_ws_response(response: dict[str, Any]) -> dict[str, Any]:

@@ -5,6 +5,7 @@ A convinience wrapper for pymodbus.
 import asyncio
 import contextlib
 import logging
+import re
 from datetime import datetime, timedelta
 
 import pymodbus
@@ -14,7 +15,7 @@ import pymodbus.framer.base
 import pymodbus.pdu
 from result import Err, Ok, Result
 
-from custom_components.sungrow.core import const, modbus_connection_base
+from custom_components.sungrow.core import modbus_connection_base
 from custom_components.sungrow.core.modbus_connection_base import (
     ModbusConnection_Base,
     RegisterType,
@@ -72,7 +73,11 @@ class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
 
     @staticmethod
     def default_port() -> int:
-        return const.SUNGROW_DEFEAULT_MODBUS_PORT
+        return 502
+
+    @property
+    def is_http(self) -> bool:
+        return False
 
     async def _throttle(self):
         now = datetime.now()
@@ -135,17 +140,17 @@ class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
             )
         except pymodbus.exceptions.ConnectionException as e:
             return Err(
-                ModbusConnection_Base.CannotConnectError(f"{type(e).__name__}: {e}")
+                modbus_connection_base.CannotConnectError(f"{type(e).__name__}: {e}")
             )
         except pymodbus.exceptions.ModbusIOException as e:
             return Err(
-                ModbusConnection_Base.ModbusError(
+                modbus_connection_base.ModbusError(
                     f"Unknown IO Error in pymodbus: {type(e).__name__}: {e}"
                 )
             )
         except Exception as e:
             return Err(
-                ModbusConnection_Base.ModbusError(f"Unknown error in pymodbus: {e}")
+                modbus_connection_base.ModbusError(f"Unknown error in pymodbus: {e}")
             )
 
         return Ok(rr)
@@ -163,7 +168,7 @@ class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
         """
         logger.debug(f"_read_range({register_range=}, {recursion=})")
         if not await self.connect():
-            raise ModbusConnection_Base.CannotConnectError(
+            raise modbus_connection_base.CannotConnectError(
                 "Cannot connect to inverter for reading"
             )
 
@@ -175,13 +180,13 @@ class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
         if rr.isError() and isinstance(rr, pymodbus.pdu.ExceptionResponse):
             if rr.exception_code == pymodbus.pdu.ModbusExceptions.GatewayNoResponse:
                 return Err(
-                    ModbusConnection_Base.InvalidSlaveError(
+                    modbus_connection_base.InvalidSlaveError(
                         f"Slave ID {self._slave} is invalid"
                     )
                 )
             elif rr.exception_code == pymodbus.pdu.ModbusExceptions.IllegalAddress:
                 return Err(
-                    ModbusConnection_Base.UnsupportedRegisterQueriedError(
+                    modbus_connection_base.UnsupportedRegisterQueriedError(
                         f"Inverter does not support {register_range}: {rr}"
                     )
                 )
@@ -194,7 +199,7 @@ class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
                         rr,
                     )
                     return Err(
-                        ModbusConnection_Base.ModbusError(
+                        modbus_connection_base.ModbusError(
                             f"Slave failure on {register_range}: {rr}"
                         )
                     )
@@ -205,14 +210,14 @@ class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
                     )
             else:
                 return Err(
-                    ModbusConnection_Base.ModbusError(f"Unknown error response: {rr}")
+                    modbus_connection_base.ModbusError(f"Unknown error response: {rr}")
                 )
 
         assert isinstance(rr.registers, list)  # for mypy
 
         if len(rr.registers) != register_range.length:
             return Err(
-                ModbusConnection_Base.ModbusError(
+                modbus_connection_base.ModbusError(
                     f"Mismatched number of registers "
                     f"(requested {register_range}) and responded {len(rr.registers)})"
                 )

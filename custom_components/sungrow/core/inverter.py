@@ -3,22 +3,15 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
 from enum import Enum
 from fnmatch import fnmatch
 
-from result import Err, Ok
+from result import Ok
 
-from custom_components.sungrow.core import connection, const
+from custom_components.sungrow.core import connection_base, connection_factory
 from custom_components.sungrow.core.inverter_types import Level, Sensor
 
-from . import (
-    deserialize,
-    modbus_connection_base,
-    modbus_connection_http,
-    modbus_connection_pymodbus,
-    signals,
-)
+from . import signals
 
 logger = logging.getLogger(__name__)
 
@@ -41,27 +34,6 @@ def mark_signals_not_in_this_model_as_disabled(
             signal.disabled.append("signal not available for this model (excluded)")
 
 
-def _guess_connection_classes(connection: str | None, port: int | None):
-    """Returns connection classes worth trying."""
-
-    if connection == "http" or port == const.SUNGROW_DEFEAULT_HTTP_PORT:
-        return [modbus_connection_http.ModbusConnection_Http]
-
-    if connection == "modbus" or port == const.SUNGROW_DEFEAULT_MODBUS_PORT:
-        return [modbus_connection_pymodbus.ModbusConnection_Pymodbus]
-
-    elif connection is None and port is None:
-        # TODO: which one do we prefer?
-        return [
-            modbus_connection_pymodbus.ModbusConnection_Pymodbus,
-            modbus_connection_http.ModbusConnection_Http,
-        ]
-
-    else:
-        # Non standard port can only mean modbus proxy
-        return [modbus_connection_pymodbus.ModbusConnection_Pymodbus]
-
-
 class SungrowInverter:
     async def __aenter__(self):
         """Ensures the connection is established."""
@@ -73,52 +45,15 @@ class SungrowInverter:
         await self._client.disconnect()
 
     @staticmethod
-    async def _establish_connection(ci: ConnectionParams):
-        connection_classes = _guess_connection_classes(ci.connection, ci.port)
-        for cc in connection_classes:
-            port = ci.port or cc.default_port()
-            connection_obj = cc(ci.host, port)
-
-            if await connection_obj.connect():
-                is_http = isinstance(
-                    connection_obj, modbus_connection_http.ModbusConnection_Http
-                )
-                return SungrowInverter.ConnectionData(connection_obj, is_http)
-        logger.debug("Failed to connect to inverter")
-        return None
-
-    @dataclass
-    class ConnectionParams:
-        host: str
-        port: int | None
-        connection: str | None
-
-    @dataclass
-    class ConnectionData:
-        """Mostly/only used for connection injection in tests."""
-
-        connection: connection.Connection
-        is_http: bool
-
-    @staticmethod
     async def create(
-        connection_param: ConnectionParams | ConnectionData,
+        connection: connection_base.Connection,
         slave: int | None = None,
         level_of_detail: Level = Level.ADVANCED,
     ) -> SungrowInverter | None:
-        """Create a connection, with heuristics for port, slave and connection type."""
+        """Note: you can aquire the connection object from establish_connection()."""
+        assert type(connection) != connection_base.Connection, "Cannot use base class"
 
-        if isinstance(connection_param, SungrowInverter.ConnectionData):
-            connection_data = connection_param
-        else:
-            temp = await SungrowInverter._establish_connection(connection_param)
-            if temp is None:
-                return None
-            connection_data = temp
-
-        assert connection_data.connection.connected
-        inv = SungrowInverter(connection_data, direct_initialization=False)
-        assert inv._client.connected
+        inv = SungrowInverter(connection, direct_initialization=False)
 
         slaves_to_attempt = [1, 2] if slave is None else [slave]
         logger.debug(f"Attempting slaves: {slaves_to_attempt}")
@@ -160,20 +95,20 @@ class SungrowInverter:
 
     def __init__(
         self,
-        connection_data: ConnectionData,
+        client: connection_base.Connection,
         signal_definitions: signals.SignalDefinitions | None = None,
         direct_initialization: bool = True,
     ):
         """Use create() factory method!!"""
-        if direct_initialization:
-            raise RuntimeError("Use create() factory method")
+        assert not direct_initialization, "Use create() factory method!"
+        assert type(client) != connection_base.Connection, "Cannot use base class"
+        print("client: ", client)
 
-        assert connection_data.connection.connected
+        assert client.connected
 
-        self._client = connection_data.connection
-        self._is_http = connection_data.is_http
+        self._client = client
 
-        self.data: deserialize.DecodedSignals = {}
+        self.data: connection_base.DecodedSignals = {}
         """
         All data from the inverter.
         This is decoded data, and the same as in sensors.
@@ -259,7 +194,7 @@ class SungrowInverter:
 
     async def pull_signals_by_name(
         self, signal_list: list[str]
-    ) -> deserialize.DecodedSignals:
+    ) -> connection_base.DecodedSignals:
         res = await self._client.read(
             self._signal_definitions.get_signal_definitions_by_name(signal_list),
         )
@@ -294,7 +229,7 @@ class SungrowInverter:
     async def _determine_is_modbus_winet(self):
         assert self._is_modbus_winet is None, "This should be called only once"
 
-        if self._is_http:
+        if self._client.is_http:
             self._is_modbus_winet = True
         else:
             # array_insulation_resistance is not supported by WiNet dongle
@@ -366,7 +301,7 @@ class SungrowInverter:
     ):
         for k, v in raw_data.items():
             # Skip dicts, as we cannot visualize them in the UI anyway
-            if isinstance(v, dict):
+            if isinstance(v, list):
                 assert k not in self.sensors, k
                 continue
 
@@ -504,10 +439,10 @@ class SungrowInverter:
         return str(self.type)
 
     @property
-    def connection_mode(self):
+    def readable_connection_mode(self):
         suffix = " WiNet" if self.is_modbus_winet else ""
 
-        if self._is_http:
+        if self._client.is_http:
             return "http" + suffix
         else:
             return "modbus" + suffix

@@ -2,9 +2,7 @@ import logging
 
 from result import Ok, Result
 
-from custom_components.sungrow.core import (
-    signals,
-)
+from custom_components.sungrow.core import signals
 
 from .signals import DatapointValueType
 
@@ -18,6 +16,10 @@ class Connection:
         raise NotImplementedError
 
     async def disconnect(self):
+        raise NotImplementedError
+
+    @property
+    def is_http(self) -> bool:
         raise NotImplementedError
 
     @property

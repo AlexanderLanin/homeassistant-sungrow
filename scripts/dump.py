@@ -24,7 +24,7 @@ if __package__ is None:
     import fix_path  # type: ignore  # noqa: F401
 
 from custom_components.sungrow.core import (
-    deserialize,
+    connection_factory,
     modbus_connection_base,
     signals,
 )
@@ -45,10 +45,10 @@ logging.getLogger().addHandler(file_handler)
 
 @dataclass
 class TaskResult:
-    connection: SungrowInverter.ConnectionParams
+    connection_params: SungrowInverter.ConnectionParams
     slave: int | None = None
     signal_definitions: signals.SignalDefinitions | None = None
-    data: deserialize.DecodedSignals | None = None
+    data: connection_factory.DecodedSignals | None = None
     stats: modbus_connection_base.ModbusConnection_Base.Stats | None = None
     error: Exception | str | None = None
 
@@ -61,7 +61,7 @@ async def collect_data_from(
 
     def info_msg(msg):
         if inv:
-            prefix = f"slave: {inv._client.slave}, mode: {inv.connection_mode}"
+            prefix = f"slave: {inv._client.slave}, mode: {inv.readable_connection_mode}"
         else:
             prefix = f"slave: {slave or 'unknown'}, mode: {params.connection or 'any'}"
         logger.info(f"{params.host} ({prefix}): {msg}")
@@ -74,12 +74,12 @@ async def collect_data_from(
             return TaskResult(params, slave, error="Failed to connect")
 
         con = SungrowInverter.ConnectionParams(
-            host=params.host, port=None, connection=inv.connection_mode
+            host=params.host, port=None, connection=inv.readable_connection_mode
         )
 
         async with inv:
             # mode = inv.get_connection_mode() TODO: implement this in SungrowInverter
-            info_msg(f"Connected via {inv.connection_mode}")
+            info_msg(f"Connected via {inv.readable_connection_mode}")
 
             # We need to read all, inclusive disabled signals, to establish if
             # they are correctly disabled. That's why we cannot use inv.pull_data()
@@ -99,7 +99,7 @@ async def collect_data_from(
                 err_value = res.err_value
 
             return TaskResult(
-                connection=con,
+                connection_params=con,
                 slave=inv._client.slave,
                 signal_definitions=inv._signal_definitions,
                 data=inv.data,
@@ -141,7 +141,7 @@ async def collect_data(
 
 def merge_by_inverter(results: list[TaskResult]):
     r: dict[str, list[TaskResult]] = {}
-    for d in sorted(results, key=lambda d: d.connection.host):
+    for d in sorted(results, key=lambda d: d.connection_params.host):
         if d.data:
             sn = d.data["serial_number"]
             assert isinstance(sn, str)
@@ -232,8 +232,8 @@ def markdown_write_summary(f, data_by_inverter: dict[str, list[TaskResult]]):
                 error = None
 
             f.write(
-                f"| {sn} | {per_connection.connection.host}/{per_connection.slave} | "
-                f"{per_connection.connection.connection} | "
+                f"| {sn} | {per_connection.connection_params.host}/{per_connection.slave} | "
+                f"{per_connection.connection_params.connection} | "
                 f"{per_connection.stats} | {error} |\n"
             )
 
@@ -254,7 +254,7 @@ def markdown_write_signals(
         f.write(
             "| host/slave/mode | "
             + " | ".join(
-                f"{c.connection.host}/{c.slave}/{c.connection.connection}"
+                f"{c.connection_params.host}/{c.slave}/{c.connection_params.connection}"
                 for c in results_for_same_sn
             )
             + " |\n"

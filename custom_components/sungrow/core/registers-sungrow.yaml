@@ -2636,6 +2636,22 @@ hold:
       0xAA: "Enable"
       0x55: "Disable"
 
+  # Not sure this works; only with Sungrow battery?!
+  # see https://www.photovoltaikforum.com/thread/200076-sungrow-und-homeassistant/?postID=3802050#post3802050
+  - name: Battery Module 1 max cell voltage
+    level: 5
+    address: 10765
+    data_type: U16
+    unit_of_measurement: mV
+    scale: 0.1
+
+  - name: Battery Module 1 min cell voltage
+    level: 5
+    address: 10773
+    data_type: U16
+    unit_of_measurement: mV
+    scale: 0.1
+
   - name: "start_stop_2"
     level: 5
     address: 13000

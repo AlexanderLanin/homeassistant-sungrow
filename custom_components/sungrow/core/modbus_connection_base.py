@@ -7,7 +7,7 @@ Basically it's pure modbus, with a (hopefully) better interface.
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import cast, overload, override
+from typing import cast
 
 from result import Err, Ok, Result
 
@@ -15,7 +15,7 @@ from custom_components.sungrow.core import (
     modbus_types,
     signals,
 )
-from custom_components.sungrow.core.connection import Connection, DecodedSignals
+from custom_components.sungrow.core.connection_base import Connection, DecodedSignals
 from custom_components.sungrow.core.modbus_types import (
     MappedData,
     ModbusSignal,
