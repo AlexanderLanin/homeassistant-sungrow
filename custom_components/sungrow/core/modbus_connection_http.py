@@ -17,7 +17,7 @@ from custom_components.sungrow.core.modbus_types import RegisterRange
 logger = logging.getLogger(__name__)
 
 
-class ModbusHttpConnection(ModbusConnection_Base):
+class ModbusConnection_Http(ModbusConnection_Base):  # noqa: N801
     def __init__(self, host: str, port: int = const.SUNGROW_DEFEAULT_HTTP_PORT):
         super().__init__(host, port)
 
@@ -40,7 +40,7 @@ class ModbusHttpConnection(ModbusConnection_Base):
         ):
             return cast(dict[str, Any], response["result_data"])
         else:
-            raise ModbusConnection_Base.ModbusError(
+            raise modbus_connection_base.ModbusError(
                 f"Inverter responded with: {type(response)} {response}"
             )
 
@@ -52,7 +52,7 @@ class ModbusHttpConnection(ModbusConnection_Base):
 
         response: dict = await self._ws.receive_json()
 
-        return ModbusHttpConnection._parse_ws_response(response)
+        return ModbusConnection_Http._parse_ws_response(response)
 
     async def _get_new_token(self) -> str:
         response = await self._ws_query(
@@ -137,12 +137,12 @@ class ModbusHttpConnection(ModbusConnection_Base):
                 if r.status == 200:
                     return cast(dict, await r.json())
                 else:
-                    raise ModbusConnection_Base.ModbusError(
+                    raise modbus_connection_base.ModbusError(
                         f"Invalid response from inverter: {r.status} {r.text}"
                     )
         except Exception as e:
             # e.g. response is not valid json
-            raise ModbusConnection_Base.ModbusError(f"Connection Failed: {e}") from e
+            raise modbus_connection_base.ModbusError(f"Connection Failed: {e}") from e
 
     def _build_address_for_register_query(
         self, rr: RegisterRange
@@ -151,8 +151,8 @@ class ModbusHttpConnection(ModbusConnection_Base):
         assert self._token
 
         param_types = {
-            ModbusConnection_Base.RegisterType.READ: 0,
-            ModbusConnection_Base.RegisterType.HOLD: 1,
+            modbus_connection_base.RegisterType.READ: 0,
+            modbus_connection_base.RegisterType.HOLD: 1,
         }
 
         # Usually port 80, but we cannot use a hardcoded port in tests.
@@ -189,42 +189,42 @@ class ModbusHttpConnection(ModbusConnection_Base):
         if response["result_code"] == 1:
             return cast(dict, response["result_data"])
         elif response["result_code"] == 106:
-            return ModbusHttpConnection.ErrorResponse.TokenExpired
+            return ModbusConnection_Http.ErrorResponse.TokenExpired
         elif response["result_code"] == 301:
             # Wild guess what 301 means. It's not in the official documentation.
             # Seems to work out if we retry after a reasonable delay.
-            return ModbusHttpConnection.ErrorResponse.Busy
+            return ModbusConnection_Http.ErrorResponse.Busy
         else:
-            raise ModbusConnection_Base.ModbusError(
+            raise modbus_connection_base.ModbusError(
                 f"Unknown response from inverter: {response}"
             )
 
     async def _query_http_json_old(self, rr: RegisterRange):
         if not await self.connect():
-            raise ModbusConnection_Base.CannotConnectError("Connection failed")
+            raise modbus_connection_base.CannotConnectError("Connection failed")
 
         url, params = self._build_address_for_register_query(rr)
         parsed = self._parse_sungrow_response_old(await self._get_json(url, params))
 
-        if isinstance(parsed, ModbusHttpConnection.ErrorResponse):
-            if parsed == ModbusHttpConnection.ErrorResponse.TokenExpired:
+        if isinstance(parsed, ModbusConnection_Http.ErrorResponse):
+            if parsed == ModbusConnection_Http.ErrorResponse.TokenExpired:
                 logger.debug("Token expired, reconnecting")
                 await self.disconnect()
                 # retry once
                 parsed = self._parse_sungrow_response_old(
                     await self._get_json(url, params)
                 )
-            elif parsed == ModbusHttpConnection.ErrorResponse.Busy:
+            elif parsed == ModbusConnection_Http.ErrorResponse.Busy:
                 # retry after a delay
                 await asyncio.sleep(5)
                 parsed = self._parse_sungrow_response_old(
                     await self._get_json(url, params)
                 )
             else:
-                raise ModbusConnection_Base.ModbusError(f"Unknown error: {parsed}")
+                raise modbus_connection_base.ModbusError(f"Unknown error: {parsed}")
 
-            if isinstance(parsed, ModbusHttpConnection.ErrorResponse):
-                raise ModbusConnection_Base.ModbusError(f"Persistent error: {parsed}")
+            if isinstance(parsed, ModbusConnection_Http.ErrorResponse):
+                raise modbus_connection_base.ModbusError(f"Persistent error: {parsed}")
 
         return parsed
 
@@ -239,13 +239,13 @@ class ModbusHttpConnection(ModbusConnection_Base):
         if response["result_code"] == 1:
             return cast(dict, response["result_data"])
         elif response["result_code"] == 106:
-            raise ModbusHttpConnection.TokenExpiredError
+            raise ModbusConnection_Http.TokenExpiredError
         elif response["result_code"] == 301:
             # Wild guess what 301 means. It's not in the official documentation.
             # Seems to work out if we retry after a reasonable delay.
-            raise ModbusHttpConnection.BusyError
+            raise ModbusConnection_Http.BusyError
         else:
-            raise ModbusConnection_Base.ModbusError(
+            raise modbus_connection_base.ModbusError(
                 f"Unknown response from inverter: {response}"
             )
 
@@ -254,22 +254,22 @@ class ModbusHttpConnection(ModbusConnection_Base):
         # But this is not done yet to make this lool exactly like the old code.
 
         if not await self.connect():
-            raise ModbusConnection_Base.CannotConnectError("Connection failed")
+            raise modbus_connection_base.CannotConnectError("Connection failed")
 
         url, params = self._build_address_for_register_query(rr)
         try:
             parsed = self._parse_sungrow_response(await self._get_json(url, params))
-        except ModbusHttpConnection.TokenExpiredError:
+        except ModbusConnection_Http.TokenExpiredError:
             logger.debug("Token expired, reconnecting")
             await self.disconnect()
             if not await self.connect():
-                raise ModbusConnection_Base.CannotConnectError(
+                raise modbus_connection_base.CannotConnectError(
                     "Cannot reconnect for new token"
                 ) from None
             # Rebuild query with new token
             url, params = self._build_address_for_register_query(rr)
             parsed = self._parse_sungrow_response(await self._get_json(url, params))
-        except ModbusHttpConnection.BusyError:
+        except ModbusConnection_Http.BusyError:
             # retry after a delay
             await asyncio.sleep(5)
             parsed = self._parse_sungrow_response(await self._get_json(url, params))
@@ -303,16 +303,16 @@ def _parse_modbus_data(
     modbus_data.pop()  # remove null on the end
 
     if len(modbus_data) != expected_length * 2:
-        raise ModbusConnection_Base.ModbusError(
+        raise modbus_connection_base.ModbusError(
             "Invalid response from inverter: "
             f"{response_json} => {modbus_data}, "
             f"expected length {expected_length}"
         )
 
     data: list[int] = []
-    # Merge two consecutive bytes into 16 bit integers, same as modbus.
+    # Merge two consecutive bytes into 16 bit integers, same as pymodbus.
     # Maybe it would be better to use bytes everywhere...
-    # but modbus was here first.
+    # but pymodbus was implemented first.
     for i in range(0, len(modbus_data), 2):
-        data.append(int(modbus_data[i], 16) * 256 + int(modbus_data[i + 1], 16))
+        data.append(int(modbus_data[i], 16) * 256 + int(modbus_data[i + 1], 16))  # noqa: PERF401
     return data

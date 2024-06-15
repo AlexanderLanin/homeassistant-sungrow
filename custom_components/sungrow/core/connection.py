@@ -3,11 +3,14 @@ import logging
 from result import Ok, Result
 
 from custom_components.sungrow.core import (
-    deserialize,
     signals,
 )
 
+from .signals import DatapointValueType
+
 logger = logging.getLogger(__name__)
+
+DecodedSignals = dict[str, DatapointValueType]
 
 
 class Connection:
@@ -32,7 +35,7 @@ class Connection:
     async def read(
         self,
         query: list[signals.SignalDefinition] | signals.SignalDefinition,
-    ) -> Result[deserialize.DecodedSignals, Exception]:
+    ) -> Result[DecodedSignals, Exception]:
         # Always convert to a list to avoid different code paths
         if isinstance(query, signals.SignalDefinition):
             query = [query]
@@ -46,7 +49,7 @@ class Connection:
     def _update_supported_state_based_on_values(
         self,
         query: list[signals.SignalDefinition],
-        decoded: deserialize.DecodedSignals,
+        decoded: DecodedSignals,
     ):
         single_item_query = len(query) == 1
 
@@ -63,5 +66,5 @@ class Connection:
     async def _read(
         self,
         query: list[signals.SignalDefinition],
-    ) -> Result[deserialize.DecodedSignals, Exception]:
+    ) -> Result[DecodedSignals, Exception]:
         raise NotImplementedError

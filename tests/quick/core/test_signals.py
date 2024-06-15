@@ -1,4 +1,4 @@
-from custom_components.sungrow.core.modbus_py import RegisterType
+from custom_components.sungrow.core.modbus_connection_pymodbus import RegisterType
 from custom_components.sungrow.core.signals import load_yaml
 
 

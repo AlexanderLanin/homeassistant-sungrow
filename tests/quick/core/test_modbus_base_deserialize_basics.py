@@ -1,4 +1,4 @@
-from custom_components.sungrow.core import deserialize, signals
+from custom_components.sungrow.core import connection, modbus_connection_base, signals
 from custom_components.sungrow.core.modbus_types import RegisterRange, RegisterType
 
 
@@ -24,7 +24,7 @@ def decode_simple_signal(
     base_datatype: str, value: list[int], mask=None, accuracy=None, decoded=None
 ):
     signal = simple_signal(base_datatype, mask, accuracy, decoded)
-    decoded = deserialize.decode_signals([signal], {signal.name: value})
+    decoded = modbus_connection_base.decode_signals([signal], {signal.name: value})
     return decoded[signal.name]
 
 

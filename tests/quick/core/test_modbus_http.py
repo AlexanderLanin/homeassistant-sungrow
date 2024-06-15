@@ -23,7 +23,7 @@ def test_modbus_http_parse_modbus_data():
 
 def test_modbus_http_parse_ws_response():
     # success
-    assert modbus_connection_http.ModbusHttpConnection._parse_ws_response(
+    assert modbus_connection_http.ModbusConnection_Http._parse_ws_response(
         {
             "result_code": 1,
             "result_msg": "success",
@@ -33,7 +33,7 @@ def test_modbus_http_parse_ws_response():
 
     # Error: result_msg is not "success"
     with pytest.raises(modbus_connection_base.ModbusError):
-        modbus_connection_http.ModbusHttpConnection._parse_ws_response(
+        modbus_connection_http.ModbusConnection_Http._parse_ws_response(
             {
                 "result_code": 1,
                 "result_msg": "error",
@@ -43,7 +43,7 @@ def test_modbus_http_parse_ws_response():
 
     # Error: result_code is not 1
     with pytest.raises(modbus_connection_base.ModbusError):
-        modbus_connection_http.ModbusHttpConnection._parse_ws_response(
+        modbus_connection_http.ModbusConnection_Http._parse_ws_response(
             {
                 "result_code": 0,
                 "result_msg": "success",
@@ -53,7 +53,7 @@ def test_modbus_http_parse_ws_response():
 
     # Error: result_data is not set
     with pytest.raises(modbus_connection_base.ModbusError):
-        modbus_connection_http.ModbusHttpConnection._parse_ws_response(
+        modbus_connection_http.ModbusConnection_Http._parse_ws_response(
             {
                 "result_code": 1,
                 "result_msg": "success",
@@ -63,4 +63,6 @@ def test_modbus_http_parse_ws_response():
 
     # Error: wrong format
     with pytest.raises(modbus_connection_base.ModbusError):
-        modbus_connection_http.ModbusHttpConnection._parse_ws_response({"key": "value"})
+        modbus_connection_http.ModbusConnection_Http._parse_ws_response(
+            {"key": "value"}
+        )

@@ -4,7 +4,7 @@ import time
 
 from beartype.claw import beartype_all
 
-from custom_components.sungrow.core.modbus_connection_http import ModbusHttpConnection
+from custom_components.sungrow.core.modbus_connection_http import ModbusConnection_Http
 
 if __package__ is None:
     # Script was executed from the command line
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 async def main():
-    connection = ModbusHttpConnection("192.168.13.58", 1, 8082)
+    connection = ModbusConnection_Http("192.168.13.58", 1, 8082)
     connected = await connection.connect()
     if not connected:
         logger.error("Could not connect to inverter")

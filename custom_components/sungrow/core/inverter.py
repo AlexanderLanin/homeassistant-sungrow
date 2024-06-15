@@ -16,7 +16,7 @@ from . import (
     deserialize,
     modbus_connection_base,
     modbus_connection_http,
-    modbus_py,
+    modbus_connection_pymodbus,
     signals,
 )
 
@@ -45,21 +45,21 @@ def _guess_connection_classes(connection: str | None, port: int | None):
     """Returns connection classes worth trying."""
 
     if connection == "http" or port == const.SUNGROW_DEFEAULT_HTTP_PORT:
-        return [modbus_connection_http.ModbusHttpConnection]
+        return [modbus_connection_http.ModbusConnection_Http]
 
     if connection == "modbus" or port == const.SUNGROW_DEFEAULT_MODBUS_PORT:
-        return [modbus_py.PymodbusConnection]
+        return [modbus_connection_pymodbus.ModbusConnection_Pymodbus]
 
     elif connection is None and port is None:
         # TODO: which one do we prefer?
         return [
-            modbus_py.PymodbusConnection,
-            modbus_connection_http.ModbusHttpConnection,
+            modbus_connection_pymodbus.ModbusConnection_Pymodbus,
+            modbus_connection_http.ModbusConnection_Http,
         ]
 
     else:
         # Non standard port can only mean modbus proxy
-        return [modbus_py.PymodbusConnection]
+        return [modbus_connection_pymodbus.ModbusConnection_Pymodbus]
 
 
 class SungrowInverter:
@@ -81,7 +81,7 @@ class SungrowInverter:
 
             if await connection_obj.connect():
                 is_http = isinstance(
-                    connection_obj, modbus_connection_http.ModbusHttpConnection
+                    connection_obj, modbus_connection_http.ModbusConnection_Http
                 )
                 return SungrowInverter.ConnectionData(connection_obj, is_http)
         logger.debug("Failed to connect to inverter")

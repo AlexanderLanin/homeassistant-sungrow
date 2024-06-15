@@ -30,8 +30,8 @@ def is_zero(v):
         return v == 0
 
 
-DatapointValueTypeBase = bool | int | float | str | None
-DatapointValueType = DatapointValueTypeBase | dict[int, DatapointValueTypeBase] | None
+DatapointBaseValueType = bool | int | float | str | None
+DatapointValueType = DatapointBaseValueType | list[DatapointBaseValueType]
 
 
 @dataclass
@@ -47,7 +47,7 @@ class SignalDefinition(ModbusSignal):
     level: int | None
     base_datatype: str | None = None
 
-    value_with_no_meaning: DatapointValueTypeBase = None
+    value_with_no_meaning: DatapointBaseValueType = None
     """
     In some cases (especially WiNet), not supported is not reported correctly.
     This is the value that is being returned, although the signal is not supported.
@@ -62,6 +62,19 @@ class SignalDefinition(ModbusSignal):
         # if the signal is not supported.
         if self.value_with_no_meaning is None:
             self.value_with_no_meaning = 0
+
+    @property
+    def element_length(self):
+        if self.array_length is None:
+            return self.registers.length
+        else:
+            element_length = self.registers.length / self.array_length
+            if element_length != int(element_length):
+                raise RuntimeError(
+                    f"Invalid yaml for {self.name}: "
+                    "array length must be a multiple of the register length"
+                )
+            return int(element_length)
 
     @property
     def is_supported(self):

@@ -54,7 +54,7 @@ if pymodbus.__version__ != "3.6.8":
 # inject_message_header_fix()
 
 
-class PymodbusConnection(ModbusConnection_Base):
+class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
     """A pymodbus connection to a single slave."""
 
     MIN_DELAY = timedelta(seconds=2)
