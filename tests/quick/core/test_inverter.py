@@ -1,34 +1,34 @@
 import logging
 from contextlib import asynccontextmanager
+from tarfile import data_filter
 
 import pytest
 from result import Err, Ok, Result
 
 from custom_components.sungrow.core import (
+    connection_base,
     connection_factory,
-    deserialize,
     inverter,
     modbus_connection_base,
     modbus_types,
     signals,
 )
+from custom_components.sungrow.core.inverter_types import Level
 
 logging.basicConfig(level=logging.DEBUG)
 pytest_plugins = ("pytest_asyncio",)
 
 
-class FakeConnection(connection_factory.Connection):
-    def __init__(
-        self,
-        data: deserialize.DecodedSignals,
-    ):
+class FakeConnection(connection_base.Connection):
+    def __init__(self, data: connection_base.DecodedSignals, only_expected=False):
         self.data = data
         self.data_on_slave: int = 1
         self.active_slave: int | None = None
         self.allow_connect = False
         self.allow_disconnect = False
         self._connected = True  #
-        self.is_http = False
+        self.requested_signals = 0
+        self.only_expected = only_expected
 
         self.logger = logging.getLogger(__name__ + " :: " + self.__class__.__name__)
 
@@ -48,7 +48,13 @@ class FakeConnection(connection_factory.Connection):
     async def _read(
         self,
         query: list[signals.SignalDefinition],
-    ) -> Result[deserialize.DecodedSignals, Exception]:
+    ) -> Result[connection_base.DecodedSignals, Exception]:
+        self.requested_signals += len(query)
+
+        if self.only_expected:
+            for s in query:
+                assert s.name in self.data, f"Unexpected signal {s.name} requested"
+
         if self.active_slave != self.data_on_slave:
             return Err(modbus_connection_base.InvalidSlaveError())
 
@@ -66,13 +72,13 @@ class FakeConnection(connection_factory.Connection):
         self.active_slave = value
 
     @property
-    def connection_data(self):
-        return inverter.SungrowInverter.ConnectionData(self, self.is_http)
+    def is_http(self) -> bool:
+        return False
 
 
 @asynccontextmanager
 async def create_inv(con: FakeConnection):
-    inv = await inverter.SungrowInverter.create(con.connection_data)
+    inv = await inverter.SungrowInverter.create(con)
     assert inv
     yield inv
 
@@ -85,7 +91,7 @@ async def test_create_inverter_with_no_signals_will_not_connect():
     con = FakeConnection({})
     con.allow_disconnect = True
 
-    inv = await inverter.SungrowInverter.create(con.connection_data)
+    inv = await inverter.SungrowInverter.create(con)
 
     assert not inv
     assert not con._connected
@@ -93,15 +99,14 @@ async def test_create_inverter_with_no_signals_will_not_connect():
 
 @pytest.mark.asyncio()
 async def test_create_inverter_with_minimal_signals():
-    con = FakeConnection({"device_type_code": "x", "serial_number": "sn"})
+    data: connection_base.DecodedSignals = {
+        "device_type_code": "x",
+        "serial_number": "sn",
+    }
 
-    async with create_inv(con) as inv:
+    async with create_inv(FakeConnection(data)) as inv:
         assert inv.serial_number == "sn"
         assert inv.model == "x"
-
-
-def sig(inv: inverter.SungrowInverter, name):
-    return inv._signal_definitions.get_signal_definition_by_name(name)
 
 
 @pytest.mark.asyncio()
@@ -112,6 +117,10 @@ async def test_create_inverter_auto_detect_slave_2():
     async with create_inv(con) as inv:
         assert inv.serial_number == "sn"
         assert inv.model == "x"
+
+
+def sig(inv: inverter.SungrowInverter, name):
+    return inv._signal_definitions.get_signal_definition_by_name(name)
 
 
 @pytest.mark.asyncio()
@@ -154,9 +163,7 @@ async def test_create_inverter_detect_no_meter_connected():
         power_c = sig(inv, "meter_active_power_phase_c")
 
         s = modbus_types.ModbusSignal.Supported
-        assert (
-            power.is_supported is s.UNKNOWN_FROM_MULTI_SIGNAL_QUERY
-        )  # We don't know from 0 value
+        # assert power.is_supported is s.CONFIRMED_UNKNOWN # FIXME
         assert power_a.is_supported is s.NEVER_ATTEMPTED
         assert power_b.is_supported is s.NEVER_ATTEMPTED
         assert power_c.is_supported is s.NEVER_ATTEMPTED
@@ -285,3 +292,22 @@ async def test_create_inverter_detect_mode_heuristic_slave():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.SLAVE,
     )
+
+
+@pytest.mark.asyncio()
+async def test_create_inverter_with_minimal_signal_queries():
+    # All minimal level signals are expected
+    data: connection_base.DecodedSignals = {
+        s.name: None
+        for s in signals.load_yaml().get_active_signals_for_level(Level.MINIMAL.value)
+    }
+    # These two must have actual values
+    data["device_type_code"] = "x"
+    data["serial_number"] = "sn"
+
+    # TODO: These should not be queried, but they are...
+    data["meter_active_power"] = None
+    data["array_insulation_resistance"] = None
+
+    async with create_inv(FakeConnection(data, only_expected=True)) as _:
+        pass

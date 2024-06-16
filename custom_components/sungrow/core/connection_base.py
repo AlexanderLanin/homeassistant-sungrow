@@ -8,6 +8,7 @@ from .signals import DatapointValueType
 
 logger = logging.getLogger(__name__)
 
+# TODO: switch str to SignalDefinition?!
 DecodedSignals = dict[str, DatapointValueType]
 
 
@@ -37,6 +38,7 @@ class Connection:
     async def read(
         self,
         query: list[signals.SignalDefinition] | signals.SignalDefinition,
+        all_signals: signals.SignalDefinitions,
     ) -> Result[DecodedSignals, Exception]:
         # Always convert to a list to avoid different code paths
         if isinstance(query, signals.SignalDefinition):
@@ -44,7 +46,9 @@ class Connection:
         result = await self._read(query)
 
         if isinstance(result, Ok):
-            self._update_supported_state_based_on_values(query, result.ok_value)
+            self._update_supported_state_based_on_values(
+                query, result.ok_value, all_signals
+            )
 
         return result
 
@@ -52,6 +56,7 @@ class Connection:
         self,
         query: list[signals.SignalDefinition],
         decoded: DecodedSignals,
+        all_signals: signals.SignalDefinitions,
     ):
         single_item_query = len(query) == 1
 
@@ -62,7 +67,7 @@ class Connection:
             signal = get_signal_by_name(name)
             assert signal
             signal.update_supported_state_based_on_value(
-                value, was_queried_individually=single_item_query
+                value, single_item_query, all_signals
             )
 
     async def _read(

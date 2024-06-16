@@ -197,7 +197,7 @@ read:
     address: 5009
     data_type: U32
     unit_of_measurement: "VA"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_1_voltage"
     level: 3
@@ -289,7 +289,7 @@ read:
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "phase_b_current"
     level: 4
@@ -297,7 +297,7 @@ read:
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "phase_c_current"
     level: 4
@@ -305,14 +305,14 @@ read:
     data_type: S16 # Documentation says Unsigned, but seems to be returning Signed 16bit
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "total_active_power"
     level: 3
     address: 5031
     data_type: S32
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "total_reactive_power"
     level: 4
@@ -403,14 +403,15 @@ read:
     data_type: U16
     accuracy: 100
     unit_of_measurement: "var"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "array_insulation_resistance"
     level: 4
     address: 5071
     data_type: U16
     unit_of_measurement: "k-ohm"
-    models_exclude: ["WiNet"]
+    # array_insulation_resistance is not supported by WiNet dongle
+    group_supported_indicator: not_supported_by_winet
 
   - name: "active_power_regulation_setpoint"
     level: 5
@@ -424,7 +425,7 @@ read:
     address: 5079
     data_type: S32
     unit_of_measurement: "var"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "work_state_2" # See Appendix 2
     level: 4
@@ -455,7 +456,7 @@ read:
     unit_of_measurement: "W"
     # Note: this seems to return garbage values on other inverters, instead of proper NotSupported.
     models: ["SG*KTL-M*"]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "meter_a_phase_power"
     level: 4
@@ -464,7 +465,7 @@ read:
     unit_of_measurement: "W"
     # Note: this seems to return garbage values on other inverters, instead of proper NotSupported.
     models: ["SG*KTL-M*"]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "meter_b_phase_power"
     level: 4
@@ -530,7 +531,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "kWh"
     models: ["SG*KTL-M*"]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "total_direct_energy_consumption"
     level: 3
@@ -539,7 +540,7 @@ read:
     accuracy: 0.1
     unit_of_measurement: "kWh"
     models: ["SG*KTL-M*"]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "daily_running_time"
     level: 4
@@ -574,7 +575,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_4_current"
     models:
@@ -602,7 +603,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_5_voltage"
     models: ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
@@ -612,7 +613,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_5_current"
     models: ["SG50CX", "SG60CX-US", "SG110CX", "SG250HX*", "SG100CX*", "SG75CX"]
@@ -622,7 +623,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_6_voltage"
     group: mppt6
@@ -632,7 +633,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_6_current"
     group: mppt6
@@ -642,7 +643,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_7_voltage"
     group: mppt7
@@ -652,7 +653,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_7_current"
     group: mppt7
@@ -662,7 +663,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_8_voltage"
     group: mppt8
@@ -672,7 +673,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_8_current"
     group: mppt8
@@ -682,7 +683,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "monthly_power_yields"
     group: is_master
@@ -701,7 +702,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_9_current"
     group: mppt9
@@ -711,7 +712,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_10_voltage"
     group: mppt10
@@ -721,7 +722,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_10_current"
     group: mppt10
@@ -731,7 +732,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_11_voltage"
     group: mppt11
@@ -741,7 +742,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_11_current"
     group: mppt11
@@ -751,7 +752,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_12_voltage"
     group: mppt12
@@ -761,7 +762,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "mppt_12_current"
     group: mppt12
@@ -771,7 +772,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "A"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "total_power_yields"
     group: is_master
@@ -788,7 +789,7 @@ read:
     data_type: S16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "bus_voltage"
     level: 4
@@ -796,7 +797,7 @@ read:
     data_type: U16
     accuracy: 0.1
     unit_of_measurement: "V"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "grid_frequency"
     level: 4
@@ -804,7 +805,7 @@ read:
     data_type: U16
     accuracy: 0.01
     unit_of_measurement: "Hz"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "pid_work_state"
     level: 5
@@ -831,42 +832,42 @@ read:
     address: 5216
     data_type: S32
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "meter_active_power"
     level: 3
     address: 5601
     data_type: S32
     unit_of_measurement: W
-    group_indicator: has_meter
+    group_supported_indicator: has_meter
 
   - name: "meter_active_power_phase_a"
     level: 3
     address: 5603
     data_type: S32
     unit_of_measurement: W
-    only_if: has_meter
+    only_if_group_supported: has_meter
 
   - name: "meter_active_power_phase_b"
     level: 3
     address: 5605
     data_type: S32
     unit_of_measurement: W
-    only_if: has_meter
+    only_if_group_supported: has_meter
 
   - name: "meter_active_power_phase_c"
     level: 3
     address: 5607
     data_type: S32
     unit_of_measurement: W
-    only_if: has_meter
+    only_if_group_supported: has_meter
 
   - name: "power_meter"
     level: 4
     address: 5218
     data_type: S32
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "export_limit_min"
     level: 4
@@ -951,7 +952,7 @@ read:
     address: 6100
     data_type: "U16[96]"
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "pv_energy_yields_daily"
     level: 5
@@ -959,7 +960,7 @@ read:
     data_type: "U16[30]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "pv_energy_yields_monthly"
     level: 5
@@ -967,7 +968,7 @@ read:
     data_type: "U16[12]"
     unit_of_measurement: "kWh"
     accuracy: 0.1
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "pv_energy_yields_yearly_starting_2019"
     level: 5
@@ -975,14 +976,14 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "direct_power_consumption_from_pv_today"
     level: 5
     address: 6290
     data_type: "U16[96]"
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "direct_power_consumption_from_pv_daily"
     level: 5
@@ -990,7 +991,7 @@ read:
     data_type: "U16[31]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "direct_energy_consumption_from_pv_monthly"
     level: 5
@@ -998,7 +999,7 @@ read:
     data_type: "U16[12]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "direct_energy_consumption_from_pv_yearly_starting_2019"
     level: 5
@@ -1006,7 +1007,7 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "export_power_from_pv_today"
     group: is_master
@@ -1014,7 +1015,7 @@ read:
     address: 6469
     data_type: "U16[96]"
     unit_of_measurement: "W"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "export_energy_from_pv_daily"
     group: is_master
@@ -1023,7 +1024,7 @@ read:
     data_type: "U16[31]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "export_energy_from_pv_monthly"
     group: is_master
@@ -1032,7 +1033,7 @@ read:
     data_type: "U16[12]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "export_energy_from_pv_yearly_starting_2019"
     group: is_master
@@ -1041,7 +1042,7 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "battery_charge_energy_from_pv_today"
     group: has_battery
@@ -1050,7 +1051,7 @@ read:
     data_type: "U16[96]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "battery_charge_energy_from_pv"
     group: has_battery
@@ -1059,7 +1060,7 @@ read:
     data_type: "U16[31]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "battery_charge_energy_from_pv_monthly"
     group: has_battery
@@ -1068,7 +1069,7 @@ read:
     data_type: "U16[12]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "battery_charge_energy_from_pv_yearly_starting_2019"
     group: has_battery
@@ -1077,7 +1078,7 @@ read:
     data_type: "U32[20]"
     accuracy: 0.1
     unit_of_measurement: "kWh"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "string_1_current"
     level: 4
@@ -1941,7 +1942,7 @@ read:
         "SH3K6-30",
         "SH4K6-30",
       ]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "max_charging_current"
     group: has_battery
@@ -2319,7 +2320,7 @@ hold:
     decoded:
       0xAA: "Enable"
       0x55: "Disable"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "export_power_limitation_value"
     level: 5
@@ -2337,7 +2338,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "current_transformer_output_current"
     level: 5
@@ -2356,7 +2357,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "current_transformer_range"
     level: 5
@@ -2375,7 +2376,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "current_transformer"
     level: 5
@@ -2396,7 +2397,7 @@ hold:
     decoded:
       0: "Internal"
       1: "External"
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "export_power_limitation_percentage"
     group: has_battery
@@ -2417,7 +2418,7 @@ hold:
         "SG17KTL-M",
         "SG20KTL-M",
       ]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: "installed_pv_power"
     level: 4
@@ -2689,7 +2690,7 @@ hold:
     data_type: U16
     unit_of_measurement: W
     models: ["SH*RS*"]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: battery_forced_charge_discharge_power
     group: has_battery
@@ -2698,7 +2699,7 @@ hold:
     data_type: U16
     unit_of_measurement: "%"
     models: ["SH*RT*"]
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
 
   - name: Max_SoC
     level: 5
@@ -2804,7 +2805,7 @@ hold:
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
     unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: battery_charge_stop_power
@@ -2814,7 +2815,7 @@ hold:
     data_type: U16
     unit_of_measurement: "W"
     accuracy: 10
-    models_exclude: ["WiNet"]
+    only_if_group_supported: not_supported_by_winet
     unsupported_value: 0 # SH8.0RT-20 via WiNet reports 0.
 
   - name: master_slave_mode

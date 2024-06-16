@@ -1,0 +1,394 @@
+device_type_code: SH8.0RT-20
+inverter_count: 2
+master_slave_mode: Enabled
+master_slave_role: Slave 1
+output_type: 3P4L
+serial_number: A2350415779
+total_exported_energy: 0.0
+total_imported_energy: 0.0
+meter_active_power: null
+array_insulation_resistance: 1082
+battery_alarm: 0
+battery_capacity: 0.0
+battery_capacity_high_precision: 0.0
+battery_charge_energy_from_pv:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+battery_charge_energy_from_pv_monthly:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+battery_charge_energy_from_pv_today:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+battery_charge_energy_from_pv_yearly_starting_2019:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - null
+  - null
+  - null
+  - null
+  - null
+battery_charge_start_power: 0.0
+battery_charge_stop_power: 0.0
+battery_current: 0.0
+battery_fault: 0
+battery_forced_charge_discharge_power_: 0
+battery_level: 0.0
+battery_power: 0
+battery_state_of_health: 0.0
+battery_temperature: 0.0
+battery_voltage: 0.0
+daily_battery_charge_energy: 0.0
+daily_battery_charge_from_pv: 0.0
+daily_battery_discharge_energy: 0.0
+daily_exported_energy: 0.0
+daily_imported_energy: 0.0
+daily_pv_export: 0.0
+export_energy_from_pv_daily:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+export_energy_from_pv_monthly:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+export_energy_from_pv_yearly_starting_2019:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - null
+  - null
+  - null
+  - null
+  - null
+export_power_from_pv_today:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+forced_charging_enable: Disabled
+forced_charging_end_time_1_hour: 0
+forced_charging_end_time_1_minute: 0
+forced_charging_end_time_2_hour: 0
+forced_charging_end_time_2_minute: 0
+forced_charging_start_time_1_hour: 0
+forced_charging_start_time_1_minute: 0
+forced_charging_start_time_2_hour: 0
+forced_charging_start_time_2_minute: 0
+forced_charging_target_soc_1: 0.0
+forced_charging_target_soc_2: 0.0
+forced_charging_valid_time: Every Day
+mppt_2_current: 0.0
+mppt_2_voltage: 336.5
+start_charging_power: 0.0
+start_discharging_power: 0.0
+state_battery_charging: false
+state_battery_discharging: false
+state_feed_into_grid: false
+state_import_from_grid: false
+total_battery_charge_energy: 0.0
+total_battery_charge_from_pv: 0.0
+total_battery_discharge_energy: 0.0
+total_pv_export: 0.0
+weekend_discharging_enable: Enabled
+weekend_discharging_end_time_1_hour: 24
+weekend_discharging_end_time_1_minute: 0
+weekend_discharging_start_time_1_hour: 0
+weekend_discharging_start_time_1_minute: 0
+weekend_discharging_start_time_2_hour: 0
+weekend_discharging_start_time_2_minute: 0
+weekly_discharging_end_time_1_hour: 24
+weekly_discharging_end_time_1_minute: 0
+weekly_discharging_end_time_2_hour: 24
+weekly_discharging_end_time_2_minute: 0
+weekly_discharging_start_time_1_hour: 0
+weekly_discharging_start_time_1_minute: 0
+weekly_discharging_start_time_2_hour: 0
+weekly_discharging_start_time_2_minute: 0

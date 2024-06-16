@@ -7,10 +7,11 @@ It does NOT know about modbus (except for "RegisterType").
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import cast
+from typing import TypeVar, cast
 
 import yaml
 
+from custom_components.sungrow.core.inverter_types import Level
 from custom_components.sungrow.core.modbus_types import RegisterRange
 
 from .modbus_types import ModbusSignal, RegisterType
@@ -37,8 +38,9 @@ DatapointValueType = DatapointBaseValueType | list[DatapointBaseValueType]
 @dataclass
 class SignalDefinition(ModbusSignal):
     unit_of_measurement: str | None
-    disabled: list[str]  # str instead of bool to allow comments
-    group: list[str] | None
+    disabled: list[str]  # list[str] instead of bool to allow comments
+    group_supported_indicator: str | None  # Idea: use SignalDefinition instead of str
+    only_if_group_supported: str | None  # Idea: use SignalDefinition instead of str
     accuracy: float | None
     mask: int | None
     decoded: dict[int, str] | None
@@ -91,6 +93,7 @@ class SignalDefinition(ModbusSignal):
         if value == ModbusSignal.Supported.NO:
             self.disabled.append("not supported by inverter")
 
+        # TODO: if the signal is an indicator we can mark all other signals now..
         super().update_supported(value)
 
     def does_value_indicate_supported(self, value) -> bool:
@@ -100,10 +103,22 @@ class SignalDefinition(ModbusSignal):
     # def is_value_unsupported(self, value) -> bool:
     #     return value is None
 
-    def update_supported_state_based_on_value(self, value, was_queried_individually):
+    def update_supported_state_based_on_value(
+        self,
+        value,
+        was_queried_individually,
+        all_signals: "SignalDefinitions",
+    ):
         if value is None:
-            # This was already done in the super class, but anyway...
+            if (
+                self.is_supported != ModbusSignal.Supported.NO
+                and self.group_supported_indicator
+            ):
+                # New information! This group is not supported!
+                all_signals.disable_group(self.group_supported_indicator)
+
             self.update_supported(ModbusSignal.Supported.NO)
+
         elif self.does_value_indicate_supported(value):
             self.update_supported(ModbusSignal.Supported.YES)
         else:
@@ -135,11 +150,7 @@ class SignalDefinitions:
         return list(self._definitions.values())
 
     def enabled_signals(self):
-        filtered: list[SignalDefinition] = []
-        for signal in self._definitions.values():
-            if not signal.disabled:
-                filtered.append(signal)
-        return filtered
+        return [signal for signal in self._definitions.values() if not signal.disabled]
 
     def enabled_modbus_signals(self):
         return cast(list[ModbusSignal], self.enabled_signals())
@@ -171,76 +182,44 @@ class SignalDefinitions:
     def get_signal_definitions_by_name(self, names: list[str]):
         return [self._definitions[name] for name in names]
 
-    def disable_winet_signals(self):
+    def get_group_indiators(self):
+        """Return a list of all group indicators"""
+        return {
+            signal.group_supported_indicator: signal
+            for signal in self._definitions.values()
+            if signal.group_supported_indicator
+        }
+
+    def get_group_indicator(self, group: str):
         """
-        Including certain signals in the WiNet query, will ruin the entire query,
-        so we disable them.
+        Return a signal that indicates if a group is supported or not.
+        This is useful for groups that are not supported by all inverters.
         """
+        return self.get_group_indiators().get(group)
 
-        for signal in self._definitions.values():
-            if signal.models_exclude and "WiNet" in signal.models_exclude:
-                signal.disabled.append("disabled for WiNet")
+    def get_group_member(self, group: str):
+        """
+        Return a signal that indicates if a group is supported or not.
+        This is useful for groups that are not supported by all inverters.
+        """
+        return {
+            signal.name: signal
+            for signal in self._definitions.values()
+            if signal.only_if_group_supported == group
+        }
 
-    def get_signals_for_group(self, group: str):
-        signals: dict[str, SignalDefinition] = {}
-        for signal in self._definitions.values():
-            if signal.group and group in signal.group:
-                signals[signal.name] = signal
-        return signals
+    def disable_group(self, group: str):
+        gr = self.get_group_indicator(group)
+        assert gr
+        gr.disabled.append(f"Group {group} is disabled by this signal")
 
-    def get_groups(self):
-        """Return a list of all groups"""
-        groups: dict[str, dict[str, SignalDefinition]] = {}
-        for signal in self._definitions.values():
-            if signal.group:
-                for group in signal.group:
-                    groups.setdefault(group, {})[signal.name] = signal
-        return groups
+        for signal in self.get_group_member(group).values():
+            signal.disabled.append(f"Group {group} is disabled by {gr.name}")
 
     # ToDo: move to inverter.py. This is clearly business logic.
-    def mark_signals_disabled_based_on_groups(self, data):
-        assert data, "data must have been pulled from the inverter first!"
-        """Note: this returns extra_data to be included!"""
-
-        logger.debug(f"Data: {data}")
-
-        extra_data = {}
-
-        # now filter groups where all signals are inactive
-        for group, group_signals in self.get_groups().items():
-            has_enabled_signal = False
-            all_zero = True
-            for signal in group_signals.values():
-                v = data.get(signal.name)
-                logger.debug(f"Group {group}: Signal {signal.name} = {v}")
-                if not signal.disabled:
-                    has_enabled_signal = True
-                    if not is_zero(v):
-                        logger.debug(
-                            f"Group {group}: Signal {signal.name} is not zero: {v}"
-                        )
-                        all_zero = False
-
-            if not has_enabled_signal:
-                logger.debug(
-                    f"Group {group}: not supported by inverter "
-                    "(all signals in group are already disabled)"
-                )
-                # extra_data[group] = False
-            elif all_zero:
-                logger.debug(f"Group {group}: all signals are zero")
-                for signal in group_signals.values():
-                    signal.disabled.append(f"all (enabled) signals in {group} are zero")
-                # extra_data[group] = False
-            else:
-                extra_data[group] = True
-
-        return extra_data
-
-    # ToDo: move to inverter.py. This is clearly business logic.
-    def mark_signals_below_level_as_disabled(self, level):
+    def mark_signals_below_level_as_disabled(self, level: Level):
         for signal in self._definitions.values():
-            if signal.level and signal.level > level:
+            if signal.level and signal.level > level.value:
                 signal.disabled.append(
                     f"signal {signal.level} not enabled on level {level}"
                 )
@@ -295,9 +274,16 @@ def load_yaml() -> SignalDefinitions:
                     return type_(entry[key])
                 return None
 
-            group = entry.get("group", None)
-            if group is not None and isinstance(group, str):
-                group = [group]
+            T = TypeVar("T")
+
+            def get_list(key: str, type_: type[T]) -> list[T] | None:
+                val = entry.get(key)
+                if val:
+                    if isinstance(val, str):
+                        return [type_(val)]  # type: ignore
+                    else:
+                        return [type_(v) for v in val]  # type: ignore
+                return None
 
             array_length: None | int = _parse_array_length(entry["data_type"])
             base_datatype = _parse_base_datatype(entry["data_type"])
@@ -323,7 +309,8 @@ def load_yaml() -> SignalDefinitions:
                 decoded=entry.get("decoded"),
                 models=entry.get("models"),
                 models_exclude=entry.get("models_exclude"),
-                group=group,
+                group_supported_indicator=entry.get("group_supported_indicator"),
+                only_if_group_supported=entry.get("only_if_group_supported"),
                 disabled=[],
                 level=entry.get("level"),
                 array_length=array_length,

@@ -34,6 +34,7 @@ class RegisterRange:
 
 @dataclass
 class ModbusSignal:
+    # Move to Signal!
     class Supported(StrEnum):
         NEVER_ATTEMPTED = "never_attempted"  # Initial state
 

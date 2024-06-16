@@ -10,7 +10,7 @@ classDiagram
     class Signal
     class ModbusSignal
     class ModbusConnection_Base {
-        translates between signals ans registers
+        translates between signals and registers
         cleverly combines registers into query ranges
         encodes and decodes data
         +__init__(host, port)

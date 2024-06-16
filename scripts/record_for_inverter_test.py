@@ -5,7 +5,9 @@ import argparse
 import asyncio
 import logging
 import sys
+from pathlib import Path
 
+import yaml
 from result import Err, Ok, Result
 
 from custom_components.sungrow.core import connection_factory, inverter, signals
@@ -26,6 +28,7 @@ def parse_arguments():
 class RecordingConnectionSpy(Connection):
     def __init__(self, connection: Connection):
         self.real_connection = connection
+        self.file = Path("recorded_responses.yml").open("w")  # noqa: SIM115
 
     async def connect(self):
         await self.real_connection.connect()
@@ -62,9 +65,11 @@ class RecordingConnectionSpy(Connection):
             values = result.ok_value
             for key, value in values.items():
                 print(f"Recorded: {key}: {value}")
+            yaml.dump(values, self.file)
         else:
             for signal in query:
                 print(f"Recorded Failure to query: {signal}")
+                yaml.dump({signal.name: None}, self.file)
 
         return result
 
