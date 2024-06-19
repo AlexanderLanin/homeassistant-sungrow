@@ -54,7 +54,6 @@ class SungrowInverter:
         slave: int | None = None,
         level_of_detail: Level = Level.ADVANCED,
     ) -> SungrowInverter | None:
-        """Note: you can aquire the connection object from establish_connection()."""
         assert type(connection) != connection_base.Connection, "Cannot use base class"
 
         inv = SungrowInverter(connection, direct_initialization=False)

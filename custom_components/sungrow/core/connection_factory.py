@@ -14,34 +14,43 @@ class ConnectionParams:
     connection: str | None
 
 
-def _guess_connection_classes(connection: str | None, port: int | None):
-    """Returns connection classes worth trying."""
+def all_possible_connection_params(params: ConnectionParams):
+    if params.connection:
+        return [params]
 
-    if connection == "http" or port == ModbusConnection_Http.default_port():
-        return [ModbusConnection_Http]
+    if params.port == ModbusConnection_Http.default_port():
+        params.connection = "http"
+        return [params]
 
-    if connection == "modbus" or port == ModbusConnection_Pymodbus.default_port():
-        return [ModbusConnection_Pymodbus]
-
-    elif connection is None and port is None:
-        # TODO: which one do we prefer?
-        return [
-            ModbusConnection_Pymodbus,
-            ModbusConnection_Http,
-        ]
+    elif params.port is not None:
+        # Non http port can only mean modbus proxy
+        params.connection = "modbus"
+        return [params]
 
     else:
-        # Non standard port can only mean modbus proxy
-        return [ModbusConnection_Pymodbus]
+        return [
+            ConnectionParams(connection="modbus", host=params.host, port=None),
+            ConnectionParams(connection="http", host=params.host, port=None),
+        ]
 
 
-async def connect(ci: ConnectionParams):
+def get_connection_cls(
+    connection: str,
+) -> type[ModbusConnection_Http | ModbusConnection_Pymodbus]:
+    return {
+        "http": ModbusConnection_Http,
+        "modbus": ModbusConnection_Pymodbus,
+    }[connection]
+
+
+async def connect(params: ConnectionParams):
     """Apply a clever heuristic to missing parameters and connect to the inverter."""
 
-    connection_classes = _guess_connection_classes(ci.connection, ci.port)
-    for cc in connection_classes:
-        port = ci.port or cc.default_port()
-        connection_obj = cc(ci.host, port)
+    all_possible_params = all_possible_connection_params(params)
+    for p in all_possible_params:
+        assert p.connection
+        cls = get_connection_cls(p.connection)
+        connection_obj = cls(p.host, p.port)
 
         if await connection_obj.connect():
             return connection_obj

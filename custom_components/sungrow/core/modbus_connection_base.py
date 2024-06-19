@@ -332,8 +332,7 @@ class ModbusConnection_Base(Connection):  # noqa: N801
         raise NotImplementedError
 
     async def _read(
-        self,
-        query: list[signals.SignalDefinition],
+        self, query: list[signals.SignalDefinition]
     ) -> Result[DecodedSignals, Exception]:
         """Pull data from inverter"""
 
@@ -465,16 +464,10 @@ class ModbusConnection_Base(Connection):  # noqa: N801
 
             return Ok(res.ok_value)
         elif isinstance(res.err_value, UnsupportedRegisterQueriedError):
-            # All registers in this range are unsupported.
-            self.stats.retrieved_signals_success += len(signal_list)
-            for signal in signal_list:
-                # signal.set_supported(Signal.Supported.NO)
-                self._problematic_registers[signal.registers.register_type].append(
-                    signal.registers.start
-                )
-
             # All signals have failed, but we indicate this by success, since we have
             # successfully read the range and determined this information.
+            self.stats.retrieved_signals_success += len(signal_list)
+            # All registers in this range are unsupported.
             return Ok({r: None for r in range(reg_range.start, reg_range.end)})
         else:
             self.stats.retrieved_signals_failed += len(signal_list)

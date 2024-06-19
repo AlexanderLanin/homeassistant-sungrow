@@ -60,12 +60,9 @@ class Connection:
     ):
         single_item_query = len(query) == 1
 
-        def get_signal_by_name(name):
-            return next((signal for signal in query if signal.name == name), None)
-
         for name, value in decoded.items():
-            signal = get_signal_by_name(name)
-            assert signal
+            signal = all_signals.get_signal_definition_by_name(name)
+            assert signal, f"Signal {name} not found in all_signals"
             signal.update_supported_state_based_on_value(
                 value, single_item_query, all_signals
             )

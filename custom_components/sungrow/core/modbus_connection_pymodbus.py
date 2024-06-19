@@ -60,7 +60,10 @@ class ModbusConnection_Pymodbus(ModbusConnection_Base):  # noqa: N801
 
     MIN_DELAY = timedelta(seconds=2)
 
-    def __init__(self, host: str, port: int):
+    def __init__(self, host: str, port: int | None):
+        if not port:
+            port = self.default_port()
+
         super().__init__(host, port)
 
         self._client = pymodbus.client.AsyncModbusTcpClient(

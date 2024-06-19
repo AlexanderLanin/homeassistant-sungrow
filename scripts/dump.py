@@ -19,15 +19,19 @@ from pathlib import Path
 
 from result import Err, Ok
 
+from scripts.common import helpers
+
 if __package__ is None:
     # Script was executed from the command line via ./scripts/dump.py
     import fix_path  # type: ignore  # noqa: F401
 
 from custom_components.sungrow.core import (
+    connection_base,
     connection_factory,
     modbus_connection_base,
     signals,
 )
+from custom_components.sungrow.core.connection_factory import ConnectionParams
 from custom_components.sungrow.core.inverter import SungrowInverter
 
 logging.basicConfig(level=logging.DEBUG)
@@ -42,21 +46,25 @@ file_handler.setFormatter(
 )
 logging.getLogger().addHandler(file_handler)
 
+ConnectionParamInclSlaveId = tuple[ConnectionParams, int | None]
+
 
 @dataclass
 class TaskResult:
-    connection_params: SungrowInverter.ConnectionParams
+    connection_params: ConnectionParams
     slave: int | None = None
     signal_definitions: signals.SignalDefinitions | None = None
-    data: connection_factory.DecodedSignals | None = None
+    data: connection_base.DecodedSignals | None = None
     stats: modbus_connection_base.ModbusConnection_Base.Stats | None = None
     error: Exception | str | None = None
 
 
 async def collect_data_from(
-    params: SungrowInverter.ConnectionParams,
+    params: ConnectionParams,
     slave: int | None,
 ) -> TaskResult:
+    assert params.connection, "Must have been set before"
+
     inv: SungrowInverter | None = None
 
     def info_msg(msg):
@@ -67,15 +75,14 @@ async def collect_data_from(
         logger.info(f"{params.host} ({prefix}): {msg}")
 
     info_msg("Connecting...")
+    con = connection_factory.connect(params)
+!! HIER WEITER !!!
+
     try:
         inv = await SungrowInverter.create(params, slave)
         if not inv:
             info_msg("Failed to connect")
             return TaskResult(params, slave, error="Failed to connect")
-
-        con = SungrowInverter.ConnectionParams(
-            host=params.host, port=None, connection=inv.readable_connection_mode
-        )
 
         async with inv:
             # mode = inv.get_connection_mode() TODO: implement this in SungrowInverter
@@ -88,9 +95,13 @@ async def collect_data_from(
             query = [
                 s
                 for s in inv._signal_definitions.all_signals()
-                if s.is_supported == signals.ModbusSignal.Supported.NEVER_ATTEMPTED
+                if s.is_supported
+                in (
+                    signals.ModbusSignal.Supported.NEVER_ATTEMPTED,
+                    signals.ModbusSignal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY,
+                )
             ]
-            res = await inv._client.read(query)
+            res = await inv._client.read(query, inv._signal_definitions)
 
             if isinstance(res, Ok):
                 inv.data.update(res.ok_value)
@@ -99,7 +110,7 @@ async def collect_data_from(
                 err_value = res.err_value
 
             return TaskResult(
-                connection_params=con,
+                connection_params=params,
                 slave=inv._client.slave,
                 signal_definitions=inv._signal_definitions,
                 data=inv.data,
@@ -116,21 +127,11 @@ async def collect_data_from(
         return TaskResult(params, slave=slave, error=e)
 
 
-async def collect_data(
-    hosts: list[str],
+async def collect_data_from_all_hosts(
+    hosts: list[ConnectionParamInclSlaveId],
     parallel: bool = False,
 ) -> list[TaskResult]:
-    tasks = []
-    for host in hosts:
-        if "/" in host:
-            host, slave_str = host.split("/")
-            slave = int(slave_str)
-        else:
-            slave = None
-
-        # Parse port from host string?
-        cp = SungrowInverter.ConnectionParams(host, None, None)
-        tasks.append(collect_data_from(cp, slave))
+    tasks = [collect_data_from(host, slave_id) for host, slave_id in hosts]
 
     # parallel will probably not work with sungrow inverters?!
     if parallel:
@@ -178,35 +179,48 @@ def write_json(task_results: list[TaskResult]):
         json.dump(task_results, file, indent=4, cls=EnhancedJSONEncoder)
 
 
-async def main(hosts: list[str], cached: bool):
+def load_from_cache_if_available(_hosts: list[ConnectionParamInclSlaveId]):
+    # TODO: remove pickle file and use json only.
+    try:
+        with Path(pickle_filename).open("rb") as f:
+            logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            logger.warning(f"Loading data from {pickle_filename}")
+            logger.warning("Delete this file to re-run actual connections.")
+            logger.warning("Note: you need to delete it if you query a different host!")
+            logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            return pickle.load(f)
+    except FileNotFoundError:
+        logger.warning(f"No cachefile at {pickle_filename}.")
+        return None
+    except AttributeError:
+        logger.warning(f"Failed to load data from {pickle_filename}.")
+        return None
+
+
+def write_to_cache(task_results: list[TaskResult]):
+    print(f"Writing data to {pickle_filename}...")
+    write_pickle(task_results)
+
+
+async def main(hosts: list[ConnectionParamInclSlaveId], load_cached: bool):
     all_signals = signals.load_yaml()
 
-    # Store data in file for development of this script.
-    # As we don't want to query the inverter every time.
-    # TODO: add command line option to force re-querying the inverter.
     task_results: list[TaskResult] | None = None
-    if cached:
-        try:
-            with Path(pickle_filename).open("rb") as f:
-                logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                logger.warning(f"Loading data from {pickle_filename}")
-                logger.warning("Delete this file to re-run actual connections.")
-                logger.warning(
-                    "Note: you need to delete it if you query a different host!"
-                )
-                logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                task_results = pickle.load(f)
-        except FileNotFoundError:
-            pass
-        except AttributeError:
-            logger.warning(f"Failed to load data from {pickle_filename}.")
+
+    # Expand all possible connection params (e.g. one entry for http and one modbus)
+    hosts = [
+        (host, slave)
+        for host_param, slave in hosts
+        for host in connection_factory.all_possible_connection_params(host_param)
+    ]
+
+    if load_cached:
+        task_results = load_from_cache_if_available(hosts)
 
     if task_results is None:
-        task_results = await collect_data(hosts)
-        print(f"Writing data to {pickle_filename}...")
-        write_pickle(task_results)
+        task_results = await collect_data_from_all_hosts(hosts)
+        write_to_cache(task_results)
 
-    # TODO: remove pickle file and use json only.
     write_json(task_results)
 
     data_by_inverter = merge_by_inverter(task_results)
@@ -318,7 +332,11 @@ def run():
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    asyncio.run(main(hosts=args.hosts, cached=args.cached))
+    parsed_hosts = [
+        helpers.parse_fully_qualified_host_param(h).unwrap() for h in args.hosts
+    ]
+
+    asyncio.run(main(parsed_hosts, load_cached=args.cached))
 
 
 if __name__ == "__main__":
