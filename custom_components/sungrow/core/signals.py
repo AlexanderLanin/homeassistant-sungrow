@@ -209,12 +209,14 @@ class SignalDefinitions:
         }
 
     def disable_group(self, group: str):
-        gr = self.get_group_indicator(group)
-        assert gr
-        gr.disabled.append(f"Group {group} is disabled by this signal")
+        indicator_signal = self.get_group_indicator(group)
+        assert indicator_signal
+        indicator_signal.disabled.append(f"Group {group} is disabled by this signal")
 
         for signal in self.get_group_member(group).values():
-            signal.disabled.append(f"Group {group} is disabled by {gr.name}")
+            signal.disabled.append(
+                f"Group {group} is disabled by {indicator_signal.name}"
+            )
 
     # ToDo: move to inverter.py. This is clearly business logic.
     def mark_signals_below_level_as_disabled(self, level: Level):

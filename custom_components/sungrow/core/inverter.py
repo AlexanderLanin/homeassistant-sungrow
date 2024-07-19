@@ -164,10 +164,8 @@ class SungrowInverter:
         # TODO: ignore groups where not a single member is requested.
         # Query all group indicators, to quickly determine which groups are supported
         query = list(self._signal_definitions.get_group_indiators().values())
-        res = await self._client.read(query, self._signal_definitions)
-        if isinstance(res, Ok):
-            self.data.update(res.ok_value)
 
+        if res := await self.pull_data(query):  # noqa: SIM103
             # self._active_groups = (
             #     self._signal_definitions.mark_signals_disabled_based_on_groups(
             #         self.data
@@ -181,25 +179,22 @@ class SungrowInverter:
     async def pull_single_signal_by_name(
         self, signal_name: str
     ) -> DatapointValueType | None:
-        res = await self._client.read(
-            self._signal_definitions.get_signal_definition_by_name(signal_name),
-            self._signal_definitions,
-        )
-        if isinstance(res, Ok):
-            return res.ok_value.get(signal_name)
-        else:
-            # ToDo: what about the error?
-            return None
+        # Wrap and unwrap into a list, and call the other function
+        res = await self.pull_signals_by_name([signal_name])
+        return res[signal_name]
 
     async def pull_signals_by_name(
         self, signal_list: list[str]
     ) -> connection_base.DecodedSignals:
-        res = await self._client.read(
-            self._signal_definitions.get_signal_definitions_by_name(signal_list),
-            self._signal_definitions,
+        """Note: this will simply return self.data for now!"""
+        res = await self.pull_data(
+            self._signal_definitions.get_signal_definitions_by_name(signal_list)
         )
-        # ToDo: what about the error?
-        return res.unwrap_or({})
+        # ToDo: what about partial data?
+        if res:
+            return self.data
+        else:
+            return {}
 
     async def _set_slave_and_query_initial_data(self, slave: int):
         """
@@ -211,45 +206,20 @@ class SungrowInverter:
         signal_list = self._signal_definitions.get_active_signals_for_level(
             Level.MINIMAL.value
         )
-        res = await self._client.read(signal_list, self._signal_definitions)
-        if isinstance(res, Ok):
-            self.data = res.ok_value
-            return True
-        else:
-            # TODO: when res is ConnectionLost, there is no point in trying another slave
-            return False
+        return await self.pull_data(signal_list)
 
     @property
     def is_modbus_winet(self):
-        assert (
-            self._is_modbus_winet is not None
-        ), "should have been determined by factory method"
-        return self._is_modbus_winet
+        s = self._signal_definitions.get_group_indicator("not_supported_by_winet")
+        assert s, "Invalid yaml (no indicator for 'not_supported_by_winet')"
 
-    async def disable_winet_signals_if_winet(self):
-        assert self._is_modbus_winet is None, "This should be called only once"
+        assert s.is_supported in (
+            modbus_types.ModbusSignal.Supported.NO,
+            modbus_types.ModbusSignal.Supported.YES,
+            modbus_types.ModbusSignal.Supported.CONFIRMED_UNKNOWN,
+        ), "must have been set by object construction"
 
-        if self._client.is_http:
-            self._is_modbus_winet = True
-            self._signal_definitions.disable_group("not_supported_by_winet")
-        else:
-            indicator = self._signal_definitions.get_group_indicator(
-                "not_supported_by_winet"
-            )
-            if not indicator:
-                raise RuntimeError(
-                    "Invalid yaml: No group indicator 'not_supported_by_winet' found"
-                )
-            value = await self.pull_single_signal_by_name(indicator.name)
-            if indicator.is_supported == modbus_types.ModbusSignal.Supported.NO:
-                logger.debug("WiNet dongle")
-                self._is_modbus_winet = True
-            else:
-                logger.debug("NOT WiNet dongle")
-                self._is_modbus_winet = False
-                self.data[indicator.name] = value
-
-        return self._is_modbus_winet
+        return s.is_supported == modbus_types.ModbusSignal.Supported.NO
 
     def _disable_signals_not_supported_by_model(self):
         """Disable signals which are not supported by the inverter model."""
@@ -315,16 +285,18 @@ class SungrowInverter:
                     unit_of_measurement=None,
                 )
 
-    async def pull_data(self):
+    async def pull_data(
+        self, signal_list: list[signals.SignalDefinition] | None = None
+    ):
         assert self._active_groups is not None, "Must be set by factory method"
 
+        if signal_list is None:
+            signal_list = self._signal_definitions.enabled_signals()
+
         logger.debug(
-            "Pulling data from inverter: "
-            + ",".join([s.name for s in self._signal_definitions.enabled_signals()])
+            "Pulling data from inverter: " + ",".join([s.name for s in signal_list])
         )
-        new_data_result = await self._client.read(
-            self._signal_definitions.enabled_signals(), self._signal_definitions
-        )
+        new_data_result = await self._client.read(signal_list, self._signal_definitions)
         if isinstance(new_data_result, Ok):
             self.update_sensors_from_raw_data(new_data_result.ok_value)
             self.update_sensors_with_active_groups()  # one time activity?

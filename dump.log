@@ -1,19 +1,31 @@
-2024-06-15 21:15:32,042 asyncio [DEBUG] Using selector: EpollSelector
-2024-06-15 21:15:32,248 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: any): Connecting...
-2024-06-15 21:15:32,249 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Connecting to 192.168.13.79:502
-2024-06-15 21:15:32,466 custom_components.sungrow.core.inverter [DEBUG] Attempting slaves: [1, 2]
-2024-06-15 21:15:32,466 custom_components.sungrow.core.modbus_connection_base [DEBUG] Setting slave to 1
-2024-06-15 21:15:32,467 custom_components.sungrow.core.modbus_connection_base [DEBUG] read_raw(10 signals) in 4 ranges
-2024-06-15 21:15:32,467 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 4990-5002), recursion=False)
-2024-06-15 21:15:34,256 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 13037-13047), recursion=False)
-2024-06-15 21:15:36,259 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(HOLD, 10765-10773), recursion=False)
-2024-06-15 21:15:40,261 custom_components.sungrow.core.modbus_connection_base [DEBUG] Inverter: Pulled 10 signals in 7.795155 secs
-2024-06-15 21:15:40,261 custom_components.sungrow.core.modbus_connection_base [DEBUG] Setting slave to 2
-2024-06-15 21:15:40,262 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Connecting to 192.168.13.79:502
-2024-06-15 21:15:40,264 custom_components.sungrow.core.modbus_connection_base [DEBUG] read_raw(10 signals) in 4 ranges
-2024-06-15 21:15:40,264 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 4990-5002), recursion=False)
-2024-06-15 21:15:44,266 custom_components.sungrow.core.modbus_connection_base [DEBUG] Inverter: Pulled 10 signals in 4.4709 secs
-2024-06-15 21:15:44,266 custom_components.sungrow.core.inverter [WARNING] Failed to connect to inverter. Exotic slave ID? You'll have to enter it manually
-2024-06-15 21:15:44,267 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Disconnecting from 192.168.13.79:502
-2024-06-15 21:15:44,267 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Disconnected from 192.168.13.79:502
-2024-06-15 21:15:44,267 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: any): Failed to connect
+2024-07-19 19:58:15,112 asyncio [DEBUG] Using selector: EpollSelector
+2024-07-19 19:58:15,401 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Connecting...
+2024-07-19 19:58:15,402 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Connecting to 192.168.13.79:502
+2024-07-19 19:58:15,475 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Connected
+2024-07-19 19:58:15,475 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Retrieving initial data...
+2024-07-19 19:58:15,765 custom_components.sungrow.core.inverter [DEBUG] Attempting slaves: [1, 2]
+2024-07-19 19:58:15,765 custom_components.sungrow.core.modbus_connection_base [DEBUG] Setting slave to 1
+2024-07-19 19:58:15,765 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Unexpected error during query (Must be set by factory method, AssertionError)
+2024-07-19 19:58:15,765 __main__ [DEBUG] Details:
+Traceback (most recent call last):
+  File "/workspaces/homeassistant-sungrow/scripts/dump.py", line 90, in collect_data_from
+    inv = await SungrowInverter.create(con, slave)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter.create) at 0x7f74665c18a0>", line 76, in create
+  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 64, in create
+    if await inv._set_slave_and_query_initial_data(slave):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter._set_slave_and_query_initial_data) at 0x7f74665c1bc0>", line 31, in _set_slave_and_query_initial_data
+  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 209, in _set_slave_and_query_initial_data
+    return await self.pull_data(signal_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter.pull_data) at 0x7f74665c1f80>", line 48, in pull_data
+  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 291, in pull_data
+    assert self._active_groups is not None, "Must be set by factory method"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Must be set by factory method
+2024-07-19 19:58:15,766 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: http): Connecting...
+2024-07-19 19:58:15,766 custom_components.sungrow.core.modbus_connection_http [DEBUG] Connecting to 192.168.13.79:8082
+2024-07-19 19:58:15,771 custom_components.sungrow.core.modbus_connection_http [DEBUG] Disconnecting from 192.168.13.79:8082
+2024-07-19 19:58:15,771 custom_components.sungrow.core.connection_factory [DEBUG] Failed to connect to inverter
+2024-07-19 19:58:15,771 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: http): Failed to connect

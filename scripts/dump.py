@@ -13,6 +13,7 @@ import asyncio
 import json
 import logging
 import pickle
+import sys
 from dataclasses import asdict, dataclass, is_dataclass
 from enum import StrEnum
 from pathlib import Path
@@ -64,34 +65,41 @@ async def collect_data_from(
     slave: int | None,
 ) -> TaskResult:
     assert params.connection, "Must have been set before"
-
-    inv: SungrowInverter | None = None
-
-    def info_msg(msg):
-        if inv:
-            prefix = f"slave: {inv._client.slave}, mode: {inv.readable_connection_mode}"
-        else:
-            prefix = f"slave: {slave or 'unknown'}, mode: {params.connection or 'any'}"
-        logger.info(f"{params.host} ({prefix}): {msg}")
-
-    info_msg("Connecting...")
-    con = connection_factory.connect(params)
-!! HIER WEITER !!!
-
     try:
-        inv = await SungrowInverter.create(params, slave)
-        if not inv:
+        inv: SungrowInverter | None = None
+
+        def info_msg(msg):
+            if inv:
+                prefix = (
+                    f"slave: {inv._client.slave}, mode: {inv.readable_connection_mode}"
+                )
+            else:
+                prefix = (
+                    f"slave: {slave or 'unknown'}, mode: {params.connection or 'any'}"
+                )
+            logger.info(f"{params.host} ({prefix}): {msg}")
+
+        info_msg("Connecting...")
+        con = await connection_factory.connect(params)
+        if not con:
             info_msg("Failed to connect")
             return TaskResult(params, slave, error="Failed to connect")
+        info_msg("Connected")
 
+        info_msg("Retrieving initial data...")
+        inv = await SungrowInverter.create(con, slave)
+        if not inv:
+            info_msg("Failed to retrieve intial data")
+            await con.disconnect()
+            return TaskResult(params, slave, error="Failed to retrieve intial data")
+        info_msg("Initial data retrieved")
+
+        info_msg("Querying ALL data...")
         async with inv:
-            # mode = inv.get_connection_mode() TODO: implement this in SungrowInverter
-            info_msg(f"Connected via {inv.readable_connection_mode}")
-
             # We need to read all, inclusive disabled signals, to establish if
             # they are correctly disabled. That's why we cannot use inv.pull_data()
-            # here.
-            # However, there is no need to requery known data.
+            # here. However, there is no need to requery data already queried during
+            # initial handshake.
             query = [
                 s
                 for s in inv._signal_definitions.all_signals()
@@ -101,8 +109,8 @@ async def collect_data_from(
                     signals.ModbusSignal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY,
                 )
             ]
-            res = await inv._client.read(query, inv._signal_definitions)
 
+            res = await inv.pull_data(query)
             if isinstance(res, Ok):
                 inv.data.update(res.ok_value)
                 err_value = None
@@ -116,11 +124,8 @@ async def collect_data_from(
                 data=inv.data,
                 error=err_value,
             )
+            # Note: inv is being closed here.
 
-    except modbus_connection_base.CannotConnectError as e:
-        info_msg(f"Failed to connect ({e}, {type(e).__name__})")
-        logger.debug("Details:", exc_info=True)
-        return TaskResult(params, slave=slave, error=e)
     except Exception as e:
         info_msg(f"Unexpected error during query ({e}, {type(e).__name__})")
         logger.debug("Details:", exc_info=True)
@@ -185,8 +190,7 @@ def load_from_cache_if_available(_hosts: list[ConnectionParamInclSlaveId]):
         with Path(pickle_filename).open("rb") as f:
             logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             logger.warning(f"Loading data from {pickle_filename}")
-            logger.warning("Delete this file to re-run actual connections.")
-            logger.warning("Note: you need to delete it if you query a different host!")
+            logger.warning("Because you specified --cached parameter.")
             logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return pickle.load(f)
     except FileNotFoundError:
@@ -205,8 +209,6 @@ def write_to_cache(task_results: list[TaskResult]):
 async def main(hosts: list[ConnectionParamInclSlaveId], load_cached: bool):
     all_signals = signals.load_yaml()
 
-    task_results: list[TaskResult] | None = None
-
     # Expand all possible connection params (e.g. one entry for http and one modbus)
     hosts = [
         (host, slave)
@@ -214,18 +216,22 @@ async def main(hosts: list[ConnectionParamInclSlaveId], load_cached: bool):
         for host in connection_factory.all_possible_connection_params(host_param)
     ]
 
+    task_results: list[TaskResult] | None = None
     if load_cached:
         task_results = load_from_cache_if_available(hosts)
-
-    if task_results is None:
+        if task_results is None:
+            sys.exit("Loading cached data failed.")
+    else:
         task_results = await collect_data_from_all_hosts(hosts)
         write_to_cache(task_results)
 
     write_json(task_results)
+    print("Data written to dump.json")
 
     data_by_inverter = merge_by_inverter(task_results)
 
     markdown_write_file("dump.md", all_signals, data_by_inverter)
+    print("Summary written to dump.md")
 
 
 def markdown_write_summary(f, data_by_inverter: dict[str, list[TaskResult]]):
@@ -234,8 +240,6 @@ def markdown_write_summary(f, data_by_inverter: dict[str, list[TaskResult]]):
     f.write("| --- | --- | --- | --- | --- |\n")
     for sn, connections in data_by_inverter.items():
         for per_connection in connections:
-            assert per_connection.data
-
             if per_connection.error:
                 e = per_connection.error
                 if isinstance(e, Exception):

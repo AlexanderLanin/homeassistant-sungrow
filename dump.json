@@ -3,7 +3,19 @@
         "connection_params": {
             "host": "192.168.13.79",
             "port": null,
-            "connection": null
+            "connection": "modbus"
+        },
+        "slave": null,
+        "signal_definitions": null,
+        "data": null,
+        "stats": null,
+        "error": "AssertionError: Must be set by factory method"
+    },
+    {
+        "connection_params": {
+            "host": "192.168.13.79",
+            "port": null,
+            "connection": "http"
         },
         "slave": null,
         "signal_definitions": null,
