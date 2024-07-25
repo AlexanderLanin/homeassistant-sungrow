@@ -144,37 +144,21 @@ class SungrowInverter:
                 self.data.pop(signal.name, None)
 
         self._is_modbus_winet: bool | None = None
-        self._active_groups: dict[str, bool] | None = None
 
     async def _disable_all_unsupported_signals(self, level_of_detail: int):
-        # Move to separate file, as it's quite a lot?!
-
         assert (
             self._signal_definitions
         ), "Must be loaded before this function is called."
 
         self._disable_signals_not_supported_by_model()
 
-        # If we have a http connection, there is no reason to perform a check
-        # (performance reasons only)
-        # TODO: are the same registers unsupported via pymodbus and http?
-        if self._client.is_http:
-            self._signal_definitions.disable_group("not_supported_by_winet")
-
+        # Query all group indicators, to quickly determine which groups are supported.
+        #
         # TODO: ignore groups where not a single member is requested.
-        # Query all group indicators, to quickly determine which groups are supported
+        # This will require later runtime checks to ensure the group indicator was
+        # queried for every group member?!
         query = list(self._signal_definitions.get_group_indiators().values())
-
-        if res := await self.pull_data(query):  # noqa: SIM103
-            # self._active_groups = (
-            #     self._signal_definitions.mark_signals_disabled_based_on_groups(
-            #         self.data
-            #     )
-            # )
-
-            return True  # success
-        else:
-            return False  # error
+        return await self.pull_data(query)
 
     async def pull_single_signal_by_name(
         self, signal_name: str
@@ -204,7 +188,7 @@ class SungrowInverter:
         self._client.slave = slave
 
         signal_list = self._signal_definitions.get_active_signals_for_level(
-            Level.MINIMAL.value
+            Level.MINIMAL
         )
         return await self.pull_data(signal_list)
 
@@ -270,26 +254,28 @@ class SungrowInverter:
             # TODO: set timestamp of last change? Could be different per sensor!
 
     def update_sensors_with_active_groups(self):
-        assert self._active_groups is not None, "Must be set by factory method"
+        """
+        Transform active groups into sensors.
 
-        for g in self._active_groups:
-            if g in self.sensors:
-                self.sensors[g].value = self._active_groups[g]
+        While that's rather uninteresting for the user, it's a good way to enable
+        reuse of Dashborads and other UI elements.
+        """
+        active_groups = self._signal_definitions.get_active_groups()
+
+        for group, enabled in active_groups:
+            if group in self.sensors:
+                self.sensors[group].value = enabled
             else:
-                logger.debug(
-                    f"Creating new sensor for group {g} ({self._active_groups[g]})"
-                )
-                self.sensors[g] = Sensor(
-                    name=g,
-                    value=self._active_groups[g],
-                    unit_of_measurement=None,
+                logger.debug(f"Creating new sensor for group {group} ({enabled})")
+                self.sensors[group] = Sensor(
+                    name=group,
+                    value=enabled,
+                    unit_of_measurement=None,  # bool
                 )
 
     async def pull_data(
         self, signal_list: list[signals.SignalDefinition] | None = None
     ):
-        assert self._active_groups is not None, "Must be set by factory method"
-
         if signal_list is None:
             signal_list = self._signal_definitions.enabled_signals()
 
@@ -368,7 +354,6 @@ class SungrowInverter:
     @property
     def type(self):
         logger.debug(f"Data: {self.data}")
-        logger.debug(f"Active Groups: {self._active_groups}")
 
         if self.is_standalone:
             return self.ConnectionMode.STANDALONE
@@ -382,9 +367,7 @@ class SungrowInverter:
 
             return self.ConnectionMode(master_slave_role)
         else:
-            assert self._active_groups is not None, "Must be set by factory method"
-
-            if self._active_groups.get("is_master"):
+            if self._signal_definitions.get_active_groups()["is_master"]:
                 return self.ConnectionMode.MASTER
             else:
                 return self.ConnectionMode.SLAVE

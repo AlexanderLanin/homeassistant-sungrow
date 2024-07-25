@@ -165,12 +165,12 @@ class SignalDefinitions:
             if signal.contained_in(registers)
         ]
 
-    def get_active_signals_for_level(self, level: int):
+    def get_active_signals_for_level(self, level: Level):
         return [
             signal
             for signal in self._definitions.values()
             if signal.level is not None
-            and signal.level <= level
+            and signal.level <= level.value
             and not signal.disabled
         ]
 
@@ -181,6 +181,13 @@ class SignalDefinitions:
 
     def get_signal_definitions_by_name(self, names: list[str]):
         return [self._definitions[name] for name in names]
+
+    def get_active_groups(self):
+        return {
+            signal.group_supported_indicator: not signal.disabled
+            for signal in self._definitions.values()
+            if signal.group_supported_indicator
+        }
 
     def get_group_indiators(self):
         """Return a list of all group indicators"""
