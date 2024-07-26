@@ -1,31 +1,73 @@
-2024-07-19 19:58:15,112 asyncio [DEBUG] Using selector: EpollSelector
-2024-07-19 19:58:15,401 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Connecting...
-2024-07-19 19:58:15,402 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Connecting to 192.168.13.79:502
-2024-07-19 19:58:15,475 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Connected
-2024-07-19 19:58:15,475 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Retrieving initial data...
-2024-07-19 19:58:15,765 custom_components.sungrow.core.inverter [DEBUG] Attempting slaves: [1, 2]
-2024-07-19 19:58:15,765 custom_components.sungrow.core.modbus_connection_base [DEBUG] Setting slave to 1
-2024-07-19 19:58:15,765 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Unexpected error during query (Must be set by factory method, AssertionError)
-2024-07-19 19:58:15,765 __main__ [DEBUG] Details:
-Traceback (most recent call last):
-  File "/workspaces/homeassistant-sungrow/scripts/dump.py", line 90, in collect_data_from
-    inv = await SungrowInverter.create(con, slave)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter.create) at 0x7f74665c18a0>", line 76, in create
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 64, in create
-    if await inv._set_slave_and_query_initial_data(slave):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter._set_slave_and_query_initial_data) at 0x7f74665c1bc0>", line 31, in _set_slave_and_query_initial_data
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 209, in _set_slave_and_query_initial_data
-    return await self.pull_data(signal_list)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(custom_components.sungrow.core.inverter.SungrowInverter.pull_data) at 0x7f74665c1f80>", line 48, in pull_data
-  File "/workspaces/homeassistant-sungrow/custom_components/sungrow/core/inverter.py", line 291, in pull_data
-    assert self._active_groups is not None, "Must be set by factory method"
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError: Must be set by factory method
-2024-07-19 19:58:15,766 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: http): Connecting...
-2024-07-19 19:58:15,766 custom_components.sungrow.core.modbus_connection_http [DEBUG] Connecting to 192.168.13.79:8082
-2024-07-19 19:58:15,771 custom_components.sungrow.core.modbus_connection_http [DEBUG] Disconnecting from 192.168.13.79:8082
-2024-07-19 19:58:15,771 custom_components.sungrow.core.connection_factory [DEBUG] Failed to connect to inverter
-2024-07-19 19:58:15,771 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: http): Failed to connect
+2024-07-25 21:02:40,830 asyncio [DEBUG] Using selector: EpollSelector
+2024-07-25 21:02:41,104 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Connecting...
+2024-07-25 21:02:41,105 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Connecting to 192.168.13.79:502
+2024-07-25 21:02:41,108 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Connected
+2024-07-25 21:02:41,109 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: modbus): Retrieving initial data...
+2024-07-25 21:02:41,386 custom_components.sungrow.core.inverter [DEBUG] Attempting slaves: [1, 2]
+2024-07-25 21:02:41,386 custom_components.sungrow.core.modbus_connection_base [DEBUG] Setting slave to 1
+2024-07-25 21:02:41,387 custom_components.sungrow.core.inverter [DEBUG] Pulling data from inverter: serial_number,device_type_code,output_type,total_imported_energy,total_exported_energy,master_slave_mode,master_slave_role,inverter_count
+2024-07-25 21:02:41,387 custom_components.sungrow.core.modbus_connection_base [DEBUG] read_raw(8 signals) in 3 ranges
+2024-07-25 21:02:41,387 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 4990-5002), recursion=False)
+2024-07-25 21:02:43,112 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 13037-13047), recursion=False)
+2024-07-25 21:02:45,114 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(HOLD, 33500-33502), recursion=False)
+2024-07-25 21:02:47,116 custom_components.sungrow.core.modbus_connection_base [DEBUG] Inverter: Pulled 8 signals in 5.728836 secs
+2024-07-25 21:02:47,116 custom_components.sungrow.core.modbus_types [DEBUG] Signal serial_number is supported.
+2024-07-25 21:02:47,116 custom_components.sungrow.core.modbus_types [DEBUG] Signal device_type_code is supported.
+2024-07-25 21:02:47,117 custom_components.sungrow.core.modbus_types [DEBUG] Signal output_type is supported.
+2024-07-25 21:02:47,117 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_imported_energy is supported.
+2024-07-25 21:02:47,117 custom_components.sungrow.core.modbus_types [DEBUG] Signal total_exported_energy is supported.
+2024-07-25 21:02:47,117 custom_components.sungrow.core.modbus_types [DEBUG] Signal master_slave_mode is supported.
+2024-07-25 21:02:47,117 custom_components.sungrow.core.modbus_types [DEBUG] Signal master_slave_role is supported.
+2024-07-25 21:02:47,117 custom_components.sungrow.core.modbus_types [DEBUG] Signal inverter_count is supported.
+2024-07-25 21:02:47,117 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for serial_number
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for device_type_code
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for output_type
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for total_imported_energy
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for total_exported_energy
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for master_slave_mode
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for master_slave_role
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for inverter_count
+2024-07-25 21:02:47,118 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for group not_supported_by_winet (True)
+2024-07-25 21:02:47,119 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for group has_meter (True)
+2024-07-25 21:02:47,119 custom_components.sungrow.core.inverter [DEBUG] Initial data: {'serial_number': 'A2350415770', 'device_type_code': 'SH8.0RT-20', 'output_type': '3P4L', 'total_imported_energy': 2054.7, 'total_exported_energy': 4596.6, 'master_slave_mode': 'Enabled', 'master_slave_role': 'Master', 'inverter_count': 2}
+2024-07-25 21:02:47,119 custom_components.sungrow.core.inverter [DEBUG] Connected to inverter SH8.0RT-20 / A2350415770
+2024-07-25 21:02:47,124 custom_components.sungrow.core.inverter [DEBUG] Pulling data from inverter: array_insulation_resistance,meter_active_power
+2024-07-25 21:02:47,124 custom_components.sungrow.core.modbus_connection_base [DEBUG] read_raw(2 signals) in 2 ranges
+2024-07-25 21:02:47,124 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 5071-5071), recursion=False)
+2024-07-25 21:02:49,117 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 5601-5602), recursion=False)
+2024-07-25 21:02:51,119 custom_components.sungrow.core.modbus_connection_base [DEBUG] Inverter: Pulled 2 signals in 3.994219 secs
+2024-07-25 21:02:51,119 custom_components.sungrow.core.modbus_types [DEBUG] Signal array_insulation_resistance is supported.
+2024-07-25 21:02:51,119 custom_components.sungrow.core.modbus_types [DEBUG] Signal meter_active_power is supported.
+2024-07-25 21:02:51,119 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for array_insulation_resistance
+2024-07-25 21:02:51,119 custom_components.sungrow.core.inverter [DEBUG] Creating new sensor for meter_active_power
+2024-07-25 21:02:51,120 __main__ [INFO] 192.168.13.79 (slave: 1, mode: modbus): Initial data retrieved
+2024-07-25 21:02:51,120 __main__ [INFO] 192.168.13.79 (slave: 1, mode: modbus): Querying ALL data...
+2024-07-25 21:02:51,120 custom_components.sungrow.core.inverter [DEBUG] Pulling data from inverter: protocol_number,protocol_version,arm_software_version,dsp_software_version,nominal_output_power,daily_output_energy_pv_and_battery,total_output_energy_pv_and_battery,total_running_time,internal_temperature,total_apparent_power,mppt_1_voltage,mppt_1_current,mppt_2_voltage,mppt_2_current,mppt_3_voltage,mppt_3_current,total_dc_power,phase_a_voltage,phase_b_voltage,phase_c_voltage,phase_a_current,phase_b_current,phase_c_current,total_active_power,total_reactive_power,power_factor,grid_frequency,work_state_1,alarm_time_year,alarm_time_month,alarm_time_day,alarm_time_hour,alarm_time_minute,alarm_time_second,alarm_code_1,nominal_reactive_power,active_power_regulation_setpoint,reactive_power_regulation_setpoint,work_state_2,meter_power,meter_a_phase_power,meter_b_phase_power,meter_c_phase_power,meter_load_power,daily_export_energy,total_export_energy,daily_import_energy,total_import_energy,daily_direct_energy_consumption,total_direct_energy_consumption,daily_running_time,mppt_4_voltage,mppt_4_current,mppt_5_voltage,mppt_5_current,mppt_6_voltage,mppt_6_current,mppt_7_voltage,mppt_7_current,mppt_8_voltage,mppt_8_current,monthly_power_yields,mppt_9_voltage,mppt_9_current,mppt_10_voltage,mppt_10_current,mppt_11_voltage,mppt_11_current,mppt_12_voltage,mppt_12_current,total_power_yields,negative_voltage_to_the_ground,bus_voltage,grid_frequency_,pid_work_state,pid_alarm_code,export_power,meter_active_power_phase_a,meter_active_power_phase_b,meter_active_power_phase_c,power_meter,export_limit_min,export_limit_max,bdc_rated_power,bms_max_charging_current,bms_max_discharging_current,battery_capacity_high_precision,backup_power_phase_a,backup_power_phase_b,backup_power_phase_c,backup_power_total,pv_power_of_today,pv_energy_yields_daily,pv_energy_yields_monthly,pv_energy_yields_yearly_starting_2019,direct_power_consumption_from_pv_today,direct_power_consumption_from_pv_daily,direct_energy_consumption_from_pv_monthly,direct_energy_consumption_from_pv_yearly_starting_2019,export_power_from_pv_today,export_energy_from_pv_daily,export_energy_from_pv_monthly,export_energy_from_pv_yearly_starting_2019,battery_charge_energy_from_pv_today,battery_charge_energy_from_pv,battery_charge_energy_from_pv_monthly,battery_charge_energy_from_pv_yearly_starting_2019,string_1_current,string_2_current,string_3_current,string_4_current,string_5_current,string_6_current,string_7_current,string_8_current,string_9_current,string_10_current,string_11_current,string_12_current,string_13_current,string_14_current,string_15_current,string_16_current,string_17_current,string_18_current,string_19_current,string_20_current,string_21_current,string_22_current,string_23_current,string_24_current,running_state,state_power_generated_from_pv,state_battery_charging,state_battery_discharging,state_load_active,state_feed_into_grid,state_import_from_grid,state_power_generated_from_load,daily_pv_generation,total_pv_generation,daily_pv_export,total_pv_export,load_power_hybrid,export_power_hybrid,daily_battery_charge_from_pv,total_battery_charge_from_pv,co2_reduction,daily_direct_energy_consumption_,total_direct_energy_consumption_,battery_voltage,battery_current,battery_power,battery_level,battery_state_of_health,battery_temperature,daily_battery_discharge_energy,total_battery_discharge_energy,self_consumption_of_day,grid_state,phase_a_current_,phase_b_current_,phase_c_current_,total_active_power_2,daily_imported_energy,battery_capacity,daily_battery_charge_energy,total_battery_charge_energy,drm_state,daily_exported_energy,inverter_alarm,grid-side_fault,system_fault1,system_fault2,dc-side_fault,permanent_fault,bdc-side_fault,bdc-side_permanent_fault,battery_fault,battery_alarm,bms_alarm,bms_protection,bms_fault1,bms_fault2,bms_alarm2,bms_status,max_charging_current,max_discharging_current,warning,protection,fault1,fault2,soc,soh,battery_current_,battery_voltage_,cycle_count,average_cell_voltage,max_cell_voltage,min_cell_voltage,battery_pack_voltage,average_cell_temp,max_cell_temp,min_cell_temp,year,month,day,hour,minute,second,start_stop,power_limitation_switch,power_limitation_setting,export_power_limitation,export_power_limitation_value,current_transformer_output_current,current_transformer_range,current_transformer,export_power_limitation_percentage,installed_pv_power,power_factor_setting,scheduling_achieve_active_overload,night_svg_switch,reactive_power_adjustment_mode,reactive_power_percentage_setting,power_limitation_adjustment,reactive_power_adjustment,pid_recovery,anti_pid,fullday_pid_suppression,Battery Module 1 max cell voltage,Battery Module 1 min cell voltage,start_stop_2,ems_mode_selection,battery_forced_charge_discharge_cmd,battery_forced_charge_discharge_power,battery_forced_charge_discharge_power_,Max_SoC,Min_SoC,export_power_limit,start_charging_power,start_discharging_power,energy_meter_comm,export_power_limitation_,soc_reserve,battery_max_charge_power,battery_max_discharge_power,battery_capacity_2,battery_charge_start_power,battery_charge_stop_power,weekly_discharging_start_time_1_hour,weekly_discharging_start_time_1_minute,weekly_discharging_end_time_1_hour,weekly_discharging_end_time_1_minute,weekly_discharging_start_time_2_hour,weekly_discharging_start_time_2_minute,weekly_discharging_end_time_2_hour,weekly_discharging_end_time_2_minute,weekend_discharging_enable,weekend_discharging_start_time_1_hour,weekend_discharging_start_time_1_minute,weekend_discharging_end_time_1_hour,weekend_discharging_end_time_1_minute,weekend_discharging_start_time_2_hour,weekend_discharging_start_time_2_minute,forced_charging_enable,forced_charging_valid_time,forced_charging_start_time_1_hour,forced_charging_start_time_1_minute,forced_charging_end_time_1_hour,forced_charging_end_time_1_minute,forced_charging_target_soc_1,forced_charging_start_time_2_hour,forced_charging_start_time_2_minute,forced_charging_end_time_2_hour,forced_charging_end_time_2_minute,forced_charging_target_soc_2
+2024-07-25 21:02:51,121 custom_components.sungrow.core.modbus_connection_base [DEBUG] read_raw(277 signals) in 22 ranges
+2024-07-25 21:02:51,121 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 4950-5049), recursion=False)
+2024-07-25 21:02:53,123 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 5077-5151), recursion=False)
+2024-07-25 21:02:55,127 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 5216-5219), recursion=False)
+2024-07-25 21:02:57,127 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 5603-5639), recursion=False)
+2024-07-25 21:02:59,131 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 5723-5726), recursion=False)
+2024-07-25 21:03:01,132 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6100-6195), recursion=False)
+2024-07-25 21:03:03,134 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6196-6289), recursion=False)
+2024-07-25 21:03:05,137 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6290-6385), recursion=False)
+2024-07-25 21:03:07,138 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6386-6468), recursion=False)
+2024-07-25 21:03:09,140 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6469-6564), recursion=False)
+2024-07-25 21:03:11,140 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6565-6647), recursion=False)
+2024-07-25 21:03:13,145 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6648-6743), recursion=False)
+2024-07-25 21:03:15,146 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 6744-6826), recursion=False)
+2024-07-25 21:03:17,149 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 7013-7036), recursion=False)
+2024-07-25 21:03:19,151 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 13000-13079), recursion=False)
+2024-07-25 21:03:21,151 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(READ, 13100-13118), recursion=False)
+2024-07-25 21:03:23,156 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(HOLD, 5000-5043), recursion=False)
+2024-07-25 21:03:25,159 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] _read_range(register_range=Range(HOLD, 10765-10773), recursion=False)
+2024-07-25 21:03:29,158 custom_components.sungrow.core.modbus_connection_base [DEBUG] Inverter: Pulled 277 signals in 38.37216 secs
+2024-07-25 21:03:29,158 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Disconnecting from 192.168.13.79:502
+2024-07-25 21:03:29,158 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Disconnected from 192.168.13.79:502
+2024-07-25 21:03:29,158 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Disconnecting from 192.168.13.79:502
+2024-07-25 21:03:31,161 custom_components.sungrow.core.modbus_connection_pymodbus [DEBUG] Disconnected from 192.168.13.79:502
+2024-07-25 21:03:31,161 __main__ [INFO] 192.168.13.79 (slave: unknown, mode: http): Connecting...
+2024-07-25 21:03:31,162 custom_components.sungrow.core.modbus_connection_http [DEBUG] Connecting to 192.168.13.79:8082
+2024-07-25 21:03:31,166 custom_components.sungrow.core.modbus_connection_http [DEBUG] Disconnecting from 192.168.13.79:8082
+2024-07-25 21:03:31,166 custom_components.sungrow.core.connection_factory [DEBUG] Failed to connect to inverter

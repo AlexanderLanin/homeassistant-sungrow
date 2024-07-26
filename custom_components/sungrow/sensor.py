@@ -87,8 +87,8 @@ async def create_sensor_entities(
     """Register sensor entities based on the inverter data."""
 
     if not inverter.data:
-        # TODO: pull_data can fail and return False
-        await inverter.pull_data()
+        res = await inverter.pull_data()
+        res.unwrap()  # TODO: handle errors
 
     entities = []
     for d in inverter.data.values():
@@ -126,7 +126,8 @@ class InverterCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         logger.warning("_async_update_data: Updating data from Sungrow Inverter")
         # async with async_timeout.timeout(10):
-        data = await self.inverter.pull_data()
+        res = await self.inverter.pull_data()
+        data = res.unwrap()  # TODO: error handling
         if data:
             logger.warning(
                 f"_async_update_data: Got data from Sungrow Inverter: {data}"

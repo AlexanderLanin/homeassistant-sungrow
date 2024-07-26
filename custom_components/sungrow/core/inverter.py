@@ -6,7 +6,7 @@ import logging
 from enum import Enum
 from fnmatch import fnmatch
 
-from result import Ok
+from result import Err, Ok, Result, is_err
 
 from custom_components.sungrow.core import (
     connection_base,
@@ -53,7 +53,7 @@ class SungrowInverter:
         connection: connection_base.Connection,
         slave: int | None = None,
         level_of_detail: Level = Level.ADVANCED,
-    ) -> SungrowInverter | None:
+    ) -> Result[SungrowInverter, Exception]:
         assert type(connection) != connection_base.Connection, "Cannot use base class"
 
         inv = SungrowInverter(connection, direct_initialization=False)
@@ -61,22 +61,21 @@ class SungrowInverter:
         slaves_to_attempt = [1, 2] if slave is None else [slave]
         logger.debug(f"Attempting slaves: {slaves_to_attempt}")
         for slave in slaves_to_attempt:
-            if await inv._set_slave_and_query_initial_data(slave):
+            if (await inv._set_slave_and_query_initial_data(slave)).is_ok():
                 break
         else:
-            logger.warning(
-                "Failed to connect to inverter. Exotic slave ID? "
-                "You'll have to enter it manually"
-            )
             await inv.disconnect()
-            return None
+            return Err(RuntimeError("Failed to connect to inverter: Exotic slave ID?"))
 
         assert inv.data, "Data should be available after initial query"
 
         if not inv.data["serial_number"] or not inv.data["device_type_code"]:
-            logger.warning("Failed to connect to inverter. No serial number or model")
             await inv.disconnect()
-            return None
+            return Err(
+                RuntimeError(
+                    "Failed to connect to inverter: No serial number or model."
+                )
+            )
 
         logger.debug(f"Initial data: {inv.data}")
         logger.debug(
@@ -85,19 +84,20 @@ class SungrowInverter:
         )
 
         # TODO: in case nothing of an entire group is requested, we should not query it
-        if not await inv._disable_all_unsupported_signals(level_of_detail.value):
-            logger.warning(
-                "Connection lost while reading first few values from inverter"
-            )
-            logger.warning(
-                "Do you have some other device that is querying the inverter?"
-            )
+        exc = await inv._disable_all_unsupported_signals(level_of_detail.value)
+        if exc:
             await inv.disconnect()
-            return None
+            return Err(
+                RuntimeError(
+                    "Connection lost while reading first few values from inverter. "
+                    "Do you have some other device that is querying the inverter?",
+                    exc,
+                )
+            )
 
         inv._signal_definitions.mark_signals_below_level_as_disabled(level_of_detail)
 
-        return inv
+        return Ok(inv)
 
     def __init__(
         self,
@@ -145,7 +145,9 @@ class SungrowInverter:
 
         self._is_modbus_winet: bool | None = None
 
-    async def _disable_all_unsupported_signals(self, level_of_detail: int):
+    async def _disable_all_unsupported_signals(
+        self, level_of_detail: int
+    ) -> Exception | None:
         assert (
             self._signal_definitions
         ), "Must be loaded before this function is called."
@@ -158,7 +160,11 @@ class SungrowInverter:
         # This will require later runtime checks to ensure the group indicator was
         # queried for every group member?!
         query = list(self._signal_definitions.get_group_indiators().values())
-        return await self.pull_data(query)
+        res = await self.pull_data(query)
+        if isinstance(res, Err):
+            return res.err_value
+        else:
+            return None
 
     async def pull_single_signal_by_name(
         self, signal_name: str
@@ -262,7 +268,7 @@ class SungrowInverter:
         """
         active_groups = self._signal_definitions.get_active_groups()
 
-        for group, enabled in active_groups:
+        for group, enabled in active_groups.items():
             if group in self.sensors:
                 self.sensors[group].value = enabled
             else:
@@ -275,7 +281,7 @@ class SungrowInverter:
 
     async def pull_data(
         self, signal_list: list[signals.SignalDefinition] | None = None
-    ):
+    ) -> Result[connection_base.DecodedSignals, Exception]:
         if signal_list is None:
             signal_list = self._signal_definitions.enabled_signals()
 
@@ -284,6 +290,7 @@ class SungrowInverter:
         )
         new_data_result = await self._client.read(signal_list, self._signal_definitions)
         if isinstance(new_data_result, Ok):
+            logger.debug("Data received from inverter. Updating internal data...")
             self.update_sensors_from_raw_data(new_data_result.ok_value)
             self.update_sensors_with_active_groups()  # one time activity?
 
@@ -291,10 +298,12 @@ class SungrowInverter:
             # extra_signals = extra_sensors.calculate(new_data)
 
             self.data.update(new_data_result.ok_value)
-            return True
         else:
+            logger.debug("Failed to read data from inverter. Disconnecting.")
+            # Quite likely redundant, as the connection is probably already lost.
             await self.disconnect()
-            return False
+
+        return new_data_result
 
     @property
     def serial_number(self):

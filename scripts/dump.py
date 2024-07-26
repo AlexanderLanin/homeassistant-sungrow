@@ -82,16 +82,15 @@ async def collect_data_from(
         info_msg("Connecting...")
         con = await connection_factory.connect(params)
         if not con:
-            info_msg("Failed to connect")
             return TaskResult(params, slave, error="Failed to connect")
         info_msg("Connected")
 
         info_msg("Retrieving initial data...")
-        inv = await SungrowInverter.create(con, slave)
-        if not inv:
-            info_msg("Failed to retrieve intial data")
+        res1 = await SungrowInverter.create(con, slave)
+        if isinstance(res1, Err):
             await con.disconnect()
-            return TaskResult(params, slave, error="Failed to retrieve intial data")
+            return TaskResult(params, slave, error=res1.err_value)
+        inv = res1.ok_value
         info_msg("Initial data retrieved")
 
         info_msg("Querying ALL data...")
@@ -110,12 +109,8 @@ async def collect_data_from(
                 )
             ]
 
-            res = await inv.pull_data(query)
-            if isinstance(res, Ok):
-                inv.data.update(res.ok_value)
-                err_value = None
-            else:
-                err_value = res.err_value
+            res2 = await inv.pull_data(query)
+            err_value = None if isinstance(res2, Ok) else res2.err_value
 
             return TaskResult(
                 connection_params=params,
@@ -171,7 +166,7 @@ def write_json(task_results: list[TaskResult]):
     class EnhancedJSONEncoder(json.JSONEncoder):
         def default(self, o):
             if is_dataclass(o):
-                return asdict(o)
+                return asdict(o)  # type: ignore
             if isinstance(o, Exception):
                 return f"{o.__class__.__name__}: {o}"
             if isinstance(o, StrEnum):
