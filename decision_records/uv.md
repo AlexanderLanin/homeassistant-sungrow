@@ -22,7 +22,7 @@ Let's use uv!
 |---------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 | **Package Management**    | ✅ Installs from PyPI      | ✅ Installs from PyPI      | ✅ Installs from PyPI      | ✅ Installs from PyPI      |
 | **Dependency Resolution** | ✅ With `pip-compile` (PEP 508) | ✅ Full solver (PEP 508)  | ✅ Full solver (PEP 508)  | ✅ Full solver (PEP 508)  |
-| **Lockfile Support**      | ✅ `requirements.txt` + `requirements.lock` (via `pip-compile`) | ✅ `requirements.lock`     | ✅ `requirements.lock`     | ✅ `poetry.lock`          |
+| **Lockfile Support**      | ✅ `requirements.txt` + `requirements.lock` (system-specific) | ✅ `requirements.lock` (system-specific) | ✅ `uv.lock` (cross-platform) | ✅ `poetry.lock` (cross-platform) |
 | **Virtual Environment Mgmt** | ❌ Requires external tool | ❌ No built-in support | ✅ Manages venv (`uv venv`) | ✅ Manages venv automatically |
 | **Project Metadata (`pyproject.toml`)** | ❌ No native support  | ✅ Reads `pyproject.toml` | ✅ Reads `pyproject.toml` | ✅ Full support           |
 | **Editable Installs (`pip install -e .`)** | ✅ Supported | ✅ Supported | ✅ Supported | ✅ Supported |
