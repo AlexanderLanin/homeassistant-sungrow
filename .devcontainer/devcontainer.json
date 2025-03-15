@@ -8,10 +8,9 @@
                 "editor.formatOnSave": true,
                 "[python]": {
                     "editor.codeActionsOnSave": {
-                        "source.sortImports": "explicit",
+                        "source.sortImports": "explicit"
                     },
-                    "editor.defaultFormatter": "charliermarsh.ruff",
-                    "python.formatting.provider": "none"
+                    "editor.defaultFormatter": "charliermarsh.ruff"
                 },
                 "python.venvPath": "${containerWorkspaceFolder}/.venv",
                 "python.pythonPath": "${containerWorkspaceFolder}/.venv/bin/python",
@@ -42,7 +41,8 @@
                 "ryanluker.vscode-coverage-gutters",
                 "redhat.vscode-yaml",
                 "github.copilot-chat",
-                "shd101wyy.markdown-preview-enhanced"
+                "shd101wyy.markdown-preview-enhanced",
+                "tamasfe.even-better-toml"
             ]
         }
     }

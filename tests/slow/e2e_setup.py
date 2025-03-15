@@ -131,7 +131,7 @@ async def simulated_http_inverter(yaml_file: str | pathlib.Path | None):
                 else:
                     raise Exception(f"Unexpected message: {m}")
             elif msg.type == aiohttp.WSMsgType.ERROR:
-                print("ws connection closed with exception %s" % ws.exception())
+                print(f"ws connection closed with exception {ws.exception()}")
 
         print("websocket connection closed")
 
@@ -253,7 +253,7 @@ async def cleanup_lingering_inverter_connections(hass: HomeAssistant):
 
 
 @pytest.fixture(autouse=True)
-async def cleanup_lingering_inverter_connections_fixture(hass: HomeAssistant):  # noqa: PT004
+async def cleanup_lingering_inverter_connections_fixture(hass: HomeAssistant):
     yield
     # Unfortunately tests here are not even aware of any connection, as it's internal
     # to the config_flow.

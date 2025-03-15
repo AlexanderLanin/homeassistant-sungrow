@@ -7,14 +7,13 @@ It does NOT know about modbus (except for "RegisterType").
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TypeVar, cast
+from typing import TypeVar
 
 import yaml
 
-from custom_components.sungrow.core.inverter_types import Level
 from custom_components.sungrow.core.modbus_types import RegisterRange
 
-from .modbus_types import ModbusSignal, RegisterType
+from .modbus_types import RegisterType
 
 logger = logging.getLogger(__name__)
 

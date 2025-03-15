@@ -5,22 +5,20 @@ A convinience wrapper for pymodbus.
 import asyncio
 import contextlib
 import logging
-import re
 from datetime import datetime, timedelta
 
+import modbus_connection_base
 import pymodbus
 import pymodbus.client
 import pymodbus.exceptions
 import pymodbus.framer.base
 import pymodbus.pdu
-from result import Err, Ok, Result
-
-from custom_components.sungrow.core import modbus_connection_base
-from custom_components.sungrow.core.modbus_connection_base import (
+from modbus_connection_base import (
     ModbusConnection_Base,
     RegisterType,
 )
-from custom_components.sungrow.core.modbus_types import RegisterRange
+from modbus_types import RegisterRange
+from result import Err, Ok, Result
 
 logger = logging.getLogger(__name__)
 

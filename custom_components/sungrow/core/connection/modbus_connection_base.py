@@ -10,7 +10,10 @@ from datetime import datetime
 from typing import cast
 
 import modbus_types
-from connection import Connection, DecodedSignals
+from connection_base import (
+    Connection,
+    DecodedSignals,
+)
 from result import Err, Ok, Result
 
 from .modbus_types import (
@@ -179,10 +182,7 @@ def can_add(
         for addr in range(current_range[-1].registers.end, signal.registers.start)
     )
 
-    if anything_blocked:
-        return False
-
-    return True
+    return not anything_blocked
 
 
 def _build_ranges(
@@ -328,7 +328,7 @@ class ModbusConnection_Base(Connection):  # noqa: N801
         raise NotImplementedError
 
     async def _read(
-        self, query: list[signals.SignalDefinition]
+        self, query: list[connection.SignalDefinition]
     ) -> Result[DecodedSignals, Exception]:
         """Pull data from inverter"""
 
@@ -473,7 +473,7 @@ class ModbusConnection_Base(Connection):  # noqa: N801
             # successfully read the range and determined this information.
             self.stats.retrieved_signals_success += len(signal_list)
             # All registers in this range are unsupported.
-            return Ok({r: None for r in range(reg_range.start, reg_range.end)})
+            return Ok(dict.fromkeys(range(reg_range.start, reg_range.end)))
         else:
             self.stats.retrieved_signals_failed += len(signal_list)
             return Err(res.err_value)

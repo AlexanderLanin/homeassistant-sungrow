@@ -1,5 +1,4 @@
 from custom_components.sungrow.core import (
-    connection_factory,
     modbus_connection_base,
     signals2,
 )

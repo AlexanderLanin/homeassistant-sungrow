@@ -1,13 +1,11 @@
 import logging
 from contextlib import asynccontextmanager
-from tarfile import data_filter
 
 import pytest
 from result import Err, Ok, Result
 
 from custom_components.sungrow.core import (
     connection_base,
-    connection_factory,
     inverter,
     modbus_connection_base,
     modbus_types,
@@ -26,7 +24,7 @@ class FakeConnection(connection_base.Connection):
         self.active_slave: int | None = None
         self.allow_connect = False
         self.allow_disconnect = False
-        self._connected = True  #
+        self._connected = True
         self.requested_signals = 0
         self.only_expected = only_expected
 
@@ -86,7 +84,7 @@ async def create_inv(con: FakeConnection):
         assert not con._connected
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_with_no_signals_will_not_connect():
     con = FakeConnection({})
     con.allow_disconnect = True
@@ -97,7 +95,7 @@ async def test_create_inverter_with_no_signals_will_not_connect():
     assert not con._connected
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_with_minimal_signals():
     data: connection_base.DecodedSignals = {
         "device_type_code": "x",
@@ -109,7 +107,7 @@ async def test_create_inverter_with_minimal_signals():
         assert inv.model == "x"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_auto_detect_slave_2():
     con = FakeConnection({"device_type_code": "x", "serial_number": "sn"})
     con.data_on_slave = 2
@@ -123,7 +121,7 @@ def sig(inv: inverter.SungrowInverter, name):
     return inv._signal_definitions.get_signal_definition_by_name(name)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_no_meter_supported():
     async with create_inv(
         FakeConnection({"device_type_code": "x", "serial_number": "sn"})
@@ -146,7 +144,7 @@ async def test_create_inverter_detect_no_meter_supported():
         assert power_c.disabled
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_no_meter_connected():
     async with create_inv(
         FakeConnection(
@@ -174,7 +172,7 @@ async def test_create_inverter_detect_no_meter_connected():
         assert not power_c.disabled
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_meter():
     async with create_inv(
         FakeConnection(
@@ -214,7 +212,7 @@ async def run_and_compare_type(
             raise AssertionError(f"Expected {expected}, got {inv.type} for {kwargs}")
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_main_standalone():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
@@ -223,7 +221,7 @@ async def test_create_inverter_detect_mode_main_standalone():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_main_master():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.MASTER,
@@ -232,7 +230,7 @@ async def test_create_inverter_detect_mode_main_master():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_main_slave1():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
@@ -241,7 +239,7 @@ async def test_create_inverter_detect_mode_main_slave1():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_main_slave_pure():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.SLAVE,
@@ -251,7 +249,7 @@ async def test_create_inverter_detect_mode_main_slave_pure():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_main_slave_1():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.SLAVE_1,
@@ -261,7 +259,7 @@ async def test_create_inverter_detect_mode_main_slave_1():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_heuristic_standalone():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.STANDALONE,
@@ -270,7 +268,7 @@ async def test_create_inverter_detect_mode_heuristic_standalone():
 
 
 # Anything imported/exported -> Master
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_heuristic_master_import():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.MASTER,
@@ -278,7 +276,7 @@ async def test_create_inverter_detect_mode_heuristic_master_import():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_heuristic_master_export():
     await run_and_compare_type(
         expected=inverter.SungrowInverter.ConnectionMode.MASTER,
@@ -286,7 +284,7 @@ async def test_create_inverter_detect_mode_heuristic_master_export():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_detect_mode_heuristic_slave():
     # No imported/exported -> Slave
     await run_and_compare_type(
@@ -294,7 +292,7 @@ async def test_create_inverter_detect_mode_heuristic_slave():
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_create_inverter_with_minimal_signal_queries():
     # All minimal level signals are expected
     data: connection_base.DecodedSignals = {

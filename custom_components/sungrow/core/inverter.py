@@ -6,11 +6,10 @@ import logging
 from enum import Enum
 from fnmatch import fnmatch
 
-from result import Err, Ok, Result, is_err
+from result import Err, Ok, Result
 
 from custom_components.sungrow.core import (
     connection_base,
-    connection_factory,
     modbus_types,
 )
 from custom_components.sungrow.core.inverter_types import Level, Sensor
@@ -396,11 +395,10 @@ class SungrowInverter:
                 return self.ConnectionMode.SLAVE
 
             return self.ConnectionMode(master_slave_role)
+        elif self._signal_definitions.get_active_groups()["is_master"]:
+            return self.ConnectionMode.MASTER
         else:
-            if self._signal_definitions.get_active_groups()["is_master"]:
-                return self.ConnectionMode.MASTER
-            else:
-                return self.ConnectionMode.SLAVE
+            return self.ConnectionMode.SLAVE
 
     def type_str(self):
         return str(self.type)
