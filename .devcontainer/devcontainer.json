@@ -1,33 +1,13 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
-    "features": {
-        "ghcr.io/devcontainers-contrib/features/pipx-package": {},
-        "ghcr.io/devcontainers-contrib/features/poetry": {}
+    "build": {
+        "dockerfile": "Dockerfile"
     },
-    // poetry installs everything to a virtual environment, which is actually super annoying.
-    // As there is no convoinient way to always activate it, we add activation to .bashrc
-    "updateContentCommand": "poetry config virtualenvs.in-project true && poetry install --no-interaction --no-ansi && echo 'source $(poetry env info --path)/bin/activate' >> ~/.bashrc",
-    // This keeps VS Code GUI stuck in "Configuring Dev Container" :-(
-    // "postAttachCommand": "poetry shell",
-    // "postStartCommand": "poetry shell",
     "customizations": {
         "vscode": {
             "settings": {
-                // This is actually not needed, as we add .venv/bin/activate to .bashrc
-                "terminal.integrated.profiles.linux": {
-                    "poetry-shell": {
-                        "path": "poetry",
-                        "icon": "terminal-bash",
-                        "args": [
-                            "shell"
-                        ]
-                    }
-                },
                 "[python]": {
                     "editor.codeActionsOnSave": {
-                        // This is actually annoying: you cannot e.g. add an unused imort which you want to use in 10 seconds.
-                        // "source.fixAll.ruff": true,
-                        "source.organizeImports": true
+                        "source.sortImports": "explicit"
                     },
                     "editor.defaultFormatter": "charliermarsh.ruff"
                 },
@@ -40,8 +20,8 @@
                 "python.testing.unittestEnabled": false,
                 "python.testing.pytestEnabled": true,
                 "python.experiments.optOutFrom": [
-                    // Tests with sockets disabled don't show up otherwise.
-                    // Ancient old issue.
+                    // That feature is broken. It doesn'T work when tests disable sockets.
+                    // Ancient old issue, which is still not fixed.
                     "pythonTestAdapter"
                 ],
                 "files.exclude": {
@@ -54,9 +34,10 @@
                 "files.insertFinalNewline": true
             },
             "extensions": [
+                "ms-python.python",
                 "charliermarsh.ruff",
+                "usernamehw.errorlens",
                 "ryanluker.vscode-coverage-gutters",
-                "ms-python.mypy-type-checker",
                 "redhat.vscode-yaml",
                 "github.copilot-chat",
                 "shd101wyy.markdown-preview-enhanced"

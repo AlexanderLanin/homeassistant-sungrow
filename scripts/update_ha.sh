@@ -1,4 +1,7 @@
 #!/bin/bash
+# This script copies the current local version to home assistant and restarts it.
+# It also shows the log of home assistant.
+
 set -euo pipefail
 
 echo "Running code analysis..."

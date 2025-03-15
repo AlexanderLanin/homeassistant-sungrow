@@ -9,4 +9,6 @@ __pycache__/
 
 coverage.xml
 
-./dump.log
+/dump.log
+
+/homeassistant_sungrow.egg-info

@@ -109,6 +109,10 @@ class SignalDefinition(ModbusSignal):
         was_queried_individually,
         all_signals: "SignalDefinitions",
     ):
+        logger.debug(
+            f"Updating supported state for {self.name}: "
+            f"{value} (was_queried_individually={was_queried_individually})"
+        )
         if value is None:
             if (
                 self.is_supported != ModbusSignal.Supported.NO
@@ -128,6 +132,7 @@ class SignalDefinition(ModbusSignal):
                 self.update_supported(
                     ModbusSignal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY
                 )
+        logger.debug(f"Signal {self.name} is now {self.is_supported}")
 
     @property
     def na_value(self):

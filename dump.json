@@ -7712,16 +7712,16 @@
             "serial_number": "A2350415770",
             "device_type_code": "SH8.0RT-20",
             "output_type": "3P4L",
-            "total_imported_energy": 2054.7,
-            "total_exported_energy": 4596.6,
+            "total_imported_energy": 2055.3,
+            "total_exported_energy": 4603.4,
             "master_slave_mode": "Enabled",
             "master_slave_role": "Master",
             "inverter_count": 2,
             "array_insulation_resistance": 689,
-            "meter_active_power": 20
+            "meter_active_power": 14
         },
         "stats": null,
-        "error": "ModbusError: Unknown IO Error in pymodbus: ModbusIOException: Modbus Error: [Input/Output] ERROR: No response received after 0 retries"
+        "error": "CannotConnectError: ConnectionException: Modbus Error: [Connection] Not connected[AsyncModbusTcpClient 192.168.13.79:502]"
     },
     {
         "connection_params": {

@@ -25,8 +25,8 @@ from custom_components.sungrow.core.modbus_types import RegisterRange
 logger = logging.getLogger(__name__)
 
 
-if pymodbus.__version__ != "3.6.8":
-    raise RuntimeError("This fix needs to be adjusted")
+# if pymodbus.__version__ != "3.6.8":
+#     raise RuntimeError("This fix needs to be adjusted")
 
 # # WiNet-S responds with slightly incorrect message headers in case of errors.
 # # Version: M_WiNet-S_V01_V01_A

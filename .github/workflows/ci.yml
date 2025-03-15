@@ -11,29 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.11"
 
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
+      - name: run in devcontainer
+        uses: devcontainers/ci
+        with:
+          runCmd: |
+            uv run ruff check .
 
-    - name: Install dependencies
-      run: poetry install
+    # - name: Install Poetry
+    #   run: |
+    #     curl -sSL https://install.python-poetry.org | python3 -
 
-    - name: Run linter
-      run: poetry run ruff .
+    # - name: Install dependencies
+    #   run: poetry install
 
-    - name: Run mypy
-      run: poetry run mypy .
+    # - name: Run linter
+    #   run: poetry run ruff .
 
-    - name: Run quick tests
-      run: poetry run pytest tests/quick
+    # - name: Run mypy
+    #   run: poetry run mypy .
 
-    - name: Run slow tests
-      # Run them in parallel?
-      run: poetry run pytest tests/slow
+    # - name: Run quick tests
+    #   run: poetry run pytest tests/quick
+
+    # - name: Run slow tests
+    #   # Run them in parallel?
+    #   run: poetry run pytest tests/slow

@@ -279,6 +279,26 @@ class SungrowInverter:
                     unit_of_measurement=None,  # bool
                 )
 
+    async def pull_data_gen(
+        self, signal_list: list[signals.SignalDefinition] | None = None
+    ):
+        if signal_list is None:
+            signal_list = self._signal_definitions.enabled_signals()
+
+        logger.debug(
+            "Pulling data from inverter: " + ",".join([s.name for s in signal_list])
+        )
+        for result in await self._client.read_gen(
+            signal_list, self._signal_definitions
+        ):
+            logger.debug(f"{len(result)} values received...")
+            self.update_sensors_from_raw_data(result)
+            # self.update_sensors_with_active_groups()  # one time activity?
+            # extra_signals = extra_sensors.calculate(new_data) # FIXME
+
+            self.data.update(result)
+            yield result
+
     async def pull_data(
         self, signal_list: list[signals.SignalDefinition] | None = None
     ) -> Result[connection_base.DecodedSignals, Exception]:
@@ -300,6 +320,7 @@ class SungrowInverter:
             self.data.update(new_data_result.ok_value)
         else:
             logger.debug("Failed to read data from inverter. Disconnecting.")
+            logger.debug(new_data_result.err_value)
             # Quite likely redundant, as the connection is probably already lost.
             await self.disconnect()
 

@@ -18,11 +18,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry, entity_registry
 
 from custom_components.sungrow.const import DOMAIN
-from tests.slow import e2e_setup
-from tests.slow.e2e_setup import (
+
+from . import e2e_setup
+from .e2e_setup import (
     cleanup_lingering_inverter_connections_fixture,  # noqa: F401
 )
-from tests.slow.test_config_flow import (
+from .test_config_flow import (
     always_enable_custom_integrations,  # noqa: F401
     start_config_flow,
 )

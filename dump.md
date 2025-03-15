@@ -3,7 +3,7 @@
 | SN | Host | Mode | Read Calls | Errors |
 | --- | --- | --- | --- | --- |
 | - | 192.168.13.79/None | http | None | Failed to connect |
-| A2350415770 | 192.168.13.79/1 | modbus | None | ModbusError: Unknown IO Error in pymodbus: ModbusIOException: Modbus Error: [Input/Output] ERROR: No response received after 0 retries |
+| A2350415770 | 192.168.13.79/1 | modbus | None | CannotConnectError: ConnectionException: Modbus Error: [Connection] Not connected[AsyncModbusTcpClient 192.168.13.79:502] |
 
 
 # A2350415770
@@ -13,10 +13,10 @@
 | protocol_version | never_attempted - | 
 | arm_software_version | never_attempted - | 
 | dsp_software_version | never_attempted - | 
-| serial_number | never_attempted A2350415770 | 
-| device_type_code | never_attempted SH8.0RT-20 | 
+| serial_number | yes A2350415770 | 
+| device_type_code | yes SH8.0RT-20 | 
 | nominal_output_power | never_attempted - | 
-| output_type | never_attempted 3P4L | 
+| output_type | yes 3P4L | 
 | daily_output_energy_pv_and_battery | never_attempted - | 
 | total_output_energy_pv_and_battery | never_attempted - | 
 | total_running_time | never_attempted - | 
@@ -48,7 +48,7 @@
 | alarm_time_second | never_attempted - | 
 | alarm_code_1 | never_attempted - | 
 | nominal_reactive_power | never_attempted - | 
-| array_insulation_resistance | never_attempted 689 | 
+| array_insulation_resistance | yes 689 | 
 | active_power_regulation_setpoint | never_attempted - | 
 | reactive_power_regulation_setpoint | never_attempted - | 
 | work_state_2 | never_attempted - | 
@@ -90,7 +90,7 @@
 | pid_work_state | never_attempted - | 
 | pid_alarm_code | never_attempted - | 
 | export_power | never_attempted - | 
-| meter_active_power | never_attempted 20 | 
+| meter_active_power | yes 14 | 
 | meter_active_power_phase_a | never_attempted - | 
 | meter_active_power_phase_b | never_attempted - | 
 | meter_active_power_phase_c | never_attempted - | 
@@ -179,13 +179,13 @@
 | phase_c_current_ | never_attempted - | 
 | total_active_power_2 | never_attempted - | 
 | daily_imported_energy | never_attempted - | 
-| total_imported_energy | never_attempted 2054.7 | 
+| total_imported_energy | yes 2055.3 | 
 | battery_capacity | never_attempted - | 
 | daily_battery_charge_energy | never_attempted - | 
 | total_battery_charge_energy | never_attempted - | 
 | drm_state | never_attempted - | 
 | daily_exported_energy | never_attempted - | 
-| total_exported_energy | never_attempted 4596.6 | 
+| total_exported_energy | yes 4603.4 | 
 | inverter_alarm | never_attempted - | 
 | grid-side_fault | never_attempted - | 
 | system_fault1 | never_attempted - | 
@@ -266,9 +266,9 @@
 | battery_capacity_2 | never_attempted - | 
 | battery_charge_start_power | never_attempted - | 
 | battery_charge_stop_power | never_attempted - | 
-| master_slave_mode | never_attempted Enabled | 
-| master_slave_role | never_attempted Master | 
-| inverter_count | never_attempted 2 | 
+| master_slave_mode | yes Enabled | 
+| master_slave_role | yes Master | 
+| inverter_count | yes 2 | 
 | weekly_discharging_start_time_1_hour | never_attempted - | 
 | weekly_discharging_start_time_1_minute | never_attempted - | 
 | weekly_discharging_end_time_1_hour | never_attempted - | 

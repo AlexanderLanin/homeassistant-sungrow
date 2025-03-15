@@ -202,8 +202,6 @@ def write_to_cache(task_results: list[TaskResult]):
 
 
 async def main(hosts: list[ConnectionParamInclSlaveId], load_cached: bool):
-    all_signals = signals.load_yaml()
-
     # Expand all possible connection params (e.g. one entry for http and one modbus)
     hosts = [
         (host, slave)
@@ -225,7 +223,7 @@ async def main(hosts: list[ConnectionParamInclSlaveId], load_cached: bool):
 
     data_by_inverter = merge_by_inverter(task_results)
 
-    markdown_write_file("dump.md", all_signals, data_by_inverter)
+    markdown_write_file("dump.md", data_by_inverter)
     print("Summary written to dump.md")
 
 
@@ -255,7 +253,6 @@ def markdown_write_summary(f, data_by_inverter: dict[str, list[TaskResult]]):
 
 def markdown_write_signals(
     f,
-    all_signals: signals.SignalDefinitions,
     data_by_inverter: dict[str, list[TaskResult]],
 ):
     for inverter_sn, results_for_same_sn in data_by_inverter.items():
@@ -274,12 +271,21 @@ def markdown_write_signals(
         )
         f.write("| --- " * (len(results_for_same_sn) + 1) + "|\n")
 
-        for signal in all_signals.all_signals():
+        # It's always the same signal definitions. Just pick first one.
+        assert results_for_same_sn[0].signal_definitions
+        all_signals = results_for_same_sn[0].signal_definitions.all_signals()
+
+        for signal in all_signals:
             line = f"| {signal.name} | "
             for result in results_for_same_sn:
                 assert result.data
+                assert result.signal_definitions
+
                 value = result.data.get(signal.name, "-")
-                line += f"{signal.is_supported} {value} | "
+                sig = result.signal_definitions.get_signal_definition_by_name(
+                    signal.name
+                )
+                line += f"{sig.is_supported} {value} | "
             f.write(line + "\n")
 
         f.write("\n\n")
@@ -287,12 +293,11 @@ def markdown_write_signals(
 
 def markdown_write_file(
     outfile: str,
-    all_signals: signals.SignalDefinitions,
     data_by_inverter: dict[str, list[TaskResult]],
 ):
     with Path(outfile).open("w") as f:
         markdown_write_summary(f, data_by_inverter)
-        markdown_write_signals(f, all_signals, data_by_inverter)
+        markdown_write_signals(f, data_by_inverter)
 
 
 def parse_arguments():

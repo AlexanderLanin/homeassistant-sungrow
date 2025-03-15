@@ -1,46 +1,83 @@
-[tool.poetry]
+[project]
 name = "homeassistant-sungrow"
-version = "0.0.2"
-description = "Sungrow integration"
-authors = ["Alexander Lanin <alex@lanin.de>"]
-license = "to be decided"
+description = "Sungrow integration for Home Assistant"
 readme = "README.md"
-packages = [{ include = "custom_components" }, { include = "scripts" }]
+authors = [
+  { name = "Alexander Lanin", email = "alex@lanin.de" }
+]
+# license = "to_be_decided"
 
-[tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-pymodbus = ">=3.6.6"
-homeassistant = ">=2024"
-aiohttp = ">=3.9.3"
-beartype = "*"
-result = "*"
+requires-python = ">=3.13"
 
-# runtime dependencies for tools
-tabulate = "*"
-requests = "*"
-tqdm = "*"
+# see https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#static-vs-dynamic-metadata
+version = "0.0.2"
 
-[tool.poetry.group.dev.dependencies]
-# tests
-pytest = "*"
-pytest-stub = "*"
-pytest-cov = "*"
-pytest-homeassistant-custom-component = "*"
-pytest-xdist = "*"
-
-# linting
-pre-commit = "*"
-ruff = "*"
-mypy = "*"
-types-requests = "*"
-types-PyYAML = "*"
-types-tabulate = "*"
-homeassistant-stubs = "*"
-types-tqdm = "*"
+dependencies = [
+    "aiohttp>=3.11.13",
+    "homeassistant>=2025.3.3",
+    "pymodbus==3.6.8", # TODO: update
+    "result>=0.17.0",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+# This should support editable mode installs.
+# TODO: what exactly is required here?
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
-[tool.poetry.scripts]
-sungrow_dump = 'scripts.dump:run'
+[tool.setuptools.packages]
+find = { include = ["custom_components*"] }
+
+[dependency-groups]
+dev = [
+    "beartype>=0.20.0",
+    "pytest-cov>=6.0.0",
+    "pytest-homeassistant-custom-component>=0.13.224",
+    "pytest-stub>=1.1.0",
+    "ruff>=0.11.0",
+]
+tools = [
+    "tabulate",
+    "requests",
+    "tqdm",
+]
+
+[tool.uv]
+# include dev and tools in all uv calls by default
+default-groups = ["dev", "tools"]
+
+# TODO: runnable scripts
+# [project.scripts]
+# example-pkg = "example_packaged_app:main"
+# [tool.poetry.scripts]
+# sungrow_dump = 'scripts.dump:run'
+
+
+
+[tool.ruff]
+target-version = "py313"
+
+# Selected rules for clean code, readability, and bug prevention
+# TODO: add more rules
+lint.select = [
+    "E",    # pycodestyle (PEP8)
+    "F",    # pyflakes (undefined vars, unused imports)
+    "I",    # isort (import sorting)
+    "B",    # flake8-bugbear (likely bugs)
+    "C90",  # mccabe (complexity checks)
+    "UP",   # pyupgrade (modern Python 3.12+ features)
+    "SIM",  # flake8-simplify (simplifies code patterns)
+    "RET"   # flake8-return (consistent return statements)
+]
+
+lint.ignore = [
+    "RET505",  # Unnecessary `else` after `return` statement. This is enabled, even with RET disabled.
+    "PGH003",  # Use specific rule codes when ignoring type issues. Too many hits for now.
+    "ERA001",  # Found commented-out code. Too many hits for now.
+    "EM101",   # Sounds reasonable, but too complex to use.
+    "EM102",   # Exception must not use an f-string literal, assign to variable first. Sounds reasonable, but too complex to use.
+    "TRY003",  # Avoid specifying long messages outside the exception class. Sounds reasonable, but too complex to use.
+    "PLR2004", # magic values like 0x7FFF
+    "B023",    # Function definition does not bind loop variable. Warns on well readable code.
+    "DTZ005",  # `datetime.datetime.now()` called without a `tz` argument. datetime is used for deltas only.
+]

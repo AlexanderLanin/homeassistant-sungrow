@@ -344,25 +344,32 @@ class ModbusConnection_Base(Connection):  # noqa: N801
             signal_definitions_base
         )
         elapsed = datetime.now() - pull_start
-        logger.debug(
-            f"Inverter: Pulled {len(query)} signals in "
-            f"{elapsed.seconds}.{elapsed.microseconds} secs"
-        )
 
         if isinstance(raw_data_result, Ok):
             raw_data = raw_data_result.ok_value
+
+            logger.debug(
+                f"Inverter: Pulled {len(raw_data)}/{len(query)} signals in "
+                f"{elapsed.seconds}.{elapsed.microseconds} secs"
+            )
+
             decoded = decode_signals(
                 query,
                 raw_data,
             )
             return Ok(decoded)
         else:
+            logger.debug(
+                f"Inverter: Partial pull of {len(query)} signals in "
+                f"{elapsed.seconds}.{elapsed.microseconds} secs, but was interrupted"
+            )
+
             return raw_data_result
 
     ## -- DETAILED IMPLEMENTATION --
 
     async def _read_raw_while_handling_disconnects(
-        self, signal_list: list[ModbusSignal], max_combined_registers=100, attempts=2
+        self, signal_list: list[ModbusSignal], max_combined_registers=100, attempts=4
     ) -> Result[MappedData, Exception]:
         res = await self._read_raw(signal_list, max_combined_registers)
         if isinstance(res, Ok):
@@ -372,6 +379,8 @@ class ModbusConnection_Base(Connection):  # noqa: N801
             and attempts > 1
             and await self.connect()
         ):
+            # FIXME!! Each attempt starts from scratch, but we should continue where we
+            # left off.
             return await self._read_raw_while_handling_disconnects(
                 signal_list, max_combined_registers, attempts - 1
             )
