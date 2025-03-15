@@ -3,9 +3,9 @@
 *2025-03-15*
 
 For some reason, I don't remember why, poetry was used in this project.
-However using venv inside devcontainers was always a pain. Maybe it was done ibncorrectly, but it's just not meant to be used that way.
+However using venv inside devcontainers was always a pain. Maybe it was done incorrectly, or it's just not meant to be used that way.
 
-Either way, I'm going to switch to using `pip` and `requirements.txt` files. This is a more standard way of doing things and will be easier to maintain. Potentially simply due to more familiarity.
+Either way, I'm going to switch back to using `pip` and `requirements.txt` files. This is a more standard way of doing things and will be easier to maintain. Potentially simply due to more familiarity.
 
 However...
 
