@@ -6,7 +6,6 @@ clear && pytest -k test_config_flow_connects_to_http --log-cli-level=DEBUG
 """
 
 import logging
-from contextlib import contextmanager
 from unittest.mock import patch
 
 import pytest
@@ -18,7 +17,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 
-import custom_components.sungrow.core.const as core_const
 from custom_components.sungrow.const import DOMAIN
 from tests.slow import e2e_setup
 from tests.slow.e2e_setup import (
@@ -41,7 +39,7 @@ async def always_enable_custom_integrations(
 ):
     """Pull our sungrow integration into the test environment."""
     # Integration has been enabled by enable_custom_integrations fixture.
-    yield
+    return
 
 
 @pytest.fixture(autouse=True)

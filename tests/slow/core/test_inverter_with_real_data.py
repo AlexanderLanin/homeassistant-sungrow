@@ -75,7 +75,7 @@ async def test_e2e_fail_no_server():
     # or should it just return None? FIXME TODO
     with pytest.raises(modbus_connection_base.CannotConnectError):
         await inverter.SungrowInverter.create(
-            connection.ConnectionParams(
+            modbus_connection_base.ConnectionParams(
                 host="localhost", port=500 * 1000, connection="pymodbus"
             ),
             slave=1,
@@ -93,7 +93,7 @@ async def test_e2e_fail_wrong_slave():
         ):
             # Note: simulation runs with slave 1
             await inverter.SungrowInverter.create(
-                connection.ConnectionParams(
+                modbus_connection_base.ConnectionParams(
                     host="localhost", port=port, connection="pymodbus"
                 ),
                 slave=2,
