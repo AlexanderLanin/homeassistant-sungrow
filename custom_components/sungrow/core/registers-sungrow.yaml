@@ -13,16 +13,13 @@
 # Note: distinction between 3 and 4 is not always clear.
 
 # Groups:
-# Most detection works via "signal supported" and "signal not supported".
-# However e.g. battery may be supported, and yet none is connected.
-# So we need to be able to distinguish between "supported" and "actually available".
-# This is done via groups.
+# In order to distinguish between "supported" and "actually available" signals, groups are used.
+# e.g. battery may be supported, and yet none is connected.
 # Signals which should be hidden and signals which are indicators for "not available" are grouped.
 # Usually "total" signals are indicators, while e.g. "daily" signals are to be hidden if the "total" is not available.
 # Examples:
 # has_battery: only include if battery is present (indicator: battery_capacity is not 0)
 # is_master: only include if inverter is master/standalone (indicator: total_imported_energy & total_exported_energy is not 0)
-# TODO: split between indicators and to be hidden signals
 
 read:
   - name: "protocol_number"

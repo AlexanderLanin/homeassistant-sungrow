@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 from result import Err, Ok, Result
 
-from custom_components.sungrow.core import connection_factory, inverter, signals
+from custom_components.sungrow.core import connection_factory, inverter, signals2
 from custom_components.sungrow.core.connection_base import Connection, DecodedSignals
 from custom_components.sungrow.core.inverter_types import Level
 from scripts.common import helpers
@@ -54,10 +54,10 @@ class RecordingConnectionSpy(Connection):
 
     async def read(
         self,
-        query: list[signals.SignalDefinition] | signals.SignalDefinition,
+        query: list[signals2.SignalDefinition] | signals2.SignalDefinition,
     ) -> Result[DecodedSignals, Exception]:
         # Always convert to a list to avoid different code paths
-        if isinstance(query, signals.SignalDefinition):
+        if isinstance(query, signals2.SignalDefinition):
             query = [query]
 
         result = await self.real_connection.read(query)

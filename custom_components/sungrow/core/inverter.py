@@ -15,15 +15,15 @@ from custom_components.sungrow.core import (
 )
 from custom_components.sungrow.core.inverter_types import Level, Sensor
 
-from . import signals
+from . import signals2
 
 logger = logging.getLogger(__name__)
 
-DatapointValueType = signals.DatapointValueType
+DatapointValueType = signals2.DatapointValueType
 
 
 def mark_signals_not_in_this_model_as_disabled(
-    signal_definitions: list[signals.SignalDefinition], model: str
+    signal_definitions: list[signals2.SignalDefinition], model: str
 ):
     def has_match(value: str, patterns: list[str]) -> bool:
         return any(fnmatch(value, pattern) for pattern in patterns)
@@ -102,7 +102,7 @@ class SungrowInverter:
     def __init__(
         self,
         client: connection_base.Connection,
-        signal_definitions: signals.SignalDefinitions | None = None,
+        signal_definitions: signals2.SignalDefinitions | None = None,
         direct_initialization: bool = True,
     ):
         """Use create() factory method!!"""
@@ -132,7 +132,7 @@ class SungrowInverter:
 
         # TODO: why do we need this or? It's not used in production code!!!
         assert signal_definitions is None
-        self._signal_definitions = signal_definitions or signals.load_yaml()
+        self._signal_definitions = signal_definitions or signals2.load_yaml()
 
         # Remove disabled signals from data
         for signal in self._signal_definitions._definitions.values():
@@ -148,9 +148,9 @@ class SungrowInverter:
     async def _disable_all_unsupported_signals(
         self, level_of_detail: int
     ) -> Exception | None:
-        assert (
-            self._signal_definitions
-        ), "Must be loaded before this function is called."
+        assert self._signal_definitions, (
+            "Must be loaded before this function is called."
+        )
 
         self._disable_signals_not_supported_by_model()
 
@@ -215,9 +215,9 @@ class SungrowInverter:
         """Disable signals which are not supported by the inverter model."""
 
         assert "device_type_code" in self.data, "device_type_code must be available."
-        assert (
-            self._signal_definitions
-        ), "Must be loaded before this function is called."
+        assert self._signal_definitions, (
+            "Must be loaded before this function is called."
+        )
 
         if isinstance(self.data["device_type_code"], int):
             logger.info(
@@ -280,7 +280,7 @@ class SungrowInverter:
                 )
 
     async def pull_data_gen(
-        self, signal_list: list[signals.SignalDefinition] | None = None
+        self, signal_list: list[signals2.SignalDefinition] | None = None
     ):
         if signal_list is None:
             signal_list = self._signal_definitions.enabled_signals()
@@ -300,7 +300,7 @@ class SungrowInverter:
             yield result
 
     async def pull_data(
-        self, signal_list: list[signals.SignalDefinition] | None = None
+        self, signal_list: list[signals2.SignalDefinition] | None = None
     ) -> Result[connection_base.DecodedSignals, Exception]:
         if signal_list is None:
             signal_list = self._signal_definitions.enabled_signals()

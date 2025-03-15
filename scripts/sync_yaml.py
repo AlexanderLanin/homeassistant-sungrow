@@ -13,7 +13,7 @@ if __package__ is None:
     import fix_path  # type: ignore  # noqa: F401
 
 from custom_components.sungrow.core.modbus_connection_pymodbus import RegisterType
-from custom_components.sungrow.core.signals import (
+from custom_components.sungrow.core.signals2 import (
     SignalDefinition,
     SignalDefinitions,
     get,

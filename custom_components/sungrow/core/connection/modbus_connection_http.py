@@ -6,10 +6,10 @@ from enum import StrEnum
 from typing import Any, cast
 
 import aiohttp
+import modbus_connection_base
 from result import Err, Ok, Result
 
-from custom_components.sungrow.core import modbus_connection_base
-from custom_components.sungrow.core.modbus_types import RegisterRange
+from .modbus_types import RegisterRange
 
 logger = logging.getLogger(__name__)
 

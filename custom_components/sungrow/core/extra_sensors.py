@@ -1,5 +1,5 @@
 from custom_components.sungrow.core.inverter_types import Datapoint
-from custom_components.sungrow.core.signals import DatapointValueType
+from custom_components.sungrow.core.signals2 import DatapointValueType
 
 
 def calculate(new_data: dict[str, DatapointValueType]) -> dict[str, Datapoint]:

@@ -30,7 +30,7 @@ from custom_components.sungrow.core import (
     connection_base,
     connection_factory,
     modbus_connection_base,
-    signals,
+    signals2,
 )
 from custom_components.sungrow.core.connection_factory import ConnectionParams
 from custom_components.sungrow.core.inverter import SungrowInverter
@@ -54,7 +54,7 @@ ConnectionParamInclSlaveId = tuple[ConnectionParams, int | None]
 class TaskResult:
     connection_params: ConnectionParams
     slave: int | None = None
-    signal_definitions: signals.SignalDefinitions | None = None
+    signal_definitions: signals2.SignalDefinitions | None = None
     data: connection_base.DecodedSignals | None = None
     stats: modbus_connection_base.ModbusConnection_Base.Stats | None = None
     error: Exception | str | None = None
@@ -104,8 +104,8 @@ async def collect_data_from(
                 for s in inv._signal_definitions.all_signals()
                 if s.is_supported
                 in (
-                    signals.ModbusSignal.Supported.NEVER_ATTEMPTED,
-                    signals.ModbusSignal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY,
+                    signals2.ModbusSignal.Supported.NEVER_ATTEMPTED,
+                    signals2.ModbusSignal.Supported.UNKNOWN_FROM_MULTI_SIGNAL_QUERY,
                 )
             ]
 
@@ -171,7 +171,7 @@ def write_json(task_results: list[TaskResult]):
                 return f"{o.__class__.__name__}: {o}"
             if isinstance(o, StrEnum):
                 return o.value
-            if isinstance(o, signals.SignalDefinitions):
+            if isinstance(o, signals2.SignalDefinitions):
                 return o._definitions
             return super().default(o)
 

@@ -11,7 +11,7 @@ from custom_components.sungrow.core import (
     inverter,
     modbus_connection_base,
     modbus_types,
-    signals,
+    signals2,
 )
 from custom_components.sungrow.core.inverter_types import Level
 
@@ -47,7 +47,7 @@ class FakeConnection(connection_base.Connection):
 
     async def _read(
         self,
-        query: list[signals.SignalDefinition],
+        query: list[signals2.SignalDefinition],
     ) -> Result[connection_base.DecodedSignals, Exception]:
         self.requested_signals += len(query)
 
@@ -299,7 +299,7 @@ async def test_create_inverter_with_minimal_signal_queries():
     # All minimal level signals are expected
     data: connection_base.DecodedSignals = {
         s.name: None
-        for s in signals.load_yaml().get_active_signals_for_level(Level.MINIMAL.value)
+        for s in signals2.load_yaml().get_active_signals_for_level(Level.MINIMAL.value)
     }
     # These two must have actual values
     data["device_type_code"] = "x"

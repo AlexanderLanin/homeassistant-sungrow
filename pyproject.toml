@@ -31,6 +31,7 @@ find = { include = ["custom_components*"] }
 [dependency-groups]
 dev = [
     "beartype>=0.20.0",
+    "pyright>=1.1.396",
     "pytest-cov>=6.0.0",
     "pytest-homeassistant-custom-component>=0.13.224",
     "pytest-stub>=1.1.0",

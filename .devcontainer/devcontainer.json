@@ -5,11 +5,13 @@
     "customizations": {
         "vscode": {
             "settings": {
+                "editor.formatOnSave": true,
                 "[python]": {
                     "editor.codeActionsOnSave": {
-                        "source.sortImports": "explicit"
+                        "source.sortImports": "explicit",
                     },
-                    "editor.defaultFormatter": "charliermarsh.ruff"
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "python.formatting.provider": "none"
                 },
                 "python.venvPath": "${containerWorkspaceFolder}/.venv",
                 "python.pythonPath": "${containerWorkspaceFolder}/.venv/bin/python",
@@ -36,7 +38,7 @@
             "extensions": [
                 "ms-python.python",
                 "charliermarsh.ruff",
-                "usernamehw.errorlens",
+                "usernamehw.errorlens", // TODO FIXME doesnt make sense inside the devcontainer. it's for the host
                 "ryanluker.vscode-coverage-gutters",
                 "redhat.vscode-yaml",
                 "github.copilot-chat",

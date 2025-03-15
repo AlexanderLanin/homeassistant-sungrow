@@ -9,21 +9,17 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import cast
 
+import modbus_types
+from connection import Connection, DecodedSignals
 from result import Err, Ok, Result
 
-from custom_components.sungrow.core import (
-    modbus_types,
-    signals,
-)
-from custom_components.sungrow.core.connection_base import Connection, DecodedSignals
-from custom_components.sungrow.core.modbus_types import (
+from .modbus_types import (
     MappedData,
     ModbusSignal,
     RawData,
     RegisterRange,
     RegisterType,
 )
-
 from .signals import (
     DatapointBaseValueType,
     DatapointValueType,

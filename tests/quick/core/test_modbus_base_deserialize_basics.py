@@ -1,13 +1,13 @@
 from custom_components.sungrow.core import (
     connection_factory,
     modbus_connection_base,
-    signals,
+    signals2,
 )
 from custom_components.sungrow.core.modbus_types import RegisterRange, RegisterType
 
 
 def simple_signal(base_datatype, mask=None, accuracy=None, decoded=None):
-    return signals.SignalDefinition(
+    return signals2.SignalDefinition(
         array_length=1,
         name="test",
         base_datatype=base_datatype,

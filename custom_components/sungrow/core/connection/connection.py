@@ -2,7 +2,7 @@ import logging
 
 from result import Ok, Result
 
-from custom_components.sungrow.core import signals
+from custom_components.sungrow.core import signals2
 
 from .signals import DatapointValueType
 
@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 DecodedSignals = dict[str, DatapointValueType]
 
 
+# TODO: interfaces don't seem very pythonic?
 class Connection:
     async def connect(self):
         raise NotImplementedError
@@ -37,11 +38,11 @@ class Connection:
 
     async def read(
         self,
-        query: list[signals.SignalDefinition] | signals.SignalDefinition,
-        all_signals: signals.SignalDefinitions,
+        query: list[signals2.SignalDefinition] | signals2.SignalDefinition,
+        all_signals: signals2.SignalDefinitions,
     ) -> Result[DecodedSignals, Exception]:
         # Always convert to a list to avoid different code paths
-        if isinstance(query, signals.SignalDefinition):
+        if isinstance(query, signals2.SignalDefinition):
             query = [query]
         result = await self._read(query)
 
@@ -54,9 +55,9 @@ class Connection:
 
     def _update_supported_state_based_on_values(
         self,
-        query: list[signals.SignalDefinition],
+        query: list[signals2.SignalDefinition],
         decoded: DecodedSignals,
-        all_signals: signals.SignalDefinitions,
+        all_signals: signals2.SignalDefinitions,
     ):
         single_item_query = len(query) == 1
 
@@ -69,6 +70,6 @@ class Connection:
 
     async def _read(
         self,
-        query: list[signals.SignalDefinition],
+        query: list[signals2.SignalDefinition],
     ) -> Result[DecodedSignals, Exception]:
         raise NotImplementedError

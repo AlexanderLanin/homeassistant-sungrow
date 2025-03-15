@@ -1,5 +1,5 @@
 from custom_components.sungrow.core.modbus_connection_pymodbus import RegisterType
-from custom_components.sungrow.core.signals import load_yaml
+from custom_components.sungrow.core.signals2 import load_yaml
 
 
 def test_parsing_yaml():
