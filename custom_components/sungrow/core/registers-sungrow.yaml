@@ -21,6 +21,8 @@
 # has_battery: only include if battery is present (indicator: battery_capacity is not 0)
 # is_master: only include if inverter is master/standalone (indicator: total_imported_energy & total_exported_energy is not 0)
 
+# Warning: decoding to int will lead to strange results, as failures to decode are reported as int
+
 read:
   - name: "protocol_number"
     level: 4
@@ -387,6 +389,24 @@ read:
     address: 5045
     data_type: U16
     models_exclude: ["SH*", "WiNet"]
+
+  # TODO: implement such combined signals
+  - name: "alarm_time"
+    level: 5
+    data_type: datetime
+    format: "%Y-%m-%d %H:%M:%S"
+    params:
+      [
+        "alarm_time_year",
+        "alarm_time_month",
+        "alarm_time_day",
+        "alarm_time_hour",
+        "alarm_time_minute",
+        "alarm_time_second",
+      ]
+    # TODO: Is this a simpler approach to those groups?
+    # Is it simple enough to be moved to Connection?? That would be nice.
+    only_if_signal: pid_alarm_code != 0
 
   - name: "alarm_code_1" # See Appendix 3
     level: 5

@@ -12,7 +12,7 @@ from typing import cast
 import modbus_types
 from connection_base import (
     Connection,
-    DecodedSignals,
+    DecodedSignalValues,
 )
 from result import Err, Ok, Result
 
@@ -23,7 +23,7 @@ from .modbus_types import (
     RegisterRange,
     RegisterType,
 )
-from .signals import (
+from .signal_def import (
     DatapointBaseValueType,
     DatapointValueType,
     SignalDefinition,
@@ -63,99 +63,101 @@ def sorted_and_filtered(
     )
 
 
+def __deserialize(registers: list[int], signal: SignalDefinition):
+    # TODO: use signal.something instead of len. It's faster. Add an assert for length?
+    if len(registers) == 1:
+        int_value = registers[0]
+        na = 0xFFFF
+    elif len(registers) == 2:
+        int_value = registers[0] + registers[1] << 16
+        na = 0xFFFFFFFF
+    else:
+        raise RuntimeError("registers not in 1,2")
+
+    if int_value == na:
+        return None
+    else:
+        # Wrap around for signed values
+        if signal.base_datatype == "S16" and int_value > 0x7FFF:
+            int_value -= 0x10000
+        elif signal.base_datatype == "S32" and int_value > 0x7FFFFFFF:
+            int_value -= 0x100000000
+
+        return int_value
+
+
 def _deserialize_and_decode_int_signal(
     signal: SignalDefinition,
     registers: list[int],
 ) -> DatapointBaseValueType:
-    int_value = int(registers[0])
-
-    if signal.base_datatype in ["U32", "S32"]:
-        # Each register is 16 bit. Combine the next register to get 32 bit.
-        int_value += registers[1] << 16
-
-    if signal.base_datatype == "S16" and int_value > 0x7FFF:
-        int_value -= 0x10000
-    elif signal.base_datatype == "S32" and int_value > 0x7FFFFFFF:
-        int_value -= 0x100000000
-
-    if int_value == signal.na_value:
+    """
+    Error cases:
+    * returns None when signal is N/A
+    * returns original int when signal cannot be decoded
+    TODO: consider using `result`
+    """
+    int_value = __deserialize(registers, signal)
+    if int_value is None:
         return None
-    else:
-        if signal.mask:
-            int_value = bool(int_value & signal.mask)
 
-        if signal.accuracy:
-            return float(round(int_value * float(signal.accuracy), 2))
+    if signal.bitmask:
+        # They cannot be combined, as currently only bool signals use bitmask.
+        assert not signal.scale
+        assert not signal.decoding_table
+        return bool(int_value & signal.bitmask)
 
-        # "decoded" is used to decode values like "1" to "ON" or "0" to "OFF"
-        elif signal.decoded:
-            # convert back to int (todo: fix yaml)
-            int_value = int(int_value)
+    elif signal.scale:
+        assert not signal.decoding_table
+        return int_value * signal.scale
 
-            # ToDo: better error handling.
-            # Exception is not an option, as it would be nice to e.g. support
-            # unknown inverters.
-            value: str | int = signal.decoded.get(int_value, int_value)
+    # "decoded" is used to decode values like "1" to "ON" or "0" to "OFF"
+    elif signal.decoding_table:
+        # ToDo: better error handling.
+        # Exception is not an option, as it would be nice to e.g. support
+        # unknown inverters.
+        if value := signal.decoding_table.get(int_value, None):
             return value
 
-        else:
-            return int_value
+        return int_value
+
+    else:
+        return int_value
 
 
 def _decode_utf8_signal(raw: list[int]) -> str:
     return "".join([chr(c >> 8) + chr(c & 0xFF) for c in raw]).strip("\x00")
 
 
-def _decode_base_signal(
-    signal: SignalDefinition, raw_value: list[int]
-) -> DatapointBaseValueType | None:
-    if signal.base_datatype in ["U16", "S16", "U32", "S32"]:
-        return _deserialize_and_decode_int_signal(signal, raw_value)
-    else:
-        raise RuntimeError(
-            f"Invalid yaml for {signal.name}: "
-            "unknown datatype (expected U16, S16, U32, S32)"
-        )
-
-
-def _decode_array_signal(
-    signal: SignalDefinition, raw_value: list[int]
-) -> DatapointValueType | str:
+def decode_signal(
+    signal: SignalDefinition,
+    raw_value: list[int],
+) -> DatapointValueType:
     assert signal.array_length
 
     if signal.base_datatype == "UTF-8":
         # raw_value is a list of registers (ints)
         return _decode_utf8_signal(raw_value)
+    elif signal.array_length == 1:
+        return _deserialize_and_decode_int_signal(signal, raw_value)
     else:
         data: list[DatapointBaseValueType] = [
-            _decode_base_signal(
+            _deserialize_and_decode_int_signal(
                 signal,
                 raw_value[i : i + signal.element_length],
             )
             for i in range(0, signal.registers.length, signal.element_length)
         ]
-
         return data
-
-
-def decode_signal(
-    signal: SignalDefinition,
-    raw_value: list[int],
-) -> DatapointValueType | None:
-    if signal.array_length == 1:
-        return _decode_base_signal(signal, raw_value)
-    else:
-        return _decode_array_signal(signal, raw_value)
 
 
 def decode_signals(
     signal_list: list[SignalDefinition],
     raw_signals: MappedData,
-) -> DecodedSignals:
-    decoded: DecodedSignals = {}
+) -> DecodedSignalValues:
+    decoded: DecodedSignalValues = {}
     for signal in signal_list:
         value = raw_signals[signal.name]
-        decoded[signal.name] = decode_signal(signal, value) if value else None
+        decoded[signal] = decode_signal(signal, value) if value else None
     return decoded
 
 
@@ -274,7 +276,7 @@ def _map_raw_to_signals(
     }
 
 
-class ModbusConnection_Base(Connection):  # noqa: N801
+class ModbusConnection_Base:  # noqa: N801
     """A pymodbus connection to a single slave."""
 
     @dataclass
@@ -324,12 +326,12 @@ class ModbusConnection_Base(Connection):  # noqa: N801
         raise NotImplementedError
 
     @property
-    def connected(self) -> bool:
+    def connected(self):
         raise NotImplementedError
 
-    async def _read(
-        self, query: list[connection.SignalDefinition]
-    ) -> Result[DecodedSignals, Exception]:
+    async def read(
+        self, query: list[signals.SignalDefinition]
+    ) -> Result[DecodedSignalValues, Exception]:
         """Pull data from inverter"""
 
         # Downcast to base class to make mypy happy

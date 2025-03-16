@@ -9,8 +9,6 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
-from .modbus_types import RegisterRange
-
 logger = logging.getLogger(__name__)
 
 
@@ -44,6 +42,33 @@ class Supported(StrEnum):
     NO = "no"
 
 
+class RegisterType(StrEnum):
+    READ = "read"
+    HOLD = "hold"
+
+
+@dataclass(frozen=True)
+class RegisterRange:
+    register_type: RegisterType
+    start: int
+    length: int
+
+    @property
+    def end(self):
+        """The address after the last address of the range."""
+        return self.start + self.length
+
+    def __repr__(self):
+        return f"Range({str(self.register_type).upper()}, {self.start}-{self.end - 1})"
+
+    def contains(self, other: "RegisterRange") -> bool:
+        return (
+            self.register_type == other.register_type
+            and other.start >= self.start
+            and other.end <= self.end
+        )
+
+
 def get_new_supported_state_based_on_value(
     sigdef: "SignalDefinition",
     value: DatapointBaseValueType,
@@ -72,9 +97,26 @@ def get_new_supported_state_based_on_value(
 class SignalDefinition:
     name: str
     registers: RegisterRange
-    accuracy: float | None
-    mask: int | None
-    base_datatype: str | None = None
+    base_datatype: str  # string????
+
+    scale: float | None
+    """
+    scale resulting integer by this number before returning.
+    """
+
+    decoding_table: dict[int, DatapointBaseValueType] | None = None
+    """
+    A table that maps raw register values to decoded values.
+    The keys are the register values interpreted as an int.
+    The values are the decoded values.
+    """
+
+    bitmask: int | None = None
+    """
+    A mask to apply to the raw register value before decoding.
+    Contrary to decoding_table the need for a mask will lead to diffent signals,
+    while a decoding_table is just a mapping of values.
+    """
 
     value_with_no_meaning: DatapointBaseValueType = None
     """
@@ -103,21 +145,6 @@ class SignalDefinition:
                     "array length must be a multiple of the register length"
                 )
             return int(element_length)
-
-    @property
-    def na_value(self):
-        """
-        Return the value that indicates that the signal is not available.
-        TODO: does sungrow ever respond with any of these?
-        """
-        assert self.base_datatype
-
-        return {
-            "U16": 0xFFFF,
-            "S16": 0x7FFF,
-            "U32": 0xFFFFFFFF,
-            "S32": 0x7FFFFFFF,
-        }.get(self.base_datatype)
 
 
 class SignalDefinitions(Mapping[str, SignalDefinition]):
