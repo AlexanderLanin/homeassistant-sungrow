@@ -1,12 +1,11 @@
 import logging
 from typing import Protocol
 
+from deserialization import DecodedSignalValues
 from result import Result
 from signal_def import DatapointValueType, SignalDefinition, SignalDefinitions
 
 logger = logging.getLogger(__name__)
-
-DecodedSignalValues = dict[SignalDefinition, DatapointValueType]
 
 
 class Connection(Protocol):

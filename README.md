@@ -44,8 +44,7 @@ However, no code was taken from these projects. Not because they are bad in any 
 
 ## License
 
-To be determined... Apache 2.0? MIT? GPL?
-I wanna get it working first.
+The current license is *CC BY-NC 4.0*. I'll very likely change it in the future, but for now I want to keep it simple. The reason for this is that I don't want to see this integration being used in a commercial product. If you want to use it in a commercial product, please contact me first.
 
 ## Development
 
@@ -53,6 +52,7 @@ For many things you can open this repository within a Codespace, but if you want
 Best supported method is to use the devcontainer, which is a docker container with all the necessary tools and dependencies.
 (Use the "Reopen in Container" button in the lower right corner of VS Code)
 
+To get the virtual environment running, you may need to run `uv sync` in the terminal. This will create a virtual environment and install all the dependencies.
 
 ### Development without docker
 This is poorly maintained, but it should work in general:

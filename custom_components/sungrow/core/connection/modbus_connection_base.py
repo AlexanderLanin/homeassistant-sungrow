@@ -14,18 +14,16 @@ from connection_base import (
     Connection,
     DecodedSignalValues,
 )
-from result import Err, Ok, Result
-
-from .modbus_types import (
+from modbus_types import (
     MappedData,
-    ModbusSignal,
     RawData,
-    RegisterRange,
-    RegisterType,
 )
-from .signal_def import (
+from result import Err, Ok, Result
+from signal_def import (
     DatapointBaseValueType,
     DatapointValueType,
+    RegisterRange,
+    RegisterType,
     SignalDefinition,
 )
 
@@ -55,115 +53,17 @@ class UnsupportedRegisterQueriedError(ModbusError):
 
 
 def sorted_and_filtered(
-    signals: list[ModbusSignal], register_type: RegisterType
-) -> list[ModbusSignal]:
+    signals: list[SignalDefinition], register_type: RegisterType
+) -> list[SignalDefinition]:
     return sorted(
         filter(lambda s: s.registers.register_type == register_type, signals),
         key=lambda s: s.registers.start,
     )
 
 
-def __deserialize(registers: list[int], signal: SignalDefinition):
-    # TODO: use signal.something instead of len. It's faster. Add an assert for length?
-    if len(registers) == 1:
-        int_value = registers[0]
-        na = 0xFFFF
-    elif len(registers) == 2:
-        int_value = registers[0] + registers[1] << 16
-        na = 0xFFFFFFFF
-    else:
-        raise RuntimeError("registers not in 1,2")
-
-    if int_value == na:
-        return None
-    else:
-        # Wrap around for signed values
-        if signal.base_datatype == "S16" and int_value > 0x7FFF:
-            int_value -= 0x10000
-        elif signal.base_datatype == "S32" and int_value > 0x7FFFFFFF:
-            int_value -= 0x100000000
-
-        return int_value
-
-
-def _deserialize_and_decode_int_signal(
-    signal: SignalDefinition,
-    registers: list[int],
-) -> DatapointBaseValueType:
-    """
-    Error cases:
-    * returns None when signal is N/A
-    * returns original int when signal cannot be decoded
-    TODO: consider using `result`
-    """
-    int_value = __deserialize(registers, signal)
-    if int_value is None:
-        return None
-
-    if signal.bitmask:
-        # They cannot be combined, as currently only bool signals use bitmask.
-        assert not signal.scale
-        assert not signal.decoding_table
-        return bool(int_value & signal.bitmask)
-
-    elif signal.scale:
-        assert not signal.decoding_table
-        return int_value * signal.scale
-
-    # "decoded" is used to decode values like "1" to "ON" or "0" to "OFF"
-    elif signal.decoding_table:
-        # ToDo: better error handling.
-        # Exception is not an option, as it would be nice to e.g. support
-        # unknown inverters.
-        if value := signal.decoding_table.get(int_value, None):
-            return value
-
-        return int_value
-
-    else:
-        return int_value
-
-
-def _decode_utf8_signal(raw: list[int]) -> str:
-    return "".join([chr(c >> 8) + chr(c & 0xFF) for c in raw]).strip("\x00")
-
-
-def decode_signal(
-    signal: SignalDefinition,
-    raw_value: list[int],
-) -> DatapointValueType:
-    assert signal.array_length
-
-    if signal.base_datatype == "UTF-8":
-        # raw_value is a list of registers (ints)
-        return _decode_utf8_signal(raw_value)
-    elif signal.array_length == 1:
-        return _deserialize_and_decode_int_signal(signal, raw_value)
-    else:
-        data: list[DatapointBaseValueType] = [
-            _deserialize_and_decode_int_signal(
-                signal,
-                raw_value[i : i + signal.element_length],
-            )
-            for i in range(0, signal.registers.length, signal.element_length)
-        ]
-        return data
-
-
-def decode_signals(
-    signal_list: list[SignalDefinition],
-    raw_signals: MappedData,
-) -> DecodedSignalValues:
-    decoded: DecodedSignalValues = {}
-    for signal in signal_list:
-        value = raw_signals[signal.name]
-        decoded[signal] = decode_signal(signal, value) if value else None
-    return decoded
-
-
 def can_add(
-    current_range: list[ModbusSignal],
-    signal: ModbusSignal,
+    current_range: list[SignalDefinition],
+    signal: SignalDefinition,
     max_registers_per_range: int,
     blocked_registers: list[int],
 ) -> bool:
@@ -189,13 +89,13 @@ def can_add(
 
 def _build_ranges(
     register_type: RegisterType,
-    signals: list[ModbusSignal],
+    signals: list[SignalDefinition],
     max_registers_per_range: int,
     blocked_registers: list[int],
-) -> list[list[ModbusSignal]]:
-    ranges: list[list[ModbusSignal]] = []
+) -> list[list[SignalDefinition]]:
+    ranges: list[list[SignalDefinition]] = []
 
-    current_range: list[ModbusSignal] = []
+    current_range: list[SignalDefinition] = []
 
     for signal in sorted_and_filtered(signals, register_type):
         if can_add(current_range, signal, max_registers_per_range, blocked_registers):
@@ -211,10 +111,10 @@ def _build_ranges(
 
 
 def split_list(
-    signals: list[ModbusSignal],
+    signals: list[SignalDefinition],
     max_registers_per_range: int,
     blocked_registers: dict[RegisterType, list[int]] | None = None,
-) -> list[list[ModbusSignal]]:
+) -> list[list[SignalDefinition]]:
     # FIXME: only combine signals that are supported.
     # Or maybe those that are not unsupported?
     """
@@ -243,7 +143,7 @@ def split_list(
     ]
 
 
-def _map_raw_to_signal(r: RawData, signal: ModbusSignal):
+def _map_raw_to_signal(r: RawData, signal: SignalDefinition):
     # We'll use the first register to check if signal is supported.
     if r[signal.registers.start] is None:
         return None
@@ -261,7 +161,7 @@ def _map_raw_to_signal(r: RawData, signal: ModbusSignal):
 
 
 def _map_raw_to_signals(
-    raw_data: dict[RegisterType, RawData], signal_list: list[ModbusSignal]
+    raw_data: dict[RegisterType, RawData], signal_list: list[SignalDefinition]
 ) -> MappedData:
     """
     Note: While this doesn't sound like it belongs into this class,
@@ -335,7 +235,7 @@ class ModbusConnection_Base:  # noqa: N801
         """Pull data from inverter"""
 
         # Downcast to base class to make mypy happy
-        signal_definitions_base = cast(list[modbus_types.ModbusSignal], query)
+        signal_definitions_base = cast(list[modbus_types.SignalDefinition], query)
 
         pull_start = datetime.now()
         raw_data_result = await self._read_raw_while_handling_disconnects(
@@ -367,7 +267,10 @@ class ModbusConnection_Base:  # noqa: N801
     ## -- DETAILED IMPLEMENTATION --
 
     async def _read_raw_while_handling_disconnects(
-        self, signal_list: list[ModbusSignal], max_combined_registers=100, attempts=4
+        self,
+        signal_list: list[SignalDefinition],
+        max_combined_registers=100,
+        attempts=4,
     ) -> Result[MappedData, Exception]:
         res = await self._read_raw(signal_list, max_combined_registers)
         if isinstance(res, Ok):
@@ -386,7 +289,7 @@ class ModbusConnection_Base:  # noqa: N801
             return res
 
     async def _read_raw(
-        self, signal_list: list[ModbusSignal], max_combined_registers=100
+        self, signal_list: list[SignalDefinition], max_combined_registers=100
     ) -> Result[dict[RegisterType, RawData], Exception]:
         if not await self.connect():
             raise CannotConnectError("Not connected to inverter, but read() was called")
@@ -444,7 +347,7 @@ class ModbusConnection_Base:  # noqa: N801
             return Err(res.err_value)
 
     async def _read_range_base(
-        self, signal_list: list[ModbusSignal]
+        self, signal_list: list[SignalDefinition]
     ) -> Result[RawData, Exception]:
         """
         Wrapper for _read_range() that handles unsupported registers.

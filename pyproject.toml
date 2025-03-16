@@ -3,7 +3,7 @@ name = "homeassistant-sungrow"
 description = "Sungrow integration for Home Assistant"
 readme = "README.md"
 authors = [{ name = "Alexander Lanin", email = "alex@lanin.de" }]
-license = "Apache-2.0"
+license = { text = "CC BY-NC 4.0" }
 
 requires-python = ">=3.13"
 
