@@ -5,6 +5,9 @@
     "customizations": {
         "vscode": {
             "settings": {
+                "editor.rulers": [
+                    88
+                ],
                 "editor.formatOnSave": true,
                 "[python]": {
                     "editor.codeActionsOnSave": {

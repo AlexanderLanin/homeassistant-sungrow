@@ -51,19 +51,16 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
     @staticmethod
     def _parse_ws_response(
         response: dict[str, Any],
-    ) -> Result[dict[str, Any], modbus_connection_base.ModbusError]:
+    ) -> Result[dict[str, Any], ErrorResponse]:
         if (
             response.get("result_code") == 1
             and response.get("result_msg") == "success"
-            and response.get("result_data") is not None
+            and response.get("result_data")  # is not None
         ):
             return Ok(response["result_data"])
         else:
-            return Err(
-                modbus_connection_base.ModbusError(
-                    f"Inverter responded with: {type(response)} {response}"
-                )
-            )
+            logger.error(f"Invalid response from inverter: {response}")
+            return Err(ErrorResponse.InvalidResponse)
 
     async def _ws_query(self, query: dict[str, str | int]):
         # Potential services: connect, devicelist, state, statistics, runtime, real
