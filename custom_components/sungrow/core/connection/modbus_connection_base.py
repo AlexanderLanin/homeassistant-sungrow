@@ -218,12 +218,14 @@ class ModbusConnection_Base:  # noqa: N801
     def stats(self):
         return self._stats
 
-    async def connect(self) -> bool:
-        # Note: for proper stats, you need to increase self._stats.connections
-        raise NotImplementedError
+    # Should be optional since we have the Protocol class?!
 
-    async def disconnect(self) -> bool:
-        raise NotImplementedError
+    # async def connect(self) -> bool:
+    #     # Note: for proper stats, you need to increase self._stats.connections
+    #     raise NotImplementedError
+
+    # async def disconnect(self) -> None:
+    #     raise NotImplementedError
 
     @property
     def connected(self):
@@ -383,9 +385,7 @@ class ModbusConnection_Base:  # noqa: N801
             self.stats.retrieved_signals_failed += len(signal_list)
             return Err(res.err_value)
 
-    async def _read_range(
-        self, register_range: RegisterRange
-    ) -> Result[list[int], Exception]:
+    async def _read_range(self, rr: RegisterRange) -> Result[list[int], Exception]:
         """
         Reads `address_count` registers of type `register_type` starting at
         `address_start`.

@@ -4,6 +4,7 @@ and the code to decode them.
 It does NOT know about modbus (except for "RegisterType").
 """
 
+from collections import defaultdict
 import logging
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -41,6 +42,15 @@ class Supported(StrEnum):
     YES = "yes"
     NO = "no"
 
+class SupportedState:
+    def __init__(self, supported: Supported):
+        self._signals: dict["SignalDefinition", Supported] = {}
+
+    def __setitem__(self, signal: "SignalDefinition", support: Supported):
+        self._signals[signal] = support
+
+    def __getitem__(self, signal: "SignalDefinition") -> Supported:
+        return self._signals.get(signal, Supported.NEVER_ATTEMPTED)
 
 class RegisterType(StrEnum):
     READ = "read"
@@ -69,21 +79,15 @@ class RegisterRange:
         )
 
 
-def get_new_supported_state_based_on_value(
+def get_supported_state_based_on_value(
     sigdef: "SignalDefinition",
     value: DatapointBaseValueType,
     was_queried_individually: bool,
 ):
-    def does_value_indicate_supported(
-        value: DatapointBaseValueType, sigdef: "SignalDefinition"
-    ) -> bool:
-        # ToDo: What about na_value?
-        return value is not None and value != sigdef.value_with_no_meaning
-
     if value is None:
         return Supported.NO
 
-    if does_value_indicate_supported(value, sigdef):
+    if value != sigdef.value_with_no_meaning:
         return Supported.YES
 
     # Unknown, but which one?

@@ -45,5 +45,6 @@
                 "tamasfe.even-better-toml"
             ]
         }
-    }
+    },
+    "updateContentCommand": "uv sync || true"
 }

@@ -23,6 +23,13 @@ from .modbus_types import RegisterRange
 logger = logging.getLogger(__name__)
 
 
+class ErrorResponse(StrEnum):
+    Busy = "retry"
+    TokenExpired = "token_expired"
+    TooManyRetries = "too_many_retries"
+    InvalidResponse = "invalid_response"
+
+
 class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # noqa: N801
     def __init__(self, host: str, port: int | None = None):
         super().__init__(host, port or self.default_port())
@@ -98,8 +105,10 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
 
     async def connect(self):
         """
-        Retrieves the token from the WiNet dongle.
-        No permanent connection is established!
+        Establish permanent websocket connection to the WiNet dongle
+        and retrieve a token.
+
+        No (clasic) http connection is established!
 
         Returns true/false on success/failure.
         Raises modbus.CannotConnectError on WiNet misbehavior.
@@ -152,21 +161,21 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
     def connected(self) -> bool:
         return self._token is not None
 
-    async def _get_json(
+    async def _query(
         self, url: str, params: dict[str, str | int]
-    ) -> Result[dict[str, Any], modbus_connection_base.ModbusError]:
+    ) -> Result[dict[str, Any], ErrorResponse]:
+        """Query the inverter via http GET."""
+
         try:
             async with await self._aio_client.get(url, params=params) as r:
-                logger.debug(f"Got r response: {r}")
                 if r.status == 200:
                     return Ok(await r.json())
                 else:
-                    return Err(
-                        modbus_connection_base.ModbusError(
-                            f"Invalid response from inverter: {r.status} {r.text}"
-                        )
+                    logger.error(
+                        "Invalid response from inverter: %s %s", r.status, r.text
                     )
-        except Exception as e:
+                    return Err(ErrorResponse.InvalidResponse)
+        except ErrorResponse as e:
             # e.g. response is not valid json
             return Err(modbus_connection_base.ModbusError(f"Connection Failed: {e}"))
 
@@ -204,115 +213,99 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
         }
         return url, params
 
-    class ErrorResponse(StrEnum):
-        Busy = "retry"
-        TokenExpired = "token_expired"
-
-    class BusyError(Exception):
+    class BusyError(ErrorResponse):
         pass
 
-    class TokenExpiredError(Exception):
+    class TokenExpiredError(ErrorResponse):
         pass
 
-    def _parse_sungrow_response(self, response: dict[str, Any]):
-        logger.debug(f"Response: {response}")
-        if response["result_code"] == 1:
-            return cast(dict, response["result_data"])
-        elif response["result_code"] == 106:
-            return Err(ModbusConnection_Http.TokenExpiredError())
-        elif response["result_code"] == 301:
-            # Wild guess what 301 means. It's not in the official documentation.
-            # Seems to work out if we retry after a reasonable delay.
-            return Err(ModbusConnection_Http.BusyError())
-        else:
-            return Err(
-                modbus_connection_base.ModbusError(
-                    f"Unknown response from inverter: {response}"
-                )
-            )
+    async def _query_http_json(self, rr: RegisterRange) -> Result[dict, ErrorResponse]:
+        _last_error = None
+        for attempt in range(3):
+            if attempt > 0:
+                # Add 1 second delay before next attempt
+                await asyncio.sleep(1)
 
-    async def _query_http_json(self, rr: RegisterRange):
-        for _attempt in range(3):
             if not await self.connect():
-                return Err(modbus_connection_base.CannotConnectError())
+                _last_error = modbus_connection_base.CannotConnectError()
+                continue
 
             # (Re-)build query with current token
             url, params = self._build_http_request_for_register_query(rr)
 
-            response = await self._get_json(url, params)
+            response = await self._query(url, params)
             if isinstance(response, Err):
                 # connection failed
-                
+                _last_error = response.err_value
+                continue
 
-            parsed = self._parse_sungrow_response(response.ok_value)
+            parsed = _parse_sungrow_response(response.ok_value)
             if isinstance(parsed, Err):
+                _last_error = parsed.err_value
                 if isinstance(
                     parsed.err_value, ModbusConnection_Http.TokenExpiredError
                 ):
                     logger.debug("Token expired, reconnecting")
                     await self.disconnect()
-                    if not await self.connect():
-                        return Err(
-                            modbus_connection_base.CannotConnectError(
-                                "Cannot reconnect for new token"
-                            )
-                        )
-                    # Rebuild query with new token
-                    url, params = self._build_http_request_for_register_query(rr)
-                    parsed = self._parse_sungrow_response(
-                        await self._get_json(url, params)
-                    )
-
-            try:
-                parsed = self._parse_sungrow_response(response)
-            except ModbusConnection_Http.TokenExpiredError:
-                logger.debug("Token expired, reconnecting")
-                await self.disconnect()
-                if not await self.connect():
-                    raise modbus_connection_base.CannotConnectError(
-                        "Cannot reconnect for new token"
-                    ) from None
-                # Rebuild query with new token
-
-            except ModbusConnection_Http.BusyError:
-                # retry after a delay
-                await asyncio.sleep(5)
-                parsed = self._parse_sungrow_response(await self._get_json(url, params))
-
+                elif isinstance(parsed.err_value, ModbusConnection_Http.BusyError):
+                    logger.debug("Inverter busy, will retry after some delay")
+                    await asyncio.sleep(5)
+                continue
             return parsed
-        return Err(modbus_connection_base.ModbusError("Too many retries"))
 
-    async def _read_range(self, r: RegisterRange) -> Result[list[int], Exception]:
+        # All retries exhausted
+        # TODO: append last_error to error message?!
+        return Err(ErrorResponse.TooManyRetries)
+
+    async def _read_range(self, rr: RegisterRange) -> Result[list[int], ErrorResponse]:
         # Note: websocket does not allow access to all possible registers.
         # Not quite clear whether it's worth the effort to query some via websocket and
         # only the rest via http.
 
-        try:
-            response_json = await self._query_http_json(r)
-
-            logger.debug(f"Got data: {response_json}")
-
-            data = _parse_modbus_data(response_json, r.length)
-            return Ok(data)
-        except Exception as e:
-            return Err(e)
+        json = await self._query_http_json(rr)
+        if isinstance(json, Ok):
+            return _parse_modbus_data(json.ok_value, rr.length)
+        else:
+            return json
 
     def __str__(self):
         return f"http({self._host}:{self._port}, slave: {self._slave or 'unknown'})"
 
 
+def _parse_sungrow_response(response: dict[str, Any]) -> Result[dict, ErrorResponse]:
+    logger.debug(f"Response: {response}")
+    if response["result_code"] == 1:
+        return Ok(response["result_data"])
+    elif response["result_code"] == 106:
+        return Err(ModbusConnection_Http.TokenExpiredError())
+    elif response["result_code"] == 301:
+        # Wild guess what 301 means. It's not in the official documentation.
+        # Seems to work out if we retry after a reasonable delay.
+        return Err(ModbusConnection_Http.BusyError())
+    else:
+        return Err(
+            modbus_connection_base.ModbusError(
+                f"Unknown response from inverter: {response}"
+            )
+        )
+
+
 def _parse_modbus_data(
-    response_json: dict[str, Any], expected_length: int
-) -> list[int]:
+    response_json: dict[str, str], expected_length: int
+) -> Result[list[int], modbus_connection_base.ModbusError]:
     modbus_data = response_json["param_value"].split(" ")
     logger.debug(f"Got modbus data: {modbus_data}")
-    modbus_data.pop()  # remove null on the end
+
+    # There is always an extra null at the end, remove it.
+    modbus_data.pop()
 
     if len(modbus_data) != expected_length * 2:
-        raise modbus_connection_base.ModbusError(
-            "Invalid response from inverter: "
-            f"{response_json} => {modbus_data}, "
-            f"expected length {expected_length}"
+        return Err(
+            modbus_connection_base.ModbusError(
+                "Invalid response from inverter: "
+                f"{response_json} => {modbus_data}, "
+                f"expected length {expected_length}"
+            )
         )
 
     data: list[int] = []
@@ -321,4 +314,4 @@ def _parse_modbus_data(
     # but pymodbus was implemented first.
     for i in range(0, len(modbus_data), 2):
         data.append(int(modbus_data[i], 16) * 256 + int(modbus_data[i + 1], 16))  # noqa: PERF401
-    return data
+    return Ok(data)
