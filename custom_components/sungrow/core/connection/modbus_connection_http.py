@@ -96,7 +96,7 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
 
         return _parse_ws_response(response)
 
-    async def _get_new_token(self) -> Result[str, ErrorResponse]:
+    async def _get_new_token(self):
         response = await self._ws_query(
             {"lang": "en_us", "token": "", "service": "connect"}
         )
@@ -108,7 +108,7 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
             return Ok(str(val.get("token")))
         else:
             logger.error("Invalid response from inverter: %s", response)
-            return Err(ErrorResponse.InvalidResponse)
+            return InvalidResponseError()
 
     async def _get_connected_devices(
         self,
@@ -150,7 +150,8 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
 
             logger.debug("Connection to websocket server established")
 
-            self._token = await self._get_new_token()
+            token = await self._get_new_token()
+            self._token = token
 
             # The first device is always the inverter.
             # ToDo: can we do anything with the others?
