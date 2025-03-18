@@ -23,11 +23,45 @@ from .modbus_types import RegisterRange
 logger = logging.getLogger(__name__)
 
 
-class ErrorResponse(StrEnum):
-    Busy = "retry"
-    TokenExpired = "token_expired"
-    TooManyRetries = "too_many_retries"
-    InvalidResponse = "invalid_response"
+class BusyError(Err):
+    """Inverter is busy, retry later."""
+
+    ...
+
+
+class TokenExpiredError(Err):
+    """Token expired, fetch a new token first."""
+
+    ...
+
+
+class TooManyRetriesError(Err):
+    """Too many retries, giving up."""
+
+    ...
+
+
+class InvalidResponseError(Err):
+    """Invalid response from inverter."""
+
+    def __init__(self):
+        super().__init__("Invalid response from inverter")
+
+
+class GenericError(Err):
+    """Generic error."""
+
+    def __init__(self):
+        super().__init__("Generic error")
+
+
+AnyError = (
+    BusyError
+    | TokenExpiredError
+    | TooManyRetriesError
+    | InvalidResponseError
+    | GenericError
+)
 
 
 class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # noqa: N801
@@ -48,41 +82,37 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
     def default_port() -> int:
         return 8082
 
-    @staticmethod
-    def _parse_ws_response(
-        response: dict[str, Any],
-    ) -> Result[dict[str, Any], ErrorResponse]:
-        if (
-            response.get("result_code") == 1
-            and response.get("result_msg") == "success"
-            and response.get("result_data")  # is not None
-        ):
-            return Ok(response["result_data"])
-        else:
-            logger.error(f"Invalid response from inverter: {response}")
-            return Err(ErrorResponse.InvalidResponse)
-
     async def _ws_query(self, query: dict[str, str | int]):
         # Potential services: connect, devicelist, state, statistics, runtime, real
         assert self._ws is not None
 
-        await self._ws.send_json(query)
+        try:
+            await self._ws.send_json(query)
+            response: dict = await self._ws.receive_json()
+        except Exception as e:
+            logger.error(f"Cannot send message to inverter: {e}")
+            await self.disconnect()
+            return GenericError()
 
-        response: dict = await self._ws.receive_json()
+        return _parse_ws_response(response)
 
-        return ModbusConnection_Http._parse_ws_response(response)
-
-    async def _get_new_token(self) -> str:
+    async def _get_new_token(self) -> Result[str, ErrorResponse]:
         response = await self._ws_query(
             {"lang": "en_us", "token": "", "service": "connect"}
         )
-        if isinstance(response, Ok):
-            return cast(str, response.ok_value["token"])
-        else:
-            # TODO: return the error instead?
-            raise response.unwrap_err()
+        if isinstance(response, Err):
+            return response
 
-    async def _get_connected_devices(self) -> list[dict[str, str]]:
+        val = response.ok_value
+        if isinstance(val, dict) and isinstance(val.get("token"), str):
+            return Ok(str(val.get("token")))
+        else:
+            logger.error("Invalid response from inverter: %s", response)
+            return Err(ErrorResponse.InvalidResponse)
+
+    async def _get_connected_devices(
+        self,
+    ) -> Result[list[dict[str, str]], ErrorResponse]:
         assert self._token is not None
 
         response = await self._ws_query(
@@ -94,11 +124,7 @@ class ModbusConnection_Http(modbus_connection_base.ModbusConnection_Base):  # no
                 "is_check_token": "0",
             }
         )
-        if isinstance(response, Ok):
-            return cast(list[dict[str, str]], response.ok_value["list"])
-        else:
-            # TODO: return the error instead?
-            raise response.unwrap_err()
+        return response.and_then(lambda x: Ok(x.get("list")))
 
     async def connect(self):
         """
@@ -312,3 +338,18 @@ def _parse_modbus_data(
     for i in range(0, len(modbus_data), 2):
         data.append(int(modbus_data[i], 16) * 256 + int(modbus_data[i + 1], 16))  # noqa: PERF401
     return Ok(data)
+
+
+def _parse_ws_response(
+    response: dict[str, Any],
+):
+    if (
+        isinstance(response, dict)
+        and response.get("result_code") == 1
+        and response.get("result_msg") == "success"
+        and response.get("result_data")  # is not None
+    ):
+        return Ok(response["result_data"])
+    else:
+        logger.error(f"Invalid websocket response from inverter: {response}")
+        return InvalidResponseError()
