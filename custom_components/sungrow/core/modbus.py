@@ -11,6 +11,7 @@ import contextlib
 import logging
 from dataclasses import dataclass
 from enum import StrEnum
+from packaging import version
 
 import pymodbus
 import pymodbus.client
@@ -30,6 +31,17 @@ RawData = dict[RegisterType, dict[int, int]]
 
 # e.g. {"ac_power": [123, 456]}
 MappedData = dict[str, list[list[int] | int]]
+
+
+def _get_pymodbus_device_param():
+    """Temporary hack to return the correct keyword argument name based on pymodbus version."""
+    try:
+        if version.parse(pymodbus.__version__) >= version.parse("3.10.0"):
+            return "device_id"
+        return "slave"
+    except (ImportError, AttributeError):
+        return "slave"
+
 
 
 class ModbusError(Exception):
@@ -68,7 +80,7 @@ class Connection:
     def __init__(self, host: str, port: int, slave: int):
         self._slave = slave
         self._client = pymodbus.client.AsyncModbusTcpClient(
-            host=host, port=port, timeout=2, retries=1, retry_on_empty=True
+            host=host, port=port, timeout=2, retries=1
         )
         self._detached = False
 
@@ -280,9 +292,10 @@ class Connection:
                 RegisterType.READ: self._client.read_input_registers,
                 RegisterType.HOLD: self._client.read_holding_registers,
             }[register_type]
+            device_param = _get_pymodbus_device_param() # hack for pymodbus version compatibility
             # Note: sending address = protocol address - 1.
             # This is the only line in the module that needs to know about this detail!
-            rr = await func(address_start - 1, count=address_count, slave=self._slave)  # type: ignore
+            rr = await func(address_start - 1, count=address_count, **{device_param: self._slave})  # type: ignore
         except pymodbus.ModbusException as e:
             # e.g. no response from device
             raise ModbusError(
